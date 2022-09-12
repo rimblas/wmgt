@@ -1,0 +1,935 @@
+---
+# ====== Page: Administration ================================
+id: 10000
+identification: 
+  name: Administration
+  alias: ADMIN
+  title: Administration
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Disabled
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>The administration page allows application owners (Administrators) to configure the application and maintain common data used across the application.
+    By selecting one of the available settings, administrators can potentially change how the application is displayed and/or features available to the end users.</p>
+    <p>Access to this page should be limited to Administrators only.</p>
+
+regions: 
+- # ====== Region: Breadcrumb ==================================
+  id: 46987062006539704325
+  identification: 
+    title: Breadcrumb
+    type: Breadcrumb
+
+  source: 
+    breadcrumb: Breadcrumb # 46986483063942702397
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Title Bar # 46986592559371702443
+    template-options: 
+    - '#DEFAULT#'
+    - t-BreadcrumbRegion--useBreadcrumbTitle
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      breadcrumb-template: Breadcrumb # 46986654645437702471
+      template-options: 
+      - '#DEFAULT#'
+
+- # ====== Region: Column 1 ====================================
+  id: 46987068544491704328
+  identification: 
+    title: Column 1
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Configuration ===============================
+  id: 46987068905437704329
+  identification: 
+    title: Configuration
+    type: List
+
+  source: 
+    list: Application Configuration # 46987062600157704326
+
+  layout: 
+    sequence: 40
+    parent-region: Column 1 # 46987068544491704328
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Configuration Options' # 46986680300695702495
+
+  attributes: 
+    appearance: 
+      list-template: Media List # 46986636000112702462
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+- # ====== Region: User Interface ==============================
+  id: 46987069330879704329
+  identification: 
+    title: User Interface
+    type: List
+
+  source: 
+    list: User Interface # 46987063311091704326
+
+  layout: 
+    sequence: 50
+    parent-region: Column 1 # 46987068544491704328
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Theme Style Selection' # 46986680700812702495
+
+  attributes: 
+    appearance: 
+      list-template: Media List # 46986636000112702462
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+- # ====== Region: Activity Reports ============================
+  id: 46987069759777704329
+  identification: 
+    title: Activity Reports
+    type: List
+
+  source: 
+    list: Activity Reports # 46987064035902704326
+
+  layout: 
+    sequence: 60
+    parent-region: Column 1 # 46987068544491704328
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Activity Reporting' # 46986680005844702495
+
+  attributes: 
+    appearance: 
+      list-template: Media List # 46986636000112702462
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+- # ====== Region: Column 2 ====================================
+  id: 46987070162973704329
+  identification: 
+    title: Column 2
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Access Control ==============================
+  id: 46987070598764704329
+  identification: 
+    title: Access Control
+    type: Static Content
+
+  layout: 
+    sequence: 70
+    parent-region: Column 2 # 46987070162973704329
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Access Control' # 46986679954839702495
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: ACL Information =============================
+  id: 46987071358123704330
+  identification: 
+    title: ACL Information
+    type: PL/SQL Dynamic Content
+
+  source: 
+    pl/sql-code: |
+      declare
+          l_acl_scope varchar2(45);
+      begin
+          l_acl_scope := apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' );
+      
+          if l_acl_scope = 'ALL_USERS' then
+              sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ALL_USERS') );
+          elsif l_acl_scope = 'ACL_ONLY' then
+              sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_ONLY') );
+          else
+              sys.htp.p( apex_lang.message('APEX.FEATURE.ACL.INFO.ACL_VALUE_INVALID', l_acl_scope) );
+          end if;
+      end;
+
+  layout: 
+    sequence: 10
+    parent-region: Access Control # 46987070598764704329
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--noIcon
+    - t-Alert--warning
+    - t-Alert--accessibleHeading
+    css-classes: 
+    - margin-sm
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+- # ====== Region: User Counts Report ==========================
+  id: 46987071781746704330
+  identification: 
+    title: User Counts Report
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.role_name, (select count(*) from apex_appl_acl_user_roles ur where r.role_id = ur.role_id) user_count, r.role_id
+      from apex_appl_acl_roles r
+      where r.application_id = :APP_ID
+      group by r.role_name, r.role_id
+      order by 2 desc, 1
+
+  layout: 
+    sequence: 20
+    parent-region: Access Control # 46987070598764704329
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader
+    - t-Region--stacked
+    - t-Region--scrollBody
+    - t-Region--noPadding
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Value Attribute Pairs - Row # 46986623011630702455
+      template-options: 
+      - '#DEFAULT#'
+      - t-AVPList--rightAligned
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ROLE_NAME ===================================
+    id: 46987072446256704336
+    identification: 
+      column-name: ROLE_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Role Name
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: USER_COUNT ==================================
+    id: 46987072866408704336
+    identification: 
+      column-name: USER_COUNT
+      type: Plain Text
+
+    heading: 
+      heading: User Count
+      alignment: start
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: 999G999G999G999G999G999G990
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROLE_ID =====================================
+    id: 46987073225889704336
+    identification: 
+      column-name: ROLE_ID
+      type: Plain Text
+
+    heading: 
+      heading: Role Id
+      alignment: start
+
+    layout: 
+      sequence: 3
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Access Control Actions ======================
+  id: 46987076350650704481
+  identification: 
+    title: Access Control Actions
+    type: List
+
+  source: 
+    list: Access Control # 46987066766889704327
+
+  layout: 
+    sequence: 30
+    parent-region: Access Control # 46987070598764704329
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      list-template: Media List # 46986636000112702462
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+- # ====== Region: Feedback ====================================
+  id: 46987076793176704481
+  identification: 
+    title: Feedback
+    type: Static Content
+
+  layout: 
+    sequence: 80
+    parent-region: Column 2 # 46987070162973704329
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Feedback' # 46986680133641702495
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Report ======================================
+  id: 46987077178963704482
+  identification: 
+    title: Report
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select l.display_value feedback_status, 
+      (select count(*) from apex_team_feedback f where f.application_id = :APP_ID and f.feedback_status = l.return_value) feedback_count 
+      from apex_application_lov_entries l
+      where l.application_id = :APP_ID
+      and l.list_of_values_name = 'FEEDBACK_STATUS'
+      order by 2 desc, 1
+
+  layout: 
+    sequence: 10
+    parent-region: Feedback # 46987076793176704481
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader
+    - t-Region--stacked
+    - t-Region--scrollBody
+    - t-Region--noPadding
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Value Attribute Pairs - Row # 46986623011630702455
+      template-options: 
+      - '#DEFAULT#'
+      - t-AVPList--rightAligned
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: FEEDBACK_STATUS =============================
+    id: 46987077814244704490
+    identification: 
+      column-name: FEEDBACK_STATUS
+      type: Plain Text
+
+    heading: 
+      heading: Feedback Status
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: FEEDBACK_COUNT ==============================
+    id: 46987078257516704491
+    identification: 
+      column-name: FEEDBACK_COUNT
+      type: Plain Text
+
+    heading: 
+      heading: Feedback Count
+      alignment: start
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: 999G999G999G999G999G999G990
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Feedback ====================================
+  id: 46987080051529704645
+  identification: 
+    title: Feedback
+    type: List
+
+  source: 
+    list: Feedback # 46987067869095704328
+
+  layout: 
+    sequence: 20
+    parent-region: Feedback # 46987076793176704481
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      list-template: Media List # 46986636000112702462
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+buttons: 
+- # ====== Button: ADD_USER ====================================
+  id: 46987070980473704330
+  identification: 
+    button-name: ADD_USER
+    label: Add User
+
+  layout: 
+    sequence: 10
+    region: Access Control # 46987070598764704329
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    - t-Button--iconLeft
+    icon: fa-user-plus
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:10042:&SESSION.::&DEBUG.:RP,10042::'
+      page: 10042 # Manage User Access
+      clear-cache: RP,10042
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Report ======================
+  id: 46987075441073704480
+  identification: 
+    name: Refresh Report
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: ADD_USER # 46987070980473704330
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46987075936135704481
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: User Counts Report # 46987071781746704330
+
+    execution-options: 
+      sequence: 10
+      event: Refresh Report # 46987075441073704480
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

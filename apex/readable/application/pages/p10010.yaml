@@ -1,0 +1,628 @@
+---
+# ====== Page: Configuration Options =========================
+id: 10010
+identification: 
+  name: Configuration Options
+  alias: CONFIGURATION-OPTIONS
+  title: Configuration Options
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+  - t-Dialog--noPadding
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>Configuration settings allow you to make specific functionality either available (enabled) or unavailable (disabled) to end users.</p>
+    <p>If a specific function is not 100% ready, or needs to be temporarily removed, click <strong>Disabled</strong>. 
+    Once it should be made available, simply click <strong>Enabled</strong>.</p>
+    <p><em><strong>Note:</strong> Changes made here will not be reflected for individual end users currently running the application. Once the end user signs out and then signs back in the revised feature settings will be invoked.</em></p>
+
+configuration: 
+  build-option: 'Feature: Configuration Options' # 46986680300695702495
+
+regions: 
+- # ====== Region: Buttons =====================================
+  id: 46986885849551703656
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_03
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: Text (escape special characters)
+      show-line-breaks: true
+
+- # ====== Region: Configuration Options =======================
+  id: 46986886019425703656
+  identification: 
+    title: Configuration Options
+    type: Interactive Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select 
+          build_option_id     ID, 
+          build_option_name   application_option,
+          apex_item.hidden(1, build_option_id) ||
+          apex_item.hidden(2, build_option_status) ||
+          apex_item.switch ( 
+               p_idx        => 3,
+               p_value      => build_option_status,
+               p_on_value   => 'Include',
+               p_on_label   => m.enabled,
+               p_off_value  => 'Exclude',
+               p_off_label  => m.disabled,
+               p_item_id    => 'BO_OPT_' || rownum,
+               p_item_label => ( case when build_option_status = 'Include' then
+                                     apex_lang.message( 'APEX.FEATURE.CONFIG.IS_ENABLED', apex_escape.html(build_option_name) )
+                                 when build_option_status = 'Exclude' then
+                                     apex_lang.message( 'APEX.FEATURE.CONFIG.IS_DISABLED', apex_escape.html(build_option_name) )
+                                 end ),
+               p_attributes => 'style="white-space:pre;"') "STATUS",
+          component_comment   description,
+          last_updated_on        updated,
+          lower(last_updated_by) updated_by,
+          build_option_status current_status
+        from apex_application_build_options,
+        (select apex_lang.message('APEX.FEATURE.CONFIG.ENABLED') enabled, apex_lang.message('APEX.FEATURE.CONFIG.DISABLED') disabled from dual) m
+       where application_id = :APP_ID 
+       and feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    - t-IRR-region--noBorders
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986886647424703656
+    link: 
+      link-column: Exclude Link Column
+
+    pagination: 
+      type: Row Ranges X to Y
+      display-position: Bottom - Right
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: No data found.
+      when-more-data-found: 'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
+
+    search-bar: 
+      include-search-bar: true
+      search-field: true
+      finder-drop-down: true
+      reports-select-list: true
+      rows-per-page-selector: false
+
+    actions-menu: 
+      include-actions-menu: true
+      filter: true
+      select-columns: true
+      rows-per-page: true
+      sort: true
+      control-break: true
+      highlight: true
+      compute: true
+      aggregate: true
+      chart: true
+      group-by: true
+      pivot: true
+      flashback: true
+      save-report: true
+      save-public-report: false
+      reset: true
+      help: true
+      download: true
+      subscription: false
+
+    download: 
+      formats: 
+      - CSV
+      - HTML
+      - Excel
+      - PDF
+      send-as-email: true
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 46986892550384703667
+      identification: 
+        name: Primary Report
+        alias: 469868926
+
+    columns: 
+    - # ====== Column: ID ==========================================
+      id: 46986887218477703662
+      identification: 
+        column-name: ID
+        type: Hidden Column
+
+      heading: 
+        heading: ID
+
+      layout: 
+        sequence: 1
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: APPLICATION_OPTION ==========================
+      id: 46986887661798703663
+      identification: 
+        column-name: APPLICATION_OPTION
+        type: Plain Text
+
+      heading: 
+        heading: Feature
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 2
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: STATUS ======================================
+      id: 46986888065742703663
+      identification: 
+        column-name: STATUS
+        type: Plain Text
+
+      heading: 
+        heading: Status
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 3
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: false
+
+    - # ====== Column: DESCRIPTION =================================
+      id: 46986888412706703663
+      identification: 
+        column-name: DESCRIPTION
+        type: Plain Text
+
+      heading: 
+        heading: Description
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 4
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED =====================================
+      id: 46986888803185703664
+      identification: 
+        column-name: UPDATED
+        type: Plain Text
+
+      heading: 
+        heading: Updated
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 5
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: SINCE
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED_BY ==================================
+      id: 46986889204275703664
+      identification: 
+        column-name: UPDATED_BY
+        type: Plain Text
+
+      heading: 
+        heading: Updated By
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 6
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: CURRENT_STATUS ==============================
+      id: 46986889656750703664
+      identification: 
+        column-name: CURRENT_STATUS
+        type: Plain Text
+
+      heading: 
+        heading: Current Status
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 7
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    printing: 
+      output: 
+        view-file-as: Attachment
+
+      page: 
+        size: Letter
+        orientation: Landscape
+        units: Inches
+        width: 11
+        height: 8.5
+        border-width: 0.5
+        border-color: '#666666'
+
+      page-header: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+        page-header-text: Configuration Options
+
+      column-headings: 
+        font: Helvetica
+        font-weight: Bold
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#EEEEEE'
+
+      columns: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#FFFFFF'
+
+      page-footer: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+
+buttons: 
+- # ====== Button: RESET_REPORT ================================
+  id: 46986893467499703668
+  identification: 
+    button-name: RESET_REPORT
+    label: Reset
+
+  layout: 
+    sequence: 20
+    region: Configuration Options # 46986886019425703656
+    position: RIGHT_OF_IR_SEARCH_BAR
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - t-Button--iconLeft
+    icon: fa-undo-alt
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
+      page: '&APP_PAGE_ID.'
+      clear-cache: '&APP_PAGE_ID.,RR'
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: APPLY_CHANGES ===============================
+  id: 46986894149088703668
+  identification: 
+    button-name: APPLY_CHANGES
+    label: Apply Changes
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986885849551703656
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+processes: 
+- # ====== Process: Update =====================================
+  id: 46986894568697703669
+  identification: 
+    name: Update
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      for i in 1..apex_application.g_f01.count loop
+          for c1 in ( select application_id, build_option_name, build_option_status
+                      from apex_application_build_options
+                      where apex_application.g_f01(i) = build_option_id
+                         and application_Id = :APP_ID) loop
+              if c1.build_option_status != apex_application.g_f03(i) then
+                  apex_util.set_build_option_status(  p_application_id => :APP_ID,
+                                                      p_id => apex_application.g_f01(i),
+                                                      p_build_status => upper(apex_application.g_f03(i)) );
+              end if;
+          end loop;
+      end loop;
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: 'Configuration Options updated. '
+
+  error: 
+    display-location: Inline in Notification
+
+branches: 
+- # ====== Branch: Branch to Admin Page ========================
+  id: 46986894999797703669
+  identification: 
+    name: Branch to Admin Page
+
+  execution-options: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:10000:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 10000 # Administration
+

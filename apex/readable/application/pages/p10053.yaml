@@ -1,0 +1,765 @@
+---
+# ====== Page: Manage Feedback ===============================
+id: 10053
+identification: 
+  name: Manage Feedback
+  alias: MANAGE-FEEDBACK
+  title: Manage Feedback
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+  - t-Dialog--noPadding
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+css: 
+  inline: |
+    /* Color feedback rating icons */
+    .feedback-positive { color: var(--ut-feedback-positive-text-color, var(--ut-palette-success)); }
+    .feedback-neutral { color: var(--ut-feedback-neutral-text-color, var(--ut-palette-warning)); }
+    .feedback-negative { color: var(--ut-feedback-negative-text-color, var(--ut-palette-danger)); }
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>Feedback can be entered by end users from any normal page within the application.</p>
+    <p>This report shows the feedback entered, any response enter by administrators, and the status of the feedback.</p>
+    <p>Click the edit icon (yellow pencil) to enter a response or update the feedback status.</p>
+    <p><em><strong>Note:</strong> If feedback recipients have been defined then feedback submissions will also be emailed to the email addresses in the feedback recipients list.</em></p>
+
+configuration: 
+  build-option: 'Feature: Feedback' # 46986680133641702495
+
+regions: 
+- # ====== Region: Manage Feedback =============================
+  id: 46987024415185704293
+  identification: 
+    title: Manage Feedback
+    type: Interactive Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select feedback_id id,
+          page_id||'. '||page_name page_name,
+          created_on created,
+          lower(created_by) created_by,
+          feedback,
+          feedback_rating rating,
+          case feedback_rating
+            when 1 then 'fa-frown-o feedback-negative' 
+            when 2 then 'fa-emoji-neutral feedback-neutral'  
+            when 3 then 'fa-smile-o feedback-positive'
+          end rating_icon,
+          feedback_status status,
+          public_response response,
+          http_user_agent user_agent,
+          updated_on updated,
+          lower(updated_by) updated_by,
+          page_id
+      from apex_team_feedback f
+      where application_id = :APP_ID
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    - t-IRR-region--noBorders
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46987043991862704304
+    link: 
+      link-column: Link to Custom Target
+      target: 
+        url: 'f?p=&APP_ID.:10054:&SESSION.::&DEBUG.:RP:P10054_ID:\#ID#\'
+        page: 10054 # Feedback
+        clear-cache: RP
+        values: 
+          p10054_id: '#ID#'
+
+      link-icon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+
+    pagination: 
+      type: Row Ranges X to Y
+      display-position: Bottom - Right
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: No data found.
+      when-more-data-found: 'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
+
+    search-bar: 
+      include-search-bar: true
+      search-field: true
+      finder-drop-down: true
+      reports-select-list: true
+      rows-per-page-selector: false
+
+    actions-menu: 
+      include-actions-menu: true
+      filter: true
+      select-columns: true
+      rows-per-page: true
+      sort: true
+      control-break: true
+      highlight: true
+      compute: true
+      aggregate: true
+      chart: true
+      group-by: true
+      pivot: true
+      flashback: true
+      save-report: true
+      save-public-report: false
+      reset: true
+      help: true
+      download: true
+      subscription: false
+
+    download: 
+      formats: 
+      - CSV
+      - HTML
+      - Excel
+      - PDF
+      send-as-email: true
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 46987053726907704319
+      identification: 
+        name: Primary Report
+        alias: 469870538
+
+    columns: 
+    - # ====== Column: ID ==========================================
+      id: 46987044399546704312
+      identification: 
+        column-name: ID
+        type: Hidden Column
+
+      heading: 
+        heading: ID
+
+      layout: 
+        sequence: 0
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: PAGE_NAME ===================================
+      id: 46987044744788704313
+      identification: 
+        column-name: PAGE_NAME
+        type: Plain Text
+
+      heading: 
+        heading: Page
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 2
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: CREATED =====================================
+      id: 46987045177898704313
+      identification: 
+        column-name: CREATED
+        type: Plain Text
+
+      heading: 
+        heading: Filed
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 3
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: SINCE
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: CREATED_BY ==================================
+      id: 46987045511508704313
+      identification: 
+        column-name: CREATED_BY
+        type: Plain Text
+
+      heading: 
+        heading: Filed By
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 4
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: FEEDBACK ====================================
+      id: 46987045961589704314
+      identification: 
+        column-name: FEEDBACK
+        type: Plain Text
+
+      heading: 
+        heading: Feedback
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 5
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RATING ======================================
+      id: 46987046385152704314
+      identification: 
+        column-name: RATING
+        type: Plain Text (based on List of Values)
+
+      list-of-values: 
+        list-of-values: FEEDBACK_RATING # 46987028326179704296
+
+      heading: 
+        heading: Rating
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 6
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-formatting: 
+        html-expression: '<span class="fa #RATING_ICON#" aria-hidden="true" title="#RATING#"></span>'
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+    - # ====== Column: RATING_ICON =================================
+      id: 46987046736833704314
+      identification: 
+        column-name: RATING_ICON
+        type: Hidden Column
+
+      heading: 
+        heading: RATING ICON
+
+      layout: 
+        sequence: 7
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: STATUS ======================================
+      id: 46987047111832704314
+      identification: 
+        column-name: STATUS
+        type: Plain Text (based on List of Values)
+
+      list-of-values: 
+        list-of-values: FEEDBACK_STATUS # 46987038772331704302
+
+      heading: 
+        heading: Status
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 8
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+    - # ====== Column: RESPONSE ====================================
+      id: 46987047595454704315
+      identification: 
+        column-name: RESPONSE
+        type: Plain Text
+
+      heading: 
+        heading: Response
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 9
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: USER_AGENT ==================================
+      id: 46987047943393704315
+      identification: 
+        column-name: USER_AGENT
+        type: Plain Text
+
+      heading: 
+        heading: User Agent
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 10
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED =====================================
+      id: 46987048387438704315
+      identification: 
+        column-name: UPDATED
+        type: Plain Text
+
+      heading: 
+        heading: Updated
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 11
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: SINCE
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED_BY ==================================
+      id: 46987048710416704315
+      identification: 
+        column-name: UPDATED_BY
+        type: Plain Text
+
+      heading: 
+        heading: Updated By
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 12
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: PAGE_ID =====================================
+      id: 46987049192266704316
+      identification: 
+        column-name: PAGE_ID
+        type: Plain Text
+
+      heading: 
+        heading: Page
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 13
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    printing: 
+      output: 
+        view-file-as: Attachment
+
+      page: 
+        size: Letter
+        orientation: Landscape
+        units: Inches
+        width: 11
+        height: 8.5
+        border-width: 0.5
+        border-color: '#666666'
+
+      page-header: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+        page-header-text: Manage Feedback
+
+      column-headings: 
+        font: Helvetica
+        font-weight: Bold
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#EEEEEE'
+
+      columns: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#FFFFFF'
+
+      page-footer: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+
+buttons: 
+- # ====== Button: RESET_REPORT ================================
+  id: 46987054689592704320
+  identification: 
+    button-name: RESET_REPORT
+    label: Reset
+
+  layout: 
+    sequence: 20
+    region: Manage Feedback # 46987024415185704293
+    position: RIGHT_OF_IR_SEARCH_BAR
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - t-Button--iconLeft
+    icon: fa-undo-alt
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
+      page: '&APP_PAGE_ID.'
+      clear-cache: '&APP_PAGE_ID.,RR'
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Report ======================
+  id: 46987024319970704293
+  identification: 
+    name: Refresh Report
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Region
+    region: Manage Feedback # 46987024415185704293
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46987055348016704320
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Manage Feedback # 46987024415185704293
+
+    execution-options: 
+      sequence: 10
+      event: Refresh Report # 46987024319970704293
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

@@ -1,0 +1,754 @@
+---
+# ====== Page: Add Multiple Users - Step 2 ===================
+id: 10044
+identification: 
+  name: Add Multiple Users - Step 2
+  alias: ADD-MULTIPLE-USERS-STEP-2
+  title: Add Multiple Users
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  inline: |
+    .a-ListView-item .fa {
+      color: var(--ut-component-text-muted-color);
+    }
+    
+    .a-ListView-item .u-success-text {
+      color: var(--ut-palette-success) !important;
+    }
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Disabled
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+configuration: 
+  build-option: 'Feature: Access Control' # 46986679954839702495
+
+regions: 
+- # ====== Region: Buttons =====================================
+  id: 46987005373635704118
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_03
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Wizard Container ============================
+  id: 46987005463171704118
+  identification: 
+    title: Wizard Container
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form--stretchInputs
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Exceptions ==================================
+  id: 46987005619412704118
+  identification: 
+    title: Exceptions
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select c001 username, c002 reason
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_INVALID'
+      order by 1
+
+  layout: 
+    sequence: 60
+    parent-region: Wizard Container # 46987005463171704118
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Collapsible # 46986538646841702421
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - is-collapsed
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_INVALID'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10000
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: USERNAME ====================================
+    id: 46987012753532704129
+    identification: 
+      column-name: USERNAME
+      type: Plain Text
+
+    heading: 
+      heading: Username
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: REASON ======================================
+    id: 46987013104272704130
+    identification: 
+      column-name: REASON
+      type: Plain Text
+
+    heading: 
+      heading: Reason
+      alignment: start
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: &P10044_VALID_COUNT. Users to Add ===========
+  id: 46987005766560704118
+  identification: 
+    title: '&P10044_VALID_COUNT. Users to Add'
+    type: List View
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select distinct c001 username
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+      order by 1
+
+  layout: 
+    sequence: 50
+    parent-region: Wizard Container # 46987005463171704118
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      features: Advanced Formatting
+      text-formatting: '<span class="fa fa-check-circle u-success-text" aria-hidden="true"></span> <span style="line-height:36px;text-transform:lowercase;">&USERNAME!HTML.</span>'
+
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10000
+
+- # ====== Region: Hidden Items ================================
+  id: 46987005847009704118
+  identification: 
+    title: Hidden Items
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Valid Users Exist - Page Info ===============
+  id: 46987017449239704290
+  identification: 
+    title: Valid Users Exist - Page Info
+    type: PL/SQL Dynamic Content
+
+  source: 
+    pl/sql-code: |
+      sys.htp.prn('<p>');
+      sys.htp.prn(apex_lang.message (
+                      'APEX.FEATURE.ACL.BULK_USER.CREATE_CONFIRM',
+                      apex_escape.html(:P10044_VALID_COUNT),
+                      apex_escape.html(:P10044_ROLE)));
+      sys.htp.prn('</p>');
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-bottom-sm
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+- # ====== Region: No Valid Users Exist - Page Info ============
+  id: 46987018186467704291
+  identification: 
+    title: No Valid Users Exist - Page Info
+    type: Static Content
+
+  source: 
+    html-code: <p>No valid new users found</p>
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-bottom-sm
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P10044_ROLE ==============================
+  id: 46987020566165704292
+  identification: 
+    name: P10044_ROLE
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Hidden Items # 46987005847009704118
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select LISTAGG( role_name, ', ')
+               WITHIN GROUP (ORDER BY role_name) role_name
+      from APEX_APPL_ACL_ROLES
+      where application_id = :APP_ID
+      and instr(:P10043_ROLE, role_id, 1) > 0
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Restricted - May not be set from browser
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P10044_VALID_COUNT =======================
+  id: 46987020908629704293
+  identification: 
+    name: P10044_VALID_COUNT
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 20
+    region: Hidden Items # 46987005847009704118
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(*)
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Restricted - May not be set from browser
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P10044_INVALID_COUNT =====================
+  id: 46987021346238704293
+  identification: 
+    name: P10044_INVALID_COUNT
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: Hidden Items # 46987005847009704118
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(*)
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Restricted - May not be set from browser
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: SUBMIT ======================================
+  id: 46987005941622704118
+  identification: 
+    button-name: SUBMIT
+    label: Add Users
+
+  layout: 
+    sequence: 20
+    region: Buttons # 46987005373635704118
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+        from apex_collections
+       where collection_name = 'ACL_BULK_USER_VALID'
+
+- # ====== Button: PREVIOUS ====================================
+  id: 46987018804080704291
+  identification: 
+    button-name: PREVIOUS
+    label: Previous
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46987005373635704118
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to URL
+    target: 'javascript:history.back();'
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: CANCEL ======================================
+  id: 46987019299233704292
+  identification: 
+    button-name: CANCEL
+    label: Cancel
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46987005373635704118
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: false
+
+dynamic-actions: 
+- # ====== Dynamic Action: Cancel Dialog =======================
+  id: 46987019313199704292
+  identification: 
+    name: Cancel Dialog
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CANCEL # 46987019299233704292
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+    id: 46987020099018704292
+    identification: 
+      action: Cancel Dialog
+
+    execution-options: 
+      sequence: 10
+      event: Cancel Dialog # 46987019313199704292
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+processes: 
+- # ====== Process: Add Users to Access Control List ===========
+  id: 46987021776398704293
+  identification: 
+    name: Add Users to Access Control List
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      declare
+          l_user_role_ids apex_application_global.vc_arr2;
+      begin
+          for c in (  select distinct c001 as username, c003 as user_roles
+                      from   apex_collections
+                      where  collection_name = 'ACL_BULK_USER_VALID' )
+          loop
+               l_user_role_ids := apex_util.string_to_table(c.user_roles);
+               for i in 1..l_user_role_ids.count loop
+                   apex_acl.add_user_role(p_application_id => :APP_ID, p_user_name => c.username, p_role_id => l_user_role_ids(i));
+               end loop;
+          end loop;
+      
+          apex_collection.delete_collection('ACL_BULK_USER_INVALID');
+          apex_collection.delete_collection('ACL_BULK_USER_VALID');
+          :P10043_PRELIM_USERS := null;
+      end;
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: User(s) added.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: SUBMIT # 46987005941622704118
+
+- # ====== Process: Close Dialog ===============================
+  id: 46987022171709704293
+  identification: 
+    name: Close Dialog
+    type: Close Dialog
+
+  execution-options: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+

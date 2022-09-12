@@ -1,0 +1,786 @@
+---
+# ====== Page: Page Views ====================================
+id: 10034
+identification: 
+  name: Page Views
+  alias: PAGE-VIEWS
+  title: Page Views
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+  - t-Dialog--noPadding
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>This page provides an interactive report of the most recent page views.</p>
+    <p>Select the reporting timeframe (Default = 1 day) at the top of the page as necessary.<br>
+    Click on the column headings to sort and filter data, or click on the <strong>Actions</strong> button to customize column display and many additional advanced features. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+
+configuration: 
+  build-option: 'Feature: Activity Reporting' # 46986680005844702495
+
+regions: 
+- # ====== Region: Page Views ==================================
+  id: 46986926281299704020
+  identification: 
+    title: Page Views
+    type: Interactive Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select 
+          step_id||'. '||(select page_name
+                          from apex_application_pages p
+                          where p.page_id = l.step_id
+                              and p.application_id = :APP_ID) page_name,
+          userid_lc     user_id,
+          time_stamp    timestamp,
+          elap          elapsed,
+          step_id       page,
+          decode(page_mode,'P','Partial','D','Full',page_mode) page_mode,
+          component_name,
+          num_rows,
+          ir_search,
+          sqlerrm  error
+      from apex_activity_log l
+      where flow_id = :app_id
+          and time_stamp >= sysdate - ( 1/24/60/60 * :P10034_TIMEFRAME )
+          and userid is not null
+          and step_id is not null
+      order by time_stamp desc
+    page-items-to-submit: 
+    - P10034_TIMEFRAME
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    - t-IRR-region--noBorders
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986926832980704020
+    link: 
+      link-column: Exclude Link Column
+
+    pagination: 
+      type: Row Ranges X to Y
+      display-position: Bottom - Right
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: No data found.
+      when-more-data-found: 'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
+
+    search-bar: 
+      include-search-bar: true
+      search-field: true
+      finder-drop-down: true
+      reports-select-list: true
+      rows-per-page-selector: false
+
+    actions-menu: 
+      include-actions-menu: true
+      filter: true
+      select-columns: true
+      rows-per-page: true
+      sort: true
+      control-break: true
+      highlight: true
+      compute: true
+      aggregate: true
+      chart: true
+      group-by: true
+      pivot: true
+      flashback: true
+      save-report: true
+      save-public-report: false
+      reset: true
+      help: true
+      download: true
+      subscription: false
+
+    download: 
+      formats: 
+      - CSV
+      - HTML
+      - Excel
+      - PDF
+      send-as-email: true
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 46986934428523704027
+      identification: 
+        name: Primary Report
+        alias: 469869345
+
+    columns: 
+    - # ====== Column: PAGE_NAME ===================================
+      id: 46986927206580704021
+      identification: 
+        column-name: PAGE_NAME
+        type: Plain Text
+
+      heading: 
+        heading: Page Name
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 1
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: USER_ID =====================================
+      id: 46986927558405704021
+      identification: 
+        column-name: USER_ID
+        type: Plain Text
+
+      heading: 
+        heading: User
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 2
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: TIMESTAMP ===================================
+      id: 46986927926578704022
+      identification: 
+        column-name: TIMESTAMP
+        type: Plain Text
+
+      heading: 
+        heading: Timestamp
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 3
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: SINCE
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: ELAPSED =====================================
+      id: 46986928313941704022
+      identification: 
+        column-name: ELAPSED
+        type: Plain Text
+
+      heading: 
+        heading: Elapsed
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 4
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990D0000
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: PAGE ========================================
+      id: 46986928780880704022
+      identification: 
+        column-name: PAGE
+        type: Plain Text
+
+      heading: 
+        heading: Page
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 5
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: PAGE_MODE ===================================
+      id: 46986929165527704022
+      identification: 
+        column-name: PAGE_MODE
+        type: Plain Text
+
+      heading: 
+        heading: Mode
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 6
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: COMPONENT_NAME ==============================
+      id: 46986929541026704023
+      identification: 
+        column-name: COMPONENT_NAME
+        type: Plain Text
+
+      heading: 
+        heading: Component Name
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 7
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: NUM_ROWS ====================================
+      id: 46986929964616704023
+      identification: 
+        column-name: NUM_ROWS
+        type: Plain Text
+
+      heading: 
+        heading: Num Rows
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 8
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: IR_SEARCH ===================================
+      id: 46986930334756704023
+      identification: 
+        column-name: IR_SEARCH
+        type: Plain Text
+
+      heading: 
+        heading: IR Search
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 9
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: ERROR =======================================
+      id: 46986930774865704024
+      identification: 
+        column-name: ERROR
+        type: Plain Text
+
+      heading: 
+        heading: Error
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 10
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    printing: 
+      output: 
+        view-file-as: Attachment
+
+      page: 
+        size: Letter
+        orientation: Landscape
+        units: Inches
+        width: 11
+        height: 8.5
+        border-width: 0.5
+        border-color: '#666666'
+
+      page-header: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+        page-header-text: Page Views
+
+      column-headings: 
+        font: Helvetica
+        font-weight: Bold
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#EEEEEE'
+
+      columns: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#FFFFFF'
+
+      page-footer: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+
+- # ====== Region: Buttons =====================================
+  id: 46986926394205704020
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--slimPadding
+    - t-ButtonRegion--noUI
+    - t-Form--large
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P10034_TIMEFRAME =========================
+  id: 46986926190390704020
+  identification: 
+    name: P10034_TIMEFRAME
+    type: Select List
+
+  label: 
+    label: Timeframe
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986926394205704020
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: TIMEFRAME (4 WEEKS) # 46986922776024704013
+    display-extra-values: false
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Static Value
+    static-value: 900
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: RESET_REPORT ================================
+  id: 46986935343417704027
+  identification: 
+    button-name: RESET_REPORT
+    label: Reset
+
+  layout: 
+    sequence: 20
+    region: Page Views # 46986926281299704020
+    position: RIGHT_OF_IR_SEARCH_BAR
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - t-Button--iconLeft
+    icon: fa-undo-alt
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
+      page: '&APP_PAGE_ID.'
+      clear-cache: '&APP_PAGE_ID.,RR'
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Report ======================
+  id: 46986926469348704020
+  identification: 
+    name: Refresh Report
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P10034_TIMEFRAME
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986936600002704029
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Page Views # 46986926281299704020
+
+    execution-options: 
+      sequence: 10
+      event: Refresh Report # 46986926469348704020
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

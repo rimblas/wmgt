@@ -1,0 +1,326 @@
+---
+# ====== Page: Configure Access Control ======================
+id: 10040
+identification: 
+  name: Configure Access Control
+  alias: CONFIGURE-ACCESS-CONTROL
+  title: Configure Access Control
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: No Arguments Supported
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>Select the appropriate choice for any authenticated users.<br> 
+    Selecting <strong>No</strong> makes the application more secure as only specified users can access the application. 
+    However, if your application has a large user community then maintaining users may be onerous, and you may prefer to choose <strong>Yes</strong> and only enter application Administrators, and possibly Contributors.<br>
+    If you select <strong>Yes</strong> then you must also select how users not included in the users list are treated.</p>
+    <p>Select between requiring email addresses and any alphanumeric value for Usernames.<br>
+    Generally, you should set this setting to <strong>E-mail Address</strong> if your application uses (or will be configured to use) a centralized authentication scheme such as Oracle Access Manager, or SSO.</p>
+    <p><em><strong>Note:</strong> This application supports the following 3 access levels: Reader, Contributor, and Administrator.
+    <ul>
+      <li><strong>Readers</strong> have read-only access to all information and can also view reports.</li>
+      <li><strong>Contributors</strong> can create, edit and delete information and view reports.</li>
+      <li><strong>Administrators</strong>, in addition to Contributors capability, can also perform configuration of the application by accessing the Administration section of the application.</li>
+    </ul>
+    </em></p>
+
+configuration: 
+  build-option: 'Feature: Access Control' # 46986679954839702495
+
+regions: 
+- # ====== Region: Access Control Configuration ================
+  id: 46986986741733704095
+  identification: 
+    title: Access Control Configuration
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Buttons =====================================
+  id: 46986986892821704095
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_03
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P10040_ALLOW_OTHER_USERS =================
+  id: 46986990281432704097
+  identification: 
+    name: P10040_ALLOW_OTHER_USERS
+    type: Switch
+
+  label: 
+    label: Any authenticated user may access this application
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 30
+    region: Access Control Configuration # 46986986741733704095
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 3
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      if apex_app_setting.get_value( p_name => 'ACCESS_CONTROL_SCOPE' ) = 'ACL_ONLY' then
+          return 'N';
+      else
+          return 'Y';
+      end if;
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: Choose <strong>No</strong> if all users are defined in the access control list. Choose <strong>Yes</strong> if authenticated users not in the access control list may also use this application.
+
+buttons: 
+- # ====== Button: APPLY_CHANGES ===============================
+  id: 46986988085386704096
+  identification: 
+    button-name: APPLY_CHANGES
+    label: Apply Changes
+
+  layout: 
+    sequence: 20
+    region: Buttons # 46986986892821704095
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: CANCEL ======================================
+  id: 46986988392057704097
+  identification: 
+    button-name: CANCEL
+    label: Cancel
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986986892821704095
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: false
+
+dynamic-actions: 
+- # ====== Dynamic Action: Cancel Dialog =======================
+  id: 46986988444690704097
+  identification: 
+    name: Cancel Dialog
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CANCEL # 46986988392057704097
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+    id: 46986989140127704097
+    identification: 
+      action: Cancel Dialog
+
+    execution-options: 
+      sequence: 10
+      event: Cancel Dialog # 46986988444690704097
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+processes: 
+- # ====== Process: Set Access Control =========================
+  id: 46986990626838704098
+  identification: 
+    name: Set Access Control
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+          if :P10040_ALLOW_OTHER_USERS = 'Y' then
+              apex_app_setting.set_value (
+                  p_name  => 'ACCESS_CONTROL_SCOPE',
+                  p_value => 'ALL_USERS');
+          else
+              apex_app_setting.set_value (
+                  p_name  => 'ACCESS_CONTROL_SCOPE',
+                  p_value => 'ACL_ONLY');
+          end if;
+      end;
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Access Control settings saved.
+
+  error: 
+    display-location: Inline in Notification
+
+branches: 
+- # ====== Branch: Branch to Admin Page ========================
+  id: 46986989846363704097
+  identification: 
+    name: Branch to Admin Page
+
+  execution-options: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:10000:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 10000 # Administration
+

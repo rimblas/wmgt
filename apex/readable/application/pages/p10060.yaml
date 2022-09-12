@@ -1,0 +1,88 @@
+---
+# ====== Page: About =========================================
+id: 10060
+identification: 
+  name: About
+  alias: HELP
+  title: About
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Normal
+  page-template: Theme Default
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: First item on page
+  warn-on-unsaved-changes: false
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: All application help text can be accessed from this page. The links in the "Documentation" region give a much more in-depth explanation of the application's features and functionality.
+
+configuration: 
+  build-option: 'Feature: About Page' # 46986680684217702495
+
+regions: 
+- # ====== Region: About Page ==================================
+  id: 46987056217710704321
+  identification: 
+    title: About Page
+    type: Static Content
+
+  source: 
+    html-code: Text about this application can be placed here.
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Content Block # 46986548188719702425
+    template-options: 
+    - '#DEFAULT#'
+    - t-ContentBlock--padded
+    - t-ContentBlock--h1
+    - t-ContentBlock--lightBG
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+

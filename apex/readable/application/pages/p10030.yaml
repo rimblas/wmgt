@@ -1,0 +1,1179 @@
+---
+# ====== Page: Activity Dashboard ============================
+id: 10030
+identification: 
+  name: Activity Dashboard
+  alias: ACTIVITY-DASHBOARD
+  title: Activity Dashboard
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+configuration: 
+  build-option: 'Feature: Activity Reporting' # 46986680005844702495
+
+regions: 
+- # ====== Region: Hourly Page Events ==========================
+  id: 46986901060892703679
+  identification: 
+    title: Hourly Page Events
+    type: Chart
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - i-h320
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986901182567703679
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      time-axis-type: Enabled
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 46986903220625703680
+      identification: 
+        name: Series 1
+
+      execution-options: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with nw as (
+              -- APEX_ACTIVITY_LOG uses dates; convert system time to local time zone.
+              select from_tz( cast( sysdate as timestamp ), to_char( systimestamp, 'TZR' ) ) at local as tm from dual
+          ),
+          window as (
+              select
+                   trunc(nw.tm - ((level-1)/24),'HH') start_tm,
+                   trunc(nw.tm - ((level-2)/24),'HH') end_tm,
+                   trunc(sysdate-((level-1)/24),'HH') log_start_tm,
+                   trunc(sysdate-((level-2)/24),'HH') log_end_tm
+              from nw
+              connect by level <= round( 24 * ( 1/24/60/60 * nvl(:P10030_TIMEFRAME,1) ) )
+          )
+          select w.start_tm log_time,
+                 ( select count(*)
+                     from apex_activity_log l
+                    where l.flow_id = :app_id
+                      and l.time_stamp between w.log_start_tm and w.log_end_tm ) as value
+          from window w
+          order by 1
+        page-items-to-submit: 
+        - P10030_TIMEFRAME
+
+      column-mapping: 
+        label: LOG_TIME
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 350
+
+    axes: 
+    - # ====== Axis: y =============================================
+      id: 46986903867984703681
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+    - # ====== Axis: x =============================================
+      id: 46986904444593703681
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format: DateTime - Short
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: true
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+- # ====== Region: Most Active Pages ===========================
+  id: 46986901213579703679
+  identification: 
+    title: Most Active Pages
+    type: Chart
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - i-h320
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986901397216703679
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Horizontal
+      stack: false
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 46986908213899703683
+      identification: 
+        name: Series 1
+
+      execution-options: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select x.step_id||'. '||(select page_name from apex_application_pages p where p.application_id = :app_id and page_id = x.step_id) label, 
+                  value
+          from ( select step_id,
+                        count(*) as value
+                   from apex_activity_log
+                  where flow_id = :app_id
+                    and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+                    and step_id is not null
+                  group by step_id
+                  order by 2 desc
+               ) x
+        page-items-to-submit: 
+        - P10030_TIMEFRAME
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 10
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 46986908889019703684
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 46986909401890703684
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Top Users ===================================
+  id: 46986901406326703679
+  identification: 
+    title: Top Users
+    type: Chart
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - i-h320
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986901503418703679
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Horizontal
+      stack: false
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 46986905710910703682
+      identification: 
+        name: Series 1
+
+      execution-options: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select nvl( userid_lc, apex_lang.message('APEX.FEATURE.TOP_USERS.USERNAME.NOT_IDENTIFIED') ) as label,
+                 count(*) as value
+          from apex_activity_log
+          where flow_id = :app_id
+          and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+          group by nvl( userid_lc, apex_lang.message('APEX.FEATURE.TOP_USERS.USERNAME.NOT_IDENTIFIED') )
+          order by 2 desc
+        page-items-to-submit: 
+        - P10030_TIMEFRAME
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 10
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 46986906339768703682
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 46986906996740703682
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Recent Errors ===============================
+  id: 46986901610545703679
+  identification: 
+    title: Recent Errors
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select sqlerrm    label,
+             time_stamp value
+        from apex_activity_log
+       where flow_id    = :app_id
+         and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+         and sqlerrm    is not null
+       order by 2 desc, 1
+    page-items-to-submit: 
+    - P10030_TIMEFRAME
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - i-h240
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 20
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--inline
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: No data found.
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: LABEL =======================================
+    id: 46986910883842703691
+    identification: 
+      column-name: LABEL
+      type: Plain Text
+
+    heading: 
+      heading: Label
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VALUE =======================================
+    id: 46986911244831703691
+    identification: 
+      column-name: VALUE
+      type: Plain Text
+
+    heading: 
+      heading: Value
+      alignment: start
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Latest Activity =============================
+  id: 46986901781952703679
+  identification: 
+    title: Latest Activity
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select userid_lc       as username,
+             max(time_stamp) as last_activity
+        from apex_activity_log
+       where flow_id     = :app_id
+         and time_stamp >= sysdate - ( 1/24/60/60 * :P10030_TIMEFRAME )
+         and userid_lc  is not null
+       group by userid_lc
+       order by 2 desc
+    page-items-to-submit: 
+    - P10030_TIMEFRAME
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - i-h240
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 20
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--inline
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: No activities found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: USERNAME ====================================
+    id: 46986915132170703850
+    identification: 
+      column-name: USERNAME
+      type: Plain Text
+
+    heading: 
+      heading: Username
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: LAST_ACTIVITY ===============================
+    id: 46986915550290703850
+    identification: 
+      column-name: LAST_ACTIVITY
+      type: Plain Text
+
+    heading: 
+      heading: Last Activity
+      alignment: start
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Filters =====================================
+  id: 46986901830179703679
+  identification: 
+    title: Filters
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--slimPadding
+    - t-ButtonRegion--noUI
+    - t-Form--large
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P10030_TIMEFRAME =========================
+  id: 46986901979029703679
+  identification: 
+    name: P10030_TIMEFRAME
+    type: Select List
+
+  label: 
+    label: Timeframe
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 10
+    region: Filters # 46986901830179703679
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: TIMEFRAME (4 WEEKS) # 46986922776024704013
+    display-extra-values: false
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Static Value
+    static-value: 900
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: VIEW_ACTIVITY_BY_USER =======================
+  id: 46986920987247704012
+  identification: 
+    button-name: VIEW_ACTIVITY_BY_USER
+    label: View Details
+
+  layout: 
+    sequence: 10
+    region: Hourly Page Events # 46986901060892703679
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-angle-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:10031:&SESSION.::&DEBUG.:RP,10031::'
+      page: 10031 # Top Users
+      clear-cache: RP,10031
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: VIEW_ACTIVITY_DETAILS =======================
+  id: 46986921371047704012
+  identification: 
+    button-name: VIEW_ACTIVITY_DETAILS
+    label: View Details
+
+  layout: 
+    sequence: 10
+    region: Most Active Pages # 46986901213579703679
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-angle-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:10034:&SESSION.::&DEBUG.:RP,10034::'
+      page: 10034 # Page Views
+      clear-cache: RP,10034
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: VIEW_ACTIVITY_BY_USER =======================
+  id: 46986921725139704013
+  identification: 
+    button-name: VIEW_ACTIVITY_BY_USER
+    label: View Details
+
+  layout: 
+    sequence: 10
+    region: Top Users # 46986901406326703679
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-angle-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:10031:&SESSION.::&DEBUG.:RP,10031::'
+      page: 10031 # Top Users
+      clear-cache: RP,10031
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: VIEW_RECENT_ERRORS ==========================
+  id: 46986922172229704013
+  identification: 
+    button-name: VIEW_RECENT_ERRORS
+    label: View Details
+
+  layout: 
+    sequence: 10
+    region: Recent Errors # 46986901610545703679
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-angle-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:10032:&SESSION.::&DEBUG.:RP,10032::'
+      page: 10032 # Application Error Log
+      clear-cache: RP,10032
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Change Filters ======================
+  id: 46986902009510703679
+  identification: 
+    name: Change Filters
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P10030_TIMEFRAME
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986923712989704019
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Hourly Page Events # 46986901060892703679
+
+    execution-options: 
+      sequence: 10
+      event: Change Filters # 46986902009510703679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986924217129704019
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Users # 46986901406326703679
+
+    execution-options: 
+      sequence: 20
+      event: Change Filters # 46986902009510703679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986924748784704019
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Most Active Pages # 46986901213579703679
+
+    execution-options: 
+      sequence: 30
+      event: Change Filters # 46986902009510703679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986925248227704020
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Recent Errors # 46986901610545703679
+
+    execution-options: 
+      sequence: 40
+      event: Change Filters # 46986902009510703679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986925748292704020
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Latest Activity # 46986901781952703679
+
+    execution-options: 
+      sequence: 50
+      event: Change Filters # 46986902009510703679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

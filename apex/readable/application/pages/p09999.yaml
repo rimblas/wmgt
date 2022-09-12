@@ -1,0 +1,399 @@
+---
+# ====== Page: Login Page ====================================
+id: 9999
+identification: 
+  name: Login Page
+  alias: LOGIN
+  title: WMG - Log In
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Normal
+  page-template: Login # 46986494461795702403
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: First item on page
+  warn-on-unsaved-changes: false
+
+security: 
+  authentication: Page Is Public
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: WMG =========================================
+  id: 46986690493641702572
+  identification: 
+    title: WMG
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Login # 46986577691210702437
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  image: 
+    file-url: '#APP_FILES#icons/app-icon-512.png'
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: Text (escape special characters)
+      show-line-breaks: true
+
+page-items: 
+- # ====== Page Item: P9999_USERNAME ===========================
+  id: 46986690937284702573
+  identification: 
+    name: P9999_USERNAME
+    type: Text Field
+
+  label: 
+    label: Username
+    alignment: Right
+
+  settings: 
+    subtype: Text
+    trim-spaces: None
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 10
+    region: WMG # 46986690493641702572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-user
+    width: 40
+    value-placeholder: Username
+
+  validation: 
+    value-required: false
+    maximum-length: 100
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9999_PASSWORD ===========================
+  id: 46986691353372702573
+  identification: 
+    name: P9999_PASSWORD
+    type: Password
+
+  label: 
+    label: Password
+    alignment: Right
+
+  settings: 
+    submit-when-enter-pressed: true
+
+  layout: 
+    sequence: 20
+    region: WMG # 46986690493641702572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-key
+    width: 40
+    value-placeholder: Password
+
+  validation: 
+    value-required: false
+    maximum-length: 100
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9999_REMEMBER ===========================
+  id: 46986691779425702573
+  identification: 
+    name: P9999_REMEMBER
+    type: Checkbox
+
+  label: 
+    label: Remember username
+    alignment: Right
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 30
+    region: WMG # 46986690493641702572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_authentication.persistent_cookies_enabled and not apex_authentication.persistent_auth_enabled
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9999_PERSISTENT_AUTH ====================
+  id: 46986692150024702574
+  identification: 
+    name: P9999_PERSISTENT_AUTH
+    type: Checkbox
+
+  label: 
+    label: Remember me
+    alignment: Right
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 30
+    region: WMG # 46986690493641702572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_authentication.persistent_auth_enabled
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: LOGIN =======================================
+  id: 46986692592679702574
+  identification: 
+    button-name: LOGIN
+    label: Sign In
+
+  layout: 
+    sequence: 40
+    region: WMG # 46986690493641702572
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+processes: 
+- # ====== Process: Login ======================================
+  id: 46986692912112702574
+  identification: 
+    name: Login
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      apex_authentication.login(
+          p_username => :P9999_USERNAME,
+          p_password => :P9999_PASSWORD,
+          p_set_persistent_auth => nvl(:P9999_PERSISTENT_AUTH, 'N') = 'Y' );
+
+  execution-options: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Set Username Cookie ========================
+  id: 46986693370480702574
+  identification: 
+    name: Set Username Cookie
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      apex_authentication.send_login_username_cookie (
+          p_username => lower(:P9999_USERNAME),
+          p_consent  => :P9999_REMEMBER = 'Y' );
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Get Username Cookie ========================
+  id: 46986693721858702575
+  identification: 
+    name: Get Username Cookie
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      :P9999_USERNAME := apex_authentication.get_login_username_cookie;
+      :P9999_REMEMBER := case when :P9999_USERNAME is not null then 'Y' end;
+
+  execution-options: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Clear Page(s) Cache ========================
+  id: 46986694117965702575
+  identification: 
+    name: Clear Page(s) Cache
+    type: Clear Session State
+
+  settings: 
+    type: Clear all Items on the Current Page
+
+  execution-options: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+

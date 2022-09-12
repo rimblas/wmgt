@@ -1,0 +1,1510 @@
+---
+# ====== Page: Course Stroke =================================
+id: 5
+identification: 
+  name: Course Stroke
+  alias: COURSE-STROKE
+  title: Course Stroke
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  inline: |
+    #scoresRegion {
+        flex-direction: row;
+        justify-content: space-evenly;
+        display: flex;
+    }
+    #scoresRegion .t-Form-labelContainer {
+    text-align:center;
+    }
+    
+
+security: 
+  authorization-scheme: Contribution Rights # 46986682878463702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: {scores} ====================================
+  id: 15134613164940923811
+  identification: 
+    title: '{scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Course Stroke # 46986709961535702951
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: scoresRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Course Stroke ===============================
+  id: 46986709961535702951
+  identification: 
+    title: Course Stroke
+    type: Form
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSE_STROKES
+    include-rowid-column: false
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+
+- # ====== Region: Buttons =====================================
+  id: 46986724505146702960
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: REGION_POSITION_03
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: Text (escape special characters)
+      show-line-breaks: true
+
+page-items: 
+- # ====== Page Item: P5_PAR ===================================
+  id: 15134613287092923812
+  identification: 
+    name: P5_PAR
+    type: Number Field
+
+  label: 
+    label: Par
+    alignment: Left
+
+  settings: 
+    number-alignment: Right
+
+  layout: 
+    sequence: 210
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select course_par from wmg_courses_v
+      where course_id= :P5_COURSE_ID
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_ID ====================================
+  id: 46986710260421702952
+  identification: 
+    name: P5_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Course Stroke # 46986709961535702951
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: ID
+    data-type: NUMBER
+    query-only: true
+    primary-key: true
+    maintain-session-state: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_COURSE_ID =============================
+  id: 46986710624982702952
+  identification: 
+    name: P5_COURSE_ID
+    type: Select List
+
+  label: 
+    label: Course
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 20
+    region: Course Stroke # 46986709961535702951
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: COURSES # 46986710799770702952
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: COURSE_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  read-only: 
+    type: Item is NOT NULL
+    item: P5_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H1 ====================================
+  id: 46986711396532702953
+  identification: 
+    name: P5_H1
+    type: Number Field
+
+  label: 
+    label: 1
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 30
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H1
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H2 ====================================
+  id: 46986711747530702953
+  identification: 
+    name: P5_H2
+    type: Number Field
+
+  label: 
+    label: 2
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 40
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H2
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H3 ====================================
+  id: 46986712147254702953
+  identification: 
+    name: P5_H3
+    type: Number Field
+
+  label: 
+    label: 3
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 50
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H3
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H4 ====================================
+  id: 46986712595863702954
+  identification: 
+    name: P5_H4
+    type: Number Field
+
+  label: 
+    label: 4
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 60
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H4
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H5 ====================================
+  id: 46986712976264702954
+  identification: 
+    name: P5_H5
+    type: Number Field
+
+  label: 
+    label: H5
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 70
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H5
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H6 ====================================
+  id: 46986713323365702954
+  identification: 
+    name: P5_H6
+    type: Number Field
+
+  label: 
+    label: H6
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 80
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H6
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H7 ====================================
+  id: 46986713727821702954
+  identification: 
+    name: P5_H7
+    type: Number Field
+
+  label: 
+    label: H7
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 90
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H7
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H8 ====================================
+  id: 46986714112802702954
+  identification: 
+    name: P5_H8
+    type: Number Field
+
+  label: 
+    label: H8
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 100
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H8
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H9 ====================================
+  id: 46986714550814702955
+  identification: 
+    name: P5_H9
+    type: Number Field
+
+  label: 
+    label: H9
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 110
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H9
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H10 ===================================
+  id: 46986714966146702955
+  identification: 
+    name: P5_H10
+    type: Number Field
+
+  label: 
+    label: H10
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 120
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H10
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H11 ===================================
+  id: 46986715392246702955
+  identification: 
+    name: P5_H11
+    type: Number Field
+
+  label: 
+    label: H11
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 130
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H11
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H12 ===================================
+  id: 46986715754888702955
+  identification: 
+    name: P5_H12
+    type: Number Field
+
+  label: 
+    label: H12
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 140
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H12
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H13 ===================================
+  id: 46986716159436702956
+  identification: 
+    name: P5_H13
+    type: Number Field
+
+  label: 
+    label: H13
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 150
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H13
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H14 ===================================
+  id: 46986716504408702956
+  identification: 
+    name: P5_H14
+    type: Number Field
+
+  label: 
+    label: H14
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 160
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H14
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H15 ===================================
+  id: 46986716955980702956
+  identification: 
+    name: P5_H15
+    type: Number Field
+
+  label: 
+    label: H15
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 170
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H15
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H16 ===================================
+  id: 46986717315394702956
+  identification: 
+    name: P5_H16
+    type: Number Field
+
+  label: 
+    label: H16
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 180
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H16
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H17 ===================================
+  id: 46986717726370702956
+  identification: 
+    name: P5_H17
+    type: Number Field
+
+  label: 
+    label: H17
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 190
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H17
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P5_H18 ===================================
+  id: 46986718120147702957
+  identification: 
+    name: P5_H18
+    type: Number Field
+
+  label: 
+    label: H18
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+
+  layout: 
+    sequence: 200
+    region: '{scores}' # 15134613164940923811
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 1
+
+  validation: 
+    value-required: true
+    maximum-length: 2
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course Stroke # 46986709961535702951
+    column: H18
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: CANCEL ======================================
+  id: 46986724901572702960
+  identification: 
+    button-name: CANCEL
+    label: Cancel
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986724505146702960
+    position: CLOSE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: DELETE ======================================
+  id: 46986726358148702961
+  identification: 
+    button-name: DELETE
+    label: Delete
+
+  layout: 
+    sequence: 20
+    region: Buttons # 46986724505146702960
+    position: DELETE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--danger
+    - t-Button--simple
+
+  behavior: 
+    action: Submit Page
+    execute-validations: false
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL DELETE action
+
+  confirmation: 
+    message: '&APP_TEXT$DELETE_MSG!RAW.'
+    style: Danger
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P5_ID
+
+- # ====== Button: SAVE ========================================
+  id: 46986726751001702961
+  identification: 
+    button-name: SAVE
+    label: Apply Changes
+
+  layout: 
+    sequence: 30
+    region: Buttons # 46986724505146702960
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P5_ID
+
+- # ====== Button: CREATE ======================================
+  id: 46986727172434702961
+  identification: 
+    button-name: CREATE
+    label: Create
+
+  layout: 
+    sequence: 40
+    region: Buttons # 46986724505146702960
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL INSERT action
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P5_ID
+
+dynamic-actions: 
+- # ====== Dynamic Action: Cancel Dialog =======================
+  id: 46986725070058702960
+  identification: 
+    name: Cancel Dialog
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CANCEL # 46986724901572702960
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+    id: 46986725891833702961
+    identification: 
+      action: Cancel Dialog
+
+    execution-options: 
+      sequence: 10
+      event: Cancel Dialog # 46986725070058702960
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+processes: 
+- # ====== Process: Initialize form Course Stroke ==============
+  id: 46986727568594702962
+  identification: 
+    name: Initialize form Course Stroke
+    type: Form - Initialization
+    form-region: Course Stroke # 46986709961535702951
+
+  execution-options: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Process form Course Stroke =================
+  id: 46986727971971702962
+  identification: 
+    name: Process form Course Stroke
+    type: Form - Automatic Row Processing (DML)
+    form-region: Course Stroke # 46986709961535702951
+
+  settings: 
+    target-type: Region Source
+    prevent-lost-updates: true
+    lock-row: Yes
+    return-primary-key(s)-after-insert: true
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Close Dialog ===============================
+  id: 46986728375598702962
+  identification: 
+    name: Close Dialog
+    type: Close Dialog
+
+  execution-options: 
+    sequence: 50
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,SAVE,DELETE
+

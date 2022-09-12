@@ -1,0 +1,64 @@
+---
+- # ====== Authorization: Administration Rights ================
+  id: 46986682652284702496
+  identification: 
+    name: Administration Rights
+
+  authorization-scheme: 
+    type: Is In Role or Group
+
+  settings: 
+    type: Application Role
+    name(s): Administrator
+
+  server-cache: 
+    evaluation-point: Once per Page View
+
+  error: 
+    error-message: Insufficient privileges, user is not an Administrator
+
+- # ====== Authorization: Reader Rights ========================
+  id: 46986682751118702496
+  identification: 
+    name: Reader Rights
+
+  authorization-scheme: 
+    type: PL/SQL Function Returning Boolean
+
+  settings: 
+    pl/sql-function-body: |
+      if nvl(apex_app_setting.get_value(
+         p_name => 'ACCESS_CONTROL_SCOPE'),'x') = 'ALL_USERS' then
+          -- allow user not in the ACL to access the application
+          return true;
+      else
+          -- require user to have at least one role
+          return apex_acl.has_user_any_roles (
+              p_application_id => :APP_ID, 
+              p_user_name      => :APP_USER);
+      end if;
+
+  server-cache: 
+    evaluation-point: Once per Session
+
+  error: 
+    error-message: You are not authorized to view this application, either because you have not been granted access, or your account has been locked. Please contact the application administrator.
+
+- # ====== Authorization: Contribution Rights ==================
+  id: 46986682878463702496
+  identification: 
+    name: Contribution Rights
+
+  authorization-scheme: 
+    type: Is In Role or Group
+
+  settings: 
+    type: Application Role
+    name(s): Administrator,Contributor
+
+  server-cache: 
+    evaluation-point: Once per Page View
+
+  error: 
+    error-message: Insufficient privileges, user is not a Contributor
+

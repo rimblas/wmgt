@@ -1,0 +1,922 @@
+---
+- # ====== List: Navigation Menu ===============================
+  id: 46986483541938702397
+  identification: 
+    name: Navigation Menu
+    type: Static Values
+
+  entries: 
+  - # ====== Entry: Home =========================================
+    id: 46986694444635702575
+    label: 
+      label: Home
+
+    icon: 
+      image/icon-css-classes: fa-home
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:1:&APP_SESSION.::&DEBUG.:'
+        page: 1 # Home
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Courses ======================================
+    id: 46986695981453702577
+    label: 
+      label: Courses
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 20
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:2:&APP_SESSION.::&DEBUG.:'
+        page: 2 # Courses
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Courses & Strokes ============================
+    id: 46986709294780702663
+    label: 
+      label: Courses & Strokes
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 30
+      parent-entry: Courses # 46986695981453702577
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:4:&SESSION.::&DEBUG.::::'
+        page: 4 # Strokes
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Players ======================================
+    id: 46986740499840702970
+    label: 
+      label: Players
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 40
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:'
+        page: 6 # Players
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Rounds =======================================
+    id: 46986753082827703266
+    label: 
+      label: Rounds
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 50
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:8:&APP_SESSION.::&DEBUG.:'
+        page: 8 # Rounds
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Administration ===============================
+    id: 46987061503295704325
+    label: 
+      label: Administration
+
+    icon: 
+      image/icon-css-classes: fa-user-wrench
+
+    layout: 
+      sequence: 10000
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10000:&APP_SESSION.::&DEBUG.:'
+        page: 10000 # Administration
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    security: 
+      authorization-scheme: Administration Rights # 46986682652284702496
+
+  - # ====== Entry: Session Analysis =============================
+    id: 47467919900503140559
+    label: 
+      label: Session Analysis
+
+    icon: 
+      image/icon-css-classes: fa-dashboard
+
+    layout: 
+      sequence: 15
+
+    is-current: 
+      type: Pages
+      pages: 
+      - 100
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.::::'
+        page: 100 # Session Analysis
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+- # ====== List: Navigation Bar ================================
+  id: 46986677670123702487
+  identification: 
+    name: Navigation Bar
+    type: Static Values
+
+  entries: 
+  - # ====== Entry: Install App ==================================
+    id: 46987057724511704323
+    label: 
+      label: Install App
+
+    icon: 
+      image/icon-css-classes: fa-cloud-download
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Never
+
+    link: 
+      target: '#action$a-pwa-install'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      2.: a-pwaInstall
+
+  - # ====== Entry: Feedback =====================================
+    id: 46987058184619704323
+    label: 
+      label: Feedback
+
+    icon: 
+      image/icon-css-classes: fa-comment-o
+
+    layout: 
+      sequence: 20
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10050:&SESSION.::&DEBUG.:RP,10050:P10050_PAGE_ID:&APP_PAGE_ID.:'
+        page: 10050 # Feedback
+        clear-cache: RP,10050
+        values: 
+          p10050_page_id: '&APP_PAGE_ID.'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      2.: icon-only
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: apex_util.feedback_enabled
+
+    configuration: 
+      build-option: 'Feature: Feedback' # 46986680133641702495
+
+  - # ====== Entry: About ========================================
+    id: 46987058449466704323
+    label: 
+      label: About
+
+    icon: 
+      image/icon-css-classes: fa-question-circle-o
+
+    layout: 
+      sequence: 30
+
+    is-current: 
+      type: Target Page
+
+    user-defined-attributes: 
+      translatable: false
+      2.: icon-only
+
+    configuration: 
+      build-option: 'Feature: About Page' # 46986680684217702495
+
+  - # ====== Entry: Page Help ====================================
+    id: 46987058964155704324
+    label: 
+      label: Page Help
+
+    icon: 
+      image/icon-css-classes: fa-question-circle-o
+
+    layout: 
+      sequence: 40
+      parent-entry: About # 46987058449466704323
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10061:&SESSION.::&DEBUG.::P10061_PAGE_ID:&APP_PAGE_ID.:'
+        page: 10061 # Help
+        values: 
+          p10061_page_id: '&APP_PAGE_ID.'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      2.: icon-only
+
+    configuration: 
+      build-option: 'Feature: About Page' # 46986680684217702495
+
+  - # ====== Entry: --- ==========================================
+    id: 46987059308283704324
+    label: 
+      label: '---'
+
+    layout: 
+      sequence: 50
+      parent-entry: About # 46987058449466704323
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: separator
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: About Page ===================================
+    id: 46987059742436704324
+    label: 
+      label: About Page
+
+    icon: 
+      image/icon-css-classes: fa-info-circle-o
+
+    layout: 
+      sequence: 60
+      parent-entry: About # 46987058449466704323
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10060:&SESSION.::&DEBUG.:10060'
+        page: 10060 # About
+        clear-cache: 10060
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    configuration: 
+      build-option: 'Feature: About Page' # 46986680684217702495
+
+  - # ====== Entry: &APP_USER. ===================================
+    id: 46987060007706704324
+    label: 
+      label: '&APP_USER.'
+
+    icon: 
+      image/icon-css-classes: fa-user
+
+    layout: 
+      sequence: 70
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: '#'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      2.: has-username
+
+  - # ====== Entry: --- ==========================================
+    id: 46987060512568704324
+    label: 
+      label: '---'
+
+    layout: 
+      sequence: 80
+      parent-entry: '&APP_USER.' # 46987060007706704324
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: separator
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Sign Out =====================================
+    id: 46987060910086704324
+    label: 
+      label: Sign Out
+
+    icon: 
+      image/icon-css-classes: fa-sign-out
+
+    layout: 
+      sequence: 90
+      parent-entry: '&APP_USER.' # 46987060007706704324
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: '&LOGOUT_URL.'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+- # ====== List: Page Navigation ===============================
+  id: 46986883504791703654
+  identification: 
+    name: Page Navigation
+    type: Static Values
+
+  entries: 
+  - # ====== Entry: Courses ======================================
+    id: 46986883943365703654
+    label: 
+      label: Courses
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 20
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:2:&APP_SESSION.::&DEBUG.:'
+        page: 2 # Courses
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Strokes ======================================
+    id: 46986884386282703655
+    label: 
+      label: Strokes
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 30
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:4:&APP_SESSION.::&DEBUG.:'
+        page: 4 # Strokes
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Players ======================================
+    id: 46986884713457703655
+    label: 
+      label: Players
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 60
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:'
+        page: 6 # Players
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Rounds =======================================
+    id: 46986885132664703655
+    label: 
+      label: Rounds
+
+    icon: 
+      image/icon-css-classes: fa-table
+
+    layout: 
+      sequence: 50
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:8:&APP_SESSION.::&DEBUG.:'
+        page: 8 # Rounds
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Session Analysis =============================
+    id: 47631407324160391704
+    label: 
+      label: Session Analysis
+
+    icon: 
+      image/icon-css-classes: fa-dashboard
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.::::'
+        page: 100 # Session Analysis
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+- # ====== List: Application Configuration =====================
+  id: 46987062600157704326
+  identification: 
+    name: Application Configuration
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Configuration Options' # 46986680300695702495
+
+  entries: 
+  - # ====== Entry: Configuration Options ========================
+    id: 46987063015961704326
+    label: 
+      label: Configuration Options
+
+    icon: 
+      image/icon-css-classes: fa-sliders
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10010:&SESSION.::&DEBUG.:10010:::'
+        page: 10010 # Configuration Options
+        clear-cache: 10010
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Enable or disable application features
+
+    configuration: 
+      build-option: 'Feature: Configuration Options' # 46986680300695702495
+
+- # ====== List: User Interface ================================
+  id: 46987063311091704326
+  identification: 
+    name: User Interface
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Theme Style Selection' # 46986680700812702495
+
+  entries: 
+  - # ====== Entry: Theme Style Selection ========================
+    id: 46987063737030704326
+    label: 
+      label: Theme Style Selection
+
+    icon: 
+      image/icon-css-classes: fa-paint-brush
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10020:&SESSION.::&DEBUG.:10020:::'
+        page: 10020 # Application Appearance
+        clear-cache: 10020
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Set the default application look and feel
+
+    configuration: 
+      build-option: 'Feature: Theme Style Selection' # 46986680700812702495
+
+- # ====== List: Activity Reports ==============================
+  id: 46987064035902704326
+  identification: 
+    name: Activity Reports
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Activity Reporting' # 46986680005844702495
+
+  entries: 
+  - # ====== Entry: Dashboard ====================================
+    id: 46987064459070704327
+    label: 
+      label: Dashboard
+
+    icon: 
+      image/icon-css-classes: fa-area-chart
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10030:&SESSION.::&DEBUG.:10030:::'
+        page: 10030 # Activity Dashboard
+        clear-cache: 10030
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: View application activity metrics
+
+  - # ====== Entry: Top Users ====================================
+    id: 46987064881940704327
+    label: 
+      label: Top Users
+
+    icon: 
+      image/icon-css-classes: fa-user-chart
+
+    layout: 
+      sequence: 20
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10031:&SESSION.::&DEBUG.:10031:::'
+        page: 10031 # Top Users
+        clear-cache: 10031
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of page views aggregated by user
+
+  - # ====== Entry: Application Error Log ========================
+    id: 46987065288337704327
+    label: 
+      label: Application Error Log
+
+    icon: 
+      image/icon-css-classes: fa-exclamation
+
+    layout: 
+      sequence: 30
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10032:&SESSION.::&DEBUG.:10032:::'
+        page: 10032 # Application Error Log
+        clear-cache: 10032
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of errors logged by this application
+
+  - # ====== Entry: Page Performance =============================
+    id: 46987065652798704327
+    label: 
+      label: Page Performance
+
+    icon: 
+      image/icon-css-classes: fa-file-chart
+
+    layout: 
+      sequence: 40
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10033:&SESSION.::&DEBUG.:10033:::'
+        page: 10033 # Page Performance
+        clear-cache: 10033
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of activity and performance by application page
+
+  - # ====== Entry: Page Views ===================================
+    id: 46987066019162704327
+    label: 
+      label: Page Views
+
+    icon: 
+      image/icon-css-classes: fa-file-search
+
+    layout: 
+      sequence: 50
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10034:&SESSION.::&DEBUG.:RR,10034:::'
+        page: 10034 # Page Views
+        clear-cache: RR,10034
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of each page view by user including date of access and elapsed time
+
+  - # ====== Entry: Automations Log ==============================
+    id: 46987066493185704327
+    label: 
+      label: Automations Log
+
+    icon: 
+      image/icon-css-classes: fa-gears
+
+    layout: 
+      sequence: 60
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10035:&SESSION.::&DEBUG.:RR,10035:::'
+        page: 10035 # Automations Log
+        clear-cache: RR,10035
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of automation executions and messages logged by this application
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from apex_appl_automations a, apex_automation_log l
+        where a.automation_id = l.automation_id
+        and l.application_id = :APP_ID
+
+- # ====== List: Access Control ================================
+  id: 46987066766889704327
+  identification: 
+    name: Access Control
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Access Control' # 46986679954839702495
+
+  entries: 
+  - # ====== Entry: Users ========================================
+    id: 46987067154338704328
+    label: 
+      label: Users
+
+    icon: 
+      image/icon-css-classes: fa-users
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10041:&SESSION.::&DEBUG.:RP:::'
+        page: 10041 # Manage User Access
+        clear-cache: RP
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Set level of access for authenticated users of this application
+
+  - # ====== Entry: Access Control ===============================
+    id: 46987067593069704328
+    label: 
+      label: Access Control
+
+    icon: 
+      image/icon-css-classes: fa-key
+
+    layout: 
+      sequence: 20
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10040:&SESSION.::&DEBUG.::::'
+        page: 10040 # Configure Access Control
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Change access control settings and disable access control
+
+- # ====== List: Feedback ======================================
+  id: 46987067869095704328
+  identification: 
+    name: Feedback
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Feedback' # 46986680133641702495
+
+  entries: 
+  - # ====== Entry: User Feedback ================================
+    id: 46987068206615704328
+    label: 
+      label: User Feedback
+
+    icon: 
+      image/icon-css-classes: fa-comment-o
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10053:&SESSION.::&DEBUG.:10053:::'
+        page: 10053 # Manage Feedback
+        clear-cache: 10053
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: Report of all feedback submitted by application users
+

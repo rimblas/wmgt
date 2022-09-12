@@ -1,0 +1,1007 @@
+---
+# ====== Page: Top Users =====================================
+id: 10031
+identification: 
+  name: Top Users
+  alias: TOP-USERS
+  title: Top Users
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+  - t-Dialog--noPadding
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+css: 
+  inline: |
+    .hour-graph { display: table; width: 100%; }
+    span.hour { display: table-cell; padding: 0; font-size: 11px; text-align: center; min-width: 32px; }
+    span.hour-label { opacity: 0.5; }
+    span.hour-value { display: block; }
+    span.hour { background-color: var(--ut-palette-success); color:  var(--ut-palette-success-contrast); }
+    span.hour.is-null { background-color: var(--ut-component-highlight-background-color); color: var(--ut-component-text-default-color); }
+    span.hour.is-over1k { background-color: var(--ut-palette-primary); color:  var(--ut-palette-primary-contrast); }
+
+security: 
+  authorization-scheme: Administration Rights # 46986682652284702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>Use this report and chart to see the users with the most page views for the specified timeframe.</p>
+    <p>Select the reporting timeframe (Default = 1 day) and choose between the report and chart icons at the top of the page.</p>
+    <p>For the interactive report, use the search field, or select the <strong>User</strong> column heading, to select a specific user. You can perform numerous functions by clicking the <strong>Actions</strong> button, such as columns displayed / hidden, rows per page, filter, and so forth. Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+
+configuration: 
+  build-option: 'Feature: Activity Reporting' # 46986680005844702495
+
+regions: 
+- # ====== Region: Top Users ===================================
+  id: 46986957784988704047
+  identification: 
+    title: Top Users
+    type: Interactive Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select the_user,
+          '<div class="hour-graph">'||
+              '<span class="hour'|| case when h00 = 0 then ' is-null' when h00 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 0</span> <span class="hour-value">'|| 
+              case when h00 > 999 then to_char((h00/1000),'99999999D0') ||'k' else to_char(h00) end ||'</span></span>'||
+              '<span class="hour'|| case when h01 = 0 then ' is-null' when h01 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 1</span> <span class="hour-value">'|| 
+              case when h01 > 999 then to_char((h01/1000),'99999999D0') ||'k' else to_char(h01) end ||'</span></span>'||
+              '<span class="hour'|| case when h02 = 0 then ' is-null' when h02 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 2</span> <span class="hour-value">'|| 
+              case when h02 > 999 then to_char((h02/1000),'99999999D0') ||'k' else to_char(h02) end ||'</span></span>'||
+              '<span class="hour'|| case when h03 = 0 then ' is-null' when h03 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 3</span> <span class="hour-value">'|| 
+              case when h03 > 999 then to_char((h03/1000),'99999999D0') ||'k' else to_char(h03) end ||'</span></span>'||
+              '<span class="hour'|| case when h04 = 0 then ' is-null' when h04 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 4</span> <span class="hour-value">'|| 
+              case when h04 > 999 then to_char((h04/1000),'99999999D0') ||'k' else to_char(h04) end ||'</span></span>'||
+              '<span class="hour'|| case when h05 = 0 then ' is-null' when h05 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 5</span> <span class="hour-value">'|| 
+              case when h05 > 999 then to_char((h05/1000),'99999999D0') ||'k' else to_char(h05) end ||'</span></span>'||
+              '<span class="hour'|| case when h06 = 0 then ' is-null' when h06 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 6</span> <span class="hour-value">'|| 
+              case when h06 > 999 then to_char((h06/1000),'99999999D0') ||'k' else to_char(h06) end ||'</span></span>'||
+              '<span class="hour'|| case when h07 = 0 then ' is-null' when h07 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 7</span> <span class="hour-value">'|| 
+              case when h07 > 999 then to_char((h07/1000),'99999999D0') ||'k' else to_char(h07) end ||'</span></span>'||
+              '<span class="hour'|| case when h08 = 0 then ' is-null' when h08 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 8</span> <span class="hour-value">'|| 
+              case when h08 > 999 then to_char((h08/1000),'99999999D0') ||'k' else to_char(h08) end ||'</span></span>'||
+              '<span class="hour'|| case when h09 = 0 then ' is-null' when h09 > 999 then ' is-over1k' end ||'"><span class="hour-label"> 9</span> <span class="hour-value">'|| 
+              case when h09 > 999 then to_char((h09/1000),'99999999D0') ||'k' else to_char(h09) end ||'</span></span>'||
+              '<span class="hour'|| case when h10 = 0 then ' is-null' when h10 > 999 then ' is-over1k' end ||'"><span class="hour-label">10</span> <span class="hour-value">'|| 
+              case when h10 > 999 then to_char((h10/1000),'99999999D0') ||'k' else to_char(h10) end ||'</span></span>'||
+              '<span class="hour'|| case when h11 = 0 then ' is-null' when h11 > 999 then ' is-over1k' end ||'"><span class="hour-label">11</span> <span class="hour-value">'|| 
+              case when h11 > 999 then to_char((h11/1000),'99999999D0') ||'k' else to_char(h11) end ||'</span></span>'||
+              '<span class="hour'|| case when h12 = 0 then ' is-null' when h12 > 999 then ' is-over1k' end ||'"><span class="hour-label">12</span> <span class="hour-value">'|| 
+              case when h12 > 999 then to_char((h12/1000),'99999999D0') ||'k' else to_char(h12) end ||'</span></span>'||
+              '<span class="hour'|| case when h13 = 0 then ' is-null' when h13 > 999 then ' is-over1k' end ||'"><span class="hour-label">13</span> <span class="hour-value">'|| 
+              case when h13 > 999 then to_char((h13/1000),'99999999D0') ||'k' else to_char(h13) end ||'</span></span>'||
+              '<span class="hour'|| case when h14 = 0 then ' is-null' when h14 > 999 then ' is-over1k' end ||'"><span class="hour-label">14</span> <span class="hour-value">'|| 
+              case when h14 > 999 then to_char((h14/1000),'99999999D0') ||'k' else to_char(h14) end ||'</span></span>'||
+              '<span class="hour'|| case when h15 = 0 then ' is-null' when h15 > 999 then ' is-over1k' end ||'"><span class="hour-label">15</span> <span class="hour-value">'|| 
+              case when h15 > 999 then to_char((h15/1000),'99999999D0') ||'k' else to_char(h15) end ||'</span></span>'||
+              '<span class="hour'|| case when h16 = 0 then ' is-null' when h16 > 999 then ' is-over1k' end ||'"><span class="hour-label">16</span> <span class="hour-value">'|| 
+              case when h16 > 999 then to_char((h16/1000),'99999999D0') ||'k' else to_char(h16) end ||'</span></span>'||
+              '<span class="hour'|| case when h17 = 0 then ' is-null' when h17 > 999 then ' is-over1k' end ||'"><span class="hour-label">17</span> <span class="hour-value">'|| 
+              case when h17 > 999 then to_char((h17/1000),'99999999D0') ||'k' else to_char(h17) end ||'</span></span>'||
+              '<span class="hour'|| case when h18 = 0 then ' is-null' when h18 > 999 then ' is-over1k' end ||'"><span class="hour-label">18</span> <span class="hour-value">'|| 
+              case when h18 > 999 then to_char((h18/1000),'99999999D0') ||'k' else to_char(h18) end ||'</span></span>'||
+              '<span class="hour'|| case when h19 = 0 then ' is-null' when h19 > 999 then ' is-over1k' end ||'"><span class="hour-label">19</span> <span class="hour-value">'|| 
+              case when h19 > 999 then to_char((h19/1000),'99999999D0') ||'k' else to_char(h19) end ||'</span></span>'||
+              '<span class="hour'|| case when h20 = 0 then ' is-null' when h20 > 999 then ' is-over1k' end ||'"><span class="hour-label">20</span> <span class="hour-value">'|| 
+              case when h20 > 999 then to_char((h20/1000),'99999999D0') ||'k' else to_char(h20) end ||'</span></span>'||
+              '<span class="hour'|| case when h21 = 0 then ' is-null' when h21 > 999 then ' is-over1k' end ||'"><span class="hour-label">21</span> <span class="hour-value">'|| 
+              case when h21 > 999 then to_char((h21/1000),'99999999D0') ||'k' else to_char(h21) end ||'</span></span>'||
+              '<span class="hour'|| case when h22 = 0 then ' is-null' when h22 > 999 then ' is-over1k' end ||'"><span class="hour-label">22</span> <span class="hour-value">'|| 
+              case when h22 > 999 then to_char((h22/1000),'99999999D0') ||'k' else to_char(h22) end ||'</span></span>'||
+              '<span class="hour'|| case when h23 = 0 then ' is-null' when h23 > 999 then ' is-over1k' end ||'"><span class="hour-label">23</span> <span class="hour-value">'|| 
+              case when h23 > 999 then to_char((h23/1000),'99999999D0') ||'k' else to_char(h23) end ||'</span></span>'||
+              '</div>' hours,
+              page_events,
+          median_elapsed,
+          rows_fetched,
+          ir_searches,
+          errors,
+          most_recent
+          from (  
+          select userid_lc                    as the_user,
+              count(*)                        as page_events,
+              median(elap)                    as median_elapsed,
+              sum(num_rows)                   as rows_fetched,
+              sum(decode(ir_search,null,0,1)) as ir_searches,
+              sum(decode(sqlerrm,null,0,1))   as errors,
+              max(time_stamp)                 as most_recent,
+              sum(decode(to_char(time_stamp,'HH24'),0,1,0)) h00,
+              sum(decode(to_char(time_stamp,'HH24'),1,1,0)) h01,
+              sum(decode(to_char(time_stamp,'HH24'),2,1,0)) h02,
+              sum(decode(to_char(time_stamp,'HH24'),3,1,0)) h03,
+              sum(decode(to_char(time_stamp,'HH24'),4,1,0)) h04,
+              sum(decode(to_char(time_stamp,'HH24'),5,1,0)) h05,
+              sum(decode(to_char(time_stamp,'HH24'),6,1,0)) h06,
+              sum(decode(to_char(time_stamp,'HH24'),7,1,0)) h07,
+              sum(decode(to_char(time_stamp,'HH24'),8,1,0)) h08,
+              sum(decode(to_char(time_stamp,'HH24'),9,1,0)) h09,
+              sum(decode(to_char(time_stamp,'HH24'),10,1,0)) h10,
+              sum(decode(to_char(time_stamp,'HH24'),11,1,0)) h11,
+              sum(decode(to_char(time_stamp,'HH24'),12,1,0)) h12,
+              sum(decode(to_char(time_stamp,'HH24'),13,1,0)) h13,
+              sum(decode(to_char(time_stamp,'HH24'),14,1,0)) h14,
+              sum(decode(to_char(time_stamp,'HH24'),15,1,0)) h15,
+              sum(decode(to_char(time_stamp,'HH24'),16,1,0)) h16,
+              sum(decode(to_char(time_stamp,'HH24'),17,1,0)) h17,
+              sum(decode(to_char(time_stamp,'HH24'),18,1,0)) h18,
+              sum(decode(to_char(time_stamp,'HH24'),19,1,0)) h19,
+              sum(decode(to_char(time_stamp,'HH24'),20,1,0)) h20,
+              sum(decode(to_char(time_stamp,'HH24'),21,1,0)) h21,
+              sum(decode(to_char(time_stamp,'HH24'),22,1,0)) h22,
+              sum(decode(to_char(time_stamp,'HH24'),23,1,0)) h23
+          from apex_activity_log l
+          where flow_id = :APP_ID
+              and time_stamp >= sysdate - ( 1/24/60/60 * :P10031_TIMEFRAME )
+              and userid is not null
+          group by userid_lc) x
+    page-items-to-submit: 
+    - P10031_TIMEFRAME
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    - t-IRR-region--noBorders
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item = Value
+    item: P10031_VIEW_AS
+    value: REPORT
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986958894261704047
+    link: 
+      link-column: Exclude Link Column
+
+    pagination: 
+      type: Row Ranges X to Y
+      display-position: Bottom - Right
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: No data found.
+      when-more-data-found: 'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
+
+    search-bar: 
+      include-search-bar: true
+      search-field: true
+      finder-drop-down: true
+      reports-select-list: true
+      rows-per-page-selector: false
+
+    actions-menu: 
+      include-actions-menu: true
+      filter: true
+      select-columns: true
+      rows-per-page: true
+      sort: true
+      control-break: true
+      highlight: true
+      compute: true
+      aggregate: true
+      chart: true
+      group-by: true
+      pivot: true
+      flashback: true
+      save-report: true
+      save-public-report: false
+      reset: true
+      help: true
+      download: true
+      subscription: false
+
+    download: 
+      formats: 
+      - CSV
+      - HTML
+      - Excel
+      - PDF
+      send-as-email: true
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 46986965214252704071
+      identification: 
+        name: Primary Report
+        alias: 469869653
+
+    columns: 
+    - # ====== Column: THE_USER ====================================
+      id: 46986959204417704050
+      identification: 
+        column-name: THE_USER
+        type: Plain Text
+
+      heading: 
+        heading: User
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 1
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: HOURS =======================================
+      id: 46986959601717704051
+      identification: 
+        column-name: HOURS
+        type: Plain Text
+
+      heading: 
+        heading: Activity by Hour
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 2
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: false
+
+    - # ====== Column: PAGE_EVENTS =================================
+      id: 46986960014224704053
+      identification: 
+        column-name: PAGE_EVENTS
+        type: Plain Text
+
+      heading: 
+        heading: Page Events
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 3
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: MEDIAN_ELAPSED ==============================
+      id: 46986960489832704054
+      identification: 
+        column-name: MEDIAN_ELAPSED
+        type: Plain Text
+
+      heading: 
+        heading: Median Elapsed
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 4
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990D0000
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: ROWS_FETCHED ================================
+      id: 46986960899281704055
+      identification: 
+        column-name: ROWS_FETCHED
+        type: Plain Text
+
+      heading: 
+        heading: Rows Fetched
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 5
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: IR_SEARCHES =================================
+      id: 46986961284264704056
+      identification: 
+        column-name: IR_SEARCHES
+        type: Plain Text
+
+      heading: 
+        heading: IR Search
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 6
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: ERRORS ======================================
+      id: 46986961735114704058
+      identification: 
+        column-name: ERRORS
+        type: Plain Text
+
+      heading: 
+        heading: Errors
+        alignment: end
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 7
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 999G999G999G999G999G999G990
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: MOST_RECENT =================================
+      id: 46986962168010704059
+      identification: 
+        column-name: MOST_RECENT
+        type: Plain Text
+
+      heading: 
+        heading: Most_Recent
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 8
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: SINCE
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    printing: 
+      output: 
+        view-file-as: Attachment
+
+      page: 
+        size: Letter
+        orientation: Landscape
+        units: Inches
+        width: 11
+        height: 8.5
+        border-width: 0.5
+        border-color: '#666666'
+
+      page-header: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+        page-header-text: Top Users
+
+      column-headings: 
+        font: Helvetica
+        font-weight: Bold
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#EEEEEE'
+
+      columns: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 10
+        font-color: '#000000'
+        background-color: '#FFFFFF'
+
+      page-footer: 
+        font: Helvetica
+        font-weight: Normal
+        font-size: 12
+        font-color: '#000000'
+        alignment: center
+
+- # ====== Region: Buttons =====================================
+  id: 46986957852721704047
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--slimPadding
+    - t-ButtonRegion--noUI
+    - t-Form--large
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Top Users Chart =============================
+  id: 46986958032217704047
+  identification: 
+    title: Top Users Chart
+    type: Chart
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--hideHeader
+    - t-Region--hiddenOverflow
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item = Value
+    item: P10031_VIEW_AS
+    value: CHART
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 46986958152488704047
+    chart: 
+      type: Donut
+
+    layout: 
+      height: 600
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    settings: 
+      pie-selection-effect: Highlight
+
+    value: 
+      pie-chart-other-threshold: 0.02
+      format: Decimal
+      decimal-places: 0
+      format-scaling: Automatic
+
+    animation: 
+      on-display: None
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    advanced: 
+      javascript-initialization-code: |
+        function( options ){ 
+        
+            this.pieSliceLabel = function(dataContext) {
+                var series_name,
+                    percent = Math.round(dataContext.value/dataContext.totalValue*100);
+                
+                if ( dataContext.seriesData ) {
+                    series_name = dataContext.seriesData.name;
+                } else {
+                    series_name = 'Other';
+                }
+                return series_name + " " + percent + "% ( " + dataContext.value + " )";
+            }
+            
+            // Set chart initialization options 
+            options.dataLabel = pieSliceLabel; 
+            return options; 
+        }
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 46986968840955704075
+      identification: 
+        name: Series 1
+
+      execution-options: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select userid_lc as userid,
+                 count(*) as page_views
+            from apex_activity_log
+           where flow_id     = :app_id
+             and time_stamp >= sysdate - ( 1/24/60/60 * :P10031_TIMEFRAME )
+             and userid     is not null
+           group by userid_lc
+           order by 2
+        page-items-to-submit: 
+        - P10031_TIMEFRAME
+
+      column-mapping: 
+        label: USERID
+        value: PAGE_VIEWS
+
+      label: 
+        show: true
+        position: Outside Slice
+        display-as: Label
+
+page-items: 
+- # ====== Page Item: P10031_VIEW_AS ===========================
+  id: 46986958285054704047
+  identification: 
+    name: P10031_VIEW_AS
+    type: Radio Group
+
+  label: 
+    label: View As
+    alignment: Left
+
+  settings: 
+    number-of-columns: 2
+    page-action-on-selection: Submit Page
+    execute-validations: true
+
+  layout: 
+    sequence: 20
+    region: Buttons # 46986957852721704047
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: VIEW_AS_REPORT_CHART # 46986969353760704076
+    display-extra-values: false
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Static Value
+    static-value: REPORT
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: false
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P10031_TIMEFRAME =========================
+  id: 46986958442827704047
+  identification: 
+    name: P10031_TIMEFRAME
+    type: Select List
+
+  label: 
+    label: Timeframe
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986957852721704047
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: TIMEFRAME (4 WEEKS) # 46986922776024704013
+    display-extra-values: false
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Static Value
+    static-value: 900
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: RESET_REPORT ================================
+  id: 46986966165644704073
+  identification: 
+    button-name: RESET_REPORT
+    label: Reset
+
+  layout: 
+    sequence: 20
+    region: Top Users # 46986957784988704047
+    position: RIGHT_OF_IR_SEARCH_BAR
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - t-Button--iconLeft
+    icon: fa-undo-alt
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:&APP_PAGE_ID.:&SESSION.::&DEBUG.:&APP_PAGE_ID.,RR::'
+      page: '&APP_PAGE_ID.'
+      clear-cache: '&APP_PAGE_ID.,RR'
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Report ======================
+  id: 46986957903815704047
+  identification: 
+    name: Refresh Report
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P10031_TIMEFRAME
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986967467225704075
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Users # 46986957784988704047
+
+    execution-options: 
+      sequence: 10
+      event: Refresh Report # 46986957903815704047
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 46986970830943704077
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Users # 46986957784988704047
+
+    execution-options: 
+      sequence: 30
+      event: Refresh Report # 46986957903815704047
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

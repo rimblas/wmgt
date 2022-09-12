@@ -1,0 +1,234 @@
+---
+- # ====== List of Values: COURSES =============================
+  id: 46986710799770702952
+  identification: 
+    name: COURSES
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSES_V
+
+  column-mapping: 
+    return: COURSE_ID
+    display: PREPARED_NAME
+    default-sort: CODE
+    sort-direction: Ascending (Nulls Last)
+
+- # ====== List of Values: PLAYERS.ACCOUNT =====================
+  id: 46986755001384703560
+  identification: 
+    name: PLAYERS.ACCOUNT
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_PLAYERS
+
+  column-mapping: 
+    return: ID
+    display: NAME
+    default-sort: ACCOUNT
+    sort-direction: Ascending (Nulls Last)
+
+- # ====== List of Values: DESKTOP THEME STYLES ================
+  id: 46986898566374703672
+  identification: 
+    name: DESKTOP THEME STYLES
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select s.name d,
+             s.theme_style_id r
+        from apex_application_theme_styles s,
+             apex_application_themes t
+       where s.application_id = :app_id
+         and t.application_id = s.application_id
+         and t.theme_number   = s.theme_number
+         and t.ui_type_name   = 'DESKTOP'
+         and t.is_current     = 'Yes'
+       order by 1
+
+  column-mapping: 
+    return: R
+    display: D
+    default-sort: Use Order By from Query
+
+- # ====== List of Values: USER_THEME_PREFERENCE ===============
+  id: 46986899202219703678
+  identification: 
+    name: USER_THEME_PREFERENCE
+
+  source: 
+    location: Static Values
+
+  entries: 
+  - # ====== Entry: Allow End Users to choose Theme Style ========
+    id: 46986899579845703678
+    entry: 
+      sequence: 1
+      display: Allow End Users to choose Theme Style
+      return: Yes
+
+- # ====== List of Values: TIMEFRAME (4 WEEKS) =================
+  id: 46986922776024704013
+  identification: 
+    name: TIMEFRAME (4 WEEKS)
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select disp,
+             val as seconds
+        from table( apex_util.get_timeframe_lov_data )
+       order by insert_order
+
+  column-mapping: 
+    return: SECONDS
+    display: DISP
+    default-sort: Use Order By from Query
+
+- # ====== List of Values: VIEW_AS_REPORT_CHART ================
+  id: 46986969353760704076
+  identification: 
+    name: VIEW_AS_REPORT_CHART
+
+  source: 
+    location: Static Values
+
+  entries: 
+  - # ====== Entry: Add Report Page ==============================
+    id: 46986969693521704076
+    entry: 
+      sequence: 1
+      display: Add Report Page
+      return: REPORT
+
+    globalization: 
+      template: <span class="fa fa-table" aria-hidden="true"></span><span class="u-VisuallyHidden">#DISPLAY_VALUE#</span>
+
+  - # ====== Entry: Add Chart Page ===============================
+    id: 46986970093309704076
+    entry: 
+      sequence: 2
+      display: Add Chart Page
+      return: CHART
+
+    globalization: 
+      template: <span class="fa fa-pie-chart" aria-hidden="true"></span><span class="u-VisuallyHidden">#DISPLAY_VALUE#</span>
+
+- # ====== List of Values: ACCESS_ROLES ========================
+  id: 46987002312963704111
+  identification: 
+    name: ACCESS_ROLES
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select role_name d, role_id r
+      from APEX_APPL_ACL_ROLES where application_id = :APP_ID 
+      order by 1
+
+  column-mapping: 
+    return: R
+    display: D
+    default-sort: Use Order By from Query
+
+- # ====== List of Values: EMAIL_USERNAME_FORMAT ===============
+  id: 46987009705527704121
+  identification: 
+    name: EMAIL_USERNAME_FORMAT
+
+  source: 
+    location: Static Values
+
+  entries: 
+  - # ====== Entry: Email Addresses ==============================
+    id: 46987010004579704121
+    entry: 
+      sequence: 1
+      display: Email Addresses
+      return: EMAIL
+
+- # ====== List of Values: FEEDBACK_RATING =====================
+  id: 46987028326179704296
+  identification: 
+    name: FEEDBACK_RATING
+
+  source: 
+    location: Static Values
+
+  entries: 
+  - # ====== Entry: Positive =====================================
+    id: 46987028695251704296
+    entry: 
+      sequence: 1
+      display: Positive
+      return: 3
+
+    globalization: 
+      template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-smile-o fa-2x feedback-positive" aria-hidden="true" ></span></span>
+
+  - # ====== Entry: Neutral ======================================
+    id: 46987029050128704296
+    entry: 
+      sequence: 2
+      display: Neutral
+      return: 2
+
+    globalization: 
+      template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-emoji-neutral fa-2x feedback-neutral" aria-hidden="true" ></span></span>
+
+  - # ====== Entry: Negative =====================================
+    id: 46987029430504704296
+    entry: 
+      sequence: 3
+      display: Negative
+      return: 1
+
+    globalization: 
+      template: <span title="#DISPLAY_VALUE#" aria-label="#DISPLAY_VALUE#"><span class="fa fa-frown-o fa-2x feedback-negative" aria-hidden="true" ></span></span>
+
+- # ====== List of Values: FEEDBACK_STATUS =====================
+  id: 46987038772331704302
+  identification: 
+    name: FEEDBACK_STATUS
+
+  source: 
+    location: Static Values
+
+  entries: 
+  - # ====== Entry: No Action ====================================
+    id: 46987039021596704302
+    entry: 
+      sequence: 1
+      display: No Action
+      return: 0
+
+  - # ====== Entry: Acknowledged =================================
+    id: 46987039440333704302
+    entry: 
+      sequence: 2
+      display: Acknowledged
+      return: 1
+
+  - # ====== Entry: Open =========================================
+    id: 46987039817536704302
+    entry: 
+      sequence: 3
+      display: Open
+      return: 3
+
+  - # ====== Entry: Closed =======================================
+    id: 46987040250386704302
+    entry: 
+      sequence: 4
+      display: Closed
+      return: 4
+

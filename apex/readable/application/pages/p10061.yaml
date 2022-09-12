@@ -1,0 +1,131 @@
+---
+# ====== Page: Help ==========================================
+id: 10061
+identification: 
+  name: Help
+  alias: PAGE_HELP
+  title: Help
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+dialog: 
+  chained: false
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+configuration: 
+  build-option: 'Feature: About Page' # 46986680684217702495
+
+regions: 
+- # ====== Region: Search Dialog ===============================
+  id: 46987056899263704322
+  identification: 
+    title: Search Dialog
+    type: PL/SQL Dynamic Content
+
+  source: 
+    pl/sql-code: |
+      for c1 in 
+      (
+          select page_title, help_text 
+            from apex_application_pages
+           where page_id = :P10061_PAGE_ID 
+             and application_id = :APP_ID
+      )
+      loop
+          if c1.help_text is null then
+              sys.htp.p('No help is available for this page.');
+          else
+              if substr(c1.help_text, 1, 3) != '<p>' then
+                  sys.htp.p('<p>');
+              end if;
+      
+              sys.htp.p(apex_application.do_substitutions(c1.help_text));
+      
+              if substr(trim(c1.help_text), -4) != '</p>' then
+                  sys.htp.p('</p>');
+              end if;
+          end if;
+      end loop;
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+page-items: 
+- # ====== Page Item: P10061_PAGE_ID ===========================
+  id: 46987057293850704322
+  identification: 
+    name: P10061_PAGE_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Search Dialog # 46987056899263704322
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+

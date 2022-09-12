@@ -1,0 +1,144 @@
+---
+# ====== Page: Feedback Submitted ============================
+id: 10051
+identification: 
+  name: Feedback Submitted
+  alias: FEEDBACK-SUBMITTED
+  title: Feedback Submitted
+  page-group: Administration # 46986684228947702497
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+configuration: 
+  build-option: 'Feature: Feedback' # 46986680133641702495
+
+regions: 
+- # ====== Region: Feedback Submitted ==========================
+  id: 46987023133639704293
+  identification: 
+    title: Feedback Submitted
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--wizard
+    - t-Alert--customIcons
+    - t-Alert--success
+    icon: fa-check-circle
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+buttons: 
+- # ====== Button: CLOSE =======================================
+  id: 46987023046368704293
+  identification: 
+    button-name: CLOSE
+    label: Close
+
+  layout: 
+    sequence: 20
+    region: Feedback Submitted # 46987023133639704293
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text # 46986653057215702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - w40p
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+dynamic-actions: 
+- # ====== Dynamic Action: Cancel Dialog =======================
+  id: 46987023273714704293
+  identification: 
+    name: Cancel Dialog
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CLOSE # 46987023046368704293
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+    id: 46987033099138704299
+    identification: 
+      action: Cancel Dialog
+
+    execution-options: 
+      sequence: 10
+      event: Cancel Dialog # 46987023273714704293
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
