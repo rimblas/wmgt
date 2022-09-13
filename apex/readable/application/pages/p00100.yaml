@@ -33,11 +33,41 @@ css:
         margin: auto;
     }
     
-    #statsRegion {
+    .shadow--bottom {
+      bottom: 0;
+      background: -webkit-linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.35), transparent);
+    }
+    
+    @media (min-width: 640px) {
+    #statsRegion  .container {
         flex-direction: row;
-        justify-content: space-evenly;
         display: flex;
         flex-wrap: wrap;
+    }
+    
+    }
+    
+    #itemsRegion {
+        flex-direction: row;
+        display: flex;
+        flex-wrap: wrap;
+      width: 100%;
+      background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
+    }
+    #statsRegion .container {
+        justify-content: space-evenly;
+    }
+    
+    .legend {
+        font-size: .8em;
+        color: #767676;
+    }
+    
+    @media (max-width: 640px) {
+    .t-Body-title {
+    top: unset;
+    }
     }
 
 security: 
@@ -65,7 +95,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 1
+    sequence: 10
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -75,7 +105,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template: Interactive Report # 46986575558905702436
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -84,6 +114,10 @@ regions:
     static-id: statsRegion
     region-display-selector: true
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P100_WEEK
 
   server-cache: 
     caching: Disabled
@@ -96,1103 +130,10 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Hard Course Stats ===========================
-  id: 47620374765021971425
-  identification: 
-    title: Hard Course Stats
-    type: Classic Report
-
-  source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      with week_courses as (
-        select id course_id, course_mode, :P100_WEEK week
-          from wmg_courses
-         where id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P100_WEEK 
-          )
-         and course_mode = 'H'
-      )
-      select 1 display_seq
-           , prepared_name
-           , null data_filter
-           , null course_mode
-           , h1
-           , h2
-           , h3
-           , h4
-           , h5
-           , h6
-           , h7
-           , h8
-           , h9
-           , h10
-           , h11
-           , h12
-           , h13
-           , h14
-           , h15
-           , h16
-           , h17
-           , h18
-           , course_par
-        from wmg_courses_v
-      where course_id in (
-        select course_id from week_courses
-      )
-      union all
-      select 100 display_seq
-           , 'Bogeys'
-           , -1 data_filter
-           , w.course_mode
-           , sum(decode(s1  - 1, h1, 1, 0)) a1
-           , sum(decode(s2  - 1, h2, 1, 0)) a2
-           , sum(decode(s3  - 1, h3, 1, 0)) a3
-           , sum(decode(s4  - 1, h4, 1, 0)) a4
-           , sum(decode(s5  - 1, h5, 1, 0)) a5
-           , sum(decode(s6  - 1, h6, 1, 0)) a6
-           , sum(decode(s7  - 1, h7, 1, 0)) a7
-           , sum(decode(s8  - 1, h8, 1, 0)) a8
-           , sum(decode(s9  - 1, h9, 1, 0)) a9
-           , sum(decode(s10 - 1, h10, 1, 0)) a10
-           , sum(decode(s11 - 1, h11, 1, 0)) a11
-           , sum(decode(s12 - 1, h12, 1, 0)) a12
-           , sum(decode(s13 - 1, h13, 1, 0)) a13
-           , sum(decode(s14 - 1, h14, 1, 0)) a14
-           , sum(decode(s15 - 1, h15, 1, 0)) a15
-           , sum(decode(s16 - 1, h16, 1, 0)) a16
-           , sum(decode(s17 - 1, h17, 1, 0)) a17
-           , sum(decode(s18 - 1, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
-      union all
-      select 200 display_seq
-           , 'Double Bogeys'
-           , -2 data_filter
-           , w.course_mode
-           , sum(decode(s1  - 2, h1, 1, 0)) a1
-           , sum(decode(s2  - 2, h2, 1, 0)) a2
-           , sum(decode(s3  - 2, h3, 1, 0)) a3
-           , sum(decode(s4  - 2, h4, 1, 0)) a4
-           , sum(decode(s5  - 2, h5, 1, 0)) a5
-           , sum(decode(s6  - 2, h6, 1, 0)) a6
-           , sum(decode(s7  - 2, h7, 1, 0)) a7
-           , sum(decode(s8  - 2, h8, 1, 0)) a8
-           , sum(decode(s9  - 2, h9, 1, 0)) a9
-           , sum(decode(s10 - 2, h10, 1, 0)) a10
-           , sum(decode(s11 - 2, h11, 1, 0)) a11
-           , sum(decode(s12 - 2, h12, 1, 0)) a12
-           , sum(decode(s13 - 2, h13, 1, 0)) a13
-           , sum(decode(s14 - 2, h14, 1, 0)) a14
-           , sum(decode(s15 - 2, h15, 1, 0)) a15
-           , sum(decode(s16 - 2, h16, 1, 0)) a16
-           , sum(decode(s17 - 2, h17, 1, 0)) a17
-           , sum(decode(s18 - 2, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
-      union all
-      select 300 display_seq
-           , 'Pars'
-           , 0 data_filter
-           , w.course_mode
-           , sum(decode(s1, h1, 1, 0)) a1
-           , sum(decode(s2, h2, 1, 0)) a2
-           , sum(decode(s3, h3, 1, 0)) a3
-           , sum(decode(s4, h4, 1, 0)) a4
-           , sum(decode(s5, h5, 1, 0)) a5
-           , sum(decode(s6, h6, 1, 0)) a6
-           , sum(decode(s7, h7, 1, 0)) a7
-           , sum(decode(s8, h8, 1, 0)) a8
-           , sum(decode(s9, h9, 1, 0)) a9
-           , sum(decode(s10, h10, 1, 0)) a10
-           , sum(decode(s11, h11, 1, 0)) a11
-           , sum(decode(s12, h12, 1, 0)) a12
-           , sum(decode(s13, h13, 1, 0)) a13
-           , sum(decode(s14, h14, 1, 0)) a14
-           , sum(decode(s15, h15, 1, 0)) a15
-           , sum(decode(s16, h16, 1, 0)) a16
-           , sum(decode(s17, h17, 1, 0)) a17
-           , sum(decode(s18, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
-      union all
-      select 400 display_seq
-           , 'Birdies'
-           , +1 data_filter
-           , w.course_mode
-           , sum(decode(s1  + 1, h1, 1, 0)) a1
-           , sum(decode(s2  + 1, h2, 1, 0)) a2
-           , sum(decode(s3  + 1, h3, 1, 0)) a3
-           , sum(decode(s4  + 1, h4, 1, 0)) a4
-           , sum(decode(s5  + 1, h5, 1, 0)) a5
-           , sum(decode(s6  + 1, h6, 1, 0)) a6
-           , sum(decode(s7  + 1, h7, 1, 0)) a7
-           , sum(decode(s8  + 1, h8, 1, 0)) a8
-           , sum(decode(s9  + 1, h9, 1, 0)) a9
-           , sum(decode(s10 + 1, h10, 1, 0)) a10
-           , sum(decode(s11 + 1, h11, 1, 0)) a11
-           , sum(decode(s12 + 1, h12, 1, 0)) a12
-           , sum(decode(s13 + 1, h13, 1, 0)) a13
-           , sum(decode(s14 + 1, h14, 1, 0)) a14
-           , sum(decode(s15 + 1, h15, 1, 0)) a15
-           , sum(decode(s16 + 1, h16, 1, 0)) a16
-           , sum(decode(s17 + 1, h17, 1, 0)) a17
-           , sum(decode(s18 + 1, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
-      union all
-      select r.*
-           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
-       from (
-        select 500 display_seq
-             , 'Eagles'
-             , +2 data_filter
-             , w.course_mode
-             , sum(decode(s1  + 2, h1, 1, 0)) a1
-             , sum(decode(s2  + 2, h2, 1, 0)) a2
-             , sum(decode(s3  + 2, h3, 1, 0)) a3
-             , sum(decode(s4  + 2, h4, 1, 0)) a4
-             , sum(decode(s5  + 2, h5, 1, 0)) a5
-             , sum(decode(s6  + 2, h6, 1, 0)) a6
-             , sum(decode(s7  + 2, h7, 1, 0)) a7
-             , sum(decode(s8  + 2, h8, 1, 0)) a8
-             , sum(decode(s9  + 2, h9, 1, 0)) a9
-             , sum(decode(s10 + 2, h10, 1, 0)) a10
-             , sum(decode(s11 + 2, h11, 1, 0)) a11
-             , sum(decode(s12 + 2, h12, 1, 0)) a12
-             , sum(decode(s13 + 2, h13, 1, 0)) a13
-             , sum(decode(s14 + 2, h14, 1, 0)) a14
-             , sum(decode(s15 + 2, h15, 1, 0)) a15
-             , sum(decode(s16 + 2, h16, 1, 0)) a16
-             , sum(decode(s17 + 2, h17, 1, 0)) a17
-             , sum(decode(s18 + 2, h18, 1, 0)) a18
-          from wmg_rounds_v r, week_courses w
-         where r.week = w.week
-           and r.course_id = w.course_id
-          group by w.course_mode
-      ) r
-      union all
-      select r.*
-           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
-       from (
-        select 600 display_seq
-             , 'Albatrosses'
-             , +3 data_filter
-             , w.course_mode
-             , sum(decode(s1  + 3, h1, 1, 0)) a1
-             , sum(decode(s2  + 3, h2, 1, 0)) a2
-             , sum(decode(s3  + 3, h3, 1, 0)) a3
-             , sum(decode(s4  + 3, h4, 1, 0)) a4
-             , sum(decode(s5  + 3, h5, 1, 0)) a5
-             , sum(decode(s6  + 3, h6, 1, 0)) a6
-             , sum(decode(s7  + 3, h7, 1, 0)) a7
-             , sum(decode(s8  + 3, h8, 1, 0)) a8
-             , sum(decode(s9  + 3, h9, 1, 0)) a9
-             , sum(decode(s10 + 3, h10, 1, 0)) a10
-             , sum(decode(s11 + 3, h11, 1, 0)) a11
-             , sum(decode(s12 + 3, h12, 1, 0)) a12
-             , sum(decode(s13 + 3, h13, 1, 0)) a13
-             , sum(decode(s14 + 3, h14, 1, 0)) a14
-             , sum(decode(s15 + 3, h15, 1, 0)) a15
-             , sum(decode(s16 + 3, h16, 1, 0)) a16
-             , sum(decode(s17 + 3, h17, 1, 0)) a17
-             , sum(decode(s18 + 3, h18, 1, 0)) a18
-          from wmg_rounds_v r, week_courses w
-         where r.week = w.week
-           and r.course_id = w.course_id
-          group by w.course_mode
-        ) r
-      union all
-      select r.*
-           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
-       from (
-        select 1000 display_seq
-             , 'Aces'
-             , 99 data_filter
-             , w.course_mode
-             , sum(decode(s1, 1, 1, 0)) a1
-             , sum(decode(s2, 1, 1, 0)) a2
-             , sum(decode(s3, 1, 1, 0)) a3
-             , sum(decode(s4, 1, 1, 0)) a4
-             , sum(decode(s5, 1, 1, 0)) a5
-             , sum(decode(s6, 1, 1, 0)) a6
-             , sum(decode(s7, 1, 1, 0)) a7
-             , sum(decode(s8, 1, 1, 0)) a8
-             , sum(decode(s9, 1, 1, 0)) a9
-             , sum(decode(s10, 1, 1, 0)) a10
-             , sum(decode(s11, 1, 1, 0)) a11
-             , sum(decode(s12, 1, 1, 0)) a12
-             , sum(decode(s13, 1, 1, 0)) a13
-             , sum(decode(s14, 1, 1, 0)) a14
-             , sum(decode(s15, 1, 1, 0)) a15
-             , sum(decode(s16, 1, 1, 0)) a16
-             , sum(decode(s17, 1, 1, 0)) a17
-             , sum(decode(s18, 1, 1, 0)) a18
-          from wmg_rounds_v r, week_courses w
-         where r.week = w.week
-           and r.course_id = w.course_id
-          group by w.course_mode
-       ) r
-      order by 1
-      
-    page-items-to-submit: 
-    - P100_WEEK
-
-  layout: 
-    sequence: 15
-    parent-region: '{Stats}' # 47486927506229033323
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Standard # 46986580184360702438
-    template-options: 
-    - '#DEFAULT#'
-    - t-Region--noPadding
-    - t-Region--noBorder
-    - t-Region--scrollBody
-    css-classes: 
-    - easyMode
-    render-components: Above Content
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    layout: 
-      number-of-rows-type: Static Value
-      number-of-rows: 15
-
-    appearance: 
-      template-type: Theme
-      template: Standard # 46986618016296702453
-      template-options: 
-      - '#DEFAULT#'
-      - t-Report--altRowsDefault
-      - t-Report--rowHighlight
-      - t-Report--hideNoPagination
-
-    pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
-    performance: 
-      lazy-loading: true
-      maximum-rows-to-process: 100
-
-    break-formatting: 
-      break-columns: No Break
-
-    advanced: 
-      strip-html: false
-      sort-nulls: Last
-
-    heading: 
-      type: Custom Headings
-
-    download: 
-      csv-export-enabled: true
-      link-text: Download
-      filename: easy_course_stats
-
-    printing: 
-      enabled: false
-
-  columns: 
-  - # ====== Column: DISPLAY_SEQ =================================
-    id: 47620374878361971426
-    identification: 
-      column-name: DISPLAY_SEQ
-      type: Hidden Column
-
-    layout: 
-      sequence: 10
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PREPARED_NAME ===============================
-    id: 47620374972986971427
-    identification: 
-      column-name: PREPARED_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Course
-      alignment: center
-
-    layout: 
-      sequence: 20
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: |
-        <span style="font-weight: bold;">#PREPARED_NAME#</span>
-        <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
-        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: DATA_FILTER =================================
-    id: 47620375072620971428
-    identification: 
-      column-name: DATA_FILTER
-      type: Hidden Column
-
-    layout: 
-      sequence: 30
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COURSE_MODE =================================
-    id: 47620375115700971429
-    identification: 
-      column-name: COURSE_MODE
-      type: Hidden Column
-
-    layout: 
-      sequence: 40
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H1 ==========================================
-    id: 47620375215961971430
-    identification: 
-      column-name: H1
-      type: Plain Text
-
-    heading: 
-      heading: H1
-      alignment: center
-
-    layout: 
-      sequence: 50
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H2 ==========================================
-    id: 47620375396349971431
-    identification: 
-      column-name: H2
-      type: Plain Text
-
-    heading: 
-      heading: H2
-      alignment: center
-
-    layout: 
-      sequence: 60
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H3 ==========================================
-    id: 47620375476700971432
-    identification: 
-      column-name: H3
-      type: Plain Text
-
-    heading: 
-      heading: H3
-      alignment: center
-
-    layout: 
-      sequence: 70
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H4 ==========================================
-    id: 47620375513721971433
-    identification: 
-      column-name: H4
-      type: Plain Text
-
-    heading: 
-      heading: H4
-      alignment: center
-
-    layout: 
-      sequence: 80
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H5 ==========================================
-    id: 47620375609837971434
-    identification: 
-      column-name: H5
-      type: Plain Text
-
-    heading: 
-      heading: H5
-      alignment: center
-
-    layout: 
-      sequence: 90
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H6 ==========================================
-    id: 47620375729404971435
-    identification: 
-      column-name: H6
-      type: Plain Text
-
-    heading: 
-      heading: H6
-      alignment: center
-
-    layout: 
-      sequence: 100
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H7 ==========================================
-    id: 47620375875724971436
-    identification: 
-      column-name: H7
-      type: Plain Text
-
-    heading: 
-      heading: H7
-      alignment: center
-
-    layout: 
-      sequence: 110
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H8 ==========================================
-    id: 47620375973817971437
-    identification: 
-      column-name: H8
-      type: Plain Text
-
-    heading: 
-      heading: H8
-      alignment: center
-
-    layout: 
-      sequence: 120
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H9 ==========================================
-    id: 47620376012206971438
-    identification: 
-      column-name: H9
-      type: Plain Text
-
-    heading: 
-      heading: H9
-      alignment: center
-
-    layout: 
-      sequence: 130
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H10 =========================================
-    id: 47620376132435971439
-    identification: 
-      column-name: H10
-      type: Plain Text
-
-    heading: 
-      heading: H10
-      alignment: center
-
-    layout: 
-      sequence: 140
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H11 =========================================
-    id: 47620376293405971440
-    identification: 
-      column-name: H11
-      type: Plain Text
-
-    heading: 
-      heading: H11
-      alignment: center
-
-    layout: 
-      sequence: 150
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H12 =========================================
-    id: 47620376358096971441
-    identification: 
-      column-name: H12
-      type: Plain Text
-
-    heading: 
-      heading: H12
-      alignment: center
-
-    layout: 
-      sequence: 160
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H13 =========================================
-    id: 47620376464930971442
-    identification: 
-      column-name: H13
-      type: Plain Text
-
-    heading: 
-      heading: H13
-      alignment: center
-
-    layout: 
-      sequence: 170
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H14 =========================================
-    id: 47620376540355971443
-    identification: 
-      column-name: H14
-      type: Plain Text
-
-    heading: 
-      heading: H14
-      alignment: center
-
-    layout: 
-      sequence: 180
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H15 =========================================
-    id: 47620376645530971444
-    identification: 
-      column-name: H15
-      type: Plain Text
-
-    heading: 
-      heading: H15
-      alignment: center
-
-    layout: 
-      sequence: 190
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H16 =========================================
-    id: 47620376753330971445
-    identification: 
-      column-name: H16
-      type: Plain Text
-
-    heading: 
-      heading: H16
-      alignment: center
-
-    layout: 
-      sequence: 200
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H17 =========================================
-    id: 47620376868241971446
-    identification: 
-      column-name: H17
-      type: Plain Text
-
-    heading: 
-      heading: H17
-      alignment: center
-
-    layout: 
-      sequence: 210
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: H18 =========================================
-    id: 47620376921668971447
-    identification: 
-      column-name: H18
-      type: Plain Text
-
-    heading: 
-      heading: H18
-      alignment: center
-
-    layout: 
-      sequence: 220
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      css-classes: 
-      - drill
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COURSE_PAR ==================================
-    id: 47620377099476971448
-    identification: 
-      column-name: COURSE_PAR
-      type: Plain Text
-
-    heading: 
-      heading: Par
-      alignment: center
-
-    layout: 
-      sequence: 230
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-- # ====== Region: Hard Course =================================
+- # ====== Region: &P100_HARD. =================================
   id: 47633175857080701301
   identification: 
-    title: Hard Course
+    title: '&P100_HARD.'
     type: Chart
 
   layout: 
@@ -1308,6 +249,31 @@ regions:
              and r.course_id = w.course_id
             group by w.course_mode
           union all
+          select 'Bogeys' label
+               , sum(decode(s1  - 1, h1, 1, 0)
+                   + decode(s2  - 1, h2, 1, 0)
+                   + decode(s3  - 1, h3, 1, 0)
+                   + decode(s4  - 1, h4, 1, 0)
+                   + decode(s5  - 1, h5, 1, 0)
+                   + decode(s6  - 1, h6, 1, 0)
+                   + decode(s7  - 1, h7, 1, 0)
+                   + decode(s8  - 1, h8, 1, 0)
+                   + decode(s9  - 1, h9, 1, 0)
+                   + decode(s10 - 1, h10, 1, 0)
+                   + decode(s11 - 1, h11, 1, 0)
+                   + decode(s12 - 1, h12, 1, 0)
+                   + decode(s13 - 1, h13, 1, 0)
+                   + decode(s14 - 1, h14, 1, 0)
+                   + decode(s15 - 1, h15, 1, 0)
+                   + decode(s16 - 1, h16, 1, 0)
+                   + decode(s17 - 1, h17, 1, 0)
+                   + decode(s18 - 1, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
           select 'Pars' label
                , sum(decode(s1, h1, 1, 0)
                    + decode(s2, h2, 1, 0)
@@ -1333,25 +299,50 @@ regions:
              and r.course_id = w.course_id
             group by w.course_mode
           union all
+          select 'Aces' label
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
           select 'Birdies' label
-               , sum(decode(s1  + 1, h1, 1, 0)
-                   + decode(s2  + 1, h2, 1, 0)
-                   + decode(s3  + 1, h3, 1, 0)
-                   + decode(s4  + 1, h4, 1, 0)
-                   + decode(s5  + 1, h5, 1, 0)
-                   + decode(s6  + 1, h6, 1, 0)
-                   + decode(s7  + 1, h7, 1, 0)
-                   + decode(s8  + 1, h8, 1, 0)
-                   + decode(s9  + 1, h9, 1, 0)
-                   + decode(s10 + 1, h10, 1, 0)
-                   + decode(s11 + 1, h11, 1, 0)
-                   + decode(s12 + 1, h12, 1, 0)
-                   + decode(s13 + 1, h13, 1, 0)
-                   + decode(s14 + 1, h14, 1, 0)
-                   + decode(s15 + 1, h15, 1, 0)
-                   + decode(s16 + 1, h16, 1, 0)
-                   + decode(s17 + 1, h17, 1, 0)
-                   + decode(s18 + 1, h18, 1, 0)
+               , sum(case when s1>1 and s1  + 1 = h1 then 1 else 0 end
+                   + case when s2>1 and s2  + 1 = h2 then 1 else 0 end
+                   + case when s3>1 and s3  + 1 = h3 then 1 else 0 end
+                   + case when s4>1 and s4  + 1 = h4 then 1 else 0 end
+                   + case when s5>1 and s5  + 1 = h5 then 1 else 0 end
+                   + case when s6>1 and s6  + 1 = h6 then 1 else 0 end
+                   + case when s7>1 and s7  + 1 = h7 then 1 else 0 end
+                   + case when s8>1 and s8  + 1 = h8 then 1 else 0 end
+                   + case when s9>1 and s9  + 1 = h9 then 1 else 0 end
+                   + case when s10>1 and s10 + 1 = h10 then 1 else 0 end
+                   + case when s11>1 and s11 + 1 = h11 then 1 else 0 end
+                   + case when s12>1 and s12 + 1 = h12 then 1 else 0 end
+                   + case when s13>1 and s13 + 1 = h13 then 1 else 0 end
+                   + case when s14>1 and s14 + 1 = h14 then 1 else 0 end
+                   + case when s15>1 and s15 + 1 = h15 then 1 else 0 end
+                   + case when s16>1 and s16 + 1 = h16 then 1 else 0 end
+                   + case when s17>1 and s17 + 1 = h17 then 1 else 0 end
+                   + case when s18>1 and s18 + 1 = h18 then 1 else 0 end
                ) value
             from wmg_rounds_v r, week_courses w
            where r.week = w.week
@@ -1359,48 +350,48 @@ regions:
             group by w.course_mode
           union all
           select 'Eagles' label
-            , sum(decode(s1  + 2, h1, 1, 0)
-                + decode(s2  + 2, h2, 1, 0)
-                + decode(s3  + 2, h3, 1, 0)
-                + decode(s4  + 2, h4, 1, 0)
-                + decode(s5  + 2, h5, 1, 0)
-                + decode(s6  + 2, h6, 1, 0)
-                + decode(s7  + 2, h7, 1, 0)
-                + decode(s8  + 2, h8, 1, 0)
-                + decode(s9  + 2, h9, 1, 0)
-                + decode(s10 + 2, h10, 1, 0)
-                + decode(s11 + 2, h11, 1, 0)
-                + decode(s12 + 2, h12, 1, 0)
-                + decode(s13 + 2, h13, 1, 0)
-                + decode(s14 + 2, h14, 1, 0)
-                + decode(s15 + 2, h15, 1, 0)
-                + decode(s16 + 2, h16, 1, 0)
-                + decode(s17 + 2, h17, 1, 0)
-                + decode(s18 + 2, h18, 1, 0)
+            , sum(case when s1>1 and s1  + 2 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 2 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 2 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 2 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 2 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 2 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 2 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 2 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 2 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 2 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 2 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 2 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 2 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 2 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 2 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 2 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 2 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 2 = h18 then 1 else 0 end
              ) value
            from wmg_rounds_v r, week_courses w
           where r.week = w.week
           and r.course_id = w.course_id
           union all
           select 'Albatrosses' label
-            , sum(decode(s1  + 3, h1, 1, 0)
-                + decode(s2  + 3, h2, 1, 0)
-                + decode(s3  + 3, h3, 1, 0)
-                + decode(s4  + 3, h4, 1, 0)
-                + decode(s5  + 3, h5, 1, 0)
-                + decode(s6  + 3, h6, 1, 0)
-                + decode(s7  + 3, h7, 1, 0)
-                + decode(s8  + 3, h8, 1, 0)
-                + decode(s9  + 3, h9, 1, 0)
-                + decode(s10 + 3, h10, 1, 0)
-                + decode(s11 + 3, h11, 1, 0)
-                + decode(s12 + 3, h12, 1, 0)
-                + decode(s13 + 3, h13, 1, 0)
-                + decode(s14 + 3, h14, 1, 0)
-                + decode(s15 + 3, h15, 1, 0)
-                + decode(s16 + 3, h16, 1, 0)
-                + decode(s17 + 3, h17, 1, 0)
-                + decode(s18 + 3, h18, 1, 0)
+            , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 3 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 3 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 3 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 3 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 3 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 3 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 3 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 3 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 3 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 3 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 3 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 3 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 3 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 3 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 3 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 3 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 3 = h18 then 1 else 0 end
              ) value
           from wmg_rounds_v r, week_courses w
           where r.week = w.week
@@ -1464,10 +455,48 @@ regions:
       tick-label: 
         show: true
 
-- # ====== Region: Easy Course Stats ===========================
-  id: 94454808801107282731
+- # ====== Region: {items} =====================================
+  id: 47633176682467701309
   identification: 
-    title: Easy Course Stats
+    title: '{items}'
+    type: Static Content
+
+  layout: 
+    sequence: 1
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: itemsRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: &P100_HARD. -  Stats ========================
+  id: 47633176753469701310
+  identification: 
+    title: '&P100_HARD. -  Stats'
     type: Classic Report
 
   source: 
@@ -1482,12 +511,13 @@ regions:
               from wmg_rounds 
              where week = :P100_WEEK 
           )
-         and course_mode = 'E'
+         and course_mode = 'H'
       )
       select 1 display_seq
            , prepared_name
            , null data_filter
            , null course_mode
+           , 'disabled' drill_class
            , h1
            , h2
            , h3
@@ -1512,117 +542,165 @@ regions:
         select course_id from week_courses
       )
       union all
-      select 100 display_seq
-           , 'Bogeys'
-           , -1 data_filter
-           , w.course_mode
-           , sum(decode(s1  - 1, h1, 1, 0)) a1
-           , sum(decode(s2  - 1, h2, 1, 0)) a2
-           , sum(decode(s3  - 1, h3, 1, 0)) a3
-           , sum(decode(s4  - 1, h4, 1, 0)) a4
-           , sum(decode(s5  - 1, h5, 1, 0)) a5
-           , sum(decode(s6  - 1, h6, 1, 0)) a6
-           , sum(decode(s7  - 1, h7, 1, 0)) a7
-           , sum(decode(s8  - 1, h8, 1, 0)) a8
-           , sum(decode(s9  - 1, h9, 1, 0)) a9
-           , sum(decode(s10 - 1, h10, 1, 0)) a10
-           , sum(decode(s11 - 1, h11, 1, 0)) a11
-           , sum(decode(s12 - 1, h12, 1, 0)) a12
-           , sum(decode(s13 - 1, h13, 1, 0)) a13
-           , sum(decode(s14 - 1, h14, 1, 0)) a14
-           , sum(decode(s15 - 1, h15, 1, 0)) a15
-           , sum(decode(s16 - 1, h16, 1, 0)) a16
-           , sum(decode(s17 - 1, h17, 1, 0)) a17
-           , sum(decode(s18 - 1, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 90 display_seq
+             , 'Triple Bogeys'
+             , -3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 3, h1, 1, 0)) a1
+             , sum(decode(s2  - 3, h2, 1, 0)) a2
+             , sum(decode(s3  - 3, h3, 1, 0)) a3
+             , sum(decode(s4  - 3, h4, 1, 0)) a4
+             , sum(decode(s5  - 3, h5, 1, 0)) a5
+             , sum(decode(s6  - 3, h6, 1, 0)) a6
+             , sum(decode(s7  - 3, h7, 1, 0)) a7
+             , sum(decode(s8  - 3, h8, 1, 0)) a8
+             , sum(decode(s9  - 3, h9, 1, 0)) a9
+             , sum(decode(s10 - 3, h10, 1, 0)) a10
+             , sum(decode(s11 - 3, h11, 1, 0)) a11
+             , sum(decode(s12 - 3, h12, 1, 0)) a12
+             , sum(decode(s13 - 3, h13, 1, 0)) a13
+             , sum(decode(s14 - 3, h14, 1, 0)) a14
+             , sum(decode(s15 - 3, h15, 1, 0)) a15
+             , sum(decode(s16 - 3, h16, 1, 0)) a16
+             , sum(decode(s17 - 3, h17, 1, 0)) a17
+             , sum(decode(s18 - 3, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
       union all
-      select 200 display_seq
-           , 'Double Bogeys'
-           , -2 data_filter
-           , w.course_mode
-           , sum(decode(s1  - 2, h1, 1, 0)) a1
-           , sum(decode(s2  - 2, h2, 1, 0)) a2
-           , sum(decode(s3  - 2, h3, 1, 0)) a3
-           , sum(decode(s4  - 2, h4, 1, 0)) a4
-           , sum(decode(s5  - 2, h5, 1, 0)) a5
-           , sum(decode(s6  - 2, h6, 1, 0)) a6
-           , sum(decode(s7  - 2, h7, 1, 0)) a7
-           , sum(decode(s8  - 2, h8, 1, 0)) a8
-           , sum(decode(s9  - 2, h9, 1, 0)) a9
-           , sum(decode(s10 - 2, h10, 1, 0)) a10
-           , sum(decode(s11 - 2, h11, 1, 0)) a11
-           , sum(decode(s12 - 2, h12, 1, 0)) a12
-           , sum(decode(s13 - 2, h13, 1, 0)) a13
-           , sum(decode(s14 - 2, h14, 1, 0)) a14
-           , sum(decode(s15 - 2, h15, 1, 0)) a15
-           , sum(decode(s16 - 2, h16, 1, 0)) a16
-           , sum(decode(s17 - 2, h17, 1, 0)) a17
-           , sum(decode(s18 - 2, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 100 display_seq
+             , 'Double Bogeys'
+             , -2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 2, h1, 1, 0)) a1
+             , sum(decode(s2  - 2, h2, 1, 0)) a2
+             , sum(decode(s3  - 2, h3, 1, 0)) a3
+             , sum(decode(s4  - 2, h4, 1, 0)) a4
+             , sum(decode(s5  - 2, h5, 1, 0)) a5
+             , sum(decode(s6  - 2, h6, 1, 0)) a6
+             , sum(decode(s7  - 2, h7, 1, 0)) a7
+             , sum(decode(s8  - 2, h8, 1, 0)) a8
+             , sum(decode(s9  - 2, h9, 1, 0)) a9
+             , sum(decode(s10 - 2, h10, 1, 0)) a10
+             , sum(decode(s11 - 2, h11, 1, 0)) a11
+             , sum(decode(s12 - 2, h12, 1, 0)) a12
+             , sum(decode(s13 - 2, h13, 1, 0)) a13
+             , sum(decode(s14 - 2, h14, 1, 0)) a14
+             , sum(decode(s15 - 2, h15, 1, 0)) a15
+             , sum(decode(s16 - 2, h16, 1, 0)) a16
+             , sum(decode(s17 - 2, h17, 1, 0)) a17
+             , sum(decode(s18 - 2, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
       union all
-      select 300 display_seq
-           , 'Pars'
-           , 0 data_filter
-           , w.course_mode
-           , sum(decode(s1, h1, 1, 0)) a1
-           , sum(decode(s2, h2, 1, 0)) a2
-           , sum(decode(s3, h3, 1, 0)) a3
-           , sum(decode(s4, h4, 1, 0)) a4
-           , sum(decode(s5, h5, 1, 0)) a5
-           , sum(decode(s6, h6, 1, 0)) a6
-           , sum(decode(s7, h7, 1, 0)) a7
-           , sum(decode(s8, h8, 1, 0)) a8
-           , sum(decode(s9, h9, 1, 0)) a9
-           , sum(decode(s10, h10, 1, 0)) a10
-           , sum(decode(s11, h11, 1, 0)) a11
-           , sum(decode(s12, h12, 1, 0)) a12
-           , sum(decode(s13, h13, 1, 0)) a13
-           , sum(decode(s14, h14, 1, 0)) a14
-           , sum(decode(s15, h15, 1, 0)) a15
-           , sum(decode(s16, h16, 1, 0)) a16
-           , sum(decode(s17, h17, 1, 0)) a17
-           , sum(decode(s18, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 200 display_seq
+             , 'Bogeys'
+             , -1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 1, h1, 1, 0)) a1
+             , sum(decode(s2  - 1, h2, 1, 0)) a2
+             , sum(decode(s3  - 1, h3, 1, 0)) a3
+             , sum(decode(s4  - 1, h4, 1, 0)) a4
+             , sum(decode(s5  - 1, h5, 1, 0)) a5
+             , sum(decode(s6  - 1, h6, 1, 0)) a6
+             , sum(decode(s7  - 1, h7, 1, 0)) a7
+             , sum(decode(s8  - 1, h8, 1, 0)) a8
+             , sum(decode(s9  - 1, h9, 1, 0)) a9
+             , sum(decode(s10 - 1, h10, 1, 0)) a10
+             , sum(decode(s11 - 1, h11, 1, 0)) a11
+             , sum(decode(s12 - 1, h12, 1, 0)) a12
+             , sum(decode(s13 - 1, h13, 1, 0)) a13
+             , sum(decode(s14 - 1, h14, 1, 0)) a14
+             , sum(decode(s15 - 1, h15, 1, 0)) a15
+             , sum(decode(s16 - 1, h16, 1, 0)) a16
+             , sum(decode(s17 - 1, h17, 1, 0)) a17
+             , sum(decode(s18 - 1, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
       union all
-      select 400 display_seq
-           , 'Birdies'
-           , +1 data_filter
-           , w.course_mode
-           , sum(decode(s1  + 1, h1, 1, 0)) a1
-           , sum(decode(s2  + 1, h2, 1, 0)) a2
-           , sum(decode(s3  + 1, h3, 1, 0)) a3
-           , sum(decode(s4  + 1, h4, 1, 0)) a4
-           , sum(decode(s5  + 1, h5, 1, 0)) a5
-           , sum(decode(s6  + 1, h6, 1, 0)) a6
-           , sum(decode(s7  + 1, h7, 1, 0)) a7
-           , sum(decode(s8  + 1, h8, 1, 0)) a8
-           , sum(decode(s9  + 1, h9, 1, 0)) a9
-           , sum(decode(s10 + 1, h10, 1, 0)) a10
-           , sum(decode(s11 + 1, h11, 1, 0)) a11
-           , sum(decode(s12 + 1, h12, 1, 0)) a12
-           , sum(decode(s13 + 1, h13, 1, 0)) a13
-           , sum(decode(s14 + 1, h14, 1, 0)) a14
-           , sum(decode(s15 + 1, h15, 1, 0)) a15
-           , sum(decode(s16 + 1, h16, 1, 0)) a16
-           , sum(decode(s17 + 1, h17, 1, 0)) a17
-           , sum(decode(s18 + 1, h18, 1, 0)) a18
-           , to_number(null) aa
-        from wmg_rounds_v r, week_courses w
-       where r.week = w.week
-         and r.course_id = w.course_id
-        group by w.course_mode
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 300 display_seq
+             , 'Pars'
+             , 0 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, h1, 1, 0)) a1
+             , sum(decode(s2, h2, 1, 0)) a2
+             , sum(decode(s3, h3, 1, 0)) a3
+             , sum(decode(s4, h4, 1, 0)) a4
+             , sum(decode(s5, h5, 1, 0)) a5
+             , sum(decode(s6, h6, 1, 0)) a6
+             , sum(decode(s7, h7, 1, 0)) a7
+             , sum(decode(s8, h8, 1, 0)) a8
+             , sum(decode(s9, h9, 1, 0)) a9
+             , sum(decode(s10, h10, 1, 0)) a10
+             , sum(decode(s11, h11, 1, 0)) a11
+             , sum(decode(s12, h12, 1, 0)) a12
+             , sum(decode(s13, h13, 1, 0)) a13
+             , sum(decode(s14, h14, 1, 0)) a14
+             , sum(decode(s15, h15, 1, 0)) a15
+             , sum(decode(s16, h16, 1, 0)) a16
+             , sum(decode(s17, h17, 1, 0)) a17
+             , sum(decode(s18, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 400 display_seq
+             , 'Birdies'
+             , +1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+      ) r
       union all
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
@@ -1631,24 +709,25 @@ regions:
              , 'Eagles'
              , +2 data_filter
              , w.course_mode
-             , sum(decode(s1  + 2, h1, 1, 0)) a1
-             , sum(decode(s2  + 2, h2, 1, 0)) a2
-             , sum(decode(s3  + 2, h3, 1, 0)) a3
-             , sum(decode(s4  + 2, h4, 1, 0)) a4
-             , sum(decode(s5  + 2, h5, 1, 0)) a5
-             , sum(decode(s6  + 2, h6, 1, 0)) a6
-             , sum(decode(s7  + 2, h7, 1, 0)) a7
-             , sum(decode(s8  + 2, h8, 1, 0)) a8
-             , sum(decode(s9  + 2, h9, 1, 0)) a9
-             , sum(decode(s10 + 2, h10, 1, 0)) a10
-             , sum(decode(s11 + 2, h11, 1, 0)) a11
-             , sum(decode(s12 + 2, h12, 1, 0)) a12
-             , sum(decode(s13 + 2, h13, 1, 0)) a13
-             , sum(decode(s14 + 2, h14, 1, 0)) a14
-             , sum(decode(s15 + 2, h15, 1, 0)) a15
-             , sum(decode(s16 + 2, h16, 1, 0)) a16
-             , sum(decode(s17 + 2, h17, 1, 0)) a17
-             , sum(decode(s18 + 2, h18, 1, 0)) a18
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18
           from wmg_rounds_v r, week_courses w
          where r.week = w.week
            and r.course_id = w.course_id
@@ -1662,24 +741,25 @@ regions:
              , 'Albatrosses'
              , +3 data_filter
              , w.course_mode
-             , sum(decode(s1  + 3, h1, 1, 0)) a1
-             , sum(decode(s2  + 3, h2, 1, 0)) a2
-             , sum(decode(s3  + 3, h3, 1, 0)) a3
-             , sum(decode(s4  + 3, h4, 1, 0)) a4
-             , sum(decode(s5  + 3, h5, 1, 0)) a5
-             , sum(decode(s6  + 3, h6, 1, 0)) a6
-             , sum(decode(s7  + 3, h7, 1, 0)) a7
-             , sum(decode(s8  + 3, h8, 1, 0)) a8
-             , sum(decode(s9  + 3, h9, 1, 0)) a9
-             , sum(decode(s10 + 3, h10, 1, 0)) a10
-             , sum(decode(s11 + 3, h11, 1, 0)) a11
-             , sum(decode(s12 + 3, h12, 1, 0)) a12
-             , sum(decode(s13 + 3, h13, 1, 0)) a13
-             , sum(decode(s14 + 3, h14, 1, 0)) a14
-             , sum(decode(s15 + 3, h15, 1, 0)) a15
-             , sum(decode(s16 + 3, h16, 1, 0)) a16
-             , sum(decode(s17 + 3, h17, 1, 0)) a17
-             , sum(decode(s18 + 3, h18, 1, 0)) a18
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
           from wmg_rounds_v r, week_courses w
          where r.week = w.week
            and r.course_id = w.course_id
@@ -1693,6 +773,1159 @@ regions:
              , 'Aces'
              , 99 data_filter
              , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, 1, 1, 0)) a1
+             , sum(decode(s2, 1, 1, 0)) a2
+             , sum(decode(s3, 1, 1, 0)) a3
+             , sum(decode(s4, 1, 1, 0)) a4
+             , sum(decode(s5, 1, 1, 0)) a5
+             , sum(decode(s6, 1, 1, 0)) a6
+             , sum(decode(s7, 1, 1, 0)) a7
+             , sum(decode(s8, 1, 1, 0)) a8
+             , sum(decode(s9, 1, 1, 0)) a9
+             , sum(decode(s10, 1, 1, 0)) a10
+             , sum(decode(s11, 1, 1, 0)) a11
+             , sum(decode(s12, 1, 1, 0)) a12
+             , sum(decode(s13, 1, 1, 0)) a13
+             , sum(decode(s14, 1, 1, 0)) a14
+             , sum(decode(s15, 1, 1, 0)) a15
+             , sum(decode(s16, 1, 1, 0)) a16
+             , sum(decode(s17, 1, 1, 0)) a17
+             , sum(decode(s18, 1, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+       ) r
+      order by 1
+      
+    page-items-to-submit: 
+    - P100_WEEK
+
+  layout: 
+    sequence: 15
+    parent-region: '{Stats}' # 47486927506229033323
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    css-classes: 
+    - hardMode
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: true
+      maximum-rows-to-process: 100
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: true
+      link-text: Download
+      filename: easy_course_stats
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: DISPLAY_SEQ =================================
+    id: 47633176841766701311
+    identification: 
+      column-name: DISPLAY_SEQ
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PREPARED_NAME ===============================
+    id: 47633176919467701312
+    identification: 
+      column-name: PREPARED_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span style="font-weight: bold;">#PREPARED_NAME#</span>
+        <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
+        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DATA_FILTER =================================
+    id: 47633177072681701313
+    identification: 
+      column-name: DATA_FILTER
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 47633177118172701314
+    identification: 
+      column-name: COURSE_MODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DRILL_CLASS =================================
+    id: 47633177241085701315
+    identification: 
+      column-name: DRILL_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H1 ==========================================
+    id: 47633177317053701316
+    identification: 
+      column-name: H1
+      type: Plain Text
+
+    heading: 
+      heading: H1
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H1#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H2 ==========================================
+    id: 47633177407111701317
+    identification: 
+      column-name: H2
+      type: Plain Text
+
+    heading: 
+      heading: H2
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H2#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H3 ==========================================
+    id: 47633177561641701318
+    identification: 
+      column-name: H3
+      type: Plain Text
+
+    heading: 
+      heading: H3
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H3#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H4 ==========================================
+    id: 47633177603612701319
+    identification: 
+      column-name: H4
+      type: Plain Text
+
+    heading: 
+      heading: H4
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H4#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H5 ==========================================
+    id: 47633177774475701320
+    identification: 
+      column-name: H5
+      type: Plain Text
+
+    heading: 
+      heading: H5
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H5#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H6 ==========================================
+    id: 47633177827325701321
+    identification: 
+      column-name: H6
+      type: Plain Text
+
+    heading: 
+      heading: H6
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H6#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H7 ==========================================
+    id: 47633177963462701322
+    identification: 
+      column-name: H7
+      type: Plain Text
+
+    heading: 
+      heading: H7
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H7#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H8 ==========================================
+    id: 47633178046707701323
+    identification: 
+      column-name: H8
+      type: Plain Text
+
+    heading: 
+      heading: H8
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H9 ==========================================
+    id: 47633178139331701324
+    identification: 
+      column-name: H9
+      type: Plain Text
+
+    heading: 
+      heading: H9
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H10 =========================================
+    id: 47633178227127701325
+    identification: 
+      column-name: H10
+      type: Plain Text
+
+    heading: 
+      heading: H10
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H11 =========================================
+    id: 47633178307903701326
+    identification: 
+      column-name: H11
+      type: Plain Text
+
+    heading: 
+      heading: H11
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H12 =========================================
+    id: 47633178493544701327
+    identification: 
+      column-name: H12
+      type: Plain Text
+
+    heading: 
+      heading: H12
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H13 =========================================
+    id: 47633178590495701328
+    identification: 
+      column-name: H13
+      type: Plain Text
+
+    heading: 
+      heading: H13
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H14 =========================================
+    id: 47633178601332701329
+    identification: 
+      column-name: H14
+      type: Plain Text
+
+    heading: 
+      heading: H14
+      alignment: center
+
+    layout: 
+      sequence: 190
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H15 =========================================
+    id: 47633178727384701330
+    identification: 
+      column-name: H15
+      type: Plain Text
+
+    heading: 
+      heading: H15
+      alignment: center
+
+    layout: 
+      sequence: 200
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H16 =========================================
+    id: 47633178887825701331
+    identification: 
+      column-name: H16
+      type: Plain Text
+
+    heading: 
+      heading: H16
+      alignment: center
+
+    layout: 
+      sequence: 210
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H17 =========================================
+    id: 47633178905898701332
+    identification: 
+      column-name: H17
+      type: Plain Text
+
+    heading: 
+      heading: H17
+      alignment: center
+
+    layout: 
+      sequence: 220
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H18 =========================================
+    id: 47633179062115701333
+    identification: 
+      column-name: H18
+      type: Plain Text
+
+    heading: 
+      heading: H18
+      alignment: center
+
+    layout: 
+      sequence: 230
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - drill
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 47633179142659701334
+    identification: 
+      column-name: COURSE_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 240
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: &P100_EASY. - Stats =========================
+  id: 94454808801107282731
+  identification: 
+    title: '&P100_EASY. - Stats'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with week_courses as (
+        select id course_id, course_mode, :P100_WEEK week
+          from wmg_courses
+         where id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P100_WEEK 
+          )
+         and course_mode = 'E'
+      )
+      select 1 display_seq
+           , prepared_name
+           , null data_filter
+           , null course_mode
+           , 'disabled' drill_class
+           , h1
+           , h2
+           , h3
+           , h4
+           , h5
+           , h6
+           , h7
+           , h8
+           , h9
+           , h10
+           , h11
+           , h12
+           , h13
+           , h14
+           , h15
+           , h16
+           , h17
+           , h18
+           , course_par
+        from wmg_courses_v
+      where course_id in (
+        select course_id from week_courses
+      )
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 90 display_seq
+             , 'Triple Bogeys'
+             , -3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 3, h1, 1, 0)) a1
+             , sum(decode(s2  - 3, h2, 1, 0)) a2
+             , sum(decode(s3  - 3, h3, 1, 0)) a3
+             , sum(decode(s4  - 3, h4, 1, 0)) a4
+             , sum(decode(s5  - 3, h5, 1, 0)) a5
+             , sum(decode(s6  - 3, h6, 1, 0)) a6
+             , sum(decode(s7  - 3, h7, 1, 0)) a7
+             , sum(decode(s8  - 3, h8, 1, 0)) a8
+             , sum(decode(s9  - 3, h9, 1, 0)) a9
+             , sum(decode(s10 - 3, h10, 1, 0)) a10
+             , sum(decode(s11 - 3, h11, 1, 0)) a11
+             , sum(decode(s12 - 3, h12, 1, 0)) a12
+             , sum(decode(s13 - 3, h13, 1, 0)) a13
+             , sum(decode(s14 - 3, h14, 1, 0)) a14
+             , sum(decode(s15 - 3, h15, 1, 0)) a15
+             , sum(decode(s16 - 3, h16, 1, 0)) a16
+             , sum(decode(s17 - 3, h17, 1, 0)) a17
+             , sum(decode(s18 - 3, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 100 display_seq
+             , 'Double Bogeys'
+             , -2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 2, h1, 1, 0)) a1
+             , sum(decode(s2  - 2, h2, 1, 0)) a2
+             , sum(decode(s3  - 2, h3, 1, 0)) a3
+             , sum(decode(s4  - 2, h4, 1, 0)) a4
+             , sum(decode(s5  - 2, h5, 1, 0)) a5
+             , sum(decode(s6  - 2, h6, 1, 0)) a6
+             , sum(decode(s7  - 2, h7, 1, 0)) a7
+             , sum(decode(s8  - 2, h8, 1, 0)) a8
+             , sum(decode(s9  - 2, h9, 1, 0)) a9
+             , sum(decode(s10 - 2, h10, 1, 0)) a10
+             , sum(decode(s11 - 2, h11, 1, 0)) a11
+             , sum(decode(s12 - 2, h12, 1, 0)) a12
+             , sum(decode(s13 - 2, h13, 1, 0)) a13
+             , sum(decode(s14 - 2, h14, 1, 0)) a14
+             , sum(decode(s15 - 2, h15, 1, 0)) a15
+             , sum(decode(s16 - 2, h16, 1, 0)) a16
+             , sum(decode(s17 - 2, h17, 1, 0)) a17
+             , sum(decode(s18 - 2, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 200 display_seq
+             , 'Bogeys'
+             , -1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 1, h1, 1, 0)) a1
+             , sum(decode(s2  - 1, h2, 1, 0)) a2
+             , sum(decode(s3  - 1, h3, 1, 0)) a3
+             , sum(decode(s4  - 1, h4, 1, 0)) a4
+             , sum(decode(s5  - 1, h5, 1, 0)) a5
+             , sum(decode(s6  - 1, h6, 1, 0)) a6
+             , sum(decode(s7  - 1, h7, 1, 0)) a7
+             , sum(decode(s8  - 1, h8, 1, 0)) a8
+             , sum(decode(s9  - 1, h9, 1, 0)) a9
+             , sum(decode(s10 - 1, h10, 1, 0)) a10
+             , sum(decode(s11 - 1, h11, 1, 0)) a11
+             , sum(decode(s12 - 1, h12, 1, 0)) a12
+             , sum(decode(s13 - 1, h13, 1, 0)) a13
+             , sum(decode(s14 - 1, h14, 1, 0)) a14
+             , sum(decode(s15 - 1, h15, 1, 0)) a15
+             , sum(decode(s16 - 1, h16, 1, 0)) a16
+             , sum(decode(s17 - 1, h17, 1, 0)) a17
+             , sum(decode(s18 - 1, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 300 display_seq
+             , 'Pars'
+             , 0 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, h1, 1, 0)) a1
+             , sum(decode(s2, h2, 1, 0)) a2
+             , sum(decode(s3, h3, 1, 0)) a3
+             , sum(decode(s4, h4, 1, 0)) a4
+             , sum(decode(s5, h5, 1, 0)) a5
+             , sum(decode(s6, h6, 1, 0)) a6
+             , sum(decode(s7, h7, 1, 0)) a7
+             , sum(decode(s8, h8, 1, 0)) a8
+             , sum(decode(s9, h9, 1, 0)) a9
+             , sum(decode(s10, h10, 1, 0)) a10
+             , sum(decode(s11, h11, 1, 0)) a11
+             , sum(decode(s12, h12, 1, 0)) a12
+             , sum(decode(s13, h13, 1, 0)) a13
+             , sum(decode(s14, h14, 1, 0)) a14
+             , sum(decode(s15, h15, 1, 0)) a15
+             , sum(decode(s16, h16, 1, 0)) a16
+             , sum(decode(s17, h17, 1, 0)) a17
+             , sum(decode(s18, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 400 display_seq
+             , 'Birdies'
+             , +1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 500 display_seq
+             , 'Eagles'
+             , +2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 600 display_seq
+             , 'Albatrosses'
+             , +3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 1000 display_seq
+             , 'Aces'
+             , 99 data_filter
+             , w.course_mode
+             , '' drill_class
              , sum(decode(s1, 1, 1, 0)) a1
              , sum(decode(s2, 1, 1, 0)) a2
              , sum(decode(s3, 1, 1, 0)) a3
@@ -1767,8 +2000,7 @@ regions:
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
@@ -1850,8 +2082,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H1#</span>
 
     sorting: 
       sortable: false
@@ -1886,8 +2117,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H2#</span>
 
     sorting: 
       sortable: false
@@ -1922,8 +2152,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H3#</span>
 
     sorting: 
       sortable: false
@@ -1958,8 +2187,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H4#</span>
 
     sorting: 
       sortable: false
@@ -1994,8 +2222,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H5#</span>
 
     sorting: 
       sortable: false
@@ -2030,8 +2257,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H6#</span>
 
     sorting: 
       sortable: false
@@ -2066,8 +2292,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H7#</span>
 
     sorting: 
       sortable: false
@@ -2487,7 +2712,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Par
+      heading: Total
       alignment: center
 
     layout: 
@@ -2550,6 +2775,21 @@ regions:
 
     layout: 
       sequence: 35
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DRILL_CLASS =================================
+    id: 47633176324540701306
+    identification: 
+      column-name: DRILL_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 36
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2700,10 +2940,10 @@ regions:
       performance: 
         maximum-rows-to-process: 20
 
-- # ====== Region: Easy Course =================================
+- # ====== Region: &P100_EASY. =================================
   id: 94935952475262333856
   identification: 
-    title: Easy Course
+    title: '&P100_EASY.'
     type: Chart
 
   layout: 
@@ -2819,6 +3059,31 @@ regions:
              and r.course_id = w.course_id
             group by w.course_mode
           union all
+          select 'Bogeys' label
+               , sum(decode(s1  - 1, h1, 1, 0)
+                   + decode(s2  - 1, h2, 1, 0)
+                   + decode(s3  - 1, h3, 1, 0)
+                   + decode(s4  - 1, h4, 1, 0)
+                   + decode(s5  - 1, h5, 1, 0)
+                   + decode(s6  - 1, h6, 1, 0)
+                   + decode(s7  - 1, h7, 1, 0)
+                   + decode(s8  - 1, h8, 1, 0)
+                   + decode(s9  - 1, h9, 1, 0)
+                   + decode(s10 - 1, h10, 1, 0)
+                   + decode(s11 - 1, h11, 1, 0)
+                   + decode(s12 - 1, h12, 1, 0)
+                   + decode(s13 - 1, h13, 1, 0)
+                   + decode(s14 - 1, h14, 1, 0)
+                   + decode(s15 - 1, h15, 1, 0)
+                   + decode(s16 - 1, h16, 1, 0)
+                   + decode(s17 - 1, h17, 1, 0)
+                   + decode(s18 - 1, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
           select 'Pars' label
                , sum(decode(s1, h1, 1, 0)
                    + decode(s2, h2, 1, 0)
@@ -2844,25 +3109,50 @@ regions:
              and r.course_id = w.course_id
             group by w.course_mode
           union all
+          select 'Aces' label
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
           select 'Birdies' label
-               , sum(decode(s1  + 1, h1, 1, 0)
-                   + decode(s2  + 1, h2, 1, 0)
-                   + decode(s3  + 1, h3, 1, 0)
-                   + decode(s4  + 1, h4, 1, 0)
-                   + decode(s5  + 1, h5, 1, 0)
-                   + decode(s6  + 1, h6, 1, 0)
-                   + decode(s7  + 1, h7, 1, 0)
-                   + decode(s8  + 1, h8, 1, 0)
-                   + decode(s9  + 1, h9, 1, 0)
-                   + decode(s10 + 1, h10, 1, 0)
-                   + decode(s11 + 1, h11, 1, 0)
-                   + decode(s12 + 1, h12, 1, 0)
-                   + decode(s13 + 1, h13, 1, 0)
-                   + decode(s14 + 1, h14, 1, 0)
-                   + decode(s15 + 1, h15, 1, 0)
-                   + decode(s16 + 1, h16, 1, 0)
-                   + decode(s17 + 1, h17, 1, 0)
-                   + decode(s18 + 1, h18, 1, 0)
+               , sum(case when s1>1 and s1  + 1 = h1 then 1 else 0 end
+                   + case when s2>1 and s2  + 1 = h2 then 1 else 0 end
+                   + case when s3>1 and s3  + 1 = h3 then 1 else 0 end
+                   + case when s4>1 and s4  + 1 = h4 then 1 else 0 end
+                   + case when s5>1 and s5  + 1 = h5 then 1 else 0 end
+                   + case when s6>1 and s6  + 1 = h6 then 1 else 0 end
+                   + case when s7>1 and s7  + 1 = h7 then 1 else 0 end
+                   + case when s8>1 and s8  + 1 = h8 then 1 else 0 end
+                   + case when s9>1 and s9  + 1 = h9 then 1 else 0 end
+                   + case when s10>1 and s10 + 1 = h10 then 1 else 0 end
+                   + case when s11>1 and s11 + 1 = h11 then 1 else 0 end
+                   + case when s12>1 and s12 + 1 = h12 then 1 else 0 end
+                   + case when s13>1 and s13 + 1 = h13 then 1 else 0 end
+                   + case when s14>1 and s14 + 1 = h14 then 1 else 0 end
+                   + case when s15>1 and s15 + 1 = h15 then 1 else 0 end
+                   + case when s16>1 and s16 + 1 = h16 then 1 else 0 end
+                   + case when s17>1 and s17 + 1 = h17 then 1 else 0 end
+                   + case when s18>1 and s18 + 1 = h18 then 1 else 0 end
                ) value
             from wmg_rounds_v r, week_courses w
            where r.week = w.week
@@ -2870,48 +3160,48 @@ regions:
             group by w.course_mode
           union all
           select 'Eagles' label
-            , sum(decode(s1  + 2, h1, 1, 0)
-                + decode(s2  + 2, h2, 1, 0)
-                + decode(s3  + 2, h3, 1, 0)
-                + decode(s4  + 2, h4, 1, 0)
-                + decode(s5  + 2, h5, 1, 0)
-                + decode(s6  + 2, h6, 1, 0)
-                + decode(s7  + 2, h7, 1, 0)
-                + decode(s8  + 2, h8, 1, 0)
-                + decode(s9  + 2, h9, 1, 0)
-                + decode(s10 + 2, h10, 1, 0)
-                + decode(s11 + 2, h11, 1, 0)
-                + decode(s12 + 2, h12, 1, 0)
-                + decode(s13 + 2, h13, 1, 0)
-                + decode(s14 + 2, h14, 1, 0)
-                + decode(s15 + 2, h15, 1, 0)
-                + decode(s16 + 2, h16, 1, 0)
-                + decode(s17 + 2, h17, 1, 0)
-                + decode(s18 + 2, h18, 1, 0)
+            , sum(case when s1>1 and s1  + 2 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 2 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 2 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 2 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 2 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 2 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 2 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 2 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 2 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 2 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 2 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 2 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 2 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 2 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 2 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 2 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 2 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 2 = h18 then 1 else 0 end
              ) value
            from wmg_rounds_v r, week_courses w
           where r.week = w.week
           and r.course_id = w.course_id
           union all
           select 'Albatrosses' label
-            , sum(decode(s1  + 3, h1, 1, 0)
-                + decode(s2  + 3, h2, 1, 0)
-                + decode(s3  + 3, h3, 1, 0)
-                + decode(s4  + 3, h4, 1, 0)
-                + decode(s5  + 3, h5, 1, 0)
-                + decode(s6  + 3, h6, 1, 0)
-                + decode(s7  + 3, h7, 1, 0)
-                + decode(s8  + 3, h8, 1, 0)
-                + decode(s9  + 3, h9, 1, 0)
-                + decode(s10 + 3, h10, 1, 0)
-                + decode(s11 + 3, h11, 1, 0)
-                + decode(s12 + 3, h12, 1, 0)
-                + decode(s13 + 3, h13, 1, 0)
-                + decode(s14 + 3, h14, 1, 0)
-                + decode(s15 + 3, h15, 1, 0)
-                + decode(s16 + 3, h16, 1, 0)
-                + decode(s17 + 3, h17, 1, 0)
-                + decode(s18 + 3, h18, 1, 0)
+            , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 3 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 3 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 3 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 3 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 3 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 3 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 3 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 3 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 3 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 3 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 3 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 3 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 3 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 3 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 3 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 3 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 3 = h18 then 1 else 0 end
              ) value
           from wmg_rounds_v r, week_courses w
           where r.week = w.week
@@ -2975,10 +3265,10 @@ regions:
       tick-label: 
         show: true
 
-- # ====== Region: Chart 4 - WIP ===============================
+- # ====== Region: Cumulative Performance ======================
   id: 94935955149037333857
   identification: 
-    title: Chart 4 - WIP
+    title: Cumulative Performance
     type: Chart
 
   layout: 
@@ -2995,6 +3285,7 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - js-showMaximizeButton
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -3016,21 +3307,25 @@ regions:
     chart: 
       type: Line
 
+    title: 
+      title: Cummulative
+
     appearance: 
       orientation: Vertical
       stack: false
 
     data-cursor: 
-      cursor: Automatic
+      cursor: Yes
       behavior: Automatic
       dim-on-hover: true
 
     multi-series-chart-data: 
       fill-gaps-in-chart-data: true
       sort-order: Label - Ascending
-      render-gap-as-zero: true
+      render-gap-as-zero: false
 
     settings: 
+      time-axis-type: Automatic
       zoom-and-scroll: No
 
     animation: 
@@ -3044,13 +3339,15 @@ regions:
       show-value: true
 
     legend: 
-      show: false
+      show: true
+      position: Automatic
+      hide-and-show-behavior: No Rescaling
 
     series: 
-    - # ====== Series: Series 1 ====================================
-      id: 47468036852496193301
+    - # ====== Series: First =======================================
+      id: 5007620315389972544
       identification: 
-        name: Series 1
+        name: First
 
       execution-options: 
         sequence: 10
@@ -3059,26 +3356,110 @@ regions:
         location: Local Database
         type: SQL Query
         sql-query: |
-          select 'Label 1' label, 30 value from sys.dual
-          union all
-          select 'Label 2' label, 20 value from sys.dual
-          union all
-          select 'Label 3' label, 34 value from sys.dual
-          union all
-          select 'Label 4' label, 6  value from sys.dual
-          union all
-          select 'Label 5' label, 10 value from sys.dual
+          with round as (
+            select r.id  round_id
+              , p.id                                      player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , course_mode
+               , h
+               , course_mode || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+          from round_unpivot
+          where round_id in (
+              select r.id
+              from wmg_rounds r
+              where r.players_id in (
+                select player_id
+                  from (
+                  select player_id, account, score
+                       , rank() over ( order by score) rn
+                   from (
+                          select e.player_id,  e.account, sum(e.under_par) score
+                            from wmg_rounds_v e
+                            where e.week = :P100_WEEK
+                           group by e.player_id, e.account
+                  )
+                 )
+                  where rn = 1
+              )
+              and r.week =  :P100_WEEK
+          )
+          
+          
+        page-items-to-submit: 
+        - P100_WEEK
 
       column-mapping: 
+        series-name: ACCOUNT
         label: LABEL
         value: VALUE
+        legend-tooltip: ACCOUNT
 
       appearance: 
+        color: '#000000'
         assigned-to-y2-axis: false
 
       line: 
         style: Solid
-        type: Automatic
+        type: Straight
 
       marker: 
         show: Automatic
@@ -3088,9 +3469,398 @@ regions:
         show: false
 
       performance: 
-        maximum-rows-to-process: 20
+        maximum-rows-to-process: 36
+
+    - # ====== Series: Third =======================================
+      id: 5007620618296972547
+      identification: 
+        name: Third
+
+      execution-options: 
+        sequence: 30
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with round as (
+            select r.id  round_id
+              , p.id                                      player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , course_mode
+               , h
+               , course_mode || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+          from round_unpivot
+          where round_id in (
+              select r.id
+              from wmg_rounds r
+              where r.players_id in (
+                select player_id
+                  from (
+                  select player_id, account, score
+                       , rank() over ( order by score) rn
+                   from (
+                          select e.player_id,  e.account, sum(e.under_par) score
+                            from wmg_rounds_v e
+                            where e.week = :P100_WEEK
+                           group by e.player_id, e.account
+                  )
+                 )
+                  where rn = 3
+              )
+              and r.week =  :P100_WEEK
+          )
+          order by course_mode , h
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        series-name: ACCOUNT
+        label: LABEL
+        value: VALUE
+        legend-tooltip: ACCOUNT
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Straight
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 36
+
+    - # ====== Series: Extra =======================================
+      id: 5007620802229972549
+      identification: 
+        name: Extra
+
+      execution-options: 
+        sequence: 40
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with round as (
+            select r.id  round_id
+              , p.id                                         player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , course_mode
+               , h
+               , course_mode || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+          from round_unpivot
+          where round_id in (
+              select r.id
+                from wmg_rounds r
+               where r.players_id = :P100_PLAYER_ID
+                 and r.week =  :P100_WEEK
+            )
+          order by course_mode , h
+        page-items-to-submit: 
+        - P100_PLAYER_ID
+        - P100_WEEK
+
+      column-mapping: 
+        series-name: ACCOUNT
+        label: LABEL
+        value: VALUE
+        legend-tooltip: ACCOUNT
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Straight
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 36
+
+    - # ====== Series: Second ======================================
+      id: 47468036852496193301
+      identification: 
+        name: Second
+
+      execution-options: 
+        sequence: 20
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with round as (
+            select r.id  round_id
+              , p.id                                      player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , course_mode
+               , h
+               , course_mode || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+          from round_unpivot
+          where round_id in (
+              select r.id
+              from wmg_rounds r
+              where r.players_id in (
+                select player_id
+                  from (
+                  select player_id, account, score
+                       , rank() over ( order by score) rn
+                   from (
+                          select e.player_id,  e.account, sum(e.under_par) score
+                            from wmg_rounds_v e
+                            where e.week = :P100_WEEK
+                           group by e.player_id, e.account
+                  )
+                 )
+                  where rn = 2
+              )
+              and r.week =  :P100_WEEK
+          )
+          order by course_mode , h
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        series-name: ACCOUNT
+        label: LABEL
+        value: VALUE
+        legend-tooltip: ACCOUNT
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Straight
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 36
 
     axes: 
+    - # ====== Axis: y2 ============================================
+      id: 5007620466412972545
+      identification: 
+        name: y2
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+      dual-y-axes: 
+        show: Automatic
+
     - # ====== Axis: x =============================================
       id: 47468035698980193300
       identification: 
@@ -3098,6 +3868,8 @@ regions:
         show-axis: true
 
       value: 
+        minimum: 0
+        maximum: 36
         format-scaling: Automatic
         baseline-scaling: Zero
         scale: Linear
@@ -3117,11 +3889,13 @@ regions:
       identification: 
         name: y
         show-axis: true
+        title: Score
 
       value: 
         format-scaling: Automatic
         baseline-scaling: Zero
         scale: Linear
+        step: 1
 
       appearance: 
         position: Automatic
@@ -3130,14 +3904,15 @@ regions:
         show: Automatic
 
       minor-ticks: 
+        show: false
 
       tick-label: 
         show: true
 
-- # ====== Region: Chart 5 - WIP ===============================
+- # ====== Region: Stacked Shot Types ==========================
   id: 94935957930713333858
   identification: 
-    title: Chart 5 - WIP
+    title: Stacked Shot Types
     type: Chart
 
   layout: 
@@ -3177,7 +3952,7 @@ regions:
 
     appearance: 
       orientation: Vertical
-      stack: false
+      stack: true
 
     data-cursor: 
       cursor: Automatic
@@ -3187,7 +3962,7 @@ regions:
     multi-series-chart-data: 
       fill-gaps-in-chart-data: true
       sort-order: Label - Ascending
-      render-gap-as-zero: true
+      render-gap-as-zero: false
 
     settings: 
       zoom-and-scroll: No
@@ -3203,13 +3978,15 @@ regions:
       show-value: true
 
     legend: 
-      show: false
+      show: true
+      position: Automatic
+      hide-and-show-behavior: Rescale
 
     series: 
-    - # ====== Series: Series 1 ====================================
+    - # ====== Series: Easy ========================================
       id: 47468039463336193302
       identification: 
-        name: Series 1
+        name: Easy
 
       execution-options: 
         sequence: 10
@@ -3218,15 +3995,409 @@ regions:
         location: Local Database
         type: SQL Query
         sql-query: |
-          select 'Label 1' label, 30 value from sys.dual
+          with week_courses as (
+            select id course_id, course_mode, :P100_WEEK week
+              from wmg_courses
+             where id in (
+                select distinct course_id
+                  from wmg_rounds 
+                 where week = :P100_WEEK 
+              )
+             and course_mode = 'E'
+          )
+          select '1.Double Bogeys' label
+               , sum(decode(s1  - 2, h1, 1, 0)
+                   + decode(s2  - 2, h2, 1, 0)
+                   + decode(s3  - 2, h3, 1, 0)
+                   + decode(s4  - 2, h4, 1, 0)
+                   + decode(s5  - 2, h5, 1, 0)
+                   + decode(s6  - 2, h6, 1, 0)
+                   + decode(s7  - 2, h7, 1, 0)
+                   + decode(s8  - 2, h8, 1, 0)
+                   + decode(s9  - 2, h9, 1, 0)
+                   + decode(s10 - 2, h10, 1, 0)
+                   + decode(s11 - 2, h11, 1, 0)
+                   + decode(s12 - 2, h12, 1, 0)
+                   + decode(s13 - 2, h13, 1, 0)
+                   + decode(s14 - 2, h14, 1, 0)
+                   + decode(s15 - 2, h15, 1, 0)
+                   + decode(s16 - 2, h16, 1, 0)
+                   + decode(s17 - 2, h17, 1, 0)
+                   + decode(s18 - 2, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
           union all
-          select 'Label 2' label, 20 value from sys.dual
+          select '2.Bogeys' label
+               , sum(decode(s1  - 1, h1, 1, 0)
+                   + decode(s2  - 1, h2, 1, 0)
+                   + decode(s3  - 1, h3, 1, 0)
+                   + decode(s4  - 1, h4, 1, 0)
+                   + decode(s5  - 1, h5, 1, 0)
+                   + decode(s6  - 1, h6, 1, 0)
+                   + decode(s7  - 1, h7, 1, 0)
+                   + decode(s8  - 1, h8, 1, 0)
+                   + decode(s9  - 1, h9, 1, 0)
+                   + decode(s10 - 1, h10, 1, 0)
+                   + decode(s11 - 1, h11, 1, 0)
+                   + decode(s12 - 1, h12, 1, 0)
+                   + decode(s13 - 1, h13, 1, 0)
+                   + decode(s14 - 1, h14, 1, 0)
+                   + decode(s15 - 1, h15, 1, 0)
+                   + decode(s16 - 1, h16, 1, 0)
+                   + decode(s17 - 1, h17, 1, 0)
+                   + decode(s18 - 1, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
           union all
-          select 'Label 3' label, 34 value from sys.dual
+          select '3.Pars' label
+               , sum(decode(s1, h1, 1, 0)
+                   + decode(s2, h2, 1, 0)
+                   + decode(s3, h3, 1, 0)
+                   + decode(s4, h4, 1, 0)
+                   + decode(s5, h5, 1, 0)
+                   + decode(s6, h6, 1, 0)
+                   + decode(s7, h7, 1, 0)
+                   + decode(s8, h8, 1, 0)
+                   + decode(s9, h9, 1, 0)
+                   + decode(s10, h10, 1, 0)
+                   + decode(s11, h11, 1, 0)
+                   + decode(s12, h12, 1, 0)
+                   + decode(s13, h13, 1, 0)
+                   + decode(s14, h14, 1, 0)
+                   + decode(s15, h15, 1, 0)
+                   + decode(s16, h16, 1, 0)
+                   + decode(s17, h17, 1, 0)
+                   + decode(s18, h18, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
           union all
-          select 'Label 4' label, 6  value from sys.dual
+          select '4.Aces' label
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
           union all
-          select 'Label 5' label, 10 value from sys.dual
+          select '5.Birdies' label
+               , sum(case when s1>1 and s1  + 1 = h1 then 1 else 0 end
+                   + case when s2>1 and s2  + 1 = h2 then 1 else 0 end
+                   + case when s3>1 and s3  + 1 = h3 then 1 else 0 end
+                   + case when s4>1 and s4  + 1 = h4 then 1 else 0 end
+                   + case when s5>1 and s5  + 1 = h5 then 1 else 0 end
+                   + case when s6>1 and s6  + 1 = h6 then 1 else 0 end
+                   + case when s7>1 and s7  + 1 = h7 then 1 else 0 end
+                   + case when s8>1 and s8  + 1 = h8 then 1 else 0 end
+                   + case when s9>1 and s9  + 1 = h9 then 1 else 0 end
+                   + case when s10>1 and s10 + 1 = h10 then 1 else 0 end
+                   + case when s11>1 and s11 + 1 = h11 then 1 else 0 end
+                   + case when s12>1 and s12 + 1 = h12 then 1 else 0 end
+                   + case when s13>1 and s13 + 1 = h13 then 1 else 0 end
+                   + case when s14>1 and s14 + 1 = h14 then 1 else 0 end
+                   + case when s15>1 and s15 + 1 = h15 then 1 else 0 end
+                   + case when s16>1 and s16 + 1 = h16 then 1 else 0 end
+                   + case when s17>1 and s17 + 1 = h17 then 1 else 0 end
+                   + case when s18>1 and s18 + 1 = h18 then 1 else 0 end
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '6.Eagles' label
+            , sum(case when s1>1 and s1  + 2 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 2 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 2 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 2 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 2 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 2 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 2 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 2 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 2 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 2 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 2 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 2 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 2 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 2 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 2 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 2 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 2 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 2 = h18 then 1 else 0 end
+             ) value
+           from wmg_rounds_v r, week_courses w
+          where r.week = w.week
+          and r.course_id = w.course_id
+          union all
+          select '7.Albatrosses' label
+            , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 3 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 3 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 3 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 3 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 3 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 3 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 3 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 3 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 3 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 3 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 3 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 3 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 3 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 3 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 3 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 3 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 3 = h18 then 1 else 0 end
+             ) value
+          from wmg_rounds_v r, week_courses w
+          where r.week = w.week
+          and r.course_id = w.course_id
+          
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        type: Automatic
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 20
+
+    - # ====== Series: Hard ========================================
+      id: 47633179495432701337
+      identification: 
+        name: Hard
+
+      execution-options: 
+        sequence: 20
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with week_courses as (
+            select id course_id, course_mode, :P100_WEEK week
+              from wmg_courses
+             where id in (
+                select distinct course_id
+                  from wmg_rounds 
+                 where week = :P100_WEEK 
+              )
+             and course_mode = 'H'
+          )
+          select '1.Double Bogeys' label
+               , sum(decode(s1  - 2, h1, 1, 0)
+                   + decode(s2  - 2, h2, 1, 0)
+                   + decode(s3  - 2, h3, 1, 0)
+                   + decode(s4  - 2, h4, 1, 0)
+                   + decode(s5  - 2, h5, 1, 0)
+                   + decode(s6  - 2, h6, 1, 0)
+                   + decode(s7  - 2, h7, 1, 0)
+                   + decode(s8  - 2, h8, 1, 0)
+                   + decode(s9  - 2, h9, 1, 0)
+                   + decode(s10 - 2, h10, 1, 0)
+                   + decode(s11 - 2, h11, 1, 0)
+                   + decode(s12 - 2, h12, 1, 0)
+                   + decode(s13 - 2, h13, 1, 0)
+                   + decode(s14 - 2, h14, 1, 0)
+                   + decode(s15 - 2, h15, 1, 0)
+                   + decode(s16 - 2, h16, 1, 0)
+                   + decode(s17 - 2, h17, 1, 0)
+                   + decode(s18 - 2, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '2.Bogeys' label
+               , sum(decode(s1  - 1, h1, 1, 0)
+                   + decode(s2  - 1, h2, 1, 0)
+                   + decode(s3  - 1, h3, 1, 0)
+                   + decode(s4  - 1, h4, 1, 0)
+                   + decode(s5  - 1, h5, 1, 0)
+                   + decode(s6  - 1, h6, 1, 0)
+                   + decode(s7  - 1, h7, 1, 0)
+                   + decode(s8  - 1, h8, 1, 0)
+                   + decode(s9  - 1, h9, 1, 0)
+                   + decode(s10 - 1, h10, 1, 0)
+                   + decode(s11 - 1, h11, 1, 0)
+                   + decode(s12 - 1, h12, 1, 0)
+                   + decode(s13 - 1, h13, 1, 0)
+                   + decode(s14 - 1, h14, 1, 0)
+                   + decode(s15 - 1, h15, 1, 0)
+                   + decode(s16 - 1, h16, 1, 0)
+                   + decode(s17 - 1, h17, 1, 0)
+                   + decode(s18 - 1, h18, 1, 0)
+                 ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '3.Pars' label
+               , sum(decode(s1, h1, 1, 0)
+                   + decode(s2, h2, 1, 0)
+                   + decode(s3, h3, 1, 0)
+                   + decode(s4, h4, 1, 0)
+                   + decode(s5, h5, 1, 0)
+                   + decode(s6, h6, 1, 0)
+                   + decode(s7, h7, 1, 0)
+                   + decode(s8, h8, 1, 0)
+                   + decode(s9, h9, 1, 0)
+                   + decode(s10, h10, 1, 0)
+                   + decode(s11, h11, 1, 0)
+                   + decode(s12, h12, 1, 0)
+                   + decode(s13, h13, 1, 0)
+                   + decode(s14, h14, 1, 0)
+                   + decode(s15, h15, 1, 0)
+                   + decode(s16, h16, 1, 0)
+                   + decode(s17, h17, 1, 0)
+                   + decode(s18, h18, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '4.Aces' label
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '5.Birdies' label
+               , sum(case when s1>1 and s1  + 1 = h1 then 1 else 0 end
+                   + case when s2>1 and s2  + 1 = h2 then 1 else 0 end
+                   + case when s3>1 and s3  + 1 = h3 then 1 else 0 end
+                   + case when s4>1 and s4  + 1 = h4 then 1 else 0 end
+                   + case when s5>1 and s5  + 1 = h5 then 1 else 0 end
+                   + case when s6>1 and s6  + 1 = h6 then 1 else 0 end
+                   + case when s7>1 and s7  + 1 = h7 then 1 else 0 end
+                   + case when s8>1 and s8  + 1 = h8 then 1 else 0 end
+                   + case when s9>1 and s9  + 1 = h9 then 1 else 0 end
+                   + case when s10>1 and s10 + 1 = h10 then 1 else 0 end
+                   + case when s11>1 and s11 + 1 = h11 then 1 else 0 end
+                   + case when s12>1 and s12 + 1 = h12 then 1 else 0 end
+                   + case when s13>1 and s13 + 1 = h13 then 1 else 0 end
+                   + case when s14>1 and s14 + 1 = h14 then 1 else 0 end
+                   + case when s15>1 and s15 + 1 = h15 then 1 else 0 end
+                   + case when s16>1 and s16 + 1 = h16 then 1 else 0 end
+                   + case when s17>1 and s17 + 1 = h17 then 1 else 0 end
+                   + case when s18>1 and s18 + 1 = h18 then 1 else 0 end
+               ) value
+            from wmg_rounds_v r, week_courses w
+           where r.week = w.week
+             and r.course_id = w.course_id
+            group by w.course_mode
+          union all
+          select '6.Eagles' label
+            , sum(case when s1>1 and s1  + 2 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 2 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 2 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 2 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 2 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 2 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 2 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 2 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 2 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 2 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 2 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 2 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 2 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 2 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 2 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 2 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 2 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 2 = h18 then 1 else 0 end
+             ) value
+           from wmg_rounds_v r, week_courses w
+          where r.week = w.week
+          and r.course_id = w.course_id
+          union all
+          select '7.Albatrosses' label
+            , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end
+                + case when s2>1 and s2  + 3 = h2 then 1 else 0 end
+                + case when s3>1 and s3  + 3 = h3 then 1 else 0 end
+                + case when s4>1 and s4  + 3 = h4 then 1 else 0 end
+                + case when s5>1 and s5  + 3 = h5 then 1 else 0 end
+                + case when s6>1 and s6  + 3 = h6 then 1 else 0 end
+                + case when s7>1 and s7  + 3 = h7 then 1 else 0 end
+                + case when s8>1 and s8  + 3 = h8 then 1 else 0 end
+                + case when s9>1 and s9  + 3 = h9 then 1 else 0 end
+                + case when s10>1 and s10 + 3 = h10 then 1 else 0 end
+                + case when s11>1 and s11 + 3 = h11 then 1 else 0 end
+                + case when s12>1 and s12 + 3 = h12 then 1 else 0 end
+                + case when s13>1 and s13 + 3 = h13 then 1 else 0 end
+                + case when s14>1 and s14 + 3 = h14 then 1 else 0 end
+                + case when s15>1 and s15 + 3 = h15 then 1 else 0 end
+                + case when s16>1 and s16 + 3 = h16 then 1 else 0 end
+                + case when s17>1 and s17 + 3 = h17 then 1 else 0 end
+                + case when s18>1 and s18 + 3 = h18 then 1 else 0 end
+             ) value
+          from wmg_rounds_v r, week_courses w
+          where r.week = w.week
+          and r.course_id = w.course_id
+          
+        page-items-to-submit: 
+        - P100_WEEK
 
       column-mapping: 
         label: LABEL
@@ -3292,10 +4463,10 @@ regions:
       tick-label: 
         show: true
 
-- # ====== Region: Chart 6 - WIP ===============================
+- # ====== Region: Position over time - WIP ====================
   id: 94935960575573333859
   identification: 
-    title: Chart 6 - WIP
+    title: Position over time - WIP
     type: Chart
 
   layout: 
@@ -3303,7 +4474,7 @@ regions:
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -3331,19 +4502,27 @@ regions:
   attributes: 
     id: 47468040360554193303
     chart: 
-      type: Pie
+      type: Bar
+
+    appearance: 
+      orientation: Horizontal
+      stack: false
+
+    layout: 
+      height: 400
 
     data-cursor: 
       cursor: Automatic
       behavior: Automatic
       dim-on-hover: true
 
-    settings: 
-      pie-selection-effect: Highlight
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Value - Ascending
+      render-gap-as-zero: true
 
-    value: 
-      pie-chart-other-threshold: 0
-      format-scaling: Automatic
+    settings: 
+      zoom-and-scroll: No
 
     animation: 
       on-display: Automatic
@@ -3352,6 +4531,7 @@ regions:
     tooltip: 
       show: true
       show-series-name: true
+      show-group-name: true
       show-value: true
 
     legend: 
@@ -3370,29 +4550,239 @@ regions:
         location: Local Database
         type: SQL Query
         sql-query: |
-          select 'Label 1' label, 30 value from sys.dual
-          union all
-          select 'Label 2' label, 20 value from sys.dual
-          union all
-          select 'Label 3' label, 34 value from sys.dual
-          union all
-          select 'Label 4' label, 6  value from sys.dual
-          union all
-          select 'Label 5' label, 10 value from sys.dual
+          with round as (
+            select r.id  round_id
+              , p.id                                      player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , sum(score * -1) total
+          from (
+          select account
+               , course_mode
+               , h
+          --     , course_mode || lpad(to_char(h), 2, '0') label
+          --     , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+               , score
+          from round_unpivot
+          where round_id in (
+              select r.id
+              from wmg_rounds r
+              where r.players_id in (
+                select player_id
+                  from (
+                  select player_id, account, score
+                       , rank() over ( order by score) rn
+                   from (
+                          select e.player_id,  e.account, sum(e.under_par) score
+                            from wmg_rounds_v e
+                            where e.week = :P100_WEEK
+                           group by e.player_id, e.account
+                  )
+                 )
+                  where rn <= 10
+              )
+              and r.week =  :P100_WEEK
+          )
+          )
+          where (:P100_HN <= 18 and course_mode = 'E'  and h <= :P100_HN)
+          or 
+          (
+              :P100_HN > 18 and (course_mode = 'E'  or (h <= :P100_HN - 18 and course_mode = 'H' ))
+          )
+          group by account
+          order by 2 desc
+        page-items-to-submit: 
+        - P100_WEEK
+        - P100_HN
 
       column-mapping: 
-        label: LABEL
-        value: VALUE
+        label: ACCOUNT
+        value: TOTAL
+
+      appearance: 
+        assigned-to-y2-axis: false
 
       label: 
         show: true
         position: Automatic
-        display-as: Label
 
       performance: 
         maximum-rows-to-process: 20
 
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 47633179922889701342
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: true
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 47633180089369701343
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
 page-items: 
+- # ====== Page Item: P100_PLAYER_ID ===========================
+  id: 5007620760770972548
+  identification: 
+    name: P100_PLAYER_ID
+    type: Popup LOV
+
+  label: 
+    label: 'Add Player '
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: Cumulative Performance # 94935955149037333857
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 5
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-12
+    - col-md-12
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46986755001384703560
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: 'Select an extra player to compare against. '
+
 - # ====== Page Item: P100_WEEK ================================
   id: 47468027814670193295
   identification: 
@@ -3409,15 +4799,20 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Breadcrumb # 94935947672531333853
+    region: '{items}' # 47633176682467701309
     position: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -3466,8 +4861,8 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 30
-    region: Breadcrumb # 94935947672531333853
+    sequence: 40
+    region: '{items}' # 47633176682467701309
     position: BODY
 
   advanced: 
@@ -3493,8 +4888,8 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 20
-    region: Breadcrumb # 94935947672531333853
+    sequence: 30
+    region: '{items}' # 47633176682467701309
     position: BODY
 
   advanced: 
@@ -3510,7 +4905,241 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P100_TOTAL_PLAYERS =======================
+  id: 47633176416329701307
+  identification: 
+    name: P100_TOTAL_PLAYERS
+    type: Display Only
+
+  label: 
+    label: Total Players
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 20
+    region: '{items}' # 47633176682467701309
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(distinct players_id)
+              from wmg_rounds 
+             where week = :P100_WEEK
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P100_WEEK
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_EASY ================================
+  id: 47633179663790701339
+  identification: 
+    name: P100_EASY
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P100_WEEK 
+          )
+         and course_mode = 'E'
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: Easy Course
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_HARD ================================
+  id: 47633179865156701341
+  identification: 
+    name: P100_HARD
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 60
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P100_WEEK 
+          )
+         and course_mode = 'H'
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: Hard Course
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_HN ==================================
+  id: 47633180168022701344
+  identification: 
+    name: P100_HN
+    type: FOS - Range Slider
+
+  label: 
+    label: Hole
+    alignment: Left
+
+  settings: 
+    type: Number
+    handles: Single
+    minimum--value: 0
+    maximum-value: 36
+    number-steps: 1
+    orientation: Horizontal
+    options: 'enable-ticks:enable-tooltip:connects-bar'
+    ticks: 9
+    range-color: '#0076df'
+
+  layout: 
+    sequence: 10
+    region: Position over time - WIP # 94935960575573333859
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 0
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: 1
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: Drag & release to see the scores as of that hole
+
 dynamic-actions: 
+- # ====== Dynamic Action: Refresh Cumulative Chart ============
+  id: 5007620983014972550
+  identification: 
+    name: Refresh Cumulative Chart
+
+  execution-options: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P100_PLAYER_ID
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 48035498561833866801
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Cumulative Performance # 94935955149037333857
+
+    execution-options: 
+      sequence: 10
+      event: Refresh Cumulative Chart # 5007620983014972550
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Nested Report Result Drill ==========
   id: 47486927373642033321
   identification: 
@@ -3658,6 +5287,75 @@ dynamic-actions:
       fire-on-initialization: false
       stop-execution-on-error: true
       wait-for-result: true
+
+- # ====== Dynamic Action: Sticky Items ========================
+  id: 47633179279657701335
+  identification: 
+    name: Sticky Items
+
+  execution-options: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+    id: 47633179353719701336
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var vRegion$ = $(this.affectedElements[0]);
+        vRegion$.stickyWidget();
+        // .find('.js-stickyTableHeader')
+
+    affected-elements: 
+      selection-type: Region
+      region: '{items}' # 47633176682467701309
+
+    execution-options: 
+      sequence: 10
+      event: Sticky Items # 47633179279657701335
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Time Chart Refresh ==================
+  id: 47633180271789701345
+  identification: 
+    name: Time Chart Refresh
+
+  execution-options: 
+    sequence: 40
+
+  when: 
+    event: PLUGIN_COM.FOS.RANGE_SLIDER|ITEM TYPE|fos-rangeslider-change
+    selection-type: Item(s)
+    item(s): 
+    - P100_HN
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 47633180381839701346
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Position over time - WIP # 94935960575573333859
+
+    execution-options: 
+      sequence: 10
+      event: Time Chart Refresh # 47633180271789701345
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
 computations: 
 - # ====== Computation: P100_WEEK ==============================

@@ -1,0 +1,15 @@
+---
+- # ====== Shortcut: CLEAR_BUTTON ==============================
+  id: 48036581432951608446
+  identification: 
+    name: CLEAR_BUTTON
+
+  source: 
+    type: Function Body returning VARCHAR2
+    language: PL/SQL
+    pl/sql-function-body: |
+      return '
+      <a class="a-Button a-Button--popupLOV lov-clear" aria-label="' || apex_lang.lang('Clear') || '" title="' || apex_lang.lang('Clear') || '" href="javascript:$s(''#CURRENT_ITEM_NAME#'','''');">
+        <span class="a-Icon fa fa-close"></span>
+      </a>';
+
