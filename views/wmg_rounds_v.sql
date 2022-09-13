@@ -1,6 +1,6 @@
 create or replace view wmg_rounds_v
 as
-  select 
+select 
     p.id                                         player_id,
     p.account                                    account,
     p.name                                       player_name,
@@ -69,10 +69,10 @@ as
     nvl(r.s17 - cs.h17, 0) +
     nvl(r.s18 - cs.h18, 0) under_par
 from 
-    rounds r,
-    players p,
-    courses c,
-    course_strokes cs
+    wmg_rounds r,
+    wmg_players p,
+    wmg_courses c,
+    wmg_course_strokes cs
 where r.players_id = p.id
   and r.course_id = c.id
   and cs.course_id(+) = c.id
