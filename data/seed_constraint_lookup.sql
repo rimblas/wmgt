@@ -1,0 +1,1 @@
+insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_ROUNDS_ONE_UK', 'The is a round for that player already');
