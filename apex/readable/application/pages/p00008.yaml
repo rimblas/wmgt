@@ -20,6 +20,14 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  inline: |
+    @media only screen and (max-width: 899px) {
+      .a-IRR-table td {
+        padding: 2px 4px;
+      }
+    }
+
 security: 
   authentication: Page Is Public
   deep-linking: Application Default
@@ -1172,7 +1180,7 @@ regions:
         value-identifies-row: false
 
       column-formatting: 
-        html-expression: '#COURSE_PAR# / #ROUND_STROKES#'
+        html-expression: <span class="hidden-md-down">#COURSE_PAR# / </span>#ROUND_STROKES#
 
       column-filter: 
         type: Default Based on Column Type

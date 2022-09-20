@@ -178,8 +178,9 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.::::'
+        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.:100:::'
         page: 100 # Session Analysis
+        clear-cache: 100
 
     click-counting: 
       count-clicks: false
@@ -428,6 +429,45 @@
     user-defined-attributes: 
       translatable: false
 
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ":APP_USER != 'nobody'"
+
+    security: 
+      authorization-scheme: Must Not Be Public User
+
+  - # ====== Entry: Sign In ======================================
+    id: 50193658522683528842
+    label: 
+      label: Sign In
+
+    icon: 
+      image/icon-css-classes: fa-sign-out
+
+    layout: 
+      sequence: 90
+      parent-entry: '&APP_USER.' # 46987060007706704324
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:9999:&SESSION.::&DEBUG.::::'
+        page: 9999 # Login Page
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: "nvl(:APP_USER, 'nobody') = 'nobody'"
+
 - # ====== List: Page Navigation ===============================
   id: 46986883504791703654
   identification: 
@@ -555,8 +595,9 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.::::'
+        url: 'f?p=&APP_ID.:100:&SESSION.::&DEBUG.:100:::'
         page: 100 # Session Analysis
+        clear-cache: 100
 
     click-counting: 
       count-clicks: false

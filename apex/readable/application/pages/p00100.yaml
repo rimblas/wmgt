@@ -20,6 +20,19 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
+javascript: 
+  function-and-global-variable-declaration: |
+    var isExpanding = false;
+    function incrementHoleCounter() {
+        var n;
+        n= parseInt($v("P100_HN"));
+        if (n<36) {
+           n++;
+        }
+       return n;
+    
+    }
+
 css: 
   inline: |
     span.drill {
@@ -69,6 +82,9 @@ css:
     top: unset;
     }
     }
+    td.t-Report-cell[headers~="WHO"] {
+        white-space: nowrap;
+    }
 
 security: 
   authentication: Page Is Public
@@ -95,7 +111,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 10
+    sequence: 31
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -137,7 +153,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 55
+    sequence: 81
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -493,8 +509,540 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: Top Players =================================
+  id: 49305650009120776601
+  identification: 
+    title: Top Players
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.*, rank() over (order by r.total_score) pos
+      from (
+      select player_id, player_name, sum(under_par) total_score
+        from wmg_rounds_v
+        where week = :P100_WEEK 
+       group by player_id, player_name
+       order by 3
+       fetch first 15 rows only
+      ) r
+      order by pos, r.player_name
+    page-items-to-submit: 
+    - P100_WEEK
+
+  layout: 
+    sequence: 10
+    parent-region: Top Results # 49305650947385776610
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - i-h240
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 20
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 49305650281082776603
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total Score
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 49305650319899776604
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P100_WEEK.,#PLAYER_ID#'
+        page: 110 # Player Round Details
+        clear-cache: 110
+        values: 
+          p110_week: '&P100_WEEK.'
+          p110_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 49305651092824776611
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '#'
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 49305651409548776615
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Highlights ==================================
+  id: 49305650432590776605
+  identification: 
+    title: Highlights
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with course_unpivot as (
+         select week, course_code, course_name, h, score, par
+          from wmg_rounds_v
+          unpivot (
+            (score, par) for h in (
+            (s1, par1) as 1,
+            (s2, par2) as 2,
+            (s3, par3) as 3,
+            (s4, par4) as 4,
+            (s5, par5) as 5,
+            (s6, par6) as 6,
+            (s7, par7) as 7,
+            (s8, par8) as 8,
+            (s9, par9) as 9,
+            (s10, par10) as 10,
+            (s11, par11) as 11,
+            (s12, par12) as 12,
+            (s13, par13) as 13,
+            (s14, par14) as 14,
+            (s15, par15) as 15,
+            (s16, par16) as 16,
+            (s17, par17) as 17,
+            (s18, par18) as 18
+            )
+          )
+        where week = :P100_WEEK
+      )
+      , whole_totals as (
+            select course_code, h, sum(score) total
+              from course_unpivot
+             group by course_code, h
+      )
+      , whole_pars as (
+            select course_code, h, sum(par) total
+              from course_unpivot
+             group by course_code, h
+      )
+      select *
+      from (
+      select 'Player with most Aces' result
+           , r.player_name who
+           , sum(decode(s1, 1, 1, 0)
+               + decode(s2, 1, 1, 0)
+               + decode(s3, 1, 1, 0)
+               + decode(s4, 1, 1, 0)
+               + decode(s5, 1, 1, 0)
+               + decode(s6, 1, 1, 0)
+               + decode(s7, 1, 1, 0)
+               + decode(s8, 1, 1, 0)
+               + decode(s9, 1, 1, 0)
+               + decode(s10, 1, 1, 0)
+               + decode(s11, 1, 1, 0)
+               + decode(s12, 1, 1, 0)
+               + decode(s13, 1, 1, 0)
+               + decode(s14, 1, 1, 0)
+               + decode(s15, 1, 1, 0)
+               + decode(s16, 1, 1, 0)
+               + decode(s17, 1, 1, 0)
+               + decode(s18, 1, 1, 0)
+            ) total
+        from wmg_rounds_v r
+       where r.week = :P100_WEEK
+      group by r.player_name
+      order by total desc
+      fetch first 1 rows only
+      ) aces
+      union all
+      select 'Tournament Strokes', 'E + H', sum(total) total
+        from whole_totals
+      union all
+      select 'Hole with most Aces', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, sum(score) total
+              from course_unpivot
+             where score = 1
+             group by course_code, h
+             order by total desc
+             fetch first 1 rows only
+      )
+      union all
+      select 'Easiest hole (strokes)', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_totals
+             order by total
+             fetch first 1 rows only
+      )
+      union all
+      select 'Most difficult hole (strokes)', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_totals
+             order by total desc
+             fetch first 1 rows only
+      )
+      union all
+      select 'Most difficult hole (Over Par) [WIP]', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_pars
+             order by total desc
+             fetch first 1 rows only
+      )
+      
+    page-items-to-submit: 
+    - P100_WEEK
+
+  layout: 
+    sequence: 30
+    parent-region: Top Results # 49305650947385776610
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: TOTAL =======================================
+    id: 49305650746266776608
+    identification: 
+      column-name: TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: 999G999G999G999G999G999G990
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RESULT ======================================
+    id: 49305650825641776609
+    identification: 
+      column-name: RESULT
+      type: Plain Text
+
+    heading: 
+      heading: Highlight
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WHO =========================================
+    id: 49305651100682776612
+    identification: 
+      column-name: WHO
+      type: Plain Text
+
+    heading: 
+      heading: Who
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Top Results =================================
+  id: 49305650947385776610
+  identification: 
+    title: Top Results
+    type: Static Content
+
+  layout: 
+    sequence: 11
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: &P100_HARD. -  Stats ========================
-  id: 47633176753469701310
+  id: 49305653389538776634
   identification: 
     title: '&P100_HARD. -  Stats'
     type: Classic Report
@@ -820,7 +1368,7 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
-    - hardMode
+    - easyMode
     render-components: Above Content
 
   advanced: 
@@ -875,7 +1423,7 @@ regions:
 
   columns: 
   - # ====== Column: DISPLAY_SEQ =================================
-    id: 47633176841766701311
+    id: 49305653469005776635
     identification: 
       column-name: DISPLAY_SEQ
       type: Hidden Column
@@ -890,7 +1438,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: PREPARED_NAME ===============================
-    id: 47633176919467701312
+    id: 49305653504340776636
     identification: 
       column-name: PREPARED_NAME
       type: Plain Text
@@ -928,7 +1476,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: DATA_FILTER =================================
-    id: 47633177072681701313
+    id: 49305653629456776637
     identification: 
       column-name: DATA_FILTER
       type: Hidden Column
@@ -943,7 +1491,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: COURSE_MODE =================================
-    id: 47633177118172701314
+    id: 49305653745894776638
     identification: 
       column-name: COURSE_MODE
       type: Hidden Column
@@ -958,7 +1506,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: DRILL_CLASS =================================
-    id: 47633177241085701315
+    id: 49305653848872776639
     identification: 
       column-name: DRILL_CLASS
       type: Hidden Column
@@ -973,7 +1521,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H1 ==========================================
-    id: 47633177317053701316
+    id: 49305653904550776640
     identification: 
       column-name: H1
       type: Plain Text
@@ -1008,7 +1556,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H2 ==========================================
-    id: 47633177407111701317
+    id: 49305654064897776641
     identification: 
       column-name: H2
       type: Plain Text
@@ -1043,7 +1591,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H3 ==========================================
-    id: 47633177561641701318
+    id: 49305654135760776642
     identification: 
       column-name: H3
       type: Plain Text
@@ -1078,7 +1626,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H4 ==========================================
-    id: 47633177603612701319
+    id: 49305654208839776643
     identification: 
       column-name: H4
       type: Plain Text
@@ -1113,7 +1661,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H5 ==========================================
-    id: 47633177774475701320
+    id: 49305654322597776644
     identification: 
       column-name: H5
       type: Plain Text
@@ -1148,7 +1696,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H6 ==========================================
-    id: 47633177827325701321
+    id: 49305654440484776645
     identification: 
       column-name: H6
       type: Plain Text
@@ -1183,7 +1731,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H7 ==========================================
-    id: 47633177963462701322
+    id: 49305654590852776646
     identification: 
       column-name: H7
       type: Plain Text
@@ -1218,7 +1766,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H8 ==========================================
-    id: 47633178046707701323
+    id: 49305654616559776647
     identification: 
       column-name: H8
       type: Plain Text
@@ -1235,8 +1783,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H8#</span>
 
     sorting: 
       sortable: false
@@ -1254,7 +1801,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H9 ==========================================
-    id: 47633178139331701324
+    id: 49305654753334776648
     identification: 
       column-name: H9
       type: Plain Text
@@ -1271,8 +1818,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H9#</span>
 
     sorting: 
       sortable: false
@@ -1290,7 +1836,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H10 =========================================
-    id: 47633178227127701325
+    id: 49305654838107776649
     identification: 
       column-name: H10
       type: Plain Text
@@ -1307,8 +1853,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H10#</span>
 
     sorting: 
       sortable: false
@@ -1326,7 +1871,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H11 =========================================
-    id: 47633178307903701326
+    id: 49305654956796776650
     identification: 
       column-name: H11
       type: Plain Text
@@ -1343,8 +1888,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H11#</span>
 
     sorting: 
       sortable: false
@@ -1362,7 +1906,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H12 =========================================
-    id: 47633178493544701327
+    id: 50429441795718004801
     identification: 
       column-name: H12
       type: Plain Text
@@ -1379,8 +1923,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H12#</span>
 
     sorting: 
       sortable: false
@@ -1398,7 +1941,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H13 =========================================
-    id: 47633178590495701328
+    id: 50429441808754004802
     identification: 
       column-name: H13
       type: Plain Text
@@ -1415,8 +1958,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H13#</span>
 
     sorting: 
       sortable: false
@@ -1434,7 +1976,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H14 =========================================
-    id: 47633178601332701329
+    id: 50429441905179004803
     identification: 
       column-name: H14
       type: Plain Text
@@ -1451,8 +1993,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H14#</span>
 
     sorting: 
       sortable: false
@@ -1470,7 +2011,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H15 =========================================
-    id: 47633178727384701330
+    id: 50429442099796004804
     identification: 
       column-name: H15
       type: Plain Text
@@ -1487,8 +2028,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H15#</span>
 
     sorting: 
       sortable: false
@@ -1506,7 +2046,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H16 =========================================
-    id: 47633178887825701331
+    id: 50429442195240004805
     identification: 
       column-name: H16
       type: Plain Text
@@ -1523,8 +2063,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H16#</span>
 
     sorting: 
       sortable: false
@@ -1542,7 +2081,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H17 =========================================
-    id: 47633178905898701332
+    id: 50429442210564004806
     identification: 
       column-name: H17
       type: Plain Text
@@ -1559,8 +2098,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H17#</span>
 
     sorting: 
       sortable: false
@@ -1578,7 +2116,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: H18 =========================================
-    id: 47633179062115701333
+    id: 50429442391508004807
     identification: 
       column-name: H18
       type: Plain Text
@@ -1595,8 +2133,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H18#</span>
 
     sorting: 
       sortable: false
@@ -1614,7 +2151,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: COURSE_PAR ==================================
-    id: 47633179142659701334
+    id: 50429442408427004808
     identification: 
       column-name: COURSE_PAR
       type: Plain Text
@@ -2327,8 +2864,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H8#</span>
 
     sorting: 
       sortable: false
@@ -2363,8 +2899,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H9#</span>
 
     sorting: 
       sortable: false
@@ -2399,8 +2934,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H10#</span>
 
     sorting: 
       sortable: false
@@ -2435,8 +2969,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H11#</span>
 
     sorting: 
       sortable: false
@@ -2471,8 +3004,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H12#</span>
 
     sorting: 
       sortable: false
@@ -2507,8 +3039,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H13#</span>
 
     sorting: 
       sortable: false
@@ -2543,8 +3074,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H14#</span>
 
     sorting: 
       sortable: false
@@ -2579,8 +3109,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H15#</span>
 
     sorting: 
       sortable: false
@@ -2615,8 +3144,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H16#</span>
 
     sorting: 
       sortable: false
@@ -2651,8 +3179,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H17#</span>
 
     sorting: 
       sortable: false
@@ -2687,8 +3214,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      css-classes: 
-      - drill
+      html-expression: <span class="drill#DRILL_CLASS#">#H18#</span>
 
     sorting: 
       sortable: false
@@ -2846,7 +3372,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 100
+    sequence: 91
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -2947,7 +3473,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 45
+    sequence: 61
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -3272,7 +3798,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 75
+    sequence: 41
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -3286,6 +3812,7 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - js-showMaximizeButton
+    - i-h480
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -3916,7 +4443,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 85
+    sequence: 71
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -4463,18 +4990,18 @@ regions:
       tick-label: 
         show: true
 
-- # ====== Region: Position over time - WIP ====================
+- # ====== Region: Positions over time =========================
   id: 94935960575573333859
   identification: 
-    title: Position over time - WIP
+    title: Positions over time
     type: Chart
 
   layout: 
-    sequence: 95
+    sequence: 51
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -4483,6 +5010,8 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - js-showMaximizeButton
+    - i-h480
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -4664,7 +5193,7 @@ regions:
         position: Automatic
 
       performance: 
-        maximum-rows-to-process: 20
+        maximum-rows-to-process: 15
 
     axes: 
     - # ====== Axis: x =============================================
@@ -5067,7 +5596,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Position over time - WIP # 94935960575573333859
+    region: Positions over time # 94935960575573333859
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5081,12 +5610,18 @@ page-items:
     template: Hidden # 46986650295547702469
     template-options: 
     - '#DEFAULT#'
+    - margin-top-none
+    - margin-bottom-none
     height: 1
 
   validation: 
     value-required: false
 
   advanced: 
+    post-text-: |
+      <div title="Increment" class="t-Button t-Button--noLabel t-Button--icon t-Button--large">
+      <span aria-hidden="true" class="t-Icon fa fa-chevron-right hnSliderAdv"></span>
+      </div>
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -5103,9 +5638,6 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-  help: 
-    inline-help-text: Drag & release to see the scores as of that hole
-
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Cumulative Chart ============
   id: 5007620983014972550
@@ -5113,7 +5645,7 @@ dynamic-actions:
     name: Refresh Cumulative Chart
 
   execution-options: 
-    sequence: 20
+    sequence: 30
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -5294,7 +5826,7 @@ dynamic-actions:
     name: Sticky Items
 
   execution-options: 
-    sequence: 30
+    sequence: 40
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
@@ -5330,7 +5862,7 @@ dynamic-actions:
     name: Time Chart Refresh
 
   execution-options: 
-    sequence: 40
+    sequence: 50
 
   when: 
     event: PLUGIN_COM.FOS.RANGE_SLIDER|ITEM TYPE|fos-rangeslider-change
@@ -5349,11 +5881,243 @@ dynamic-actions:
 
     affected-elements: 
       selection-type: Region
-      region: Position over time - WIP # 94935960575573333859
+      region: Positions over time # 94935960575573333859
 
     execution-options: 
       sequence: 10
       event: Time Chart Refresh # 47633180271789701345
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Advance Hole Slider =================
+  id: 47633180442318701347
+  identification: 
+    name: Advance Hole Slider
+
+  execution-options: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .hnSliderAdv
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_SET_VALUE ============================
+    id: 47633180513118701348
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: incrementHoleCounter()
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P100_HN
+
+    execution-options: 
+      sequence: 10
+      event: Advance Hole Slider # 47633180442318701347
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+- # ====== Dynamic Action: Nested Report Result Drill (Hover) ==
+  id: 49305652783522776628
+  identification: 
+    name: Nested Report Result Drill (Hover)
+
+  execution-options: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.MOUSEENTER
+    selection-type: jQuery Selector
+    jquery-selector: .drill
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: '!isExpanding'
+
+  advanced: 
+    event-scope: Dynamic
+
+  security: 
+    authorization-scheme: Administration Rights # 46986682652284702496
+
+  actions: 
+  - # ====== Action: NATIVE_SET_VALUE ============================
+    id: 49305652843896776629
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: $(this.triggeringElement).parent().attr("headers")
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P100_H
+
+    execution-options: 
+      sequence: 10
+      event: Nested Report Result Drill (Hover) # 49305652783522776628
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: PLUGIN_UC_NESTED_REPORTS ====================
+    id: 49305652989452776630
+    identification: 
+      action: United Codes Nested Reports
+
+    settings: 
+      mode: Default template & default callback
+      default-callback-options: 'AA:LI'
+      default-template-options: Sorting data
+      loading-indicator-style: Cell icon spinner
+      background-color: '#EBEBEB'
+      border-color: '#c5c5c5'
+      highlight-row-color: '#e3e3e3'
+      details-query: |
+        with week_courses as (
+          select id course_id, course_mode, :P100_WEEK week
+            from wmg_courses
+           where id in (
+              select distinct course_id
+                from wmg_rounds 
+               where week = :P100_WEEK 
+            )
+           and course_mode = '#COURSE_MODE#'
+        )
+        select r.account "Player"
+             , case :P100_H 
+             when 'H1' then r.s1
+             when 'H2' then r.s2
+             when 'H3' then r.s3
+             when 'H4' then r.s4
+             when 'H5' then r.s5
+             when 'H6' then r.s6
+             when 'H7' then r.s7
+             when 'H8' then r.s8
+             when 'H9' then r.s9
+             when 'H10' then r.s10
+             when 'H11' then r.s11
+             when 'H12' then r.s12
+             when 'H13' then r.s13
+             when 'H14' then r.s14
+             when 'H15' then r.s15
+             when 'H16' then r.s16
+             when 'H17' then r.s17
+             when 'H18' then r.s18
+           else null end "Score"
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and (
+               (#DATA_FILTER# = 99 -- Aces
+                  and (
+                     (:P100_H = 'H1' and r.s1 = 1)
+                  or (:P100_H = 'H2' and r.s2 = 1)
+                  or (:P100_H = 'H3' and r.s3 = 1)
+                  or (:P100_H = 'H4' and r.s4 = 1)
+                  or (:P100_H = 'H5' and r.s5 = 1)
+                  or (:P100_H = 'H6' and r.s6 = 1)
+                  or (:P100_H = 'H7' and r.s7 = 1)
+                  or (:P100_H = 'H8' and r.s8 = 1)
+                  or (:P100_H = 'H9' and r.s9 = 1)
+                  or (:P100_H = 'H10' and r.s10 = 1)
+                  or (:P100_H = 'H11' and r.s11 = 1)
+                  or (:P100_H = 'H12' and r.s12 = 1)
+                  or (:P100_H = 'H13' and r.s13 = 1)
+                  or (:P100_H = 'H14' and r.s14 = 1)
+                  or (:P100_H = 'H15' and r.s15 = 1)
+                  or (:P100_H = 'H16' and r.s16 = 1)
+                  or (:P100_H = 'H17' and r.s17 = 1)
+                  or (:P100_H = 'H18' and r.s18 = 1)
+                  )
+               )
+               or (
+                   #DATA_FILTER# < 99
+                  and (
+                     (:P100_H = 'H1' and r.s1 + #DATA_FILTER# = r.h1)
+                  or (:P100_H = 'H2' and r.s2 + #DATA_FILTER# = r.h2)
+                  or (:P100_H = 'H3' and r.s3 + #DATA_FILTER# = r.h3)
+                  or (:P100_H = 'H4' and r.s4 + #DATA_FILTER# = r.h4)
+                  or (:P100_H = 'H5' and r.s5 + #DATA_FILTER# = r.h5)
+                  or (:P100_H = 'H6' and r.s6 + #DATA_FILTER# = r.h6)
+                  or (:P100_H = 'H7' and r.s7 + #DATA_FILTER# = r.h7)
+                  or (:P100_H = 'H8' and r.s8 + #DATA_FILTER# = r.h8)
+                  or (:P100_H = 'H9' and r.s9 + #DATA_FILTER# = r.h9)
+                  or (:P100_H = 'H10' and r.s10 + #DATA_FILTER# = r.h10)
+                  or (:P100_H = 'H11' and r.s11 + #DATA_FILTER# = r.h11)
+                  or (:P100_H = 'H12' and r.s12 + #DATA_FILTER# = r.h12)
+                  or (:P100_H = 'H13' and r.s13 + #DATA_FILTER# = r.h13)
+                  or (:P100_H = 'H14' and r.s14 + #DATA_FILTER# = r.h14)
+                  or (:P100_H = 'H15' and r.s15 + #DATA_FILTER# = r.h15)
+                  or (:P100_H = 'H16' and r.s16 + #DATA_FILTER# = r.h16)
+                  or (:P100_H = 'H17' and r.s17 + #DATA_FILTER# = r.h17)
+                  or (:P100_H = 'H18' and r.s18 + #DATA_FILTER# = r.h18)
+                  )
+               )
+           )
+        order by 1
+      when-no-data-found: No data found
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: '#statsRegion'
+
+    execution-options: 
+      sequence: 20
+      event: Nested Report Result Drill (Hover) # 49305652783522776628
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: '!isExpanding'
+
+- # ====== Dynamic Action: Nested Report Callback ==============
+  id: 49305653111946776632
+  identification: 
+    name: Nested Report Callback
+
+  execution-options: 
+    sequence: 70
+
+  when: 
+    event: PLUGIN_UC_NESTED_REPORTS|DYNAMIC ACTION|uc_default_callback
+    selection-type: Region
+    region: '&P100_EASY. - Stats' # 94454808801107282731
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+    id: 49305653271729776633
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        console.log("CALLBACK!", {isExpanding},this.data);
+        isExpanding = this.data.isExpanding;
+
+    execution-options: 
+      sequence: 10
+      event: Nested Report Callback # 49305653111946776632
       fire-when-event-result-is: True
       fire-on-initialization: false
 

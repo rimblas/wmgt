@@ -81,6 +81,10 @@ javascript:
     }
     
   execute-when-page-loads: |
+    $(".XXXnumber_field[name^='P9_S'").each (function() {
+        this.type = 'number';  // switch to number input so see a mobile friendly field
+        $(this).attr("pattern", "\d*");
+     });
     var viewModel = new roundTotal();
     ko.applyBindings(viewModel);
 
@@ -121,6 +125,21 @@ css:
         border-color: var(--a-field-input-state-border-color,var(--a-field-input-border-color));
         border-width: var(--a-field-input-border-width,1px);
         border-style: solid;
+    }
+    
+    @media only screen and (max-width: 900px) {
+        #roundScores .t-Form-inputContainer.col.col-null {
+          padding: 1px;
+        }
+        .number_field,
+        #P9_SCORE_DISPLAY {
+          font-family: Menlo,Consolas,monospace;
+          padding: 5px;
+        }
+        #P9_SCORE_DISPLAY {
+          min-width: 30px;
+        }
+    
     }
 
 security: 
@@ -414,6 +433,8 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -483,6 +504,8 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
 
   appearance: 
     template: Required - Floating # 46986651846996702470
@@ -547,6 +570,8 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - hidden-md-down
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -668,13 +693,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s1"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -726,13 +752,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s2"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -784,13 +811,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s3"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -842,13 +870,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s4"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -900,13 +929,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s5"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -958,13 +988,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s6"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -994,7 +1025,7 @@ page-items:
     alignment: Left
 
   settings: 
-    number-alignment: Center
+    number-alignment: Right
 
   layout: 
     sequence: 120
@@ -1016,13 +1047,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s7"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1074,13 +1106,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s8"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1132,13 +1165,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s9"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1190,13 +1224,14 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
     - data-bind="init,
     - 'textInput:'
     - s10"
+    - pattern="\d*"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1248,7 +1283,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1306,7 +1341,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1364,7 +1399,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1422,7 +1457,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1480,7 +1515,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1538,7 +1573,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1596,7 +1631,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1654,7 +1689,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 255
+    maximum-length: 3
 
   advanced: 
     custom-attributes: 
@@ -1756,6 +1791,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -2873,7 +2910,7 @@ buttons:
     label: Add Round
 
   layout: 
-    sequence: 40
+    sequence: 50
     region: Buttons # 46986770952553703569
     position: NEXT
     start-new-layout: false
@@ -2940,7 +2977,7 @@ buttons:
     label: Add Round & Add Again
 
   layout: 
-    sequence: 50
+    sequence: 40
     region: Buttons # 46986770952553703569
     position: NEXT
     start-new-layout: false
@@ -2951,7 +2988,7 @@ buttons:
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
-    hot: true
+    hot: false
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconLeft
@@ -2962,6 +2999,9 @@ buttons:
     execute-validations: true
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL INSERT action
+
+  advanced: 
+    static-id: CREATE_AGAIN_BTN
 
   server-side-condition: 
     type: Item is NULL
@@ -3030,6 +3070,59 @@ dynamic-actions:
     execution-options: 
       sequence: 10
       event: Init Player LOV # 47348558512324808513
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Auto Tab ============================
+  id: 47633180672606701349
+  identification: 
+    name: Auto Tab
+
+  execution-options: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.KEYUP
+    selection-type: jQuery Selector
+    jquery-selector: .number_field[name^='P9_S'
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+    id: 47633180766760701350
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var nextEl, e = this.triggeringElement.name;
+        var n = parseInt(e.substr(4));
+        
+        // console.log({n}, this.browserEvent);
+        
+        if (this.browserEvent.keyCode >= 48 && this.browserEvent.keyCode <= 57) {
+            if (n >= 1 && n <= 18) {
+                if (n==18) {
+                    n=1;
+                    $("#CREATE_AGAIN_BTN").focus();
+                    return;
+                }
+                else {n++;}
+            }
+        
+            nextEl = "#P9_S" + n;
+        
+            $(nextEl).focus().select();
+        }
+        else {
+            console.log("not a number");
+        }
+
+    execution-options: 
+      sequence: 10
+      event: Auto Tab # 47633180672606701349
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -3117,8 +3210,15 @@ processes:
     point: Processing
     run-process: Once Per Page Visit (default)
 
+  success-message: 
+    success-message: Round saved.
+
   error: 
     display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE
 
 - # ====== Process: Close Dialog ===============================
   id: 46986774702296703571
