@@ -1,6 +1,7 @@
+-- drop materialized view wmg_rounds_unpivot_mv;
 create materialized view wmg_rounds_unpivot_mv
 as
-select week, course_id, course_code, course_name, player_id, account
+select week, course_id, player_id
      , h, score, par
  from wmg_rounds_v
  unpivot (
@@ -25,3 +26,5 @@ select week, course_id, course_code, course_name, player_id, account
    (s18, par18) as 18
    )
  )
+/
+create unique index wmg_rounds_unpivot_mv_u on wmg_rounds_unpivot_mv(week, player_id, course_id, h);
