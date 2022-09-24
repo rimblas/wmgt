@@ -1,6 +1,7 @@
 # wmgt
 
-Analysis Application for the [Walkabout Mini Golf][https://www.mightycoconut.com/minigolf] VR game weekly tournaments. (_However, it would work fairly well for any individual play golf round analysis_).
+Analysis Application for the [Walkabout Mini Golf](https://www.mightycoconut.com/minigolf) VR game weekly tournaments. 
+(_However, it would work fairly well for any individual play golf round analysis_).
 
 ## Tech Details
 
@@ -21,9 +22,9 @@ Helper core views:
   
 ### Naming convention
 
-*CS[1-18]* or *H[1-18]*: Par on a course hole (Course strokes per hole).<br>
-*S[1-18]*: Strokes per hole<br>
-*PAR[1-18]*: Player under par score per hole<br>
+`CS[1-18]` or `H[1-18]`: Par on a course hole (Course strokes per hole).<br>
+`S[1-18]`: Strokes per hole<br>
+`PAR[1-18]`: Player under par score per hole<br>
 
 
 
