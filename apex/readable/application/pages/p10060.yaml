@@ -20,7 +20,7 @@ navigation:
   warn-on-unsaved-changes: false
 
 security: 
-  authentication: Page Requires Authentication
+  authentication: Page Is Public
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -43,14 +43,23 @@ configuration:
   build-option: 'Feature: About Page' # 46986680684217702495
 
 regions: 
-- # ====== Region: About Page ==================================
+- # ====== Region: About &APP_NAME. ============================
   id: 46987056217710704321
   identification: 
-    title: About Page
+    title: About &APP_NAME.
     type: Static Content
 
   source: 
-    html-code: Text about this application can be placed here.
+    html-code: |
+      This web application is built using <a href="https://apex.oracle.com/en/" target="_blank">Oracle APEX</a> with the purpose of analyzing and exploring the results of Walkabout Minig Golf tournaments.<br>
+      <br>
+      APEX is a Low Code platform that goes from Low Code all the way to High Control. Behind the scenes there is an Oracle Database, PL/SQL Code, SQL statements, plus some HTML and CSS. The whole project is available in <a href=“ https://github.com/rimblas/wmgt” target="_blank" >GitHub</a>.<br> 
+      <br>
+      All the analysis is comprised of multiple hand crafted SQL statements that slice and dice the available data.<br>
+      As such, although great care has been put into the correct presentation of results and statistics, there may be omisions and mistakes in some of the results.<br>
+      That said, several people have been involved during testing and validation week after week; as well as providing new ideas so that the best results possible can be provided.<br>
+      <br>
+      <i>- <a href="https://rimblas.com" target="_blank">Jorge</a></i>
 
   layout: 
     sequence: 20

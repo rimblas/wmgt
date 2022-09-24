@@ -103,6 +103,17 @@ advanced:
 server-cache: 
   caching: Disabled
 
+help: 
+  help-text: |
+    After selecting the season & week, via the "Week" drop down, 
+    this page will show relevant information and stadistics about that week.<br>
+    <br>
+    * Best rounds<br>
+    * Most Aces (Hole in ones)<br>
+    * Cumulative scores for top players<br>
+    * Analysis per hole like people that obtained: Aces, Albatrossess, Eagles, Birdies, Pars, etc..<br>
+    
+
 regions: 
 - # ====== Region: {Stats} =====================================
   id: 47486927506229033323
@@ -145,6 +156,258 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: Course Highlights ===========================
+  id: 47577406983154657303
+  identification: 
+    title: Course Highlights
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with course_unpivot as (
+         select week, course_code, course_name, h, score, par
+          from wmg_rounds_v
+          unpivot (
+            (score, par) for h in (
+            (s1, par1) as 1,
+            (s2, par2) as 2,
+            (s3, par3) as 3,
+            (s4, par4) as 4,
+            (s5, par5) as 5,
+            (s6, par6) as 6,
+            (s7, par7) as 7,
+            (s8, par8) as 8,
+            (s9, par9) as 9,
+            (s10, par10) as 10,
+            (s11, par11) as 11,
+            (s12, par12) as 12,
+            (s13, par13) as 13,
+            (s14, par14) as 14,
+            (s15, par15) as 15,
+            (s16, par16) as 16,
+            (s17, par17) as 17,
+            (s18, par18) as 18
+            )
+          )
+        where week = :P100_WEEK
+      )
+      , whole_totals as (
+            select course_code, h, sum(score) total
+              from course_unpivot
+             group by course_code, h
+      )
+      , whole_pars as (
+            select course_code, h, sum(par) total
+              from course_unpivot
+             group by course_code, h
+      )
+      select 'Tournament Strokes' highlight, 'E + H' what, sum(total) total
+        from whole_totals
+      union all
+      select 'Hole with most Aces', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, sum(score) total
+              from course_unpivot
+             where score = 1
+             group by course_code, h
+             order by total desc
+             fetch first 1 rows only
+      )
+      union all
+      select 'Easiest hole (strokes)', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_totals
+             order by total
+             fetch first 1 rows only
+      )
+      union all
+      select 'Most difficult hole (strokes)', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_totals
+             order by total desc
+             fetch first 1 rows only
+      )
+      union all
+      select 'Most difficult hole (Over Par) [WIP]', course_code || ' - H' || to_char(h), total
+      from ( 
+             select course_code, h, total
+              from whole_pars
+             order by total desc
+             fetch first 1 rows only
+      )
+      
+    page-items-to-submit: 
+    - P100_WEEK
+
+  layout: 
+    sequence: 40
+    parent-region: Top Results # 49305650947385776610
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: TOTAL =======================================
+    id: 47577407299227657306
+    identification: 
+      column-name: TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: 999G999G999G999G999G999G990
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HIGHLIGHT ===================================
+    id: 47577407789339657311
+    identification: 
+      column-name: HIGHLIGHT
+      type: Plain Text
+
+    heading: 
+      heading: Highlight
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WHAT ========================================
+    id: 47577407829367657312
+    identification: 
+      column-name: WHAT
+      type: Plain Text
+
+    heading: 
+      heading: What
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 - # ====== Region: &P100_HARD. =================================
   id: 47633175857080701301
@@ -731,109 +994,53 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with course_unpivot as (
-         select week, course_code, course_name, h, score, par
-          from wmg_rounds_v
-          unpivot (
-            (score, par) for h in (
-            (s1, par1) as 1,
-            (s2, par2) as 2,
-            (s3, par3) as 3,
-            (s4, par4) as 4,
-            (s5, par5) as 5,
-            (s6, par6) as 6,
-            (s7, par7) as 7,
-            (s8, par8) as 8,
-            (s9, par9) as 9,
-            (s10, par10) as 10,
-            (s11, par11) as 11,
-            (s12, par12) as 12,
-            (s13, par13) as 13,
-            (s14, par14) as 14,
-            (s15, par15) as 15,
-            (s16, par16) as 16,
-            (s17, par17) as 17,
-            (s18, par18) as 18
-            )
-          )
-        where week = :P100_WEEK
-      )
-      , whole_totals as (
-            select course_code, h, sum(score) total
-              from course_unpivot
-             group by course_code, h
-      )
-      , whole_pars as (
-            select course_code, h, sum(par) total
-              from course_unpivot
-             group by course_code, h
-      )
-      select *
+      select 'Best score ' || decode(course_mode, 'E', 'Easy', 'Hard') result, listagg(player_name, ', ') who, total
       from (
-      select 'Player with most Aces' result
-           , r.player_name who
-           , sum(decode(s1, 1, 1, 0)
-               + decode(s2, 1, 1, 0)
-               + decode(s3, 1, 1, 0)
-               + decode(s4, 1, 1, 0)
-               + decode(s5, 1, 1, 0)
-               + decode(s6, 1, 1, 0)
-               + decode(s7, 1, 1, 0)
-               + decode(s8, 1, 1, 0)
-               + decode(s9, 1, 1, 0)
-               + decode(s10, 1, 1, 0)
-               + decode(s11, 1, 1, 0)
-               + decode(s12, 1, 1, 0)
-               + decode(s13, 1, 1, 0)
-               + decode(s14, 1, 1, 0)
-               + decode(s15, 1, 1, 0)
-               + decode(s16, 1, 1, 0)
-               + decode(s17, 1, 1, 0)
-               + decode(s18, 1, 1, 0)
-            ) total
-        from wmg_rounds_v r
-       where r.week = :P100_WEEK
-      group by r.player_name
-      order by total desc
-      fetch first 1 rows only
-      ) aces
-      union all
-      select 'Tournament Strokes', 'E + H', sum(total) total
-        from whole_totals
-      union all
-      select 'Hole with most Aces', course_code || ' - H' || to_char(h), total
-      from ( 
-             select course_code, h, sum(score) total
-              from course_unpivot
-             where score = 1
-             group by course_code, h
-             order by total desc
-             fetch first 1 rows only
+            select r.*, rank() over (partition by course_mode order by r.total) rn
+            from (
+            select course_mode, player_id, player_name, sum(under_par) total
+              from wmg_rounds_v
+              where week = :P100_WEEK 
+             group by course_mode, player_id, player_name
+            ) r
+            order by course_mode, rn, r.player_name
       )
+      where rn = 1
+      group by  course_mode, total
       union all
-      select 'Easiest hole (strokes)', course_code || ' - H' || to_char(h), total
-      from ( 
-             select course_code, h, total
-              from whole_totals
-             order by total
-             fetch first 1 rows only
+      select result, listagg(who, ', ') who, total
+      from (
+          select result, who, total, rank() over (order by total desc) rn
+          from (
+          select 'Player(s) with most Aces' result
+               , r.player_name who
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+                ) total
+            from wmg_rounds_v r
+           where r.week = :P100_WEEK
+          group by r.player_name
+          ) aces
+          order by aces.who
       )
-      union all
-      select 'Most difficult hole (strokes)', course_code || ' - H' || to_char(h), total
-      from ( 
-             select course_code, h, total
-              from whole_totals
-             order by total desc
-             fetch first 1 rows only
-      )
-      union all
-      select 'Most difficult hole (Over Par) [WIP]', course_code || ' - H' || to_char(h), total
-      from ( 
-             select course_code, h, total
-              from whole_pars
-             order by total desc
-             fetch first 1 rows only
-      )
+      where rn = 1
+      group by  result, total
       
     page-items-to-submit: 
     - P100_WEEK
@@ -905,7 +1112,7 @@ regions:
 
   columns: 
   - # ====== Column: TOTAL =======================================
-    id: 49305650746266776608
+    id: 47577407616182657310
     identification: 
       column-name: TOTAL
       type: Plain Text
@@ -921,11 +1128,8 @@ regions:
     accessibility: 
       value-identifies-row: false
 
-    appearance: 
-      format-mask: 999G999G999G999G999G999G990
-
     sorting: 
-      sortable: false
+      sortable: true
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -3835,7 +4039,7 @@ regions:
       type: Line
 
     title: 
-      title: Cummulative
+      title: Cumulative
 
     appearance: 
       orientation: Vertical
@@ -3871,10 +4075,10 @@ regions:
       hide-and-show-behavior: No Rescaling
 
     series: 
-    - # ====== Series: First =======================================
+    - # ====== Series: Top 3 =======================================
       id: 5007620315389972544
       identification: 
-        name: First
+        name: Top 3
 
       execution-options: 
         sequence: 10
@@ -3965,138 +4169,12 @@ regions:
                            group by e.player_id, e.account
                   )
                  )
-                  where rn = 1
+                  where rn <= 3
               )
               and r.week =  :P100_WEEK
           )
+          order by course_mode, account, h
           
-          
-        page-items-to-submit: 
-        - P100_WEEK
-
-      column-mapping: 
-        series-name: ACCOUNT
-        label: LABEL
-        value: VALUE
-        legend-tooltip: ACCOUNT
-
-      appearance: 
-        color: '#000000'
-        assigned-to-y2-axis: false
-
-      line: 
-        style: Solid
-        type: Straight
-
-      marker: 
-        show: Automatic
-        shape: Automatic
-
-      label: 
-        show: false
-
-      performance: 
-        maximum-rows-to-process: 36
-
-    - # ====== Series: Third =======================================
-      id: 5007620618296972547
-      identification: 
-        name: Third
-
-      execution-options: 
-        sequence: 30
-
-      source: 
-        location: Local Database
-        type: SQL Query
-        sql-query: |
-          with round as (
-            select r.id  round_id
-              , p.id                                      player_id
-              , p.account                                    account
-              , p.name                                       player_name
-              , c.id                                         course_id
-              , c.code                                       course_code
-              , c.name                                       course_name
-              , c.course_mode                                course_mode
-              , r.week
-            , nvl(r.s1 - cs.h1, 0) h1
-            , nvl(r.s2 - cs.h2, 0) h2
-            , nvl(r.s3 - cs.h3, 0) h3
-            , nvl(r.s4 - cs.h4, 0) h4
-            , nvl(r.s5 - cs.h5, 0) h5
-            , nvl(r.s6 - cs.h6, 0) h6
-            , nvl(r.s7 - cs.h7, 0) h7
-            , nvl(r.s8 - cs.h8, 0) h8
-            , nvl(r.s9 - cs.h9, 0) h9
-            , nvl(r.s10 - cs.h10, 0) h10
-            , nvl(r.s11 - cs.h11, 0) h11
-            , nvl(r.s12 - cs.h12, 0) h12
-            , nvl(r.s13 - cs.h13, 0) h13
-            , nvl(r.s14 - cs.h14, 0) h14
-            , nvl(r.s15 - cs.h15, 0) h15
-            , nvl(r.s16 - cs.h16, 0) h16
-            , nvl(r.s17 - cs.h17, 0) h17
-            , nvl(r.s18 - cs.h18, 0) h18
-          from wmg_rounds r
-             , wmg_players p
-             , wmg_courses c
-             , wmg_course_strokes cs
-          where r.players_id = p.id
-            and r.course_id = c.id
-            and cs.course_id(+) = c.id
-          )
-          , round_unpivot as (
-            select *
-            from round
-            unpivot (score FOR h IN (
-              h1 as 1,
-              h2 as 2,
-              h3 as 3,
-              h4 as 4,
-              h5 as 5,
-              h6 as 6,
-              h7 as 7,
-              h8 as 8,
-              h9 as 9,
-              h10 as 10,
-              h11 as 11,
-              h12 as 12,
-              h13 as 13,
-              h14 as 14,
-              h15 as 15,
-              h16 as 16,
-              h17 as 17,
-              h18 as 18
-              )
-            )
-          )
-          select account
-               , course_mode
-               , h
-               , course_mode || lpad(to_char(h), 2, '0') label
-               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
-          from round_unpivot
-          where round_id in (
-              select r.id
-              from wmg_rounds r
-              where r.players_id in (
-                select player_id
-                  from (
-                  select player_id, account, score
-                       , rank() over ( order by score) rn
-                   from (
-                          select e.player_id,  e.account, sum(e.under_par) score
-                            from wmg_rounds_v e
-                            where e.week = :P100_WEEK
-                           group by e.player_id, e.account
-                  )
-                 )
-                  where rn = 3
-              )
-              and r.week =  :P100_WEEK
-          )
-          order by course_mode , h
         page-items-to-submit: 
         - P100_WEEK
 
@@ -4121,12 +4199,12 @@ regions:
         show: false
 
       performance: 
-        maximum-rows-to-process: 36
+        maximum-rows-to-process: 180
 
-    - # ====== Series: Extra =======================================
+    - # ====== Series: Extra Player ================================
       id: 5007620802229972549
       identification: 
-        name: Extra
+        name: Extra Player
 
       execution-options: 
         sequence: 40
@@ -4211,131 +4289,6 @@ regions:
           order by course_mode , h
         page-items-to-submit: 
         - P100_PLAYER_ID
-        - P100_WEEK
-
-      column-mapping: 
-        series-name: ACCOUNT
-        label: LABEL
-        value: VALUE
-        legend-tooltip: ACCOUNT
-
-      appearance: 
-        assigned-to-y2-axis: false
-
-      line: 
-        style: Solid
-        type: Straight
-
-      marker: 
-        show: Automatic
-        shape: Automatic
-
-      label: 
-        show: false
-
-      performance: 
-        maximum-rows-to-process: 36
-
-    - # ====== Series: Second ======================================
-      id: 47468036852496193301
-      identification: 
-        name: Second
-
-      execution-options: 
-        sequence: 20
-
-      source: 
-        location: Local Database
-        type: SQL Query
-        sql-query: |
-          with round as (
-            select r.id  round_id
-              , p.id                                      player_id
-              , p.account                                    account
-              , p.name                                       player_name
-              , c.id                                         course_id
-              , c.code                                       course_code
-              , c.name                                       course_name
-              , c.course_mode                                course_mode
-              , r.week
-            , nvl(r.s1 - cs.h1, 0) h1
-            , nvl(r.s2 - cs.h2, 0) h2
-            , nvl(r.s3 - cs.h3, 0) h3
-            , nvl(r.s4 - cs.h4, 0) h4
-            , nvl(r.s5 - cs.h5, 0) h5
-            , nvl(r.s6 - cs.h6, 0) h6
-            , nvl(r.s7 - cs.h7, 0) h7
-            , nvl(r.s8 - cs.h8, 0) h8
-            , nvl(r.s9 - cs.h9, 0) h9
-            , nvl(r.s10 - cs.h10, 0) h10
-            , nvl(r.s11 - cs.h11, 0) h11
-            , nvl(r.s12 - cs.h12, 0) h12
-            , nvl(r.s13 - cs.h13, 0) h13
-            , nvl(r.s14 - cs.h14, 0) h14
-            , nvl(r.s15 - cs.h15, 0) h15
-            , nvl(r.s16 - cs.h16, 0) h16
-            , nvl(r.s17 - cs.h17, 0) h17
-            , nvl(r.s18 - cs.h18, 0) h18
-          from wmg_rounds r
-             , wmg_players p
-             , wmg_courses c
-             , wmg_course_strokes cs
-          where r.players_id = p.id
-            and r.course_id = c.id
-            and cs.course_id(+) = c.id
-          )
-          , round_unpivot as (
-            select *
-            from round
-            unpivot (score FOR h IN (
-              h1 as 1,
-              h2 as 2,
-              h3 as 3,
-              h4 as 4,
-              h5 as 5,
-              h6 as 6,
-              h7 as 7,
-              h8 as 8,
-              h9 as 9,
-              h10 as 10,
-              h11 as 11,
-              h12 as 12,
-              h13 as 13,
-              h14 as 14,
-              h15 as 15,
-              h16 as 16,
-              h17 as 17,
-              h18 as 18
-              )
-            )
-          )
-          select account
-               , course_mode
-               , h
-               , course_mode || lpad(to_char(h), 2, '0') label
-               , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
-          from round_unpivot
-          where round_id in (
-              select r.id
-              from wmg_rounds r
-              where r.players_id in (
-                select player_id
-                  from (
-                  select player_id, account, score
-                       , rank() over ( order by score) rn
-                   from (
-                          select e.player_id,  e.account, sum(e.under_par) score
-                            from wmg_rounds_v e
-                            where e.week = :P100_WEEK
-                           group by e.player_id, e.account
-                  )
-                 )
-                  where rn = 2
-              )
-              and r.week =  :P100_WEEK
-          )
-          order by course_mode , h
-        page-items-to-submit: 
         - P100_WEEK
 
       column-mapping: 
@@ -5696,12 +5649,13 @@ dynamic-actions:
 
     settings: 
       mode: Default template & default callback
-      default-callback-options: 'AA:LI'
+      default-callback-options: 'SMH:AA:LI'
       default-template-options: Sorting data
       loading-indicator-style: Cell icon spinner
       background-color: '#EBEBEB'
       border-color: '#c5c5c5'
       highlight-row-color: '#e3e3e3'
+      set-max-height: 300
       details-query: |
         with week_courses as (
           select id course_id, course_mode, :P100_WEEK week
@@ -5785,7 +5739,7 @@ dynamic-actions:
                )
            )
         order by 1
-      when-no-data-found: No data found
+      when-no-data-found: No players
 
     affected-elements: 
       selection-type: jQuery Selector
@@ -5983,12 +5937,13 @@ dynamic-actions:
 
     settings: 
       mode: Default template & default callback
-      default-callback-options: 'AA:LI'
+      default-callback-options: 'SMH:AA:LI'
       default-template-options: Sorting data
       loading-indicator-style: Cell icon spinner
       background-color: '#EBEBEB'
       border-color: '#c5c5c5'
       highlight-row-color: '#e3e3e3'
+      set-max-height: 300
       details-query: |
         with week_courses as (
           select id course_id, course_mode, :P100_WEEK week
@@ -6072,7 +6027,7 @@ dynamic-actions:
                )
            )
         order by 1
-      when-no-data-found: No data found
+      when-no-data-found: No players
 
     affected-elements: 
       selection-type: jQuery Selector

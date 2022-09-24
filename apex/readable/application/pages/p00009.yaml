@@ -81,10 +81,13 @@ javascript:
     }
     
   execute-when-page-loads: |
+    // this was an attempt to switch to number inputs on mobile devices, but it needs work, hence the XXX
     $(".XXXnumber_field[name^='P9_S'").each (function() {
         this.type = 'number';  // switch to number input so see a mobile friendly field
         $(this).attr("pattern", "\d*");
      });
+    
+    // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
     ko.applyBindings(viewModel);
 
@@ -125,6 +128,12 @@ css:
         border-color: var(--a-field-input-state-border-color,var(--a-field-input-border-color));
         border-width: var(--a-field-input-border-width,1px);
         border-style: solid;
+    }
+    
+    .dupEntry {
+        color: orange;
+        margin-left: 5px;
+       display: none;
     }
     
     @media only screen and (max-width: 900px) {
@@ -470,6 +479,10 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  read-only: 
+    type: Item is NOT NULL
+    item: P9_ID
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -523,6 +536,7 @@ page-items:
     display-null-value: true
 
   advanced: 
+    post-text-: <span class="fa fa-warning fa-2x dupEntry" aria-hidden="true"></span>
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -535,6 +549,10 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  read-only: 
+    type: Item is NOT NULL
+    item: P9_ID
 
   security: 
     session-state-protection: Unrestricted
@@ -1823,6 +1841,10 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  read-only: 
+    type: Item is NOT NULL
+    item: P9_ID
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -2804,6 +2826,37 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P9_DUP_IND ===============================
+  id: 50429445466579004838
+  identification: 
+    name: P9_DUP_IND
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 90
+    region: Round # 46986753890975703559
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: N
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: CANCEL ======================================
   id: 46986771380611703569
@@ -3124,6 +3177,164 @@ dynamic-actions:
       sequence: 10
       event: Auto Tab # 47633180672606701349
       fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Check for Dup Players ===============
+  id: 50429445295615004836
+  identification: 
+    name: Check for Dup Players
+
+  execution-options: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P9_WEEK
+    - P9_PLAYERS_ID
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_EXECUTE_PLSQL_CODE ===================
+    id: 50429445377773004837
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        declare
+         r number;
+        begin
+          if  :P9_PLAYERS_ID is null or :P9_WEEK is null then
+            :P9_DUP_IND := 'N';
+          else
+            select 1
+              into r
+              from wmg_rounds
+             where week = :P9_WEEK
+               and course_id = :P9_COURSE_ID
+               and players_id = :P9_PLAYERS_ID;
+        
+              :P9_DUP_IND := 'Y';
+          end if;
+        exception
+        when NO_DATA_FOUND then
+          :P9_DUP_IND := 'N';
+        end;
+        
+      items-to-submit: 
+      - P9_PLAYERS_ID
+      - P9_WEEK
+      - P9_DUP_IND
+      - P9_COURSE_ID
+      items-to-return: 
+      - P9_DUP_IND
+      suppress-change-event: false
+
+    execution-options: 
+      sequence: 10
+      event: Check for Dup Players # 50429445295615004836
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+      stop-execution-on-error: true
+      wait-for-result: true
+
+- # ====== Dynamic Action: Show Dup Alert ======================
+  id: 50429445574151004839
+  identification: 
+    name: Show Dup Alert
+
+  execution-options: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P9_DUP_IND
+
+  client-side-condition: 
+    type: Item = Value
+    item: P9_DUP_IND
+    value: N
+
+  advanced: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_ID
+
+  actions: 
+  - # ====== Action: NATIVE_HIDE =================================
+    id: 50429445645363004840
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .dupEntry
+
+    execution-options: 
+      sequence: 10
+      event: Show Dup Alert # 50429445574151004839
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+    id: 50429445728452004841
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: apex.message.clearErrors();
+
+    execution-options: 
+      sequence: 20
+      event: Show Dup Alert # 50429445574151004839
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_SHOW =================================
+    id: 50429445836638004842
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .dupEntry
+
+    execution-options: 
+      sequence: 10
+      event: Show Dup Alert # 50429445574151004839
+      fire-when-event-result-is: False
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+    id: 50429445943471004843
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        apex.message.showErrors([
+             {
+                 type:       "error",
+                 location:   [ "inline" ],
+                 pageItem:   "P9_PLAYERS_ID",
+                 message:    "There's already a round for that player.",
+                 unsafe:     false
+             }
+        ]);
+
+    execution-options: 
+      sequence: 20
+      event: Show Dup Alert # 50429445574151004839
+      fire-when-event-result-is: False
       fire-on-initialization: false
 
 validations: 

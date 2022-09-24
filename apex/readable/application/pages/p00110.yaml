@@ -22,7 +22,27 @@ navigation-menu:
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
+
+css: 
+  inline: |
+    @media (min-width: 640px) {
+    #statsRegion  .container {
+        flex-direction: row;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    }
+    
+    #statsRegion .container {
+        justify-content: space-evenly;
+    }
+    
+    td.t-Report-cell[headers~="WHO"] {
+        white-space: nowrap;
+    }
+    
 
 security: 
   authentication: Page Requires Authentication
@@ -42,6 +62,1222 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Hard Stats ==================================
+  id: 50429442663637004810
+  identification: 
+    title: Hard Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with week_courses as (
+        select id course_id, course_mode, :P110_WEEK week
+          from wmg_courses
+         where id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P110_WEEK 
+          )
+         and course_mode = 'H'
+      )
+      select 1 display_seq
+           , prepared_name
+           , null data_filter
+           , null course_mode
+           , 'disabled' drill_class
+           , h1
+           , h2
+           , h3
+           , h4
+           , h5
+           , h6
+           , h7
+           , h8
+           , h9
+           , h10
+           , h11
+           , h12
+           , h13
+           , h14
+           , h15
+           , h16
+           , h17
+           , h18
+           , course_par
+        from wmg_courses_v
+      where course_id in (
+        select course_id from week_courses
+      )
+      union all
+      select 2 display_seq
+           , player_name
+           , null data_filter
+           , null course_mode
+           , 'disabled' drill_class,
+             S1,
+             S2,
+             S3,
+             S4,
+             S5,
+             S6,
+             S7,
+             S8,
+             S9,
+             S10,
+             S11,
+             S12,
+             S13,
+             S14,
+             S15,
+             S16,
+             S17,
+             S18,
+             UNDER_PAR
+        from WMG_ROUNDS_V
+        where week = :P110_WEEK
+          and player_id = :P110_PLAYER_ID
+          and course_mode = 'E'
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 90 display_seq
+             , 'Triple Bogeys'
+             , -3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 3, h1, 1, 0)) a1
+             , sum(decode(s2  - 3, h2, 1, 0)) a2
+             , sum(decode(s3  - 3, h3, 1, 0)) a3
+             , sum(decode(s4  - 3, h4, 1, 0)) a4
+             , sum(decode(s5  - 3, h5, 1, 0)) a5
+             , sum(decode(s6  - 3, h6, 1, 0)) a6
+             , sum(decode(s7  - 3, h7, 1, 0)) a7
+             , sum(decode(s8  - 3, h8, 1, 0)) a8
+             , sum(decode(s9  - 3, h9, 1, 0)) a9
+             , sum(decode(s10 - 3, h10, 1, 0)) a10
+             , sum(decode(s11 - 3, h11, 1, 0)) a11
+             , sum(decode(s12 - 3, h12, 1, 0)) a12
+             , sum(decode(s13 - 3, h13, 1, 0)) a13
+             , sum(decode(s14 - 3, h14, 1, 0)) a14
+             , sum(decode(s15 - 3, h15, 1, 0)) a15
+             , sum(decode(s16 - 3, h16, 1, 0)) a16
+             , sum(decode(s17 - 3, h17, 1, 0)) a17
+             , sum(decode(s18 - 3, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 100 display_seq
+             , 'Double Bogeys'
+             , -2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 2, h1, 1, 0)) a1
+             , sum(decode(s2  - 2, h2, 1, 0)) a2
+             , sum(decode(s3  - 2, h3, 1, 0)) a3
+             , sum(decode(s4  - 2, h4, 1, 0)) a4
+             , sum(decode(s5  - 2, h5, 1, 0)) a5
+             , sum(decode(s6  - 2, h6, 1, 0)) a6
+             , sum(decode(s7  - 2, h7, 1, 0)) a7
+             , sum(decode(s8  - 2, h8, 1, 0)) a8
+             , sum(decode(s9  - 2, h9, 1, 0)) a9
+             , sum(decode(s10 - 2, h10, 1, 0)) a10
+             , sum(decode(s11 - 2, h11, 1, 0)) a11
+             , sum(decode(s12 - 2, h12, 1, 0)) a12
+             , sum(decode(s13 - 2, h13, 1, 0)) a13
+             , sum(decode(s14 - 2, h14, 1, 0)) a14
+             , sum(decode(s15 - 2, h15, 1, 0)) a15
+             , sum(decode(s16 - 2, h16, 1, 0)) a16
+             , sum(decode(s17 - 2, h17, 1, 0)) a17
+             , sum(decode(s18 - 2, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID   
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 200 display_seq
+             , 'Bogeys'
+             , -1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 1, h1, 1, 0)) a1
+             , sum(decode(s2  - 1, h2, 1, 0)) a2
+             , sum(decode(s3  - 1, h3, 1, 0)) a3
+             , sum(decode(s4  - 1, h4, 1, 0)) a4
+             , sum(decode(s5  - 1, h5, 1, 0)) a5
+             , sum(decode(s6  - 1, h6, 1, 0)) a6
+             , sum(decode(s7  - 1, h7, 1, 0)) a7
+             , sum(decode(s8  - 1, h8, 1, 0)) a8
+             , sum(decode(s9  - 1, h9, 1, 0)) a9
+             , sum(decode(s10 - 1, h10, 1, 0)) a10
+             , sum(decode(s11 - 1, h11, 1, 0)) a11
+             , sum(decode(s12 - 1, h12, 1, 0)) a12
+             , sum(decode(s13 - 1, h13, 1, 0)) a13
+             , sum(decode(s14 - 1, h14, 1, 0)) a14
+             , sum(decode(s15 - 1, h15, 1, 0)) a15
+             , sum(decode(s16 - 1, h16, 1, 0)) a16
+             , sum(decode(s17 - 1, h17, 1, 0)) a17
+             , sum(decode(s18 - 1, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID   
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 300 display_seq
+             , 'Pars'
+             , 0 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, h1, 1, 0)) a1
+             , sum(decode(s2, h2, 1, 0)) a2
+             , sum(decode(s3, h3, 1, 0)) a3
+             , sum(decode(s4, h4, 1, 0)) a4
+             , sum(decode(s5, h5, 1, 0)) a5
+             , sum(decode(s6, h6, 1, 0)) a6
+             , sum(decode(s7, h7, 1, 0)) a7
+             , sum(decode(s8, h8, 1, 0)) a8
+             , sum(decode(s9, h9, 1, 0)) a9
+             , sum(decode(s10, h10, 1, 0)) a10
+             , sum(decode(s11, h11, 1, 0)) a11
+             , sum(decode(s12, h12, 1, 0)) a12
+             , sum(decode(s13, h13, 1, 0)) a13
+             , sum(decode(s14, h14, 1, 0)) a14
+             , sum(decode(s15, h15, 1, 0)) a15
+             , sum(decode(s16, h16, 1, 0)) a16
+             , sum(decode(s17, h17, 1, 0)) a17
+             , sum(decode(s18, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 400 display_seq
+             , 'Birdies'
+             , +1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 500 display_seq
+             , 'Eagles'
+             , +2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 600 display_seq
+             , 'Albatrosses'
+             , +3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 1000 display_seq
+             , 'Aces'
+             , 99 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, 1, 1, 0)) a1
+             , sum(decode(s2, 1, 1, 0)) a2
+             , sum(decode(s3, 1, 1, 0)) a3
+             , sum(decode(s4, 1, 1, 0)) a4
+             , sum(decode(s5, 1, 1, 0)) a5
+             , sum(decode(s6, 1, 1, 0)) a6
+             , sum(decode(s7, 1, 1, 0)) a7
+             , sum(decode(s8, 1, 1, 0)) a8
+             , sum(decode(s9, 1, 1, 0)) a9
+             , sum(decode(s10, 1, 1, 0)) a10
+             , sum(decode(s11, 1, 1, 0)) a11
+             , sum(decode(s12, 1, 1, 0)) a12
+             , sum(decode(s13, 1, 1, 0)) a13
+             , sum(decode(s14, 1, 1, 0)) a14
+             , sum(decode(s15, 1, 1, 0)) a15
+             , sum(decode(s16, 1, 1, 0)) a16
+             , sum(decode(s17, 1, 1, 0)) a17
+             , sum(decode(s18, 1, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+       ) r
+      order by 1
+      
+    page-items-to-submit: 
+    - P110_WEEK
+    - P110_PLAYER_ID
+
+  layout: 
+    sequence: 30
+    parent-region: '{Stats}' # 98299060405746359013
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    css-classes: 
+    - hardMode
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: true
+      maximum-rows-to-process: 100
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: DISPLAY_SEQ =================================
+    id: 50429442735203004811
+    identification: 
+      column-name: DISPLAY_SEQ
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PREPARED_NAME ===============================
+    id: 50429442862879004812
+    identification: 
+      column-name: PREPARED_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span style="font-weight: bold;">#PREPARED_NAME#</span>
+        <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
+        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DATA_FILTER =================================
+    id: 50429442915248004813
+    identification: 
+      column-name: DATA_FILTER
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 50429443054044004814
+    identification: 
+      column-name: COURSE_MODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DRILL_CLASS =================================
+    id: 50429443146712004815
+    identification: 
+      column-name: DRILL_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H1 ==========================================
+    id: 50429443289634004816
+    identification: 
+      column-name: H1
+      type: Plain Text
+
+    heading: 
+      heading: H1
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H1#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H2 ==========================================
+    id: 50429443386243004817
+    identification: 
+      column-name: H2
+      type: Plain Text
+
+    heading: 
+      heading: H2
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H2#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H3 ==========================================
+    id: 50429443456721004818
+    identification: 
+      column-name: H3
+      type: Plain Text
+
+    heading: 
+      heading: H3
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H3#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H4 ==========================================
+    id: 50429443570892004819
+    identification: 
+      column-name: H4
+      type: Plain Text
+
+    heading: 
+      heading: H4
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H4#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H5 ==========================================
+    id: 50429443637286004820
+    identification: 
+      column-name: H5
+      type: Plain Text
+
+    heading: 
+      heading: H5
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H5#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H6 ==========================================
+    id: 50429443788890004821
+    identification: 
+      column-name: H6
+      type: Plain Text
+
+    heading: 
+      heading: H6
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H6#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H7 ==========================================
+    id: 50429443871856004822
+    identification: 
+      column-name: H7
+      type: Plain Text
+
+    heading: 
+      heading: H7
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H7#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H8 ==========================================
+    id: 50429443983409004823
+    identification: 
+      column-name: H8
+      type: Plain Text
+
+    heading: 
+      heading: H8
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H8#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H9 ==========================================
+    id: 50429444099117004824
+    identification: 
+      column-name: H9
+      type: Plain Text
+
+    heading: 
+      heading: H9
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H9#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H10 =========================================
+    id: 50429444104306004825
+    identification: 
+      column-name: H10
+      type: Plain Text
+
+    heading: 
+      heading: H10
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H10#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H11 =========================================
+    id: 50429444273649004826
+    identification: 
+      column-name: H11
+      type: Plain Text
+
+    heading: 
+      heading: H11
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H11#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H12 =========================================
+    id: 50429444371496004827
+    identification: 
+      column-name: H12
+      type: Plain Text
+
+    heading: 
+      heading: H12
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H12#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H13 =========================================
+    id: 50429444431813004828
+    identification: 
+      column-name: H13
+      type: Plain Text
+
+    heading: 
+      heading: H13
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H13#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H14 =========================================
+    id: 50429444523489004829
+    identification: 
+      column-name: H14
+      type: Plain Text
+
+    heading: 
+      heading: H14
+      alignment: center
+
+    layout: 
+      sequence: 190
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H14#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H15 =========================================
+    id: 50429444640833004830
+    identification: 
+      column-name: H15
+      type: Plain Text
+
+    heading: 
+      heading: H15
+      alignment: center
+
+    layout: 
+      sequence: 200
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H15#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H16 =========================================
+    id: 50429444777370004831
+    identification: 
+      column-name: H16
+      type: Plain Text
+
+    heading: 
+      heading: H16
+      alignment: center
+
+    layout: 
+      sequence: 210
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H16#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H17 =========================================
+    id: 50429444824370004832
+    identification: 
+      column-name: H17
+      type: Plain Text
+
+    heading: 
+      heading: H17
+      alignment: center
+
+    layout: 
+      sequence: 220
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H17#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H18 =========================================
+    id: 50429444919776004833
+    identification: 
+      column-name: H18
+      type: Plain Text
+
+    heading: 
+      heading: H18
+      alignment: center
+
+    layout: 
+      sequence: 230
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H18#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 50429445044341004834
+    identification: 
+      column-name: COURSE_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 240
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {Stats} =====================================
+  id: 98299060405746359013
+  identification: 
+    title: '{Stats}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: statsRegion
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Player Round Details ========================
   id: 98800129858927712032
   identification: 
@@ -76,24 +1312,6 @@ regions:
              S17,
              S18,
              ROUND_STROKES,
-             PAR1,
-             PAR2,
-             PAR3,
-             PAR4,
-             PAR5,
-             PAR6,
-             PAR7,
-             PAR8,
-             PAR9,
-             PAR10,
-             PAR11,
-             PAR12,
-             PAR13,
-             PAR14,
-             PAR15,
-             PAR16,
-             PAR17,
-             PAR18,
              UNDER_PAR
         from WMG_ROUNDS_V
         where week = :P110_WEEK
@@ -157,7 +1375,7 @@ regions:
       maximum-rows-to-process: 500
 
     messages: 
-      when-no-data-found: no data found
+      when-no-data-found: No scores for the player.
 
     break-formatting: 
       break-columns: No Break
@@ -308,10 +1526,30 @@ regions:
     id: 49400106749758997944
     identification: 
       column-name: S1
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S1
+      alignment: center
 
     layout: 
       sequence: 31
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -323,10 +1561,30 @@ regions:
     id: 49400107157072997944
     identification: 
       column-name: S2
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S2
+      alignment: center
 
     layout: 
       sequence: 32
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -338,10 +1596,30 @@ regions:
     id: 49400107539485997944
     identification: 
       column-name: S3
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S3
+      alignment: center
 
     layout: 
       sequence: 33
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -353,10 +1631,30 @@ regions:
     id: 49400107965198997944
     identification: 
       column-name: S4
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S4
+      alignment: center
 
     layout: 
       sequence: 34
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -368,10 +1666,30 @@ regions:
     id: 49400108315424997945
     identification: 
       column-name: S5
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S5
+      alignment: center
 
     layout: 
       sequence: 35
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -383,10 +1701,30 @@ regions:
     id: 49400108741499997945
     identification: 
       column-name: S6
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S6
+      alignment: center
 
     layout: 
       sequence: 36
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -398,10 +1736,30 @@ regions:
     id: 49400109150743997945
     identification: 
       column-name: S7
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S7
+      alignment: center
 
     layout: 
       sequence: 37
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -413,10 +1771,30 @@ regions:
     id: 49400109506958997945
     identification: 
       column-name: S8
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S8
+      alignment: center
 
     layout: 
       sequence: 38
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -428,10 +1806,30 @@ regions:
     id: 49400109969024997945
     identification: 
       column-name: S9
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S9
+      alignment: center
 
     layout: 
       sequence: 39
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -443,10 +1841,30 @@ regions:
     id: 49400110345818997946
     identification: 
       column-name: S10
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S10
+      alignment: center
 
     layout: 
       sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -458,10 +1876,30 @@ regions:
     id: 49400110796267997946
     identification: 
       column-name: S11
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S11
+      alignment: center
 
     layout: 
       sequence: 41
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -473,10 +1911,30 @@ regions:
     id: 49400111117043997946
     identification: 
       column-name: S12
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S12
+      alignment: center
 
     layout: 
       sequence: 42
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -488,10 +1946,30 @@ regions:
     id: 49400111509538997947
     identification: 
       column-name: S13
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S13
+      alignment: center
 
     layout: 
       sequence: 43
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -503,10 +1981,30 @@ regions:
     id: 49400111935471997947
     identification: 
       column-name: S14
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S14
+      alignment: center
 
     layout: 
       sequence: 44
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -518,10 +2016,30 @@ regions:
     id: 49400112340282997947
     identification: 
       column-name: S15
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S15
+      alignment: center
 
     layout: 
       sequence: 45
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -533,10 +2051,30 @@ regions:
     id: 49400112716337997947
     identification: 
       column-name: S16
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S16
+      alignment: center
 
     layout: 
       sequence: 46
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -548,10 +2086,30 @@ regions:
     id: 49400113190196997947
     identification: 
       column-name: S17
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S17
+      alignment: center
 
     layout: 
       sequence: 47
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -563,10 +2121,30 @@ regions:
     id: 49400113538908997947
     identification: 
       column-name: S18
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: S18
+      alignment: center
 
     layout: 
       sequence: 48
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: 1
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -582,582 +2160,6 @@ regions:
 
     layout: 
       sequence: 49
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR1 ========================================
-    id: 49400114375391997948
-    identification: 
-      column-name: PAR1
-      type: Plain Text
-
-    heading: 
-      heading: H1
-      alignment: center
-
-    layout: 
-      sequence: 50
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR2 ========================================
-    id: 49400114782767997948
-    identification: 
-      column-name: PAR2
-      type: Plain Text
-
-    heading: 
-      heading: H2
-      alignment: center
-
-    layout: 
-      sequence: 51
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR3 ========================================
-    id: 49400115154163997948
-    identification: 
-      column-name: PAR3
-      type: Plain Text
-
-    heading: 
-      heading: H3
-      alignment: center
-
-    layout: 
-      sequence: 52
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR4 ========================================
-    id: 49400115503085997948
-    identification: 
-      column-name: PAR4
-      type: Plain Text
-
-    heading: 
-      heading: H4
-      alignment: center
-
-    layout: 
-      sequence: 53
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR5 ========================================
-    id: 49400115977114997949
-    identification: 
-      column-name: PAR5
-      type: Plain Text
-
-    heading: 
-      heading: H5
-      alignment: center
-
-    layout: 
-      sequence: 54
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR6 ========================================
-    id: 49400116303688997949
-    identification: 
-      column-name: PAR6
-      type: Plain Text
-
-    heading: 
-      heading: H6
-      alignment: center
-
-    layout: 
-      sequence: 55
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR7 ========================================
-    id: 49400116728602997949
-    identification: 
-      column-name: PAR7
-      type: Plain Text
-
-    heading: 
-      heading: H7
-      alignment: center
-
-    layout: 
-      sequence: 56
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR8 ========================================
-    id: 49400117116248997949
-    identification: 
-      column-name: PAR8
-      type: Plain Text
-
-    heading: 
-      heading: H8
-      alignment: center
-
-    layout: 
-      sequence: 57
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR9 ========================================
-    id: 49400117593835997950
-    identification: 
-      column-name: PAR9
-      type: Plain Text
-
-    heading: 
-      heading: H9
-      alignment: center
-
-    layout: 
-      sequence: 58
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR10 =======================================
-    id: 49400117902251997950
-    identification: 
-      column-name: PAR10
-      type: Plain Text
-
-    heading: 
-      heading: H10
-      alignment: center
-
-    layout: 
-      sequence: 59
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR11 =======================================
-    id: 49400118345837997950
-    identification: 
-      column-name: PAR11
-      type: Plain Text
-
-    heading: 
-      heading: H11
-      alignment: center
-
-    layout: 
-      sequence: 60
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR12 =======================================
-    id: 49400118760568997950
-    identification: 
-      column-name: PAR12
-      type: Plain Text
-
-    heading: 
-      heading: H12
-      alignment: center
-
-    layout: 
-      sequence: 61
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR13 =======================================
-    id: 49400119193168997950
-    identification: 
-      column-name: PAR13
-      type: Plain Text
-
-    heading: 
-      heading: H13
-      alignment: center
-
-    layout: 
-      sequence: 62
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR14 =======================================
-    id: 49400119537975997950
-    identification: 
-      column-name: PAR14
-      type: Plain Text
-
-    heading: 
-      heading: H14
-      alignment: center
-
-    layout: 
-      sequence: 63
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR15 =======================================
-    id: 49400119977023997951
-    identification: 
-      column-name: PAR15
-      type: Plain Text
-
-    heading: 
-      heading: H115
-      alignment: center
-
-    layout: 
-      sequence: 64
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR16 =======================================
-    id: 49400120341178997951
-    identification: 
-      column-name: PAR16
-      type: Plain Text
-
-    heading: 
-      heading: H16
-      alignment: center
-
-    layout: 
-      sequence: 65
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR17 =======================================
-    id: 49400120701742997951
-    identification: 
-      column-name: PAR17
-      type: Plain Text
-
-    heading: 
-      heading: H17
-      alignment: center
-
-    layout: 
-      sequence: 66
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PAR18 =======================================
-    id: 49400121184425997951
-    identification: 
-      column-name: PAR18
-      type: Plain Text
-
-    heading: 
-      heading: H18
-      alignment: center
-
-    layout: 
-      sequence: 67
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1183,7 +2185,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '#ROUND_STROKES#/#UNDER_PAR#'
+      html-expression: '#ROUND_STROKES# /#UNDER_PAR#'
 
     sorting: 
       sortable: true
@@ -1193,6 +2195,1184 @@ regions:
 
     advanced: 
       compute-sum: true
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Easy Stats ==================================
+  id: 145264662457556461223
+  identification: 
+    title: Easy Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with week_courses as (
+        select id course_id, course_mode, :P110_WEEK week
+          from wmg_courses
+         where id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P110_WEEK 
+          )
+         and course_mode = 'E'
+      )
+      select 1 display_seq
+           , prepared_name
+           , null data_filter
+           , null course_mode
+           , 'disabled' drill_class
+           , h1
+           , h2
+           , h3
+           , h4
+           , h5
+           , h6
+           , h7
+           , h8
+           , h9
+           , h10
+           , h11
+           , h12
+           , h13
+           , h14
+           , h15
+           , h16
+           , h17
+           , h18
+           , course_par
+        from wmg_courses_v
+      where course_id in (
+        select course_id from week_courses
+      )
+      union all
+      select 2 display_seq
+           , player_name
+           , null data_filter
+           , null course_mode
+           , 'disabled' drill_class,
+             S1,
+             S2,
+             S3,
+             S4,
+             S5,
+             S6,
+             S7,
+             S8,
+             S9,
+             S10,
+             S11,
+             S12,
+             S13,
+             S14,
+             S15,
+             S16,
+             S17,
+             S18,
+             UNDER_PAR
+        from WMG_ROUNDS_V
+        where week = :P110_WEEK
+          and player_id = :P110_PLAYER_ID
+          and course_mode = 'E'
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 90 display_seq
+             , 'Triple Bogeys'
+             , -3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 3, h1, 1, 0)) a1
+             , sum(decode(s2  - 3, h2, 1, 0)) a2
+             , sum(decode(s3  - 3, h3, 1, 0)) a3
+             , sum(decode(s4  - 3, h4, 1, 0)) a4
+             , sum(decode(s5  - 3, h5, 1, 0)) a5
+             , sum(decode(s6  - 3, h6, 1, 0)) a6
+             , sum(decode(s7  - 3, h7, 1, 0)) a7
+             , sum(decode(s8  - 3, h8, 1, 0)) a8
+             , sum(decode(s9  - 3, h9, 1, 0)) a9
+             , sum(decode(s10 - 3, h10, 1, 0)) a10
+             , sum(decode(s11 - 3, h11, 1, 0)) a11
+             , sum(decode(s12 - 3, h12, 1, 0)) a12
+             , sum(decode(s13 - 3, h13, 1, 0)) a13
+             , sum(decode(s14 - 3, h14, 1, 0)) a14
+             , sum(decode(s15 - 3, h15, 1, 0)) a15
+             , sum(decode(s16 - 3, h16, 1, 0)) a16
+             , sum(decode(s17 - 3, h17, 1, 0)) a17
+             , sum(decode(s18 - 3, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 100 display_seq
+             , 'Double Bogeys'
+             , -2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 2, h1, 1, 0)) a1
+             , sum(decode(s2  - 2, h2, 1, 0)) a2
+             , sum(decode(s3  - 2, h3, 1, 0)) a3
+             , sum(decode(s4  - 2, h4, 1, 0)) a4
+             , sum(decode(s5  - 2, h5, 1, 0)) a5
+             , sum(decode(s6  - 2, h6, 1, 0)) a6
+             , sum(decode(s7  - 2, h7, 1, 0)) a7
+             , sum(decode(s8  - 2, h8, 1, 0)) a8
+             , sum(decode(s9  - 2, h9, 1, 0)) a9
+             , sum(decode(s10 - 2, h10, 1, 0)) a10
+             , sum(decode(s11 - 2, h11, 1, 0)) a11
+             , sum(decode(s12 - 2, h12, 1, 0)) a12
+             , sum(decode(s13 - 2, h13, 1, 0)) a13
+             , sum(decode(s14 - 2, h14, 1, 0)) a14
+             , sum(decode(s15 - 2, h15, 1, 0)) a15
+             , sum(decode(s16 - 2, h16, 1, 0)) a16
+             , sum(decode(s17 - 2, h17, 1, 0)) a17
+             , sum(decode(s18 - 2, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID   
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 200 display_seq
+             , 'Bogeys'
+             , -1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1  - 1, h1, 1, 0)) a1
+             , sum(decode(s2  - 1, h2, 1, 0)) a2
+             , sum(decode(s3  - 1, h3, 1, 0)) a3
+             , sum(decode(s4  - 1, h4, 1, 0)) a4
+             , sum(decode(s5  - 1, h5, 1, 0)) a5
+             , sum(decode(s6  - 1, h6, 1, 0)) a6
+             , sum(decode(s7  - 1, h7, 1, 0)) a7
+             , sum(decode(s8  - 1, h8, 1, 0)) a8
+             , sum(decode(s9  - 1, h9, 1, 0)) a9
+             , sum(decode(s10 - 1, h10, 1, 0)) a10
+             , sum(decode(s11 - 1, h11, 1, 0)) a11
+             , sum(decode(s12 - 1, h12, 1, 0)) a12
+             , sum(decode(s13 - 1, h13, 1, 0)) a13
+             , sum(decode(s14 - 1, h14, 1, 0)) a14
+             , sum(decode(s15 - 1, h15, 1, 0)) a15
+             , sum(decode(s16 - 1, h16, 1, 0)) a16
+             , sum(decode(s17 - 1, h17, 1, 0)) a17
+             , sum(decode(s18 - 1, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID   
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 300 display_seq
+             , 'Pars'
+             , 0 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, h1, 1, 0)) a1
+             , sum(decode(s2, h2, 1, 0)) a2
+             , sum(decode(s3, h3, 1, 0)) a3
+             , sum(decode(s4, h4, 1, 0)) a4
+             , sum(decode(s5, h5, 1, 0)) a5
+             , sum(decode(s6, h6, 1, 0)) a6
+             , sum(decode(s7, h7, 1, 0)) a7
+             , sum(decode(s8, h8, 1, 0)) a8
+             , sum(decode(s9, h9, 1, 0)) a9
+             , sum(decode(s10, h10, 1, 0)) a10
+             , sum(decode(s11, h11, 1, 0)) a11
+             , sum(decode(s12, h12, 1, 0)) a12
+             , sum(decode(s13, h13, 1, 0)) a13
+             , sum(decode(s14, h14, 1, 0)) a14
+             , sum(decode(s15, h15, 1, 0)) a15
+             , sum(decode(s16, h16, 1, 0)) a16
+             , sum(decode(s17, h17, 1, 0)) a17
+             , sum(decode(s18, h18, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 400 display_seq
+             , 'Birdies'
+             , +1 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 500 display_seq
+             , 'Eagles'
+             , +2 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+      ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 600 display_seq
+             , 'Albatrosses'
+             , +3 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 1000 display_seq
+             , 'Aces'
+             , 99 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(decode(s1, 1, 1, 0)) a1
+             , sum(decode(s2, 1, 1, 0)) a2
+             , sum(decode(s3, 1, 1, 0)) a3
+             , sum(decode(s4, 1, 1, 0)) a4
+             , sum(decode(s5, 1, 1, 0)) a5
+             , sum(decode(s6, 1, 1, 0)) a6
+             , sum(decode(s7, 1, 1, 0)) a7
+             , sum(decode(s8, 1, 1, 0)) a8
+             , sum(decode(s9, 1, 1, 0)) a9
+             , sum(decode(s10, 1, 1, 0)) a10
+             , sum(decode(s11, 1, 1, 0)) a11
+             , sum(decode(s12, 1, 1, 0)) a12
+             , sum(decode(s13, 1, 1, 0)) a13
+             , sum(decode(s14, 1, 1, 0)) a14
+             , sum(decode(s15, 1, 1, 0)) a15
+             , sum(decode(s16, 1, 1, 0)) a16
+             , sum(decode(s17, 1, 1, 0)) a17
+             , sum(decode(s18, 1, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+       ) r
+      order by 1
+      
+    page-items-to-submit: 
+    - P110_WEEK
+    - P110_PLAYER_ID
+
+  layout: 
+    sequence: 20
+    parent-region: '{Stats}' # 98299060405746359013
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    css-classes: 
+    - easyMode
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: true
+      maximum-rows-to-process: 100
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PREPARED_NAME ===============================
+    id: 50809853979487178494
+    identification: 
+      column-name: PREPARED_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span style="font-weight: bold;">#PREPARED_NAME#</span>
+        <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
+        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H1 ==========================================
+    id: 50809854318411178495
+    identification: 
+      column-name: H1
+      type: Plain Text
+
+    heading: 
+      heading: H1
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H1#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H2 ==========================================
+    id: 50809854795144178496
+    identification: 
+      column-name: H2
+      type: Plain Text
+
+    heading: 
+      heading: H2
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H2#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H3 ==========================================
+    id: 50809855100752178497
+    identification: 
+      column-name: H3
+      type: Plain Text
+
+    heading: 
+      heading: H3
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H3#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H4 ==========================================
+    id: 50809855413816178498
+    identification: 
+      column-name: H4
+      type: Plain Text
+
+    heading: 
+      heading: H4
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H4#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H5 ==========================================
+    id: 50809855868442178499
+    identification: 
+      column-name: H5
+      type: Plain Text
+
+    heading: 
+      heading: H5
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H5#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H6 ==========================================
+    id: 50809856267602178500
+    identification: 
+      column-name: H6
+      type: Plain Text
+
+    heading: 
+      heading: H6
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H6#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H7 ==========================================
+    id: 50809856629310178501
+    identification: 
+      column-name: H7
+      type: Plain Text
+
+    heading: 
+      heading: H7
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H7#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H8 ==========================================
+    id: 50809857013828178502
+    identification: 
+      column-name: H8
+      type: Plain Text
+
+    heading: 
+      heading: H8
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H8#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H9 ==========================================
+    id: 50809857456516178503
+    identification: 
+      column-name: H9
+      type: Plain Text
+
+    heading: 
+      heading: H9
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H9#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H10 =========================================
+    id: 50809857893567178505
+    identification: 
+      column-name: H10
+      type: Plain Text
+
+    heading: 
+      heading: H10
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H10#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H11 =========================================
+    id: 50809858255734178506
+    identification: 
+      column-name: H11
+      type: Plain Text
+
+    heading: 
+      heading: H11
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H11#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H12 =========================================
+    id: 50809858623711178506
+    identification: 
+      column-name: H12
+      type: Plain Text
+
+    heading: 
+      heading: H12
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H12#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H13 =========================================
+    id: 50809859056169178507
+    identification: 
+      column-name: H13
+      type: Plain Text
+
+    heading: 
+      heading: H13
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H13#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H14 =========================================
+    id: 50809859718001178507
+    identification: 
+      column-name: H14
+      type: Plain Text
+
+    heading: 
+      heading: H14
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H14#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H15 =========================================
+    id: 50809860407358178508
+    identification: 
+      column-name: H15
+      type: Plain Text
+
+    heading: 
+      heading: H15
+      alignment: center
+
+    layout: 
+      sequence: 190
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H15#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H16 =========================================
+    id: 50809860854203178509
+    identification: 
+      column-name: H16
+      type: Plain Text
+
+    heading: 
+      heading: H16
+      alignment: center
+
+    layout: 
+      sequence: 200
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H16#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H17 =========================================
+    id: 50809861254544178510
+    identification: 
+      column-name: H17
+      type: Plain Text
+
+    heading: 
+      heading: H17
+      alignment: center
+
+    layout: 
+      sequence: 210
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H17#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H18 =========================================
+    id: 50809861695404178511
+    identification: 
+      column-name: H18
+      type: Plain Text
+
+    heading: 
+      heading: H18
+      alignment: center
+
+    layout: 
+      sequence: 220
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="drill#DRILL_CLASS#">#H18#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 50809862087817178511
+    identification: 
+      column-name: COURSE_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 230
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISPLAY_SEQ =================================
+    id: 50809862415542178513
+    identification: 
+      column-name: DISPLAY_SEQ
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DATA_FILTER =================================
+    id: 50809862804954178513
+    identification: 
+      column-name: DATA_FILTER
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 50809863272580178514
+    identification: 
+      column-name: COURSE_MODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 35
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DRILL_CLASS =================================
+    id: 50809863642280178515
+    identification: 
+      column-name: DRILL_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 36
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1338,6 +3518,36 @@ dynamic-actions:
 
     execution-options: 
       sequence: 10
+      event: Refresh on Change # 49305651562201776616
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 50429442582077004809
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Easy Stats # 145264662457556461223
+
+    execution-options: 
+      sequence: 20
+      event: Refresh on Change # 49305651562201776616
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 50429445104772004835
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Hard Stats # 50429442663637004810
+
+    execution-options: 
+      sequence: 30
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false

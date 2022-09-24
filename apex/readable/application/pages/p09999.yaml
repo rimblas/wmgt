@@ -20,6 +20,22 @@ navigation:
   cursor-focus: First item on page
   warn-on-unsaved-changes: false
 
+css: 
+  inline: |
+    .google-style {
+        --a-button-background-color: var(--rw-palette-blue-100);
+        --a-button-text-color: var(--rw-palette-green-0);
+        --a-button-hover-background-color: var(--rw-palette-blue-110);
+        --a-button-hover-text-color: var(--a-button-text-color);
+        --a-button-hover-border-color: var(--a-button-hover-background-color);
+        --a-button-active-background-color: var(--rw-palette-blue-120);
+        --a-button-active-text-color: var(--a-button-hover-text-color);
+        --a-button-active-border-color: var(--a-button-active-background-color);
+        --a-button-focus-background-color: var(--a-button-hover-background-color);
+        --a-button-focus-text-color: var(--a-button-hover-text-color);
+        --a-button-focus-border-color: var(--a-button-focus-background-color);
+    }
+
 security: 
   authentication: Page Is Public
   deep-linking: Application Default
@@ -45,7 +61,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -77,6 +93,44 @@ regions:
     settings: 
       output-as: Text (escape special characters)
       show-line-breaks: true
+
+- # ====== Region: Sign In =====================================
+  id: 47577408628042657320
+  identification: 
+    title: Sign In
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Login # 46986577691210702437
+    template-options: 
+    - '#DEFAULT#'
+    - t-Login-region--headerTitle js-removeLandmark
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 page-items: 
 - # ====== Page Item: P9999_USERNAME ===========================
@@ -314,6 +368,41 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: LOGIN_GOOGLE ================================
+  id: 47577408275874657316
+  identification: 
+    button-name: LOGIN_GOOGLE
+    label: Sign In with Google
+
+  layout: 
+    sequence: 10
+    region: Sign In # 47577408628042657320
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    css-classes: 
+    - google-style
+    icon: fa-google
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1000:&SESSION.:APEX_AUTHENTICATION=google:&DEBUG.:::'
+      page: 1000 # auth
+      request: APEX_AUTHENTICATION=google
+
     warn-on-unsaved-changes: Do Not Check
 
 processes: 

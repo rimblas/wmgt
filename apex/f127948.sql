@@ -31,16 +31,17 @@ prompt APPLICATION 127948 - WMGT
 --   Exported By:     JORGE@RIMBLAS.COM
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     35
---       Items:                  145
+--     Pages:                     36
+--       Items:                  146
 --       Computations:             4
 --       Validations:              4
 --       Processes:               40
---       Regions:                 97
---       Buttons:                 58
---       Dynamic Actions:         34
+--       Regions:                102
+--       Buttons:                 59
+--       Dynamic Actions:         36
 --     Shared Components:
 --       Logic:
+--         Items:                  1
 --         App Settings:           2
 --         Build Options:          7
 --       Navigation:
@@ -48,7 +49,7 @@ prompt APPLICATION 127948 - WMGT
 --         Breadcrumbs:            1
 --           Entries:              7
 --       Security:
---         Authentication:         1
+--         Authentication:         2
 --         Authorization:          3
 --         ACL Roles:              3
 --       User Interface:
@@ -120,9 +121,9 @@ wwv_flow_imp.create_flow(
 ,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'wmg_error_handler.error_handler_logging_session'
 ,p_substitution_string_01=>'APP_NAME'
-,p_substitution_value_01=>'WMG'
+,p_substitution_value_01=>'WMGT'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220919122740'
+,p_last_upd_yyyymmddhh24miss=>'20220924210904'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>9
 ,p_ui_type_name => null
@@ -132,6 +133,18 @@ wwv_flow_imp.create_flow(
 ,p_pwa_manifest_display=>'fullscreen'
 ,p_pwa_manifest_orientation=>'landscape-primary'
 ,p_pwa_apple_status_bar_style=>'black-translucent'
+);
+end;
+/
+prompt --workspace/credentials/google_auth_wmgt
+begin
+wwv_imp_workspace.create_credential(
+ p_id=>wwv_flow_imp.id(52292780350301216133)
+,p_name=>'Google Auth WMGT'
+,p_static_id=>'Google_Auth_WMGT'
+,p_authentication_type=>'OAUTH2_CLIENT_CREDENTIALS'
+,p_scope=>'profile,email'
+,p_prompt_on_install=>true
 );
 end;
 /
@@ -1739,6 +1752,15 @@ end;
 prompt --application/shared_components/navigation/navigation_bar
 begin
 null;
+end;
+/
+prompt --application/shared_components/logic/application_items/g_user_info
+begin
+wwv_flow_imp_shared.create_flow_item(
+ p_id=>wwv_flow_imp.id(52295932299167677853)
+,p_name=>'G_USER_INFO'
+,p_protection_level=>'I'
+);
 end;
 /
 prompt --application/shared_components/logic/application_settings
@@ -15455,6 +15477,25 @@ wwv_flow_imp_shared.create_authentication(
 );
 end;
 /
+prompt --application/shared_components/security/authentications/google
+begin
+wwv_flow_imp_shared.create_authentication(
+ p_id=>wwv_flow_imp.id(52294059659865562835)
+,p_name=>'google'
+,p_scheme_type=>'NATIVE_SOCIAL'
+,p_attribute_01=>wwv_flow_imp.id(52292780350301216133)
+,p_attribute_02=>'GOOGLE'
+,p_attribute_07=>'profile,email'
+,p_attribute_09=>'email'
+,p_attribute_11=>'Y'
+,p_attribute_13=>'Y'
+,p_invalid_session_type=>'LOGIN'
+,p_use_secure_cookie_yn=>'N'
+,p_ras_mode=>0
+,p_switch_in_session_yn=>'Y'
+);
+end;
+/
 prompt --application/shared_components/plugins/dynamic_action/unitedcodes_list_extension
 begin
 wwv_flow_imp_shared.create_plugin(
@@ -23913,7 +23954,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'13'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220913141238'
+,p_last_upd_yyyymmddhh24miss=>'20220922213650'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986695303177702576)
@@ -26964,10 +27005,13 @@ wwv_flow_imp_page.create_page(
 '}',
 ''))
 ,p_javascript_code_onload=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'// this was an attempt to switch to number inputs on mobile devices, but it needs work, hence the XXX',
 '$(".XXXnumber_field[name^=''P9_S''").each (function() {',
 '    this.type = ''number'';  // switch to number input so see a mobile friendly field',
 '    $(this).attr("pattern", "\d*");',
 ' });',
+'',
+'// start the knowckout viewModel to provide live SUM of scores',
 'var viewModel = new roundTotal();',
 'ko.applyBindings(viewModel);'))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
@@ -27008,6 +27052,12 @@ wwv_flow_imp_page.create_page(
 '    border-style: solid;',
 '}',
 '',
+'.dupEntry {',
+'    color: orange;',
+'    margin-left: 5px;',
+'   display: none;',
+'}',
+'',
 '@media only screen and (max-width: 900px) {',
 '    #roundScores .t-Form-inputContainer.col.col-null {',
 '      padding: 1px;',
@@ -27027,7 +27077,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220919122740'
+,p_last_upd_yyyymmddhh24miss=>'20220924210904'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986753890975703559)
@@ -27243,6 +27293,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_cHeight=>1
 ,p_begin_on_new_line=>'N'
 ,p_grid_column_css_classes=>'col-md-6'
+,p_read_only_when=>'P9_ID'
+,p_read_only_when_type=>'ITEM_IS_NOT_NULL'
 ,p_field_template=>wwv_flow_imp.id(46986650580145702469)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -27259,6 +27311,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_plug_id=>wwv_flow_imp.id(46986753890975703559)
 ,p_item_source_plug_id=>wwv_flow_imp.id(46986753890975703559)
 ,p_prompt=>'Player'
+,p_post_element_text=>'<span class="fa fa-warning fa-2x dupEntry" aria-hidden="true"></span>'
 ,p_source=>'PLAYERS_ID'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_POPUP_LOV'
@@ -27267,6 +27320,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_cSize=>30
 ,p_begin_on_new_line=>'N'
 ,p_grid_column_css_classes=>'col-md-6'
+,p_read_only_when=>'P9_ID'
+,p_read_only_when_type=>'ITEM_IS_NOT_NULL'
 ,p_field_template=>wwv_flow_imp.id(46986651846996702470)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -27699,6 +27754,8 @@ wwv_flow_imp_page.create_page_item(
 ,p_cMaxlength=>10
 ,p_colspan=>1
 ,p_grid_column_css_classes=>'col-md-6'
+,p_read_only_when=>'P9_ID'
+,p_read_only_when_type=>'ITEM_IS_NOT_NULL'
 ,p_field_template=>wwv_flow_imp.id(46986650580145702469)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -27882,6 +27939,9 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'PLAIN'
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47436472382354126438)
 ,p_name=>'P9_H9'
@@ -27901,9 +27961,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'PLAIN'
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47436472756201126438)
 ,p_name=>'P9_H10'
@@ -28095,6 +28152,15 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'PLAIN'
 );
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(50429445466579004838)
+,p_name=>'P9_DUP_IND'
+,p_item_sequence=>90
+,p_item_plug_id=>wwv_flow_imp.id(46986753890975703559)
+,p_item_default=>'N'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
 wwv_flow_imp_page.create_page_computation(
  p_id=>wwv_flow_imp.id(47348558037376808508)
 ,p_computation_sequence=>10
@@ -28202,6 +28268,110 @@ wwv_flow_imp_page.create_page_da_action(
 'else {',
 '    console.log("not a number");',
 '}'))
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(50429445295615004836)
+,p_name=>'Check for Dup Players'
+,p_event_sequence=>40
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P9_WEEK,P9_PLAYERS_ID'
+,p_bind_type=>'bind'
+,p_bind_event_type=>'change'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445377773004837)
+,p_event_id=>wwv_flow_imp.id(50429445295615004836)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'Y'
+,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'declare',
+' r number;',
+'begin',
+'  if  :P9_PLAYERS_ID is null or :P9_WEEK is null then',
+'    :P9_DUP_IND := ''N'';',
+'  else',
+'    select 1',
+'      into r',
+'      from wmg_rounds',
+'     where week = :P9_WEEK',
+'       and course_id = :P9_COURSE_ID',
+'       and players_id = :P9_PLAYERS_ID;',
+'',
+'      :P9_DUP_IND := ''Y'';',
+'  end if;',
+'exception',
+'when NO_DATA_FOUND then',
+'  :P9_DUP_IND := ''N'';',
+'end;',
+''))
+,p_attribute_02=>'P9_PLAYERS_ID,P9_WEEK,P9_DUP_IND,P9_COURSE_ID'
+,p_attribute_03=>'P9_DUP_IND'
+,p_attribute_04=>'N'
+,p_attribute_05=>'PLSQL'
+,p_wait_for_result=>'Y'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(50429445574151004839)
+,p_name=>'Show Dup Alert'
+,p_event_sequence=>50
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P9_DUP_IND'
+,p_condition_element=>'P9_DUP_IND'
+,p_triggering_condition_type=>'EQUALS'
+,p_triggering_expression=>'N'
+,p_bind_type=>'bind'
+,p_bind_event_type=>'change'
+,p_display_when_type=>'ITEM_IS_NULL'
+,p_display_when_cond=>'P9_ID'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445645363004840)
+,p_event_id=>wwv_flow_imp.id(50429445574151004839)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'Y'
+,p_action=>'NATIVE_HIDE'
+,p_affected_elements_type=>'JQUERY_SELECTOR'
+,p_affected_elements=>'.dupEntry'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445836638004842)
+,p_event_id=>wwv_flow_imp.id(50429445574151004839)
+,p_event_result=>'FALSE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_SHOW'
+,p_affected_elements_type=>'JQUERY_SELECTOR'
+,p_affected_elements=>'.dupEntry'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445728452004841)
+,p_event_id=>wwv_flow_imp.id(50429445574151004839)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'apex.message.clearErrors();'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445943471004843)
+,p_event_id=>wwv_flow_imp.id(50429445574151004839)
+,p_event_result=>'FALSE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'apex.message.showErrors([',
+'     {',
+'         type:       "error",',
+'         location:   [ "inline" ],',
+'         pageItem:   "P9_PLAYERS_ID",',
+'         message:    "There''s already a round for that player.",',
+'         unsafe:     false',
+'     }',
+']);'))
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(46986774353376703571)
@@ -29215,9 +29385,18 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
+,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'After selecting the season & week, via the "Week" drop down, ',
+'this page will show relevant information and stadistics about that week.<br>',
+'<br>',
+'* Best rounds<br>',
+'* Most Aces (Hole in ones)<br>',
+'* Cumulative scores for top players<br>',
+'* Analysis per hole like people that obtained: Aces, Albatrossess, Eagles, Birdies, Pars, etc..<br>',
+''))
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220919115837'
+,p_last_upd_yyyymmddhh24miss=>'20220924152834'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(47486927506229033323)
@@ -30708,6 +30887,138 @@ wwv_flow_imp_page.create_page_plug(
 ,p_attribute_02=>'HTML'
 );
 wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(47577406983154657303)
+,p_name=>'Course Highlights'
+,p_parent_plug_id=>wwv_flow_imp.id(49305650947385776610)
+,p_template=>wwv_flow_imp.id(46986580184360702438)
+,p_display_sequence=>40
+,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader js-removeLandmark:t-Region--noUI:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight'
+,p_new_grid_row=>false
+,p_display_point=>'SUB_REGIONS'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with course_unpivot as (',
+'   select week, course_code, course_name, h, score, par',
+'    from wmg_rounds_v',
+'    unpivot (',
+'      (score, par) for h in (',
+'      (s1, par1) as 1,',
+'      (s2, par2) as 2,',
+'      (s3, par3) as 3,',
+'      (s4, par4) as 4,',
+'      (s5, par5) as 5,',
+'      (s6, par6) as 6,',
+'      (s7, par7) as 7,',
+'      (s8, par8) as 8,',
+'      (s9, par9) as 9,',
+'      (s10, par10) as 10,',
+'      (s11, par11) as 11,',
+'      (s12, par12) as 12,',
+'      (s13, par13) as 13,',
+'      (s14, par14) as 14,',
+'      (s15, par15) as 15,',
+'      (s16, par16) as 16,',
+'      (s17, par17) as 17,',
+'      (s18, par18) as 18',
+'      )',
+'    )',
+'  where week = :P100_WEEK',
+')',
+', whole_totals as (',
+'      select course_code, h, sum(score) total',
+'        from course_unpivot',
+'       group by course_code, h',
+')',
+', whole_pars as (',
+'      select course_code, h, sum(par) total',
+'        from course_unpivot',
+'       group by course_code, h',
+')',
+'select ''Tournament Strokes'' highlight, ''E + H'' what, sum(total) total',
+'  from whole_totals',
+'union all',
+'select ''Hole with most Aces'', course_code || '' - H'' || to_char(h), total',
+'from ( ',
+'       select course_code, h, sum(score) total',
+'        from course_unpivot',
+'       where score = 1',
+'       group by course_code, h',
+'       order by total desc',
+'       fetch first 1 rows only',
+')',
+'union all',
+'select ''Easiest hole (strokes)'', course_code || '' - H'' || to_char(h), total',
+'from ( ',
+'       select course_code, h, total',
+'        from whole_totals',
+'       order by total',
+'       fetch first 1 rows only',
+')',
+'union all',
+'select ''Most difficult hole (strokes)'', course_code || '' - H'' || to_char(h), total',
+'from ( ',
+'       select course_code, h, total',
+'        from whole_totals',
+'       order by total desc',
+'       fetch first 1 rows only',
+')',
+'union all',
+'select ''Most difficult hole (Over Par) [WIP]'', course_code || '' - H'' || to_char(h), total',
+'from ( ',
+'       select course_code, h, total',
+'        from whole_pars',
+'       order by total desc',
+'       fetch first 1 rows only',
+')',
+''))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P100_WEEK'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(47577407789339657311)
+,p_query_column_id=>1
+,p_column_alias=>'HIGHLIGHT'
+,p_column_display_sequence=>40
+,p_column_heading=>'Highlight'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(47577407829367657312)
+,p_query_column_id=>2
+,p_column_alias=>'WHAT'
+,p_column_display_sequence=>50
+,p_column_heading=>'What'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'CENTER'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(47577407299227657306)
+,p_query_column_id=>3
+,p_column_alias=>'TOTAL'
+,p_column_display_sequence=>60
+,p_column_heading=>'Total'
+,p_use_as_row_header=>'N'
+,p_column_format=>'999G999G999G999G999G999G990'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(49305650009120776601)
 ,p_name=>'Top Players'
 ,p_parent_plug_id=>wwv_flow_imp.id(49305650947385776610)
@@ -30795,109 +31106,53 @@ wwv_flow_imp_page.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'with course_unpivot as (',
-'   select week, course_code, course_name, h, score, par',
-'    from wmg_rounds_v',
-'    unpivot (',
-'      (score, par) for h in (',
-'      (s1, par1) as 1,',
-'      (s2, par2) as 2,',
-'      (s3, par3) as 3,',
-'      (s4, par4) as 4,',
-'      (s5, par5) as 5,',
-'      (s6, par6) as 6,',
-'      (s7, par7) as 7,',
-'      (s8, par8) as 8,',
-'      (s9, par9) as 9,',
-'      (s10, par10) as 10,',
-'      (s11, par11) as 11,',
-'      (s12, par12) as 12,',
-'      (s13, par13) as 13,',
-'      (s14, par14) as 14,',
-'      (s15, par15) as 15,',
-'      (s16, par16) as 16,',
-'      (s17, par17) as 17,',
-'      (s18, par18) as 18',
-'      )',
-'    )',
-'  where week = :P100_WEEK',
-')',
-', whole_totals as (',
-'      select course_code, h, sum(score) total',
-'        from course_unpivot',
-'       group by course_code, h',
-')',
-', whole_pars as (',
-'      select course_code, h, sum(par) total',
-'        from course_unpivot',
-'       group by course_code, h',
-')',
-'select *',
+'select ''Best score '' || decode(course_mode, ''E'', ''Easy'', ''Hard'') result, listagg(player_name, '', '') who, total',
 'from (',
-'select ''Player with most Aces'' result',
-'     , r.player_name who',
-'     , sum(decode(s1, 1, 1, 0)',
-'         + decode(s2, 1, 1, 0)',
-'         + decode(s3, 1, 1, 0)',
-'         + decode(s4, 1, 1, 0)',
-'         + decode(s5, 1, 1, 0)',
-'         + decode(s6, 1, 1, 0)',
-'         + decode(s7, 1, 1, 0)',
-'         + decode(s8, 1, 1, 0)',
-'         + decode(s9, 1, 1, 0)',
-'         + decode(s10, 1, 1, 0)',
-'         + decode(s11, 1, 1, 0)',
-'         + decode(s12, 1, 1, 0)',
-'         + decode(s13, 1, 1, 0)',
-'         + decode(s14, 1, 1, 0)',
-'         + decode(s15, 1, 1, 0)',
-'         + decode(s16, 1, 1, 0)',
-'         + decode(s17, 1, 1, 0)',
-'         + decode(s18, 1, 1, 0)',
-'      ) total',
-'  from wmg_rounds_v r',
-' where r.week = :P100_WEEK',
-'group by r.player_name',
-'order by total desc',
-'fetch first 1 rows only',
-') aces',
-'union all',
-'select ''Tournament Strokes'', ''E + H'', sum(total) total',
-'  from whole_totals',
-'union all',
-'select ''Hole with most Aces'', course_code || '' - H'' || to_char(h), total',
-'from ( ',
-'       select course_code, h, sum(score) total',
-'        from course_unpivot',
-'       where score = 1',
-'       group by course_code, h',
-'       order by total desc',
-'       fetch first 1 rows only',
+'      select r.*, rank() over (partition by course_mode order by r.total) rn',
+'      from (',
+'      select course_mode, player_id, player_name, sum(under_par) total',
+'        from wmg_rounds_v',
+'        where week = :P100_WEEK ',
+'       group by course_mode, player_id, player_name',
+'      ) r',
+'      order by course_mode, rn, r.player_name',
 ')',
+'where rn = 1',
+'group by  course_mode, total',
 'union all',
-'select ''Easiest hole (strokes)'', course_code || '' - H'' || to_char(h), total',
-'from ( ',
-'       select course_code, h, total',
-'        from whole_totals',
-'       order by total',
-'       fetch first 1 rows only',
+'select result, listagg(who, '', '') who, total',
+'from (',
+'    select result, who, total, rank() over (order by total desc) rn',
+'    from (',
+'    select ''Player(s) with most Aces'' result',
+'         , r.player_name who',
+'         , sum(decode(s1, 1, 1, 0)',
+'             + decode(s2, 1, 1, 0)',
+'             + decode(s3, 1, 1, 0)',
+'             + decode(s4, 1, 1, 0)',
+'             + decode(s5, 1, 1, 0)',
+'             + decode(s6, 1, 1, 0)',
+'             + decode(s7, 1, 1, 0)',
+'             + decode(s8, 1, 1, 0)',
+'             + decode(s9, 1, 1, 0)',
+'             + decode(s10, 1, 1, 0)',
+'             + decode(s11, 1, 1, 0)',
+'             + decode(s12, 1, 1, 0)',
+'             + decode(s13, 1, 1, 0)',
+'             + decode(s14, 1, 1, 0)',
+'             + decode(s15, 1, 1, 0)',
+'             + decode(s16, 1, 1, 0)',
+'             + decode(s17, 1, 1, 0)',
+'             + decode(s18, 1, 1, 0)',
+'          ) total',
+'      from wmg_rounds_v r',
+'     where r.week = :P100_WEEK',
+'    group by r.player_name',
+'    ) aces',
+'    order by aces.who',
 ')',
-'union all',
-'select ''Most difficult hole (strokes)'', course_code || '' - H'' || to_char(h), total',
-'from ( ',
-'       select course_code, h, total',
-'        from whole_totals',
-'       order by total desc',
-'       fetch first 1 rows only',
-')',
-'union all',
-'select ''Most difficult hole (Over Par) [WIP]'', course_code || '' - H'' || to_char(h), total',
-'from ( ',
-'       select course_code, h, total',
-'        from whole_pars',
-'       order by total desc',
-'       fetch first 1 rows only',
-')',
+'where rn = 1',
+'group by  result, total',
 ''))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P100_WEEK'
@@ -30934,14 +31189,14 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49305650746266776608)
+ p_id=>wwv_flow_imp.id(47577407616182657310)
 ,p_query_column_id=>3
 ,p_column_alias=>'TOTAL'
 ,p_column_display_sequence=>30
 ,p_column_heading=>'Total'
 ,p_use_as_row_header=>'N'
-,p_column_format=>'999G999G999G999G999G999G990'
 ,p_column_alignment=>'RIGHT'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
@@ -31070,6 +31325,9 @@ wwv_flow_imp_page.create_jet_chart(
 ,p_gauge_plot_area=>'on'
 ,p_show_gauge_value=>true
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_jet_chart_series(
  p_id=>wwv_flow_imp.id(47468034296984193299)
 ,p_chart_id=>wwv_flow_imp.id(47468032550263193299)
@@ -31266,9 +31524,6 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_assigned_to_y2=>'off'
 ,p_items_label_rendered=>false
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_jet_chart_axis(
  p_id=>wwv_flow_imp.id(47468033055330193299)
 ,p_chart_id=>wwv_flow_imp.id(47468032550263193299)
@@ -31315,7 +31570,7 @@ wwv_flow_imp_page.create_jet_chart(
  p_id=>wwv_flow_imp.id(47468035113474193300)
 ,p_region_id=>wwv_flow_imp.id(94935955149037333857)
 ,p_chart_type=>'line'
-,p_title=>'Cummulative'
+,p_title=>'Cumulative'
 ,p_animation_on_display=>'auto'
 ,p_animation_on_data_change=>'auto'
 ,p_orientation=>'vertical'
@@ -31340,7 +31595,7 @@ wwv_flow_imp_page.create_jet_chart_series(
  p_id=>wwv_flow_imp.id(5007620315389972544)
 ,p_chart_id=>wwv_flow_imp.id(47468035113474193300)
 ,p_seq=>10
-,p_name=>'First'
+,p_name=>'Top 3'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with round as (',
@@ -31425,228 +31680,13 @@ wwv_flow_imp_page.create_jet_chart_series(
 '                 group by e.player_id, e.account',
 '        )',
 '       )',
-'        where rn = 1',
+'        where rn <= 3',
 '    )',
 '    and r.week =  :P100_WEEK',
 ')',
-'',
+'order by course_mode, account, h',
 ''))
-,p_max_row_count=>36
-,p_ajax_items_to_submit=>'P100_WEEK'
-,p_series_name_column_name=>'ACCOUNT'
-,p_items_value_column_name=>'VALUE'
-,p_group_name_column_name=>'ACCOUNT'
-,p_items_label_column_name=>'LABEL'
-,p_color=>'#000000'
-,p_line_style=>'solid'
-,p_line_type=>'straight'
-,p_marker_rendered=>'auto'
-,p_marker_shape=>'auto'
-,p_assigned_to_y2=>'off'
-,p_items_label_rendered=>false
-);
-wwv_flow_imp_page.create_jet_chart_series(
- p_id=>wwv_flow_imp.id(47468036852496193301)
-,p_chart_id=>wwv_flow_imp.id(47468035113474193300)
-,p_seq=>20
-,p_name=>'Second'
-,p_data_source_type=>'SQL'
-,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'with round as (',
-'  select r.id  round_id',
-'    , p.id                                      player_id',
-'    , p.account                                    account',
-'    , p.name                                       player_name',
-'    , c.id                                         course_id',
-'    , c.code                                       course_code',
-'    , c.name                                       course_name',
-'    , c.course_mode                                course_mode',
-'    , r.week',
-'  , nvl(r.s1 - cs.h1, 0) h1',
-'  , nvl(r.s2 - cs.h2, 0) h2',
-'  , nvl(r.s3 - cs.h3, 0) h3',
-'  , nvl(r.s4 - cs.h4, 0) h4',
-'  , nvl(r.s5 - cs.h5, 0) h5',
-'  , nvl(r.s6 - cs.h6, 0) h6',
-'  , nvl(r.s7 - cs.h7, 0) h7',
-'  , nvl(r.s8 - cs.h8, 0) h8',
-'  , nvl(r.s9 - cs.h9, 0) h9',
-'  , nvl(r.s10 - cs.h10, 0) h10',
-'  , nvl(r.s11 - cs.h11, 0) h11',
-'  , nvl(r.s12 - cs.h12, 0) h12',
-'  , nvl(r.s13 - cs.h13, 0) h13',
-'  , nvl(r.s14 - cs.h14, 0) h14',
-'  , nvl(r.s15 - cs.h15, 0) h15',
-'  , nvl(r.s16 - cs.h16, 0) h16',
-'  , nvl(r.s17 - cs.h17, 0) h17',
-'  , nvl(r.s18 - cs.h18, 0) h18',
-'from wmg_rounds r',
-'   , wmg_players p',
-'   , wmg_courses c',
-'   , wmg_course_strokes cs',
-'where r.players_id = p.id',
-'  and r.course_id = c.id',
-'  and cs.course_id(+) = c.id',
-')',
-', round_unpivot as (',
-'  select *',
-'  from round',
-'  unpivot (score FOR h IN (',
-'    h1 as 1,',
-'    h2 as 2,',
-'    h3 as 3,',
-'    h4 as 4,',
-'    h5 as 5,',
-'    h6 as 6,',
-'    h7 as 7,',
-'    h8 as 8,',
-'    h9 as 9,',
-'    h10 as 10,',
-'    h11 as 11,',
-'    h12 as 12,',
-'    h13 as 13,',
-'    h14 as 14,',
-'    h15 as 15,',
-'    h16 as 16,',
-'    h17 as 17,',
-'    h18 as 18',
-'    )',
-'  )',
-')',
-'select account',
-'     , course_mode',
-'     , h',
-'     , course_mode || lpad(to_char(h), 2, ''0'') label',
-'     , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value',
-'from round_unpivot',
-'where round_id in (',
-'    select r.id',
-'    from wmg_rounds r',
-'    where r.players_id in (',
-'      select player_id',
-'        from (',
-'        select player_id, account, score',
-'             , rank() over ( order by score) rn',
-'         from (',
-'                select e.player_id,  e.account, sum(e.under_par) score',
-'                  from wmg_rounds_v e',
-'                  where e.week = :P100_WEEK',
-'                 group by e.player_id, e.account',
-'        )',
-'       )',
-'        where rn = 2',
-'    )',
-'    and r.week =  :P100_WEEK',
-')',
-'order by course_mode , h'))
-,p_max_row_count=>36
-,p_ajax_items_to_submit=>'P100_WEEK'
-,p_series_name_column_name=>'ACCOUNT'
-,p_items_value_column_name=>'VALUE'
-,p_group_name_column_name=>'ACCOUNT'
-,p_items_label_column_name=>'LABEL'
-,p_line_style=>'solid'
-,p_line_type=>'straight'
-,p_marker_rendered=>'auto'
-,p_marker_shape=>'auto'
-,p_assigned_to_y2=>'off'
-,p_items_label_rendered=>false
-);
-wwv_flow_imp_page.create_jet_chart_series(
- p_id=>wwv_flow_imp.id(5007620618296972547)
-,p_chart_id=>wwv_flow_imp.id(47468035113474193300)
-,p_seq=>30
-,p_name=>'Third'
-,p_data_source_type=>'SQL'
-,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'with round as (',
-'  select r.id  round_id',
-'    , p.id                                      player_id',
-'    , p.account                                    account',
-'    , p.name                                       player_name',
-'    , c.id                                         course_id',
-'    , c.code                                       course_code',
-'    , c.name                                       course_name',
-'    , c.course_mode                                course_mode',
-'    , r.week',
-'  , nvl(r.s1 - cs.h1, 0) h1',
-'  , nvl(r.s2 - cs.h2, 0) h2',
-'  , nvl(r.s3 - cs.h3, 0) h3',
-'  , nvl(r.s4 - cs.h4, 0) h4',
-'  , nvl(r.s5 - cs.h5, 0) h5',
-'  , nvl(r.s6 - cs.h6, 0) h6',
-'  , nvl(r.s7 - cs.h7, 0) h7',
-'  , nvl(r.s8 - cs.h8, 0) h8',
-'  , nvl(r.s9 - cs.h9, 0) h9',
-'  , nvl(r.s10 - cs.h10, 0) h10',
-'  , nvl(r.s11 - cs.h11, 0) h11',
-'  , nvl(r.s12 - cs.h12, 0) h12',
-'  , nvl(r.s13 - cs.h13, 0) h13',
-'  , nvl(r.s14 - cs.h14, 0) h14',
-'  , nvl(r.s15 - cs.h15, 0) h15',
-'  , nvl(r.s16 - cs.h16, 0) h16',
-'  , nvl(r.s17 - cs.h17, 0) h17',
-'  , nvl(r.s18 - cs.h18, 0) h18',
-'from wmg_rounds r',
-'   , wmg_players p',
-'   , wmg_courses c',
-'   , wmg_course_strokes cs',
-'where r.players_id = p.id',
-'  and r.course_id = c.id',
-'  and cs.course_id(+) = c.id',
-')',
-', round_unpivot as (',
-'  select *',
-'  from round',
-'  unpivot (score FOR h IN (',
-'    h1 as 1,',
-'    h2 as 2,',
-'    h3 as 3,',
-'    h4 as 4,',
-'    h5 as 5,',
-'    h6 as 6,',
-'    h7 as 7,',
-'    h8 as 8,',
-'    h9 as 9,',
-'    h10 as 10,',
-'    h11 as 11,',
-'    h12 as 12,',
-'    h13 as 13,',
-'    h14 as 14,',
-'    h15 as 15,',
-'    h16 as 16,',
-'    h17 as 17,',
-'    h18 as 18',
-'    )',
-'  )',
-')',
-'select account',
-'     , course_mode',
-'     , h',
-'     , course_mode || lpad(to_char(h), 2, ''0'') label',
-'     , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value',
-'from round_unpivot',
-'where round_id in (',
-'    select r.id',
-'    from wmg_rounds r',
-'    where r.players_id in (',
-'      select player_id',
-'        from (',
-'        select player_id, account, score',
-'             , rank() over ( order by score) rn',
-'         from (',
-'                select e.player_id,  e.account, sum(e.under_par) score',
-'                  from wmg_rounds_v e',
-'                  where e.week = :P100_WEEK',
-'                 group by e.player_id, e.account',
-'        )',
-'       )',
-'        where rn = 3',
-'    )',
-'    and r.week =  :P100_WEEK',
-')',
-'order by course_mode , h'))
-,p_max_row_count=>36
+,p_max_row_count=>180
 ,p_ajax_items_to_submit=>'P100_WEEK'
 ,p_series_name_column_name=>'ACCOUNT'
 ,p_items_value_column_name=>'VALUE'
@@ -31663,7 +31703,7 @@ wwv_flow_imp_page.create_jet_chart_series(
  p_id=>wwv_flow_imp.id(5007620802229972549)
 ,p_chart_id=>wwv_flow_imp.id(47468035113474193300)
 ,p_seq=>40
-,p_name=>'Extra'
+,p_name=>'Extra Player'
 ,p_data_source_type=>'SQL'
 ,p_data_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with round as (',
@@ -32724,12 +32764,13 @@ wwv_flow_imp_page.create_page_da_action(
 '       )',
 '   )',
 'order by 1'))
-,p_attribute_02=>'AA:LI'
+,p_attribute_02=>'SMH:AA:LI'
 ,p_attribute_03=>'DTDC'
 ,p_attribute_06=>'#EBEBEB'
+,p_attribute_07=>'300'
 ,p_attribute_08=>'#c5c5c5'
 ,p_attribute_09=>'#e3e3e3'
-,p_attribute_11=>'No data found'
+,p_attribute_11=>'No players'
 ,p_attribute_12=>'CIS'
 ,p_attribute_14=>'SD'
 );
@@ -32851,12 +32892,13 @@ wwv_flow_imp_page.create_page_da_action(
 '       )',
 '   )',
 'order by 1'))
-,p_attribute_02=>'AA:LI'
+,p_attribute_02=>'SMH:AA:LI'
 ,p_attribute_03=>'DTDC'
 ,p_attribute_06=>'#EBEBEB'
+,p_attribute_07=>'300'
 ,p_attribute_08=>'#c5c5c5'
 ,p_attribute_09=>'#e3e3e3'
-,p_attribute_11=>'No data found'
+,p_attribute_11=>'No players'
 ,p_attribute_12=>'CIS'
 ,p_attribute_14=>'SD'
 ,p_client_condition_type=>'JAVASCRIPT_EXPRESSION'
@@ -32985,12 +33027,1311 @@ wwv_flow_imp_page.create_page(
 ,p_alias=>'PLAYER-ROUND-DETAILS1'
 ,p_page_mode=>'MODAL'
 ,p_step_title=>'Player Round Details'
+,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'@media (min-width: 640px) {',
+'#statsRegion  .container {',
+'    flex-direction: row;',
+'    display: flex;',
+'    flex-wrap: wrap;',
+'}',
+'',
+'}',
+'',
+'#statsRegion .container {',
+'    justify-content: space-evenly;',
+'}',
+'',
+'td.t-Report-cell[headers~="WHO"] {',
+'    white-space: nowrap;',
+'}',
+''))
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220915180602'
+,p_last_upd_yyyymmddhh24miss=>'20220920014055'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(98299060405746359013)
+,p_plug_name=>'{Stats}'
+,p_region_name=>'statsRegion'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986575558905702436)
+,p_plug_display_sequence=>40
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(50429442663637004810)
+,p_name=>'Hard Stats'
+,p_parent_plug_id=>wwv_flow_imp.id(98299060405746359013)
+,p_template=>wwv_flow_imp.id(46986580184360702438)
+,p_display_sequence=>30
+,p_region_css_classes=>'hardMode'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--noBorder:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
+,p_new_grid_row=>false
+,p_display_point=>'SUB_REGIONS'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with week_courses as (',
+'  select id course_id, course_mode, :P110_WEEK week',
+'    from wmg_courses',
+'   where id in (',
+'      select distinct course_id',
+'        from wmg_rounds ',
+'       where week = :P110_WEEK ',
+'    )',
+'   and course_mode = ''H''',
+')',
+'select 1 display_seq',
+'     , prepared_name',
+'     , null data_filter',
+'     , null course_mode',
+'     , ''disabled'' drill_class',
+'     , h1',
+'     , h2',
+'     , h3',
+'     , h4',
+'     , h5',
+'     , h6',
+'     , h7',
+'     , h8',
+'     , h9',
+'     , h10',
+'     , h11',
+'     , h12',
+'     , h13',
+'     , h14',
+'     , h15',
+'     , h16',
+'     , h17',
+'     , h18',
+'     , course_par',
+'  from wmg_courses_v',
+'where course_id in (',
+'  select course_id from week_courses',
+')',
+'union all',
+'select 2 display_seq',
+'     , player_name',
+'     , null data_filter',
+'     , null course_mode',
+'     , ''disabled'' drill_class,',
+'       S1,',
+'       S2,',
+'       S3,',
+'       S4,',
+'       S5,',
+'       S6,',
+'       S7,',
+'       S8,',
+'       S9,',
+'       S10,',
+'       S11,',
+'       S12,',
+'       S13,',
+'       S14,',
+'       S15,',
+'       S16,',
+'       S17,',
+'       S18,',
+'       UNDER_PAR',
+'  from WMG_ROUNDS_V',
+'  where week = :P110_WEEK',
+'    and player_id = :P110_PLAYER_ID',
+'    and course_mode = ''E''',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 90 display_seq',
+'       , ''Triple Bogeys''',
+'       , -3 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 3, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 3, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 3, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 3, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 3, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 3, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 3, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 3, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 3, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 3, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 3, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 3, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 3, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 3, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 3, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 3, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 3, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 3, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 100 display_seq',
+'       , ''Double Bogeys''',
+'       , -2 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 2, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 2, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 2, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 2, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 2, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 2, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 2, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 2, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 2, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 2, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 2, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 2, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 2, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 2, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 2, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 2, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 2, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 2, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID   ',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 200 display_seq',
+'       , ''Bogeys''',
+'       , -1 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 1, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 1, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 1, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 1, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 1, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 1, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 1, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 1, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 1, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 1, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 1, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 1, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 1, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 1, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 1, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 1, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 1, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 1, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID   ',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 300 display_seq',
+'       , ''Pars''',
+'       , 0 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1, h1, 1, 0)) a1',
+'       , sum(decode(s2, h2, 1, 0)) a2',
+'       , sum(decode(s3, h3, 1, 0)) a3',
+'       , sum(decode(s4, h4, 1, 0)) a4',
+'       , sum(decode(s5, h5, 1, 0)) a5',
+'       , sum(decode(s6, h6, 1, 0)) a6',
+'       , sum(decode(s7, h7, 1, 0)) a7',
+'       , sum(decode(s8, h8, 1, 0)) a8',
+'       , sum(decode(s9, h9, 1, 0)) a9',
+'       , sum(decode(s10, h10, 1, 0)) a10',
+'       , sum(decode(s11, h11, 1, 0)) a11',
+'       , sum(decode(s12, h12, 1, 0)) a12',
+'       , sum(decode(s13, h13, 1, 0)) a13',
+'       , sum(decode(s14, h14, 1, 0)) a14',
+'       , sum(decode(s15, h15, 1, 0)) a15',
+'       , sum(decode(s16, h16, 1, 0)) a16',
+'       , sum(decode(s17, h17, 1, 0)) a17',
+'       , sum(decode(s18, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 400 display_seq',
+'       , ''Birdies''',
+'       , +1 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 500 display_seq',
+'       , ''Eagles''',
+'       , +2 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 600 display_seq',
+'       , ''Albatrosses''',
+'       , +3 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 1000 display_seq',
+'       , ''Aces''',
+'       , 99 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1, 1, 1, 0)) a1',
+'       , sum(decode(s2, 1, 1, 0)) a2',
+'       , sum(decode(s3, 1, 1, 0)) a3',
+'       , sum(decode(s4, 1, 1, 0)) a4',
+'       , sum(decode(s5, 1, 1, 0)) a5',
+'       , sum(decode(s6, 1, 1, 0)) a6',
+'       , sum(decode(s7, 1, 1, 0)) a7',
+'       , sum(decode(s8, 1, 1, 0)) a8',
+'       , sum(decode(s9, 1, 1, 0)) a9',
+'       , sum(decode(s10, 1, 1, 0)) a10',
+'       , sum(decode(s11, 1, 1, 0)) a11',
+'       , sum(decode(s12, 1, 1, 0)) a12',
+'       , sum(decode(s13, 1, 1, 0)) a13',
+'       , sum(decode(s14, 1, 1, 0)) a14',
+'       , sum(decode(s15, 1, 1, 0)) a15',
+'       , sum(decode(s16, 1, 1, 0)) a16',
+'       , sum(decode(s17, 1, 1, 0)) a17',
+'       , sum(decode(s18, 1, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+' ) r',
+'order by 1',
+''))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P110_WEEK,P110_PLAYER_ID'
+,p_lazy_loading=>true
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_row_count_max=>100
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429442735203004811)
+,p_query_column_id=>1
+,p_column_alias=>'DISPLAY_SEQ'
+,p_column_display_sequence=>10
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429442862879004812)
+,p_query_column_id=>2
+,p_column_alias=>'PREPARED_NAME'
+,p_column_display_sequence=>20
+,p_column_heading=>'Course'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span style="font-weight: bold;">#PREPARED_NAME#</span>',
+'<span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>',
+'<span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>'))
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429442915248004813)
+,p_query_column_id=>3
+,p_column_alias=>'DATA_FILTER'
+,p_column_display_sequence=>30
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443054044004814)
+,p_query_column_id=>4
+,p_column_alias=>'COURSE_MODE'
+,p_column_display_sequence=>40
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443146712004815)
+,p_query_column_id=>5
+,p_column_alias=>'DRILL_CLASS'
+,p_column_display_sequence=>50
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443289634004816)
+,p_query_column_id=>6
+,p_column_alias=>'H1'
+,p_column_display_sequence=>60
+,p_column_heading=>'H1'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H1#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443386243004817)
+,p_query_column_id=>7
+,p_column_alias=>'H2'
+,p_column_display_sequence=>70
+,p_column_heading=>'H2'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H2#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443456721004818)
+,p_query_column_id=>8
+,p_column_alias=>'H3'
+,p_column_display_sequence=>80
+,p_column_heading=>'H3'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H3#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443570892004819)
+,p_query_column_id=>9
+,p_column_alias=>'H4'
+,p_column_display_sequence=>90
+,p_column_heading=>'H4'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H4#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443637286004820)
+,p_query_column_id=>10
+,p_column_alias=>'H5'
+,p_column_display_sequence=>100
+,p_column_heading=>'H5'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H5#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443788890004821)
+,p_query_column_id=>11
+,p_column_alias=>'H6'
+,p_column_display_sequence=>110
+,p_column_heading=>'H6'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H6#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443871856004822)
+,p_query_column_id=>12
+,p_column_alias=>'H7'
+,p_column_display_sequence=>120
+,p_column_heading=>'H7'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H7#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429443983409004823)
+,p_query_column_id=>13
+,p_column_alias=>'H8'
+,p_column_display_sequence=>130
+,p_column_heading=>'H8'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H8#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444099117004824)
+,p_query_column_id=>14
+,p_column_alias=>'H9'
+,p_column_display_sequence=>140
+,p_column_heading=>'H9'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H9#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444104306004825)
+,p_query_column_id=>15
+,p_column_alias=>'H10'
+,p_column_display_sequence=>150
+,p_column_heading=>'H10'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H10#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444273649004826)
+,p_query_column_id=>16
+,p_column_alias=>'H11'
+,p_column_display_sequence=>160
+,p_column_heading=>'H11'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H11#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444371496004827)
+,p_query_column_id=>17
+,p_column_alias=>'H12'
+,p_column_display_sequence=>170
+,p_column_heading=>'H12'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H12#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444431813004828)
+,p_query_column_id=>18
+,p_column_alias=>'H13'
+,p_column_display_sequence=>180
+,p_column_heading=>'H13'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H13#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444523489004829)
+,p_query_column_id=>19
+,p_column_alias=>'H14'
+,p_column_display_sequence=>190
+,p_column_heading=>'H14'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H14#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444640833004830)
+,p_query_column_id=>20
+,p_column_alias=>'H15'
+,p_column_display_sequence=>200
+,p_column_heading=>'H15'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H15#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444777370004831)
+,p_query_column_id=>21
+,p_column_alias=>'H16'
+,p_column_display_sequence=>210
+,p_column_heading=>'H16'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H16#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444824370004832)
+,p_query_column_id=>22
+,p_column_alias=>'H17'
+,p_column_display_sequence=>220
+,p_column_heading=>'H17'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H17#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429444919776004833)
+,p_query_column_id=>23
+,p_column_alias=>'H18'
+,p_column_display_sequence=>230
+,p_column_heading=>'H18'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H18#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50429445044341004834)
+,p_query_column_id=>24
+,p_column_alias=>'COURSE_PAR'
+,p_column_display_sequence=>240
+,p_column_heading=>'Total'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(145264662457556461223)
+,p_name=>'Easy Stats'
+,p_parent_plug_id=>wwv_flow_imp.id(98299060405746359013)
+,p_template=>wwv_flow_imp.id(46986580184360702438)
+,p_display_sequence=>20
+,p_region_css_classes=>'easyMode'
+,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--noBorder:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
+,p_display_point=>'SUB_REGIONS'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with week_courses as (',
+'  select id course_id, course_mode, :P110_WEEK week',
+'    from wmg_courses',
+'   where id in (',
+'      select distinct course_id',
+'        from wmg_rounds ',
+'       where week = :P110_WEEK ',
+'    )',
+'   and course_mode = ''E''',
+')',
+'select 1 display_seq',
+'     , prepared_name',
+'     , null data_filter',
+'     , null course_mode',
+'     , ''disabled'' drill_class',
+'     , h1',
+'     , h2',
+'     , h3',
+'     , h4',
+'     , h5',
+'     , h6',
+'     , h7',
+'     , h8',
+'     , h9',
+'     , h10',
+'     , h11',
+'     , h12',
+'     , h13',
+'     , h14',
+'     , h15',
+'     , h16',
+'     , h17',
+'     , h18',
+'     , course_par',
+'  from wmg_courses_v',
+'where course_id in (',
+'  select course_id from week_courses',
+')',
+'union all',
+'select 2 display_seq',
+'     , player_name',
+'     , null data_filter',
+'     , null course_mode',
+'     , ''disabled'' drill_class,',
+'       S1,',
+'       S2,',
+'       S3,',
+'       S4,',
+'       S5,',
+'       S6,',
+'       S7,',
+'       S8,',
+'       S9,',
+'       S10,',
+'       S11,',
+'       S12,',
+'       S13,',
+'       S14,',
+'       S15,',
+'       S16,',
+'       S17,',
+'       S18,',
+'       UNDER_PAR',
+'  from WMG_ROUNDS_V',
+'  where week = :P110_WEEK',
+'    and player_id = :P110_PLAYER_ID',
+'    and course_mode = ''E''',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 90 display_seq',
+'       , ''Triple Bogeys''',
+'       , -3 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 3, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 3, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 3, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 3, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 3, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 3, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 3, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 3, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 3, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 3, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 3, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 3, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 3, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 3, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 3, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 3, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 3, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 3, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 100 display_seq',
+'       , ''Double Bogeys''',
+'       , -2 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 2, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 2, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 2, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 2, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 2, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 2, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 2, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 2, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 2, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 2, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 2, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 2, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 2, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 2, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 2, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 2, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 2, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 2, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID   ',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 200 display_seq',
+'       , ''Bogeys''',
+'       , -1 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1  - 1, h1, 1, 0)) a1',
+'       , sum(decode(s2  - 1, h2, 1, 0)) a2',
+'       , sum(decode(s3  - 1, h3, 1, 0)) a3',
+'       , sum(decode(s4  - 1, h4, 1, 0)) a4',
+'       , sum(decode(s5  - 1, h5, 1, 0)) a5',
+'       , sum(decode(s6  - 1, h6, 1, 0)) a6',
+'       , sum(decode(s7  - 1, h7, 1, 0)) a7',
+'       , sum(decode(s8  - 1, h8, 1, 0)) a8',
+'       , sum(decode(s9  - 1, h9, 1, 0)) a9',
+'       , sum(decode(s10 - 1, h10, 1, 0)) a10',
+'       , sum(decode(s11 - 1, h11, 1, 0)) a11',
+'       , sum(decode(s12 - 1, h12, 1, 0)) a12',
+'       , sum(decode(s13 - 1, h13, 1, 0)) a13',
+'       , sum(decode(s14 - 1, h14, 1, 0)) a14',
+'       , sum(decode(s15 - 1, h15, 1, 0)) a15',
+'       , sum(decode(s16 - 1, h16, 1, 0)) a16',
+'       , sum(decode(s17 - 1, h17, 1, 0)) a17',
+'       , sum(decode(s18 - 1, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID   ',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 300 display_seq',
+'       , ''Pars''',
+'       , 0 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1, h1, 1, 0)) a1',
+'       , sum(decode(s2, h2, 1, 0)) a2',
+'       , sum(decode(s3, h3, 1, 0)) a3',
+'       , sum(decode(s4, h4, 1, 0)) a4',
+'       , sum(decode(s5, h5, 1, 0)) a5',
+'       , sum(decode(s6, h6, 1, 0)) a6',
+'       , sum(decode(s7, h7, 1, 0)) a7',
+'       , sum(decode(s8, h8, 1, 0)) a8',
+'       , sum(decode(s9, h9, 1, 0)) a9',
+'       , sum(decode(s10, h10, 1, 0)) a10',
+'       , sum(decode(s11, h11, 1, 0)) a11',
+'       , sum(decode(s12, h12, 1, 0)) a12',
+'       , sum(decode(s13, h13, 1, 0)) a13',
+'       , sum(decode(s14, h14, 1, 0)) a14',
+'       , sum(decode(s15, h15, 1, 0)) a15',
+'       , sum(decode(s16, h16, 1, 0)) a16',
+'       , sum(decode(s17, h17, 1, 0)) a17',
+'       , sum(decode(s18, h18, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 400 display_seq',
+'       , ''Birdies''',
+'       , +1 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1  and s3  + 1 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1  and s4  + 1 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1  and s5  + 1 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1  and s6  + 1 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1  and s7  + 1 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1  and s8  + 1 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1  and s9  + 1 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 1 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 1 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 1 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 1 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 1 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 1 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 1 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 1 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 1 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 500 display_seq',
+'       , ''Eagles''',
+'       , +2 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1  and s3  + 2 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1  and s4  + 2 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1  and s5  + 2 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1  and s6  + 2 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1  and s7  + 2 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1  and s8  + 2 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1  and s9  + 2 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 2 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 2 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 2 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 2 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 2 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 2 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 2 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 2 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 2 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+') r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 600 display_seq',
+'       , ''Albatrosses''',
+'       , +3 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1',
+'       , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2',
+'       , sum(case when s3>1 and s3  + 3 = h3 then 1 else 0 end) a3',
+'       , sum(case when s4>1 and s4  + 3 = h4 then 1 else 0 end) a4',
+'       , sum(case when s5>1 and s5  + 3 = h5 then 1 else 0 end) a5',
+'       , sum(case when s6>1 and s6  + 3 = h6 then 1 else 0 end) a6',
+'       , sum(case when s7>1 and s7  + 3 = h7 then 1 else 0 end) a7',
+'       , sum(case when s8>1 and s8  + 3 = h8 then 1 else 0 end) a8',
+'       , sum(case when s9>1 and s9  + 3 = h9 then 1 else 0 end) a9',
+'       , sum(case when s10>1 and s10 + 3 = h10 then 1 else 0 end) a10',
+'       , sum(case when s11>1 and s11 + 3 = h11 then 1 else 0 end) a11',
+'       , sum(case when s12>1 and s12 + 3 = h12 then 1 else 0 end) a12',
+'       , sum(case when s13>1 and s13 + 3 = h13 then 1 else 0 end) a13',
+'       , sum(case when s14>1 and s14 + 3 = h14 then 1 else 0 end) a14',
+'       , sum(case when s15>1 and s15 + 3 = h15 then 1 else 0 end) a15',
+'       , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16',
+'       , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17',
+'       , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+'  ) r',
+'union all',
+'select r.*',
+'     , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total',
+' from (',
+'  select 1000 display_seq',
+'       , ''Aces''',
+'       , 99 data_filter',
+'       , w.course_mode',
+'       , '''' drill_class',
+'       , sum(decode(s1, 1, 1, 0)) a1',
+'       , sum(decode(s2, 1, 1, 0)) a2',
+'       , sum(decode(s3, 1, 1, 0)) a3',
+'       , sum(decode(s4, 1, 1, 0)) a4',
+'       , sum(decode(s5, 1, 1, 0)) a5',
+'       , sum(decode(s6, 1, 1, 0)) a6',
+'       , sum(decode(s7, 1, 1, 0)) a7',
+'       , sum(decode(s8, 1, 1, 0)) a8',
+'       , sum(decode(s9, 1, 1, 0)) a9',
+'       , sum(decode(s10, 1, 1, 0)) a10',
+'       , sum(decode(s11, 1, 1, 0)) a11',
+'       , sum(decode(s12, 1, 1, 0)) a12',
+'       , sum(decode(s13, 1, 1, 0)) a13',
+'       , sum(decode(s14, 1, 1, 0)) a14',
+'       , sum(decode(s15, 1, 1, 0)) a15',
+'       , sum(decode(s16, 1, 1, 0)) a16',
+'       , sum(decode(s17, 1, 1, 0)) a17',
+'       , sum(decode(s18, 1, 1, 0)) a18',
+'    from wmg_rounds_v r, week_courses w',
+'   where r.week = w.week',
+'     and r.course_id = w.course_id',
+'     and r.player_id = :P110_PLAYER_ID',
+'    group by w.course_mode',
+' ) r',
+'order by 1',
+''))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P110_WEEK,P110_PLAYER_ID'
+,p_lazy_loading=>true
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_row_count_max=>100
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+end;
+/
+begin
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809862415542178513)
+,p_query_column_id=>1
+,p_column_alias=>'DISPLAY_SEQ'
+,p_column_display_sequence=>10
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809853979487178494)
+,p_query_column_id=>2
+,p_column_alias=>'PREPARED_NAME'
+,p_column_display_sequence=>20
+,p_column_heading=>'Course'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<span style="font-weight: bold;">#PREPARED_NAME#</span>',
+'<span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>',
+'<span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>'))
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809862804954178513)
+,p_query_column_id=>3
+,p_column_alias=>'DATA_FILTER'
+,p_column_display_sequence=>30
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809863272580178514)
+,p_query_column_id=>4
+,p_column_alias=>'COURSE_MODE'
+,p_column_display_sequence=>35
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809863642280178515)
+,p_query_column_id=>5
+,p_column_alias=>'DRILL_CLASS'
+,p_column_display_sequence=>36
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809854318411178495)
+,p_query_column_id=>6
+,p_column_alias=>'H1'
+,p_column_display_sequence=>40
+,p_column_heading=>'H1'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H1#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809854795144178496)
+,p_query_column_id=>7
+,p_column_alias=>'H2'
+,p_column_display_sequence=>50
+,p_column_heading=>'H2'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H2#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809855100752178497)
+,p_query_column_id=>8
+,p_column_alias=>'H3'
+,p_column_display_sequence=>60
+,p_column_heading=>'H3'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H3#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809855413816178498)
+,p_query_column_id=>9
+,p_column_alias=>'H4'
+,p_column_display_sequence=>80
+,p_column_heading=>'H4'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H4#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809855868442178499)
+,p_query_column_id=>10
+,p_column_alias=>'H5'
+,p_column_display_sequence=>90
+,p_column_heading=>'H5'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H5#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809856267602178500)
+,p_query_column_id=>11
+,p_column_alias=>'H6'
+,p_column_display_sequence=>100
+,p_column_heading=>'H6'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H6#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809856629310178501)
+,p_query_column_id=>12
+,p_column_alias=>'H7'
+,p_column_display_sequence=>110
+,p_column_heading=>'H7'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H7#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809857013828178502)
+,p_query_column_id=>13
+,p_column_alias=>'H8'
+,p_column_display_sequence=>120
+,p_column_heading=>'H8'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H8#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809857456516178503)
+,p_query_column_id=>14
+,p_column_alias=>'H9'
+,p_column_display_sequence=>130
+,p_column_heading=>'H9'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H9#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809857893567178505)
+,p_query_column_id=>15
+,p_column_alias=>'H10'
+,p_column_display_sequence=>140
+,p_column_heading=>'H10'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H10#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809858255734178506)
+,p_query_column_id=>16
+,p_column_alias=>'H11'
+,p_column_display_sequence=>150
+,p_column_heading=>'H11'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H11#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809858623711178506)
+,p_query_column_id=>17
+,p_column_alias=>'H12'
+,p_column_display_sequence=>160
+,p_column_heading=>'H12'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H12#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809859056169178507)
+,p_query_column_id=>18
+,p_column_alias=>'H13'
+,p_column_display_sequence=>170
+,p_column_heading=>'H13'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H13#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809859718001178507)
+,p_query_column_id=>19
+,p_column_alias=>'H14'
+,p_column_display_sequence=>180
+,p_column_heading=>'H14'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H14#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809860407358178508)
+,p_query_column_id=>20
+,p_column_alias=>'H15'
+,p_column_display_sequence=>190
+,p_column_heading=>'H15'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H15#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809860854203178509)
+,p_query_column_id=>21
+,p_column_alias=>'H16'
+,p_column_display_sequence=>200
+,p_column_heading=>'H16'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H16#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809861254544178510)
+,p_query_column_id=>22
+,p_column_alias=>'H17'
+,p_column_display_sequence=>210
+,p_column_heading=>'H17'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H17#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809861695404178511)
+,p_query_column_id=>23
+,p_column_alias=>'H18'
+,p_column_display_sequence=>220
+,p_column_heading=>'H18'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<span class="drill#DRILL_CLASS#">#H18#</span>'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(50809862087817178511)
+,p_query_column_id=>24
+,p_column_alias=>'COURSE_PAR'
+,p_column_display_sequence=>230
+,p_column_heading=>'Total'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(98800129858927712032)
@@ -33026,24 +34367,6 @@ wwv_flow_imp_page.create_report_region(
 '       S17,',
 '       S18,',
 '       ROUND_STROKES,',
-'       PAR1,',
-'       PAR2,',
-'       PAR3,',
-'       PAR4,',
-'       PAR5,',
-'       PAR6,',
-'       PAR7,',
-'       PAR8,',
-'       PAR9,',
-'       PAR10,',
-'       PAR11,',
-'       PAR12,',
-'       PAR13,',
-'       PAR14,',
-'       PAR15,',
-'       PAR16,',
-'       PAR17,',
-'       PAR18,',
 '       UNDER_PAR',
 '  from WMG_ROUNDS_V',
 '  where week = :P110_WEEK',
@@ -33054,10 +34377,11 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
 ,p_query_num_rows=>50
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
-,p_query_no_data_found=>'no data found'
+,p_query_no_data_found=>'No scores for the player.'
 ,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_query_row_count_max=>500
 ,p_pagination_display_position=>'BOTTOM_RIGHT'
+,p_csv_output=>'N'
 ,p_prn_output=>'N'
 ,p_prn_format=>'PDF'
 ,p_sort_null=>'L'
@@ -33121,144 +34445,234 @@ wwv_flow_imp_page.create_report_columns(
 ,p_query_column_id=>6
 ,p_column_alias=>'S1'
 ,p_column_display_sequence=>31
-,p_hidden_column=>'Y'
+,p_column_heading=>'S1'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400107157072997944)
 ,p_query_column_id=>7
 ,p_column_alias=>'S2'
 ,p_column_display_sequence=>32
-,p_hidden_column=>'Y'
+,p_column_heading=>'S2'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400107539485997944)
 ,p_query_column_id=>8
 ,p_column_alias=>'S3'
 ,p_column_display_sequence=>33
-,p_hidden_column=>'Y'
+,p_column_heading=>'S3'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400107965198997944)
 ,p_query_column_id=>9
 ,p_column_alias=>'S4'
 ,p_column_display_sequence=>34
-,p_hidden_column=>'Y'
+,p_column_heading=>'S4'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400108315424997945)
 ,p_query_column_id=>10
 ,p_column_alias=>'S5'
 ,p_column_display_sequence=>35
-,p_hidden_column=>'Y'
+,p_column_heading=>'S5'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400108741499997945)
 ,p_query_column_id=>11
 ,p_column_alias=>'S6'
 ,p_column_display_sequence=>36
-,p_hidden_column=>'Y'
+,p_column_heading=>'S6'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400109150743997945)
 ,p_query_column_id=>12
 ,p_column_alias=>'S7'
 ,p_column_display_sequence=>37
-,p_hidden_column=>'Y'
+,p_column_heading=>'S7'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400109506958997945)
 ,p_query_column_id=>13
 ,p_column_alias=>'S8'
 ,p_column_display_sequence=>38
-,p_hidden_column=>'Y'
+,p_column_heading=>'S8'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400109969024997945)
 ,p_query_column_id=>14
 ,p_column_alias=>'S9'
 ,p_column_display_sequence=>39
-,p_hidden_column=>'Y'
+,p_column_heading=>'S9'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400110345818997946)
 ,p_query_column_id=>15
 ,p_column_alias=>'S10'
 ,p_column_display_sequence=>40
-,p_hidden_column=>'Y'
+,p_column_heading=>'S10'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400110796267997946)
 ,p_query_column_id=>16
 ,p_column_alias=>'S11'
 ,p_column_display_sequence=>41
-,p_hidden_column=>'Y'
+,p_column_heading=>'S11'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400111117043997946)
 ,p_query_column_id=>17
 ,p_column_alias=>'S12'
 ,p_column_display_sequence=>42
-,p_hidden_column=>'Y'
+,p_column_heading=>'S12'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400111509538997947)
 ,p_query_column_id=>18
 ,p_column_alias=>'S13'
 ,p_column_display_sequence=>43
-,p_hidden_column=>'Y'
+,p_column_heading=>'S13'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400111935471997947)
 ,p_query_column_id=>19
 ,p_column_alias=>'S14'
 ,p_column_display_sequence=>44
-,p_hidden_column=>'Y'
+,p_column_heading=>'S14'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400112340282997947)
 ,p_query_column_id=>20
 ,p_column_alias=>'S15'
 ,p_column_display_sequence=>45
-,p_hidden_column=>'Y'
+,p_column_heading=>'S15'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400112716337997947)
 ,p_query_column_id=>21
 ,p_column_alias=>'S16'
 ,p_column_display_sequence=>46
-,p_hidden_column=>'Y'
+,p_column_heading=>'S16'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400113190196997947)
 ,p_query_column_id=>22
 ,p_column_alias=>'S17'
 ,p_column_display_sequence=>47
-,p_hidden_column=>'Y'
+,p_column_heading=>'S17'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400113538908997947)
 ,p_query_column_id=>23
 ,p_column_alias=>'S18'
 ,p_column_display_sequence=>48
-,p_hidden_column=>'Y'
+,p_column_heading=>'S18'
+,p_use_as_row_header=>'N'
+,p_column_hit_highlight=>'1'
+,p_column_alignment=>'CENTER'
+,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
+,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400113910296997948)
@@ -33269,229 +34683,13 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400114375391997948)
-,p_query_column_id=>25
-,p_column_alias=>'PAR1'
-,p_column_display_sequence=>50
-,p_column_heading=>'H1'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400114782767997948)
-,p_query_column_id=>26
-,p_column_alias=>'PAR2'
-,p_column_display_sequence=>51
-,p_column_heading=>'H2'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400115154163997948)
-,p_query_column_id=>27
-,p_column_alias=>'PAR3'
-,p_column_display_sequence=>52
-,p_column_heading=>'H3'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400115503085997948)
-,p_query_column_id=>28
-,p_column_alias=>'PAR4'
-,p_column_display_sequence=>53
-,p_column_heading=>'H4'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400115977114997949)
-,p_query_column_id=>29
-,p_column_alias=>'PAR5'
-,p_column_display_sequence=>54
-,p_column_heading=>'H5'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400116303688997949)
-,p_query_column_id=>30
-,p_column_alias=>'PAR6'
-,p_column_display_sequence=>55
-,p_column_heading=>'H6'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400116728602997949)
-,p_query_column_id=>31
-,p_column_alias=>'PAR7'
-,p_column_display_sequence=>56
-,p_column_heading=>'H7'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400117116248997949)
-,p_query_column_id=>32
-,p_column_alias=>'PAR8'
-,p_column_display_sequence=>57
-,p_column_heading=>'H8'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400117593835997950)
-,p_query_column_id=>33
-,p_column_alias=>'PAR9'
-,p_column_display_sequence=>58
-,p_column_heading=>'H9'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400117902251997950)
-,p_query_column_id=>34
-,p_column_alias=>'PAR10'
-,p_column_display_sequence=>59
-,p_column_heading=>'H10'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400118345837997950)
-,p_query_column_id=>35
-,p_column_alias=>'PAR11'
-,p_column_display_sequence=>60
-,p_column_heading=>'H11'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400118760568997950)
-,p_query_column_id=>36
-,p_column_alias=>'PAR12'
-,p_column_display_sequence=>61
-,p_column_heading=>'H12'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400119193168997950)
-,p_query_column_id=>37
-,p_column_alias=>'PAR13'
-,p_column_display_sequence=>62
-,p_column_heading=>'H13'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400119537975997950)
-,p_query_column_id=>38
-,p_column_alias=>'PAR14'
-,p_column_display_sequence=>63
-,p_column_heading=>'H14'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400119977023997951)
-,p_query_column_id=>39
-,p_column_alias=>'PAR15'
-,p_column_display_sequence=>64
-,p_column_heading=>'H115'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400120341178997951)
-,p_query_column_id=>40
-,p_column_alias=>'PAR16'
-,p_column_display_sequence=>65
-,p_column_heading=>'H16'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400120701742997951)
-,p_query_column_id=>41
-,p_column_alias=>'PAR17'
-,p_column_display_sequence=>66
-,p_column_heading=>'H17'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49400121184425997951)
-,p_query_column_id=>42
-,p_column_alias=>'PAR18'
-,p_column_display_sequence=>67
-,p_column_heading=>'H18'
-,p_use_as_row_header=>'N'
-,p_column_alignment=>'RIGHT'
-,p_disable_sort_column=>'N'
-,p_derived_column=>'N'
-,p_include_in_export=>'Y'
-);
-wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49400121535233997951)
-,p_query_column_id=>43
+,p_query_column_id=>25
 ,p_column_alias=>'UNDER_PAR'
 ,p_column_display_sequence=>68
 ,p_column_heading=>'Under Par'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>'#ROUND_STROKES#/#UNDER_PAR#'
+,p_column_html_expression=>'#ROUND_STROKES# /#UNDER_PAR#'
 ,p_column_alignment=>'CENTER'
 ,p_disable_sort_column=>'N'
 ,p_sum_column=>'Y'
@@ -33553,6 +34751,51 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(98800129858927712032)
 );
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429442582077004809)
+,p_event_id=>wwv_flow_imp.id(49305651562201776616)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(145264662457556461223)
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(50429445104772004835)
+,p_event_id=>wwv_flow_imp.id(49305651562201776616)
+,p_event_result=>'TRUE'
+,p_action_sequence=>30
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(50429442663637004810)
+);
+end;
+/
+prompt --application/pages/page_01000
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>1000
+,p_user_interface_id=>wwv_flow_imp.id(46986677909852702488)
+,p_name=>'auth'
+,p_alias=>'AUTH'
+,p_step_title=>'auth'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_protection_level=>'C'
+,p_page_component_map=>'11'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20220922213521'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(47577408469812657318)
+,p_branch_name=>'Go to Home'
+,p_branch_action=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'BEFORE_HEADER'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>10
+);
 end;
 /
 prompt --application/pages/page_09999
@@ -33566,24 +34809,64 @@ wwv_flow_imp_page.create_page(
 ,p_warn_on_unsaved_changes=>'N'
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'.google-style {',
+'    --a-button-background-color: var(--rw-palette-blue-100);',
+'    --a-button-text-color: var(--rw-palette-green-0);',
+'    --a-button-hover-background-color: var(--rw-palette-blue-110);',
+'    --a-button-hover-text-color: var(--a-button-text-color);',
+'    --a-button-hover-border-color: var(--a-button-hover-background-color);',
+'    --a-button-active-background-color: var(--rw-palette-blue-120);',
+'    --a-button-active-text-color: var(--a-button-hover-text-color);',
+'    --a-button-active-border-color: var(--a-button-active-background-color);',
+'    --a-button-focus-background-color: var(--a-button-hover-background-color);',
+'    --a-button-focus-text-color: var(--a-button-hover-text-color);',
+'    --a-button-focus-border-color: var(--a-button-focus-background-color);',
+'}'))
 ,p_step_template=>wwv_flow_imp.id(46986494461795702403)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'12'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220908223554'
+,p_last_upd_yyyymmddhh24miss=>'20220923165846'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986690493641702572)
 ,p_plug_name=>'WMG'
 ,p_region_template_options=>'#DEFAULT#'
 ,p_plug_template=>wwv_flow_imp.id(46986577691210702437)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>20
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_region_image=>'#APP_FILES#icons/app-icon-512.png'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'TEXT'
 ,p_attribute_03=>'Y'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(47577408628042657320)
+,p_plug_name=>'Sign In'
+,p_region_template_options=>'#DEFAULT#:t-Login-region--headerTitle js-removeLandmark'
+,p_plug_template=>wwv_flow_imp.id(46986577691210702437)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(47577408275874657316)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(47577408628042657320)
+,p_button_name=>'LOGIN_GOOGLE'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(46986653123744702471)
+,p_button_image_alt=>'Sign In with Google'
+,p_button_position=>'NEXT'
+,p_button_redirect_url=>'f?p=&APP_ID.:1000:&SESSION.:APEX_AUTHENTICATION=google:&DEBUG.:::'
+,p_button_css_classes=>'google-style'
+,p_icon_css_classes=>'fa-google'
 );
 wwv_flow_imp_page.create_page_button(
  p_id=>wwv_flow_imp.id(46986692592679702574)
@@ -38845,22 +40128,32 @@ wwv_flow_imp_page.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_group_id=>wwv_flow_imp.id(46986684228947702497)
 ,p_required_patch=>wwv_flow_imp.id(46986680684217702495)
+,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_help_text=>'All application help text can be accessed from this page. The links in the "Documentation" region give a much more in-depth explanation of the application''s features and functionality.'
 ,p_page_component_map=>'11'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220908223612'
+,p_last_upd_yyyymmddhh24miss=>'20220924155044'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46987056217710704321)
-,p_plug_name=>'About Page'
+,p_plug_name=>'About &APP_NAME.'
 ,p_region_template_options=>'#DEFAULT#:t-ContentBlock--padded:t-ContentBlock--h1:t-ContentBlock--lightBG'
-,p_escape_on_http_output=>'Y'
 ,p_plug_template=>wwv_flow_imp.id(46986548188719702425)
 ,p_plug_display_sequence=>20
-,p_query_type=>'SQL'
-,p_plug_source=>'Text about this application can be placed here.'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'This web application is built using <a href="https://apex.oracle.com/en/" target="_blank">Oracle APEX</a> with the purpose of analyzing and exploring the results of Walkabout Minig Golf tournaments.<br>',
+'<br>',
+unistr('APEX is a Low Code platform that goes from Low Code all the way to High Control. Behind the scenes there is an Oracle Database, PL/SQL Code, SQL statements, plus some HTML and CSS. The whole project is available in <a href=\201C https://github.com/rimbla')
+||unistr('s/wmgt\201D target="_blank" >GitHub</a>.<br> '),
+'<br>',
+'All the analysis is comprised of multiple hand crafted SQL statements that slice and dice the available data.<br>',
+'As such, although great care has been put into the correct presentation of results and statistics, there may be omisions and mistakes in some of the results.<br>',
+'That said, several people have been involved during testing and validation week after week; as well as providing new ideas so that the best results possible can be provided.<br>',
+'<br>',
+'<i>- <a href="https://rimblas.com" target="_blank">Jorge</a></i>'))
 ,p_plug_query_num_rows=>15
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 ,p_attribute_01=>'N'
 ,p_attribute_02=>'HTML'
 ,p_attribute_03=>'Y'
@@ -38881,10 +40174,11 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_required_patch=>wwv_flow_imp.id(46986680684217702495)
 ,p_dialog_chained=>'N'
+,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'10'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220908223612'
+,p_last_upd_yyyymmddhh24miss=>'20220924153031'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46987056899263704322)
