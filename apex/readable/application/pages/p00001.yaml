@@ -20,6 +20,9 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  inline: '#optionsRegion .t-HeroRegion-title {display: none;}'
+
 security: 
   authentication: Page Is Public
   deep-linking: Application Default
@@ -38,10 +41,10 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: WMGT Analysis ===============================
+- # ====== Region: WMG Tournament ==============================
   id: 46986695303177702576
   identification: 
-    title: WMGT Analysis
+    title: WMG Tournament
     type: Static Content
 
   layout: 
@@ -58,6 +61,8 @@ regions:
     template: Hero # 46986552355884702427
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - hidden-sm-down
     render-components: Above Content
 
   image: 
@@ -88,7 +93,7 @@ regions:
     list: Page Navigation # 46986883504791703654
 
   layout: 
-    sequence: 30
+    sequence: 20
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -124,4 +129,58 @@ regions:
       - t-Cards--4cols
       - t-Cards--hideBody
       - t-Cards--animColorFill
+
+- # ====== Region: Tournament Options ==========================
+  id: 50429446025262004844
+  identification: 
+    title: Tournament Options
+    type: List
+
+  source: 
+    list: Tournament Options # 55884590206608414057
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Hero # 46986552355884702427
+    template-options: 
+    - '#DEFAULT#'
+    - t-HeroRegion--featured t-HeroRegion--centered
+    - t-HeroRegion--hideIcon
+    render-components: Above Content
+
+  advanced: 
+    static-id: optionsRegion
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  security: 
+    authorization-scheme: Administration Rights # 46986682652284702496
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      list-template: Cards # 46986628863802702458
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+      - t-Cards--displaySubtitle
+      - t-Cards--featured force-fa-lg
+      - t-Cards--displayIcons
+      - t-Cards--4cols
+      - t-Cards--hideBody
+      - t-Cards--animRaiseCard
 

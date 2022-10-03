@@ -1,0 +1,1787 @@
+---
+# ====== Page: Rounds ========================================
+id: 12
+identification: 
+  name: Rounds
+  alias: ROUNDS1
+  title: Rounds
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Normal
+  page-template: Standard # 46986509683871702409
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Breadcrumb ==================================
+  id: 52970709845508917646
+  identification: 
+    title: Breadcrumb
+    type: Breadcrumb
+
+  source: 
+    breadcrumb: Breadcrumb # 46986483063942702397
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Title Bar # 46986592559371702443
+    template-options: 
+    - '#DEFAULT#'
+    - t-BreadcrumbRegion--useBreadcrumbTitle
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      breadcrumb-template: Breadcrumb # 46986654645437702471
+      template-options: 
+      - '#DEFAULT#'
+
+- # ====== Region: Search Results ==============================
+  id: 52970710421947917652
+  identification: 
+    title: Search Results
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_ROUNDS_V
+    include-rowid-column: false
+
+  order-by: 
+    type: None
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--hideHeader
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlight
+      - t-Report--inline
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 100000
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 52970714385984917731
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 1
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 52970714741338917732
+    identification: 
+      column-name: ACCOUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 2
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 52970715112627917732
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 3
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_ID ===================================
+    id: 52970715515235917732
+    identification: 
+      column-name: COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 4
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_CODE =================================
+    id: 52970715945305917733
+    identification: 
+      column-name: COURSE_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Course Code
+      alignment: start
+
+    layout: 
+      sequence: 5
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_NAME =================================
+    id: 52970716334705917733
+    identification: 
+      column-name: COURSE_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 6
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 52970716796307917733
+    identification: 
+      column-name: COURSE_MODE
+      type: Plain Text
+
+    heading: 
+      heading: Course Mode
+      alignment: start
+
+    layout: 
+      sequence: 7
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H1 ==========================================
+    id: 52970717130249917733
+    identification: 
+      column-name: H1
+      type: Hidden Column
+
+    layout: 
+      sequence: 8
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H2 ==========================================
+    id: 52970717505761917733
+    identification: 
+      column-name: H2
+      type: Hidden Column
+
+    layout: 
+      sequence: 9
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H3 ==========================================
+    id: 52970717901974917734
+    identification: 
+      column-name: H3
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H4 ==========================================
+    id: 52970718324985917734
+    identification: 
+      column-name: H4
+      type: Hidden Column
+
+    layout: 
+      sequence: 11
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H5 ==========================================
+    id: 52970718749307917734
+    identification: 
+      column-name: H5
+      type: Hidden Column
+
+    layout: 
+      sequence: 12
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H6 ==========================================
+    id: 52970719124974917734
+    identification: 
+      column-name: H6
+      type: Hidden Column
+
+    layout: 
+      sequence: 13
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H7 ==========================================
+    id: 52970719581931917734
+    identification: 
+      column-name: H7
+      type: Hidden Column
+
+    layout: 
+      sequence: 14
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H8 ==========================================
+    id: 52970719991136917734
+    identification: 
+      column-name: H8
+      type: Hidden Column
+
+    layout: 
+      sequence: 15
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H9 ==========================================
+    id: 52970720312246917734
+    identification: 
+      column-name: H9
+      type: Hidden Column
+
+    layout: 
+      sequence: 16
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H10 =========================================
+    id: 52970720718005917735
+    identification: 
+      column-name: H10
+      type: Hidden Column
+
+    layout: 
+      sequence: 17
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H11 =========================================
+    id: 52970721153393917735
+    identification: 
+      column-name: H11
+      type: Hidden Column
+
+    layout: 
+      sequence: 18
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H12 =========================================
+    id: 52970721516442917735
+    identification: 
+      column-name: H12
+      type: Hidden Column
+
+    layout: 
+      sequence: 19
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H13 =========================================
+    id: 52970721966576917735
+    identification: 
+      column-name: H13
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H14 =========================================
+    id: 52970722353387917735
+    identification: 
+      column-name: H14
+      type: Hidden Column
+
+    layout: 
+      sequence: 21
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H15 =========================================
+    id: 52970722742733917736
+    identification: 
+      column-name: H15
+      type: Hidden Column
+
+    layout: 
+      sequence: 22
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H16 =========================================
+    id: 52970723133123917736
+    identification: 
+      column-name: H16
+      type: Hidden Column
+
+    layout: 
+      sequence: 23
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H17 =========================================
+    id: 52970723571028917736
+    identification: 
+      column-name: H17
+      type: Hidden Column
+
+    layout: 
+      sequence: 24
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H18 =========================================
+    id: 52970723947244917736
+    identification: 
+      column-name: H18
+      type: Hidden Column
+
+    layout: 
+      sequence: 25
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 52970724388238917736
+    identification: 
+      column-name: COURSE_PAR
+      type: Hidden Column
+
+    layout: 
+      sequence: 26
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_ID ====================================
+    id: 52970724798816917736
+    identification: 
+      column-name: ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 27
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_PLAYED_ON =============================
+    id: 52970725193923917737
+    identification: 
+      column-name: ROUND_PLAYED_ON
+      type: Hidden Column
+
+    layout: 
+      sequence: 28
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 52970725548076917737
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 2
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROOM_NAME ===================================
+    id: 52970725997575917737
+    identification: 
+      column-name: ROOM_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S1 ==========================================
+    id: 52970726363683917737
+    identification: 
+      column-name: S1
+      type: Hidden Column
+
+    layout: 
+      sequence: 31
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S2 ==========================================
+    id: 52970726786499917737
+    identification: 
+      column-name: S2
+      type: Hidden Column
+
+    layout: 
+      sequence: 32
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S3 ==========================================
+    id: 52970727169720917737
+    identification: 
+      column-name: S3
+      type: Hidden Column
+
+    layout: 
+      sequence: 33
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S4 ==========================================
+    id: 52970727578729917738
+    identification: 
+      column-name: S4
+      type: Hidden Column
+
+    layout: 
+      sequence: 34
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S5 ==========================================
+    id: 52970727947456917738
+    identification: 
+      column-name: S5
+      type: Hidden Column
+
+    layout: 
+      sequence: 35
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S6 ==========================================
+    id: 52970728307861917738
+    identification: 
+      column-name: S6
+      type: Hidden Column
+
+    layout: 
+      sequence: 36
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S7 ==========================================
+    id: 52970728711251917738
+    identification: 
+      column-name: S7
+      type: Hidden Column
+
+    layout: 
+      sequence: 37
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S8 ==========================================
+    id: 52970729115345917738
+    identification: 
+      column-name: S8
+      type: Hidden Column
+
+    layout: 
+      sequence: 38
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S9 ==========================================
+    id: 52970729500770917739
+    identification: 
+      column-name: S9
+      type: Hidden Column
+
+    layout: 
+      sequence: 39
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S10 =========================================
+    id: 52970729929435917739
+    identification: 
+      column-name: S10
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S11 =========================================
+    id: 52970730329671917739
+    identification: 
+      column-name: S11
+      type: Hidden Column
+
+    layout: 
+      sequence: 41
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S12 =========================================
+    id: 52970730775740917739
+    identification: 
+      column-name: S12
+      type: Hidden Column
+
+    layout: 
+      sequence: 42
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S13 =========================================
+    id: 52970731138198917739
+    identification: 
+      column-name: S13
+      type: Hidden Column
+
+    layout: 
+      sequence: 43
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S14 =========================================
+    id: 52970731504279917739
+    identification: 
+      column-name: S14
+      type: Hidden Column
+
+    layout: 
+      sequence: 44
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S15 =========================================
+    id: 52970731972938917740
+    identification: 
+      column-name: S15
+      type: Hidden Column
+
+    layout: 
+      sequence: 45
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S16 =========================================
+    id: 52970732342361917740
+    identification: 
+      column-name: S16
+      type: Hidden Column
+
+    layout: 
+      sequence: 46
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S17 =========================================
+    id: 52970732770925917740
+    identification: 
+      column-name: S17
+      type: Hidden Column
+
+    layout: 
+      sequence: 47
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S18 =========================================
+    id: 52970733142514917740
+    identification: 
+      column-name: S18
+      type: Hidden Column
+
+    layout: 
+      sequence: 48
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_STROKES ===============================
+    id: 52970733568920917741
+    identification: 
+      column-name: ROUND_STROKES
+      type: Plain Text
+
+    heading: 
+      heading: Strokes
+      alignment: center
+
+    layout: 
+      sequence: 49
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR1 ========================================
+    id: 52970733970071917741
+    identification: 
+      column-name: PAR1
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR2 ========================================
+    id: 52970734383640917741
+    identification: 
+      column-name: PAR2
+      type: Hidden Column
+
+    layout: 
+      sequence: 51
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR3 ========================================
+    id: 52970734779363917741
+    identification: 
+      column-name: PAR3
+      type: Hidden Column
+
+    layout: 
+      sequence: 52
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR4 ========================================
+    id: 52970735141823917741
+    identification: 
+      column-name: PAR4
+      type: Hidden Column
+
+    layout: 
+      sequence: 53
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR5 ========================================
+    id: 52970735580765917741
+    identification: 
+      column-name: PAR5
+      type: Hidden Column
+
+    layout: 
+      sequence: 54
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR6 ========================================
+    id: 52970735942013917742
+    identification: 
+      column-name: PAR6
+      type: Hidden Column
+
+    layout: 
+      sequence: 55
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR7 ========================================
+    id: 52970736383480917742
+    identification: 
+      column-name: PAR7
+      type: Hidden Column
+
+    layout: 
+      sequence: 56
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR8 ========================================
+    id: 52970736726082917742
+    identification: 
+      column-name: PAR8
+      type: Hidden Column
+
+    layout: 
+      sequence: 57
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR9 ========================================
+    id: 52970737105657917742
+    identification: 
+      column-name: PAR9
+      type: Hidden Column
+
+    layout: 
+      sequence: 58
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR10 =======================================
+    id: 52970737548545917742
+    identification: 
+      column-name: PAR10
+      type: Hidden Column
+
+    layout: 
+      sequence: 59
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR11 =======================================
+    id: 52970737981537917742
+    identification: 
+      column-name: PAR11
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR12 =======================================
+    id: 52970738350254917743
+    identification: 
+      column-name: PAR12
+      type: Hidden Column
+
+    layout: 
+      sequence: 61
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR13 =======================================
+    id: 52970738752866917743
+    identification: 
+      column-name: PAR13
+      type: Hidden Column
+
+    layout: 
+      sequence: 62
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR14 =======================================
+    id: 52970739178613917743
+    identification: 
+      column-name: PAR14
+      type: Hidden Column
+
+    layout: 
+      sequence: 63
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR15 =======================================
+    id: 52970739523476917743
+    identification: 
+      column-name: PAR15
+      type: Hidden Column
+
+    layout: 
+      sequence: 64
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR16 =======================================
+    id: 52970739931224917743
+    identification: 
+      column-name: PAR16
+      type: Hidden Column
+
+    layout: 
+      sequence: 65
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR17 =======================================
+    id: 52970740311681917743
+    identification: 
+      column-name: PAR17
+      type: Hidden Column
+
+    layout: 
+      sequence: 66
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PAR18 =======================================
+    id: 52970740752878917743
+    identification: 
+      column-name: PAR18
+      type: Hidden Column
+
+    layout: 
+      sequence: 67
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UNDER_PAR ===================================
+    id: 52970741121937917744
+    identification: 
+      column-name: UNDER_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Score
+      alignment: center
+
+    layout: 
+      sequence: 68
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Search ======================================
+  id: 52970710588239917652
+  identification: 
+    title: Search
+    type: Smart Filters
+
+  source: 
+    filtered-region: Search Results # 52970710421947917652
+
+  layout: 
+    sequence: 10
+    parent-region: Breadcrumb # 52970709845508917646
+    position: SMART_FILTERS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      more-filters-suggestion-chip: false
+      compact-numbers-threshold: 10000
+      show-total-row-count: No
+
+  facets: 
+  - # ====== Facet: P12_SEARCH ===================================
+    id: 52970711060334917654
+    identification: 
+      name: P12_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      input-field: Top of Faceted Search Region
+
+    layout: 
+      sequence: 10
+
+    source: 
+      database-column(s): ACCOUNT,PLAYER_NAME,COURSE_CODE,COURSE_NAME,COURSE_MODE,WEEK,ROOM_NAME
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Facet: P12_PLAYER_NAME ==============================
+    id: 52970711818292917655
+    identification: 
+      name: P12_PLAYER_NAME
+      type: Checkbox Group
+
+    label: 
+      label: Player
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 30
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: PLAYER_NAME
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P12_COURSE_NAME ==============================
+    id: 52970712676222917655
+    identification: 
+      name: P12_COURSE_NAME
+      type: Checkbox Group
+
+    label: 
+      label: Course
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 40
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COURSE_NAME
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P12_COURSE_MODE ==============================
+    id: 52970713088405917655
+    identification: 
+      name: P12_COURSE_MODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Mode
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 50
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:Easy;E,Hard;H'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P12_WEEK =====================================
+    id: 52970713420699917655
+    identification: 
+      name: P12_WEEK
+      type: Checkbox Group
+
+    label: 
+      label: Week
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 20
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: WEEK
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P12_ROOM_NAME ================================
+    id: 52970713826847917656
+    identification: 
+      name: P12_ROOM_NAME
+      type: Input Field
+
+    label: 
+      label: Room Name
+      show-label-for-current-facet: true
+
+    settings: 
+      comparison-operator: Equals
+
+    layout: 
+      sequence: 70
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: ROOM_NAME
+      data-type: VARCHAR2
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  filters: 
+  - # ====== Filter: P12_SEARCH ==================================
+    id: 52970711060334917654
+    identification: 
+      name: P12_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      collapsed-search-field: false
+
+    layout: 
+      sequence: 10
+
+    source: 
+      database-column(s): ACCOUNT,PLAYER_NAME,COURSE_CODE,COURSE_NAME,COURSE_MODE,WEEK,ROOM_NAME
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Filter: P12_PLAYER_NAME =============================
+    id: 52970711818292917655
+    identification: 
+      name: P12_PLAYER_NAME
+      type: Checkbox Group
+
+    label: 
+      label: Player
+
+    layout: 
+      sequence: 30
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: PLAYER_NAME
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P12_COURSE_NAME =============================
+    id: 52970712676222917655
+    identification: 
+      name: P12_COURSE_NAME
+      type: Checkbox Group
+
+    label: 
+      label: Course
+
+    layout: 
+      sequence: 40
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: Dynamic
+      show-label: true
+
+    source: 
+      database-column: COURSE_NAME
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P12_COURSE_MODE =============================
+    id: 52970713088405917655
+    identification: 
+      name: P12_COURSE_MODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Mode
+
+    layout: 
+      sequence: 50
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:Easy;E,Hard;H'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: Dynamic
+      show-label: true
+
+    source: 
+      database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P12_WEEK ====================================
+    id: 52970713420699917655
+    identification: 
+      name: P12_WEEK
+      type: Checkbox Group
+
+    label: 
+      label: Week
+
+    layout: 
+      sequence: 20
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: Dynamic
+      show-label: true
+
+    source: 
+      database-column: WEEK
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P12_ROOM_NAME ===============================
+    id: 52970713826847917656
+    identification: 
+      name: P12_ROOM_NAME
+      type: Input Field
+
+    label: 
+      label: Room Name
+
+    settings: 
+      comparison-operator: Equals
+
+    layout: 
+      sequence: 70
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: ROOM_NAME
+      data-type: VARCHAR2
+
+    security: 
+      store-value-encrypted-in-session-state: true
+

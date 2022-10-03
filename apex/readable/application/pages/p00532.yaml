@@ -1,0 +1,1094 @@
+---
+# ====== Page: Wmg Tournament Sessions =======================
+id: 532
+identification: 
+  name: Wmg Tournament Sessions
+  alias: WMG-TOURNAMENT-SESSIONS
+  title: Tournament Sessions
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+dialog: 
+  chained: false
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Tournament Sessions =========================
+  id: 56149524865750424863
+  identification: 
+    title: Tournament Sessions
+    type: Form
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_TOURNAMENT_SESSIONS
+    include-rowid-column: true
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+
+- # ====== Region: Buttons =====================================
+  id: 56149537080911424870
+  identification: 
+    title: Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: REGION_POSITION_03
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: Text (escape special characters)
+      show-line-breaks: true
+
+page-items: 
+- # ====== Page Item: P532_EASY_COURSE_ID ======================
+  id: 56015645078624939730
+  identification: 
+    name: P532_EASY_COURSE_ID
+    type: Select List
+
+  label: 
+    label: Easy Course
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 70
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select code || ' - ' || name d
+           , id 
+      from wmg_courses
+      where course_mode = 'E'
+      order by 1
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_HARD_COURSE_ID ======================
+  id: 56015645176711939731
+  identification: 
+    name: P532_HARD_COURSE_ID
+    type: Select List
+
+  label: 
+    label: Hard Course
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 80
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select code || ' - ' || name d
+           , id 
+      from wmg_courses
+      where course_mode = 'H'
+      order by 1
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_ID ==================================
+  id: 56149525638161424863
+  identification: 
+    name: P532_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 20
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: ID
+    data-type: NUMBER
+    query-only: true
+    primary-key: true
+    maintain-session-state: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_TOURNAMENT_ID =======================
+  id: 56149526069045424864
+  identification: 
+    name: P532_TOURNAMENT_ID
+    type: Display Only
+
+  label: 
+    label: 'Tournament '
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Display Value of List of Values
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 30
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select code d, id r
+      from wmg_tournaments
+    display-extra-values: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: TOURNAMENT_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_ROUND_NUM ===========================
+  id: 56149526450592424864
+  identification: 
+    name: P532_ROUND_NUM
+    type: Number Field
+
+  label: 
+    label: Round Num
+    alignment: Right
+
+  settings: 
+    number-alignment: Right
+
+  layout: 
+    sequence: 40
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46986651846996702470
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: true
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: ROUND_NUM
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_SESSION_DATE ========================
+  id: 56149526821089424864
+  identification: 
+    name: P532_SESSION_DATE
+    type: Date Picker
+
+  label: 
+    label: Session Date
+    alignment: Left
+
+  settings: 
+    show-time: false
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: false
+    use-defaults: true
+
+  layout: 
+    sequence: 60
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: SESSION_DATE
+    data-type: DATE
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_WEEK ================================
+  id: 56149527285695424865
+  identification: 
+    name: P532_WEEK
+    type: Text Field
+
+  label: 
+    label: Week
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: None
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 50
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 40
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: WEEK
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_OPEN_REGISTRATION_ON ================
+  id: 56149527639003424865
+  identification: 
+    name: P532_OPEN_REGISTRATION_ON
+    type: Date Picker
+
+  label: 
+    label: Open Registration On
+    alignment: Left
+
+  settings: 
+    show-time: true
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: false
+    use-defaults: true
+
+  layout: 
+    sequence: 90
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: OPEN_REGISTRATION_ON
+    data-type: TIMESTAMP WITH TIME ZONE
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_CLOSE_REGISTRATION_ON ===============
+  id: 56149528420758424865
+  identification: 
+    name: P532_CLOSE_REGISTRATION_ON
+    type: Date Picker
+
+  label: 
+    label: Close Registration On
+    alignment: Left
+
+  settings: 
+    show-time: true
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: false
+    use-defaults: true
+
+  layout: 
+    sequence: 100
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: CLOSE_REGISTRATION_ON
+    data-type: TIMESTAMP WITH TIME ZONE
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_COMPLETED_IND =======================
+  id: 56149529213158424866
+  identification: 
+    name: P532_COMPLETED_IND
+    type: Switch
+
+  label: 
+    label: Completed ?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 110
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: COMPLETED_IND
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_COMPLETED_ON ========================
+  id: 56149529684294424866
+  identification: 
+    name: P532_COMPLETED_ON
+    type: Date Picker
+
+  label: 
+    label: Completed On
+    alignment: Left
+
+  settings: 
+    show-time: false
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: false
+    use-defaults: true
+
+  layout: 
+    sequence: 120
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: COMPLETED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: false
+    primary-key: false
+    maintain-session-state: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: CANCEL ======================================
+  id: 56149537478443424871
+  identification: 
+    button-name: CANCEL
+    label: Cancel
+
+  layout: 
+    sequence: 10
+    region: Buttons # 56149537080911424870
+    position: CLOSE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: DELETE ======================================
+  id: 56149538823352424871
+  identification: 
+    button-name: DELETE
+    label: Delete
+
+  layout: 
+    sequence: 20
+    region: Buttons # 56149537080911424870
+    position: DELETE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--danger
+    - t-Button--simple
+
+  behavior: 
+    action: Submit Page
+    execute-validations: false
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL DELETE action
+
+  confirmation: 
+    message: '&APP_TEXT$DELETE_MSG!RAW.'
+    style: Danger
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P532_ID
+
+- # ====== Button: SAVE ========================================
+  id: 56149539270179424871
+  identification: 
+    button-name: SAVE
+    label: Apply Changes
+
+  layout: 
+    sequence: 30
+    region: Buttons # 56149537080911424870
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P532_ID
+
+- # ====== Button: CREATE ======================================
+  id: 56149539668042424872
+  identification: 
+    button-name: CREATE
+    label: Create
+
+  layout: 
+    sequence: 40
+    region: Buttons # 56149537080911424870
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL INSERT action
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P532_ID
+
+dynamic-actions: 
+- # ====== Dynamic Action: Cancel Dialog =======================
+  id: 56149537573814424871
+  identification: 
+    name: Cancel Dialog
+
+  execution-options: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CANCEL # 56149537478443424871
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+    id: 56149538314474424871
+    identification: 
+      action: Cancel Dialog
+
+    execution-options: 
+      sequence: 10
+      event: Cancel Dialog # 56149537573814424871
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+validations: 
+- # ====== Validation: P532_OPEN_REGISTRATION_ON must be timesta
+  id: 56149528148509424865
+  identification: 
+    name: P532_OPEN_REGISTRATION_ON must be timestamp
+
+  execution-options: 
+    sequence: 60
+
+  validation: 
+    type: Item is a valid timestamp
+    item: P532_OPEN_REGISTRATION_ON
+    always-execute: false
+
+  error: 
+    error-message: '#LABEL# must be a valid timestamp.'
+    display-location: Inline with Field and in Notification
+    associated-item: P532_OPEN_REGISTRATION_ON # 56149527639003424865
+
+- # ====== Validation: P532_CLOSE_REGISTRATION_ON must be timest
+  id: 56149528963439424866
+  identification: 
+    name: P532_CLOSE_REGISTRATION_ON must be timestamp
+
+  execution-options: 
+    sequence: 70
+
+  validation: 
+    type: Item is a valid timestamp
+    item: P532_CLOSE_REGISTRATION_ON
+    always-execute: false
+
+  error: 
+    error-message: '#LABEL# must be a valid timestamp.'
+    display-location: Inline with Field and in Notification
+    associated-item: P532_CLOSE_REGISTRATION_ON # 56149528420758424865
+
+- # ====== Validation: P532_COMPLETED_ON must be timestamp =====
+  id: 56149530152912424867
+  identification: 
+    name: P532_COMPLETED_ON must be timestamp
+
+  execution-options: 
+    sequence: 90
+
+  validation: 
+    type: Item is a valid timestamp
+    item: P532_COMPLETED_ON
+    always-execute: false
+
+  error: 
+    error-message: '#LABEL# must be a valid timestamp.'
+    display-location: Inline with Field and in Notification
+    associated-item: P532_COMPLETED_ON # 56149529684294424866
+
+computations: 
+- # ====== Computation: P532_EASY_COURSE_ID ====================
+  id: 56015645387278939733
+  identification: 
+    item-name: P532_EASY_COURSE_ID
+
+  execution-options: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select course_id
+      from wmg_tournament_courses
+      where tournament_session_id = :P532_ID
+        and course_no = 1
+
+- # ====== Computation: P532_HARD_COURSE_ID ====================
+  id: 56015645483236939734
+  identification: 
+    item-name: P532_HARD_COURSE_ID
+
+  execution-options: 
+    sequence: 20
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select course_id
+      from wmg_tournament_courses
+      where tournament_session_id = :P532_ID
+        and course_no = 2
+
+processes: 
+- # ====== Process: Save Courses ===============================
+  id: 56015645283649939732
+  identification: 
+    name: Save Courses
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      merge into wmg_tournament_courses c using 
+        (select :P532_ID tournament_session_id
+              , 1 course_no
+              , :P532_EASY_COURSE_ID course_id
+           from dual
+        ) c2
+        on (
+            c.tournament_session_id = c2.tournament_session_id
+        and c.course_no = c2.course_no
+        )
+      when matched then
+        update set c.course_id = c2.course_id
+      when not matched then
+        insert (tournament_session_id, course_no, course_id)
+        values (c2.tournament_session_id, c2.course_no, c2.course_id);
+      
+      merge into wmg_tournament_courses c using 
+        (select :P532_ID tournament_session_id
+              , 2 course_no
+              , :P532_HARD_COURSE_ID course_id
+           from dual
+        ) c2
+        on (
+            c.tournament_session_id = c2.tournament_session_id
+        and c.course_no = c2.course_no
+        )
+      when matched then
+        update set c.course_id = c2.course_id
+      when not matched then
+        insert (tournament_session_id, course_no, course_id)
+        values (c2.tournament_session_id, c2.course_no, c2.course_id);
+      
+
+  execution-options: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Initialize form Wmg Tournament Sessions ====
+  id: 56149540077194424872
+  identification: 
+    name: Initialize form Wmg Tournament Sessions
+    type: Form - Initialization
+    form-region: Tournament Sessions # 56149524865750424863
+
+  execution-options: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Process form Wmg Tournament Sessions =======
+  id: 56149540480003424872
+  identification: 
+    name: Process form Wmg Tournament Sessions
+    type: Form - Automatic Row Processing (DML)
+    form-region: Tournament Sessions # 56149524865750424863
+
+  settings: 
+    target-type: Region Source
+    prevent-lost-updates: true
+    lock-row: Yes
+    return-primary-key(s)-after-insert: true
+
+  execution-options: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Close Dialog ===============================
+  id: 56149540857010424872
+  identification: 
+    name: Close Dialog
+    type: Close Dialog
+
+  settings: 
+    items-to-return-: 
+    - REQUEST
+
+  execution-options: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,SAVE,DELETE
+

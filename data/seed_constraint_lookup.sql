@@ -1,1 +1,2 @@
 insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_ROUNDS_ONE_UK', 'The is a round for that player already');
+insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_TOURNAMENT_SESSIONS_WK', 'Week format should be SnnWnn');

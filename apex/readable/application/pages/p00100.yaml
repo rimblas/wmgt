@@ -23,12 +23,19 @@ navigation:
 javascript: 
   function-and-global-variable-declaration: |
     var isExpanding = false;
-    function incrementHoleCounter() {
+    function incrementHoleCounter(i) {
         var n;
         n= parseInt($v("P100_HN"));
-        if (n<36) {
-           n++;
-        }
+        if (i === undefined || i>0) {
+            if (n<36) {
+            n++;
+            }
+       }
+       else {
+           if (i<0 && n>0) {
+               n--;
+           }
+       }
        return n;
     
     }
@@ -994,6 +1001,14 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
+      with players_with_aces as (
+            select c.id course_id, c.course_mode, r.player_id
+              from wmg_rounds_unpivot_mv r
+                 , wmg_courses c
+             where r.course_id = c.id
+               and r.week = :P100_WEEK
+               and r.score = 1
+      )
       select 'Best score ' || decode(course_mode, 'E', 'Easy', 'Hard') result, listagg(player_name, ', ') who, total
       from (
             select r.*, rank() over (partition by course_mode order by r.total) rn
@@ -1041,6 +1056,31 @@ regions:
       )
       where rn = 1
       group by  result, total
+      union all
+      select 'Zero Aces on Hard' result, '- Undisclosed -' who, count(*) total
+      from ( 
+         select player_id
+          from wmg_rounds_v r
+           where r.week = :P100_WEEK
+             and r.course_mode = 'H'
+        minus  -- all players, minus players with aces
+         select player_id
+          from players_with_aces
+         where course_mode = 'H'
+      )
+      union all
+      select 'Zero Aces on Easy' result, '- Undisclosed -' who, count(*) total
+      from ( 
+         select player_id
+          from wmg_rounds_v r
+           where r.week = :P100_WEEK
+             and r.course_mode = 'E'
+        minus  -- all players, minus players with aces
+         select player_id
+          from players_with_aces
+         where course_mode = 'E'
+      )
+      
       
     page-items-to-submit: 
     - P100_WEEK
@@ -1293,6 +1333,38 @@ regions:
       where course_id in (
         select course_id from week_courses
       )
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 80 display_seq
+             , 'Beyond Triple Bogeys'
+             , -4 data_filter
+             , w.course_mode
+             , 'disabled' drill_class
+             , sum(decode(sign(  s1 - h1 - 3), 1, 1, 0)) a1
+             , sum(decode(sign(  s2 - h2 - 3), 1, 1, 0)) a2
+             , sum(decode(sign(  s3 - h3 - 3), 1, 1, 0)) a3
+             , sum(decode(sign(  s4 - h4 - 3), 1, 1, 0)) a4
+             , sum(decode(sign(  s5 - h5 - 3), 1, 1, 0)) a5
+             , sum(decode(sign(  s6 - h6 - 3), 1, 1, 0)) a6
+             , sum(decode(sign(  s7 - h7 - 3), 1, 1, 0)) a7
+             , sum(decode(sign(  s8 - h8 - 3), 1, 1, 0)) a8
+             , sum(decode(sign(  s9 - h9 - 3), 1, 1, 0)) a9
+             , sum(decode(sign( s10 - h10 - 3), 1, 1, 0)) a10
+             , sum(decode(sign( s11 - h11 - 3), 1, 1, 0)) a11
+             , sum(decode(sign( s12 - h12 - 3), 1, 1, 0)) a12
+             , sum(decode(sign( s13 - h13 - 3), 1, 1, 0)) a13
+             , sum(decode(sign( s14 - h14 - 3), 1, 1, 0)) a14
+             , sum(decode(sign( s15 - h15 - 3), 1, 1, 0)) a15
+             , sum(decode(sign( s16 - h16 - 3), 1, 1, 0)) a16
+             , sum(decode(sign( s17 - h17 - 3), 1, 1, 0)) a17
+             , sum(decode(sign( s18 - h18 - 3), 1, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
       union all
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
@@ -2434,6 +2506,38 @@ regions:
       where course_id in (
         select course_id from week_courses
       )
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 80 display_seq
+             , 'Beyond Triple Bogeys'
+             , -4 data_filter
+             , w.course_mode
+             , 'disabled' drill_class
+             , sum(decode(sign(  s1 - h1 - 3), 1, 1, 0)) a1
+             , sum(decode(sign(  s2 - h2 - 3), 1, 1, 0)) a2
+             , sum(decode(sign(  s3 - h3 - 3), 1, 1, 0)) a3
+             , sum(decode(sign(  s4 - h4 - 3), 1, 1, 0)) a4
+             , sum(decode(sign(  s5 - h5 - 3), 1, 1, 0)) a5
+             , sum(decode(sign(  s6 - h6 - 3), 1, 1, 0)) a6
+             , sum(decode(sign(  s7 - h7 - 3), 1, 1, 0)) a7
+             , sum(decode(sign(  s8 - h8 - 3), 1, 1, 0)) a8
+             , sum(decode(sign(  s9 - h9 - 3), 1, 1, 0)) a9
+             , sum(decode(sign( s10 - h10 - 3), 1, 1, 0)) a10
+             , sum(decode(sign( s11 - h11 - 3), 1, 1, 0)) a11
+             , sum(decode(sign( s12 - h12 - 3), 1, 1, 0)) a12
+             , sum(decode(sign( s13 - h13 - 3), 1, 1, 0)) a13
+             , sum(decode(sign( s14 - h14 - 3), 1, 1, 0)) a14
+             , sum(decode(sign( s15 - h15 - 3), 1, 1, 0)) a15
+             , sum(decode(sign( s16 - h16 - 3), 1, 1, 0)) a16
+             , sum(decode(sign( s17 - h17 - 3), 1, 1, 0)) a17
+             , sum(decode(sign( s18 - h18 - 3), 1, 1, 0)) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
       union all
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
@@ -5119,6 +5223,7 @@ regions:
                   )
                  )
                   where rn <= 10
+                --    or player_id = :P100_PLAYER_ID  -- this is to view an extra player along the top performers
               )
               and r.week =  :P100_WEEK
           )
@@ -5133,6 +5238,7 @@ regions:
         page-items-to-submit: 
         - P100_WEEK
         - P100_HN
+        - P100_PLAYER_ID
 
       column-mapping: 
         label: ACCOUNT
@@ -5147,6 +5253,127 @@ regions:
 
       performance: 
         maximum-rows-to-process: 15
+
+    - # ====== Series: Extra Player ================================
+      id: 52997261362939034404
+      identification: 
+        name: Extra Player
+
+      execution-options: 
+        sequence: 20
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with round as (
+            select r.id  round_id
+              , p.id                                      player_id
+              , p.account                                    account
+              , p.name                                       player_name
+              , c.id                                         course_id
+              , c.code                                       course_code
+              , c.name                                       course_name
+              , c.course_mode                                course_mode
+              , r.week
+            , nvl(r.s1 - cs.h1, 0) h1
+            , nvl(r.s2 - cs.h2, 0) h2
+            , nvl(r.s3 - cs.h3, 0) h3
+            , nvl(r.s4 - cs.h4, 0) h4
+            , nvl(r.s5 - cs.h5, 0) h5
+            , nvl(r.s6 - cs.h6, 0) h6
+            , nvl(r.s7 - cs.h7, 0) h7
+            , nvl(r.s8 - cs.h8, 0) h8
+            , nvl(r.s9 - cs.h9, 0) h9
+            , nvl(r.s10 - cs.h10, 0) h10
+            , nvl(r.s11 - cs.h11, 0) h11
+            , nvl(r.s12 - cs.h12, 0) h12
+            , nvl(r.s13 - cs.h13, 0) h13
+            , nvl(r.s14 - cs.h14, 0) h14
+            , nvl(r.s15 - cs.h15, 0) h15
+            , nvl(r.s16 - cs.h16, 0) h16
+            , nvl(r.s17 - cs.h17, 0) h17
+            , nvl(r.s18 - cs.h18, 0) h18
+          from wmg_rounds r
+             , wmg_players p
+             , wmg_courses c
+             , wmg_course_strokes cs
+          where r.players_id = p.id
+            and r.course_id = c.id
+            and cs.course_id(+) = c.id
+          )
+          , round_unpivot as (
+            select *
+            from round
+            unpivot (score FOR h IN (
+              h1 as 1,
+              h2 as 2,
+              h3 as 3,
+              h4 as 4,
+              h5 as 5,
+              h6 as 6,
+              h7 as 7,
+              h8 as 8,
+              h9 as 9,
+              h10 as 10,
+              h11 as 11,
+              h12 as 12,
+              h13 as 13,
+              h14 as 14,
+              h15 as 15,
+              h16 as 16,
+              h17 as 17,
+              h18 as 18
+              )
+            )
+          )
+          select account
+               , sum(score * -1) total
+          from (
+          select account
+               , course_mode
+               , h
+          --     , course_mode || lpad(to_char(h), 2, '0') label
+          --     , sum(score * -1) over(partition by account order by course_mode, h range between unbounded preceding and current row) as value
+               , score
+          from round_unpivot
+          where round_id in (
+              select r.id
+              from wmg_rounds r
+              where r.players_id = :P100_PLAYER_ID
+              and r.week =  :P100_WEEK
+          )
+          )
+          where (:P100_HN <= 18 and course_mode = 'E'  and h <= :P100_HN)
+          or 
+          (
+              :P100_HN > 18 and (course_mode = 'E'  or (h <= :P100_HN - 18 and course_mode = 'H' ))
+          )
+          group by account
+          order by 2 desc
+        page-items-to-submit: 
+        - P100_WEEK
+        - P100_HN
+        - P100_PLAYER_ID
+
+      column-mapping: 
+        label: ACCOUNT
+        value: TOTAL
+
+      appearance: 
+        color: '#ff9500'
+        assigned-to-y2-axis: false
+
+      label: 
+        show: true
+        position: Automatic
+
+      performance: 
+        maximum-rows-to-process: 15
+
+      server-side-condition: 
+        type: Item is NOT NULL
+        item: P100_PLAYER_ID
 
     axes: 
     - # ====== Axis: x =============================================
@@ -5424,6 +5651,8 @@ page-items:
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - u-textCenter
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -5572,6 +5801,9 @@ page-items:
 
   advanced: 
     post-text-: |
+      <div title="Decrement" class="t-Button t-Button--noLabel t-Button--icon">
+      <span aria-hidden="true" class="t-Icon fa fa-chevron-left hnSliderRew"></span>
+      </div> 
       <div title="Increment" class="t-Button t-Button--noLabel t-Button--icon t-Button--large">
       <span aria-hidden="true" class="t-Icon fa fa-chevron-right hnSliderAdv"></span>
       </div>
@@ -5621,6 +5853,21 @@ dynamic-actions:
 
     execution-options: 
       sequence: 10
+      event: Refresh Cumulative Chart # 5007620983014972550
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: NATIVE_REFRESH ==============================
+    id: 52997261291343034403
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Positions over time # 94935960575573333859
+
+    execution-options: 
+      sequence: 20
       event: Refresh Cumulative Chart # 5007620983014972550
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -5867,7 +6114,7 @@ dynamic-actions:
 
     settings: 
       set-type: JavaScript Expression
-      javascript-expression: incrementHoleCounter()
+      javascript-expression: incrementHoleCounter(1)
       suppress-change-event: false
 
     affected-elements: 
@@ -6049,7 +6296,7 @@ dynamic-actions:
     name: Nested Report Callback
 
   execution-options: 
-    sequence: 70
+    sequence: 80
 
   when: 
     event: PLUGIN_UC_NESTED_REPORTS|DYNAMIC ACTION|uc_default_callback
@@ -6075,6 +6322,46 @@ dynamic-actions:
       event: Nested Report Callback # 49305653111946776632
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+- # ====== Dynamic Action: Decrease Hole Slider ================
+  id: 52997261028124034401
+  identification: 
+    name: Decrease Hole Slider
+
+  execution-options: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .hnSliderRew
+
+  advanced: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: NATIVE_SET_VALUE ============================
+    id: 52997261108767034402
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: incrementHoleCounter(-1)
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P100_HN
+
+    execution-options: 
+      sequence: 10
+      event: Decrease Hole Slider # 52997261028124034401
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
 
 computations: 
 - # ====== Computation: P100_WEEK ==============================

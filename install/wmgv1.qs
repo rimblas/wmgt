@@ -49,3 +49,19 @@ courses /insert 2
 
 view course_v courses course_strokes
 view rounds_v players courses course_strokes rounds
+
+
+tournaments
+  code vc20  /nn /unique
+  name  vc60 /nn /unique
+  prefix_tournament vc10 -- The tournament prefix gets concatenated with the session prefix and round_num to form the "WEEK"
+  prefix_session vc10
+  url
+  notes
+  tournament_sessions
+    round_num int /nn
+    session_date    
+    week vc10 -- If prefixes are specified this value gets derived
+    tournament_courses -- Courses to be played on a specific session
+        course_id /fk courses(id)
+
