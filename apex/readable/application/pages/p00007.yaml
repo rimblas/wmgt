@@ -24,8 +24,7 @@ navigation:
   warn-on-unsaved-changes: true
 
 security: 
-  authorization-scheme: Contribution Rights # 46986682878463702496
-  authentication: Page Requires Authentication
+  authentication: Page Is Public
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -165,7 +164,7 @@ page-items:
     type: Text Field
 
   label: 
-    label: Account
+    label: Discord Account
     alignment: Left
 
   settings: 
@@ -274,6 +273,33 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P7_REGISTRATION_FLAG =====================
+  id: 56015645930685939739
+  identification: 
+    name: P7_REGISTRATION_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: Player # 46986741552156703258
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: CANCEL ======================================
   id: 46986744377215703260
@@ -338,6 +364,9 @@ buttons:
   server-side-condition: 
     type: Item is NOT NULL
     item: P7_ID
+
+  security: 
+    authorization-scheme: Contribution Rights # 46986682878463702496
 
 - # ====== Button: SAVE ========================================
   id: 46986746162734703261
@@ -532,6 +561,25 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    type: Request is contained in Value
-    value: CREATE,SAVE,DELETE
+    type: Item is NULL
+    item: P7_REGISTRATION_FLAG
+
+branches: 
+- # ====== Branch: This new record is a registration ===========
+  id: 56015646063529939740
+  identification: 
+    name: This new record is a registration
+
+  execution-options: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:7:P30_PLAYER_ID:&P7_ID.&success_msg=#SUCCESS_MSG#'
+      page: 30 # Registration
+      clear-cache: 7
+      values: 
+        p30_player_id: '&P7_ID.'
 
