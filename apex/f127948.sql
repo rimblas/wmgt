@@ -31,22 +31,23 @@ prompt APPLICATION 127948 - WMGT
 --   Exported By:     JORGE@RIMBLAS.COM
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     45
---       Items:                  200
+--     Pages:                     49
+--       Items:                  210
 --       Computations:             6
 --       Validations:              9
---       Processes:               53
---       Regions:                130
---       Buttons:                 85
---       Dynamic Actions:         51
+--       Processes:               55
+--       Regions:                144
+--       Buttons:                 88
+--       Dynamic Actions:         54
 --     Shared Components:
 --       Logic:
+--         Items:                  1
 --         App Settings:           2
 --         Build Options:          7
 --       Navigation:
 --         Lists:                  9
 --         Breadcrumbs:            1
---           Entries:             10
+--           Entries:             13
 --       Security:
 --         Authentication:         2
 --         Authorization:          4
@@ -117,12 +118,12 @@ wwv_flow_imp.create_flow(
 ,p_runtime_api_usage=>'T'
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
-,p_auto_time_zone=>'Y'
+,p_auto_time_zone=>'N'
 ,p_error_handling_function=>'wmg_error_handler.error_handler_logging_session'
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'WMGT'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221002185040'
+,p_last_upd_yyyymmddhh24miss=>'20221009214930'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>13
 ,p_ui_type_name => null
@@ -221,6 +222,33 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-file-o'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'500'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(58989707945457953662)
+,p_list_item_display_sequence=>80
+,p_list_item_link_text=>'Rooms'
+,p_list_item_link_target=>'f?p=&APP_ID.:40:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-file-o'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'40'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(58989849472220683421)
+,p_list_item_display_sequence=>90
+,p_list_item_link_text=>'Enter Rounds'
+,p_list_item_link_target=>'f?p=&APP_ID.:50:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-file-o'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'50'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(58989729834847961599)
+,p_list_item_display_sequence=>100
+,p_list_item_link_text=>'View Results'
+,p_list_item_link_target=>'f?p=&APP_ID.:60:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-file-o'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'60'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(46987061503295704325)
@@ -563,17 +591,33 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(55884590802908414060)
 ,p_list_item_display_sequence=>10
 ,p_list_item_link_text=>'Register'
-,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:30:::'
 ,p_list_item_icon=>'fa-number-1'
+,p_list_item_disp_cond_type=>'EXPRESSION'
+,p_list_item_disp_condition=>'nvl(:G_ENROLLED_IND, ''N'') = ''N'''
+,p_list_item_disp_condition2=>'PLSQL'
 ,p_list_text_01=>'fa-file-signature'
 ,p_list_text_07=>'Sign-up / Un-register / Change Times'
+,p_list_item_current_type=>'TARGET_PAGE'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(56477738600450440563)
+,p_list_item_display_sequence=>12
+,p_list_item_link_text=>'Change Registration'
+,p_list_item_link_target=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-number-1'
+,p_list_item_disp_cond_type=>'EXPRESSION'
+,p_list_item_disp_condition=>'nvl(:G_ENROLLED_IND, ''N'') = ''Y'''
+,p_list_item_disp_condition2=>'PLSQL'
+,p_list_text_01=>'fa-file-signature'
+,p_list_text_07=>'Un-register / Change Times'
 ,p_list_item_current_type=>'TARGET_PAGE'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(55884591288574414060)
 ,p_list_item_display_sequence=>30
 ,p_list_item_link_text=>'Rooms'
-,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:40:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-number-2'
 ,p_list_text_02=>'fa-cards'
 ,p_list_text_07=>'Tee Time & View Room'
@@ -583,7 +627,7 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(55884591687048414060)
 ,p_list_item_display_sequence=>40
 ,p_list_item_link_text=>'Enter Rounds'
-,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-number-3'
 ,p_list_text_02=>'fa-pencil-square-o'
 ,p_list_item_current_type=>'TARGET_PAGE'
@@ -592,7 +636,7 @@ wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(55884592054376414060)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'View Results'
-,p_list_item_link_target=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-number-4'
 ,p_list_text_02=>'fa-table'
 ,p_list_item_current_type=>'TARGET_PAGE'
@@ -1902,6 +1946,16 @@ begin
 null;
 end;
 /
+prompt --application/shared_components/logic/application_items/g_enrolled_ind
+begin
+wwv_flow_imp_shared.create_flow_item(
+ p_id=>wwv_flow_imp.id(56461064280026201223)
+,p_name=>'G_ENROLLED_IND'
+,p_protection_level=>'I'
+,p_item_comment=>'Indicates that the current user is Enrolled for the current/upcoming sesison'
+);
+end;
+/
 prompt --application/shared_components/logic/application_settings
 begin
 wwv_flow_imp_shared.create_app_setting(
@@ -2246,6 +2300,24 @@ wwv_flow_imp_shared.create_menu_option(
 ,p_short_name=>'Sessions'
 ,p_link=>'f?p=&APP_ID.:530:&APP_SESSION.::&DEBUG.:::'
 ,p_page_id=>530
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(58989708861636953664)
+,p_short_name=>'Rooms'
+,p_link=>'f?p=&APP_ID.:40:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>40
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(58989730714977961601)
+,p_short_name=>'View Results'
+,p_link=>'f?p=&APP_ID.:60:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>60
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(58989850395142683423)
+,p_short_name=>'Enter Rounds'
+,p_link=>'f?p=&APP_ID.:50:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>50
 );
 end;
 /
@@ -24116,7 +24188,42 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'D'
 ,p_page_component_map=>'14'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220908223553'
+,p_last_upd_yyyymmddhh24miss=>'20221009013548'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(47577408716670657321)
+,p_plug_name=>'{AutoDetectTimeZone.js}'
+,p_plug_display_sequence=>-1
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<div id="apex_wait_overlay" class="apex_wait_overlay" style="visibility: visible;"></div>',
+'<div class="tzx" style="color: rgb(164, 164, 164);font-size: 2.5em;z-index: 20000;position: relative;margin-top: 60px;width: 100%;line-height: 1.2em;text-align: center;">',
+'  Determining Time Zone <span aria-hidden="true" class="fa fa-ellipsis-h fa-3x fa-anim-flash"></span>',
+'</div>',
+'',
+'<script type="text/javascript">',
+'var tzx;',
+'try {tzx = Intl.DateTimeFormat().resolvedOptions().timeZone;}',
+'catch (e) {tzx = "America/Chicago";}',
+'tzx=tzx===undefined?"America/Chicago":tzx;',
+'// var lLink = window.location.href.replace(/\#[a-z\_]+\#/gi, "").replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + ''\u0026tz=''+tzx;',
+'var lLink = window.location.href;',
+'console.log({lLink});',
+'var a = lLink.match(/\#.+$/) || [""];  // extract a possible anchor',
+'console.log({a});',
+'lLink = lLink.replace(/\#.+$/gi,"");',
+'lLink = lLink.replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + ''\u0026tz=''+ encodeURIComponent( tzx) + a[0];',
+'',
+'console.log({lLink});',
+'',
+'// reload page with new tz set',
+'window.location.href = lLink;',
+'</script>'))
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'EXPRESSION'
+,p_plug_display_when_condition=>'apex_util.get_session_time_zone() is null and 1=2'
+,p_plug_display_when_cond2=>'PLSQL'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
 );
 end;
 /
@@ -24135,7 +24242,95 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'13'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221001172155'
+,p_last_upd_yyyymmddhh24miss=>'20221009004753'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(24735740413470583646)
+,p_name=>'Next Tournament'
+,p_template=>wwv_flow_imp.id(46986514536301702411)
+,p_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_region_template_options=>'#DEFAULT#:t-Alert--colorBG:t-Alert--horizontal:t-Alert--defaultIcons:t-Alert--info'
+,p_component_template_options=>'#DEFAULT#:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--noBorders'
+,p_grid_column_span=>6
+,p_display_column=>4
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select s.session_date',
+'     , s.easy_course_code, ec.name easy_course',
+'     , s.hard_course_code, hc.name hard_course',
+'from wmg_tournament_sessions_v s',
+'   , wmg_courses ec',
+'   , wmg_courses hc',
+'where s.easy_course_id = ec.id (+)',
+'  and s.hard_course_id = hc.id (+)',
+'  and s.tournament_id in (',
+'select ID',
+'  from WMG_TOURNAMENTS',
+' where current_flag = ''Y''',
+')',
+'and session_date+1 > sysdate',
+'fetch first 1 rows only'))
+,p_ajax_enabled=>'Y'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_headings_type=>'NO_HEADINGS'
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(24735740504360583647)
+,p_query_column_id=>1
+,p_column_alias=>'SESSION_DATE'
+,p_column_display_sequence=>10
+,p_column_heading=>'Session Date'
+,p_use_as_row_header=>'N'
+,p_column_format=>'fmDay, fmMonth fmDD, YYYY'
+,p_column_html_expression=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'The next tournament session is on #SESSION_DATE#.<br>',
+'The courses are:<br>',
+unistr('\2022 #EASY_COURSE_CODE# - #EASY_COURSE#<br>'),
+unistr('\2022 #HARD_COURSE_CODE# - #HARD_COURSE#')))
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(24735740660122583648)
+,p_query_column_id=>2
+,p_column_alias=>'EASY_COURSE_CODE'
+,p_column_display_sequence=>20
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(24735740822580583650)
+,p_query_column_id=>3
+,p_column_alias=>'EASY_COURSE'
+,p_column_display_sequence=>40
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(24735740743520583649)
+,p_query_column_id=>4
+,p_column_alias=>'HARD_COURSE_CODE'
+,p_column_display_sequence=>30
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(57207806103846896001)
+,p_query_column_id=>5
+,p_column_alias=>'HARD_COURSE'
+,p_column_display_sequence=>50
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986695303177702576)
@@ -24158,7 +24353,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-Cards--featured t-Cards--block force-fa-lg:t-Cards--displayIcons:t-Cards--4cols:t-Cards--hideBody:t-Cards--animColorFill'
 ,p_plug_template=>wwv_flow_imp.id(46986519704134702414)
-,p_plug_display_sequence=>20
+,p_plug_display_sequence=>30
 ,p_list_id=>wwv_flow_imp.id(46986883504791703654)
 ,p_plug_source_type=>'NATIVE_LIST'
 ,p_list_template_id=>wwv_flow_imp.id(46986628863802702458)
@@ -24172,7 +24367,7 @@ wwv_flow_imp_page.create_page_plug(
 ,p_region_template_options=>'#DEFAULT#:t-HeroRegion--featured t-HeroRegion--centered:t-HeroRegion--hideIcon'
 ,p_component_template_options=>'#DEFAULT#:u-colors:t-Cards--displaySubtitle:t-Cards--featured force-fa-lg:t-Cards--displayIcons:t-Cards--4cols:t-Cards--hideBody:t-Cards--animRaiseCard'
 ,p_plug_template=>wwv_flow_imp.id(46986552355884702427)
-,p_plug_display_sequence=>10
+,p_plug_display_sequence=>20
 ,p_include_in_reg_disp_sel_yn=>'Y'
 ,p_list_id=>wwv_flow_imp.id(55884590206608414057)
 ,p_plug_source_type=>'NATIVE_LIST'
@@ -26235,12 +26430,12 @@ wwv_flow_imp_page.create_page(
 ,p_first_item=>'AUTO_FIRST_ITEM'
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#'
-,p_required_role=>wwv_flow_imp.id(46986682878463702496)
 ,p_dialog_chained=>'N'
+,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220912003501'
+,p_last_upd_yyyymmddhh24miss=>'20221008174904'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986741552156703258)
@@ -26294,6 +26489,7 @@ wwv_flow_imp_page.create_page_button(
 ,p_confirm_style=>'danger'
 ,p_button_condition=>'P7_ID'
 ,p_button_condition_type=>'ITEM_IS_NOT_NULL'
+,p_security_scheme=>wwv_flow_imp.id(46986682878463702496)
 ,p_database_action=>'DELETE'
 );
 wwv_flow_imp_page.create_page_button(
@@ -26327,6 +26523,14 @@ wwv_flow_imp_page.create_page_button(
 ,p_icon_css_classes=>'fa-plus'
 ,p_database_action=>'INSERT'
 );
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(56015646063529939740)
+,p_branch_name=>'This new record is a registration'
+,p_branch_action=>'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:7:P30_PLAYER_ID:&P7_ID.&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>10
+);
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(46986741830980703259)
 ,p_name=>'P7_ID'
@@ -26356,7 +26560,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>20
 ,p_item_plug_id=>wwv_flow_imp.id(46986741552156703258)
 ,p_item_source_plug_id=>wwv_flow_imp.id(46986741552156703258)
-,p_prompt=>'Account'
+,p_prompt=>'Discord Account'
 ,p_source=>'ACCOUNT'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXT_FIELD'
@@ -26390,6 +26594,14 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_04=>'TEXT'
 ,p_attribute_05=>'BOTH'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(56015645930685939739)
+,p_name=>'P7_REGISTRATION_FLAG'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(46986741552156703258)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
 );
 wwv_flow_imp_page.create_page_da_event(
  p_id=>wwv_flow_imp.id(46986744427290703260)
@@ -26454,8 +26666,8 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_name=>'Close Dialog'
 ,p_attribute_01=>'P7_ID'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
-,p_process_when=>'CREATE,SAVE,DELETE'
-,p_process_when_type=>'REQUEST_IN_CONDITION'
+,p_process_when=>'P7_REGISTRATION_FLAG'
+,p_process_when_type=>'ITEM_IS_NULL'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(46986746997832703262)
@@ -26499,7 +26711,7 @@ wwv_flow_imp_page.create_page(
 '<p>Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>'))
 ,p_page_component_map=>'18'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220918170338'
+,p_last_upd_yyyymmddhh24miss=>'20221008163958'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986775325612703572)
@@ -26801,7 +27013,7 @@ wwv_flow_imp_page.create_worksheet_column(
 ,p_db_column_name=>'ACCOUNT'
 ,p_display_order=>240
 ,p_column_identifier=>'Y'
-,p_column_label=>'Account'
+,p_column_label=>'Discord Account'
 ,p_column_type=>'STRING'
 ,p_use_as_row_header=>'N'
 );
@@ -27274,7 +27486,7 @@ wwv_flow_imp_page.create_page(
 ,p_protection_level=>'C'
 ,p_page_component_map=>'02'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220926005857'
+,p_last_upd_yyyymmddhh24miss=>'20221009014902'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(46986753890975703559)
@@ -27485,8 +27697,20 @@ wwv_flow_imp_page.create_page_item(
 ,p_source=>'COURSE_ID'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_SELECT_LIST'
-,p_named_lov=>'COURSES'
-,p_lov_display_null=>'YES'
+,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select prepared_name d, course_id r',
+'from wmg_courses_v',
+'where course_id in (',
+'select course_id',
+'from wmg_tournament_courses',
+'where tournament_session_id  in (',
+'select id',
+'from wmg_tournament_sessions',
+'where week= :P9_WEEK',
+')',
+')'))
+,p_lov_cascade_parent_items=>'P9_WEEK'
+,p_ajax_optimize_refresh=>'Y'
 ,p_cHeight=>1
 ,p_begin_on_new_line=>'N'
 ,p_grid_column_css_classes=>'col-md-6 col-sm-4'
@@ -27947,7 +28171,11 @@ wwv_flow_imp_page.create_page_item(
 ,p_prompt=>'Week'
 ,p_source=>'WEEK'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
-,p_display_as=>'NATIVE_TEXT_FIELD'
+,p_display_as=>'NATIVE_AUTO_COMPLETE'
+,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select week',
+'from wmg_tournament_sessions',
+'order by round_num'))
 ,p_cSize=>30
 ,p_cMaxlength=>10
 ,p_colspan=>1
@@ -27957,11 +28185,10 @@ wwv_flow_imp_page.create_page_item(
 ,p_field_template=>wwv_flow_imp.id(46986650580145702469)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
+,p_lov_display_extra=>'YES'
 ,p_inline_help_text=>'SnWn'
-,p_attribute_01=>'N'
-,p_attribute_02=>'N'
-,p_attribute_04=>'TEXT'
-,p_attribute_05=>'BOTH'
+,p_attribute_01=>'CONTAINS_IGNORE'
+,p_attribute_04=>'N'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47436467448912126435)
@@ -28118,6 +28345,9 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'PLAIN'
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47436471975347126437)
 ,p_name=>'P9_H8'
@@ -28137,9 +28367,6 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_04=>'Y'
 ,p_attribute_05=>'PLAIN'
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47436472382354126438)
 ,p_name=>'P9_H9'
@@ -28570,6 +28797,25 @@ wwv_flow_imp_page.create_page_da_action(
 '         unsafe:     false',
 '     }',
 ']);'))
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(56015646112744939741)
+,p_name=>'Week Changes'
+,p_event_sequence=>60
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P9_WEEK'
+,p_bind_type=>'bind'
+,p_bind_event_type=>'NATIVE_AUTO_COMPLETE|ITEM TYPE|ojupdate'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(56015646244661939742)
+,p_event_id=>wwv_flow_imp.id(56015646112744939741)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'ITEM'
+,p_affected_elements=>'P9_COURSE_ID'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(46986774353376703571)
@@ -30713,6 +30959,766 @@ wwv_flow_imp_page.create_page_da_action(
 );
 end;
 /
+prompt --application/pages/page_00030
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>30
+,p_user_interface_id=>wwv_flow_imp.id(46986677909852702488)
+,p_name=>'Registration'
+,p_alias=>'REGISTRATION'
+,p_step_title=>'Tournament Registration'
+,p_autocomplete_on_off=>'OFF'
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'tr.is-active {',
+'    outline-width: 2px;',
+'    outline-style: solid;',
+'}',
+'',
+'#P30_OR_CONTAINER .t-Form-labelContainer {',
+'    max-width: 50%;',
+'    flex-basis: auto;',
+'}'))
+,p_step_template=>wwv_flow_imp.id(46986501077006702405)
+,p_page_template_options=>'#DEFAULT#'
+,p_protection_level=>'C'
+,p_page_component_map=>'03'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20221009005009'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(56015645817310939738)
+,p_plug_name=>'Register for the next session'
+,p_icon_css_classes=>'fa-file-signature'
+,p_region_template_options=>'#DEFAULT#:t-ContentBlock--padded:t-ContentBlock--showIcon:t-ContentBlock--h3:t-ContentBlock--lightBG:t-ContentBlock--headingFontAlt'
+,p_plug_template=>wwv_flow_imp.id(46986548188719702425)
+,p_plug_display_sequence=>30
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_grid_column_span=>8
+,p_plug_display_column=>3
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(24735738743925583629)
+,p_plug_name=>'Registration'
+,p_parent_plug_id=>wwv_flow_imp.id(56015645817310939738)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986521189613702414)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(52997261434694034405)
+,p_plug_name=>'{Buttons}'
+,p_parent_plug_id=>wwv_flow_imp.id(56015645817310939738)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986522566537702415)
+,p_plug_display_sequence=>50
+,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(57207807845640896018)
+,p_plug_name=>'Select the time you want to play'
+,p_parent_plug_id=>wwv_flow_imp.id(56015645817310939738)
+,p_region_template_options=>'#DEFAULT#:t-Region--noUI:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(46986580184360702438)
+,p_plug_display_sequence=>20
+,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(24735738905404583631)
+,p_name=>'Time Slots'
+,p_region_name=>'slotsRegion'
+,p_parent_plug_id=>wwv_flow_imp.id(57207807845640896018)
+,p_template=>wwv_flow_imp.id(46986519704134702414)
+,p_display_sequence=>20
+,p_region_template_options=>'#DEFAULT#'
+,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
+,p_grid_column_span=>10
+,p_display_column=>2
+,p_display_point=>'SUB_REGIONS'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with tz as (',
+'select :P30_TZ tz from dual',
+')',
+', slots_n as (',
+'    select level n',
+'     from dual',
+'     connect by level <= 6',
+'    )',
+', slots as (',
+'    select slot || '':00'' d, slot t',
+'    from (',
+'        select lpad( (n-1)*4,2,0) slot',
+'        from slots_n',
+'    )',
+')',
+', ts as (',
+'    select s.session_date',
+'    from wmg_tournament_sessions s',
+'    where s.tournament_id in (',
+'    select ID',
+'      from WMG_TOURNAMENTS',
+'     where current_flag = ''Y''',
+'    )',
+'    fetch first 1 rows only',
+')',
+'select APEX_ITEM.RADIOGROUP(',
+'      p_idx              => 1',
+'    , p_value            => slots.d',
+'    , p_attributes       => ''class="slotOption"'') selection',
+' , slots.d slot',
+' , to_utc_timestamp_tz(to_char(s.session_date, ''yyyy-mm-dd'') || ''T'' || slots.t || '':00'') UTC',
+' , to_utc_timestamp_tz(to_char(s.session_date, ''yyyy-mm-dd'') || ''T'' || slots.t || '':00'') at time zone tz.tz local_tz',
+'from ts s',
+'   , tz',
+'   , slots',
+'order by slots.t'))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P30_TZ'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
+,p_pagination_display_position=>'BOTTOM_RIGHT'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(57207807376686896013)
+,p_query_column_id=>1
+,p_column_alias=>'SELECTION'
+,p_column_display_sequence=>10
+,p_column_heading=>'Choose'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'CENTER'
+,p_display_as=>'WITHOUT_MODIFICATION'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(57207807191651896011)
+,p_query_column_id=>2
+,p_column_alias=>'SLOT'
+,p_column_display_sequence=>30
+,p_column_heading=>'Slot'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'#SLOT# <span class="hidden-md-down">UTC</span>'
+,p_column_alignment=>'CENTER'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(57207806631705896006)
+,p_query_column_id=>3
+,p_column_alias=>'UTC'
+,p_column_display_sequence=>40
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(57207806793167896007)
+,p_query_column_id=>4
+,p_column_alias=>'LOCAL_TZ'
+,p_column_display_sequence=>50
+,p_column_heading=>'&P30_TZ. will play at'
+,p_use_as_row_header=>'N'
+,p_column_format=>'fmDay, fmMonth fmDD HH24'
+,p_column_html_expression=>'#LOCAL_TZ#:00'
+,p_column_alignment=>'CENTER'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(57207807968675896019)
+,p_plug_name=>'{tz option}'
+,p_parent_plug_id=>wwv_flow_imp.id(57207807845640896018)
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986519704134702414)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'SUB_REGIONS'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(57207806277140896002)
+,p_button_sequence=>25
+,p_button_plug_id=>wwv_flow_imp.id(24735738743925583629)
+,p_button_name=>'REGISTER_NEW_PLAYER'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--large:t-Button--iconLeft:t-Button--stretch'
+,p_button_template_id=>wwv_flow_imp.id(46986653123744702471)
+,p_button_image_alt=>'Register New Player'
+,p_button_redirect_url=>'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_REGISTRATION_FLAG:Y'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(52997261599890034406)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(52997261434694034405)
+,p_button_name=>'CANCEL'
+,p_button_action=>'REDIRECT_PAGE'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(46986653123744702471)
+,p_button_image_alt=>'Cancel'
+,p_button_position=>'CLOSE'
+,p_button_redirect_url=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:1::'
+,p_icon_css_classes=>'fa-chevron-left'
+);
+wwv_flow_imp_page.create_page_button(
+ p_id=>wwv_flow_imp.id(52997261988465034410)
+,p_button_sequence=>10
+,p_button_plug_id=>wwv_flow_imp.id(52997261434694034405)
+,p_button_name=>'SIGNUP'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
+,p_button_template_id=>wwv_flow_imp.id(46986653123744702471)
+,p_button_is_hot=>'Y'
+,p_button_image_alt=>'Signup!'
+,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-check'
+);
+wwv_flow_imp_page.create_page_branch(
+ p_id=>wwv_flow_imp.id(52997262146098034412)
+,p_branch_action=>'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+,p_branch_point=>'AFTER_PROCESSING'
+,p_branch_type=>'REDIRECT_URL'
+,p_branch_sequence=>10
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(56479072097480745968)
+,p_name=>'P30_PLAYER_ID'
+,p_is_required=>true
+,p_item_sequence=>5
+,p_item_plug_id=>wwv_flow_imp.id(24735738743925583629)
+,p_prompt=>'Your Discord Account'
+,p_display_as=>'NATIVE_POPUP_LOV'
+,p_named_lov=>'PLAYERS.ACCOUNT'
+,p_lov_display_null=>'YES'
+,p_cSize=>30
+,p_field_template=>wwv_flow_imp.id(46986650580145702469)
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'POPUP'
+,p_attribute_02=>'FIRST_ROWSET'
+,p_attribute_03=>'N'
+,p_attribute_04=>'N'
+,p_attribute_05=>'Y'
+,p_attribute_06=>'0'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(57207806325852896003)
+,p_name=>'P30_OR'
+,p_item_sequence=>15
+,p_item_plug_id=>wwv_flow_imp.id(24735738743925583629)
+,p_prompt=>'Or'
+,p_display_as=>'NATIVE_DISPLAY_ONLY'
+,p_field_template=>wwv_flow_imp.id(46986650382572702469)
+,p_item_css_classes=>'hidden-md-down'
+,p_item_template_options=>'#DEFAULT#'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'VALUE'
+,p_attribute_04=>'Y'
+,p_attribute_05=>'PLAIN'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(57207806806147896008)
+,p_name=>'P30_TZ'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(57207807968675896019)
+,p_item_default=>'select sessiontimezone tz from dual '
+,p_item_default_type=>'SQL_QUERY'
+,p_prompt=>'Your Region'
+,p_display_as=>'NATIVE_SELECT_LIST'
+,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with tz_regions as (',
+'select sessiontimezone tz from dual union all',
+'select ''US/Central'' tz from dual union all',
+'select ''US/Michigan'' tz from dual union all',
+'select ''US/Eastern'' tz from dual union all',
+'select ''US/Arizona'' tz from dual union all',
+'select ''US/Pacific'' tz from dual',
+')',
+'select tz d, tz r',
+'from tz_regions'))
+,p_lov_display_null=>'YES'
+,p_cHeight=>1
+,p_field_template=>wwv_flow_imp.id(46986650580145702469)
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'NONE'
+,p_attribute_02=>'N'
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(57207806962069896009)
+,p_name=>'Refresh Time SLots'
+,p_event_sequence=>20
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P30_TZ'
+,p_bind_type=>'bind'
+,p_bind_event_type=>'change'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(57207807077490896010)
+,p_event_id=>wwv_flow_imp.id(57207806962069896009)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_REFRESH'
+,p_affected_elements_type=>'REGION'
+,p_affected_region_id=>wwv_flow_imp.id(24735738905404583631)
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(57207807411513896014)
+,p_name=>'Highlight Slot Selection'
+,p_event_sequence=>30
+,p_triggering_element_type=>'JQUERY_SELECTOR'
+,p_triggering_element=>'.slotOption'
+,p_triggering_condition_type=>'JAVASCRIPT_EXPRESSION'
+,p_triggering_expression=>'$(".slotOption:checked").length > 0'
+,p_bind_type=>'live'
+,p_bind_event_type=>'change'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(57207807514248896015)
+,p_event_id=>wwv_flow_imp.id(57207807411513896014)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'$("#slotsRegion").find(".is-active").removeClass();',
+'$(this.triggeringElement).parents("tr").addClass("is-active");'))
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(57207807785190896017)
+,p_event_id=>wwv_flow_imp.id(57207807411513896014)
+,p_event_result=>'FALSE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'Y'
+,p_action=>'NATIVE_DISABLE'
+,p_affected_elements_type=>'BUTTON'
+,p_affected_button_id=>wwv_flow_imp.id(52997261988465034410)
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(57207807682932896016)
+,p_event_id=>wwv_flow_imp.id(57207807411513896014)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_ENABLE'
+,p_affected_elements_type=>'BUTTON'
+,p_affected_button_id=>wwv_flow_imp.id(52997261988465034410)
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(52997262016247034411)
+,p_process_sequence=>10
+,p_process_point=>'AFTER_SUBMIT'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Signup'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'if nvl(:G_ENROLLED_IND, ''N'') = ''N'' then',
+' :G_ENROLLED_IND := ''Y'';',
+'else',
+' :G_ENROLLED_IND := ''N'';',
+'end if;'))
+,p_process_clob_language=>'PLSQL'
+,p_error_display_location=>'INLINE_IN_NOTIFICATION'
+);
+end;
+/
+prompt --application/pages/page_00040
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>40
+,p_user_interface_id=>wwv_flow_imp.id(46986677909852702488)
+,p_name=>'Rooms'
+,p_alias=>'ROOMS'
+,p_step_title=>'Rooms'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_page_is_public_y_n=>'Y'
+,p_page_component_map=>'11'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20221009214851'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(58989708405516953663)
+,p_plug_name=>'Breadcrumb'
+,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986592559371702443)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_menu_id=>wwv_flow_imp.id(46986483063942702397)
+,p_plug_source_type=>'NATIVE_BREADCRUMB'
+,p_menu_template_id=>wwv_flow_imp.id(46986654645437702471)
+);
+end;
+/
+prompt --application/pages/page_00050
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>50
+,p_user_interface_id=>wwv_flow_imp.id(46986677909852702488)
+,p_name=>'Enter Rounds'
+,p_alias=>'ENTER-ROUNDS'
+,p_step_title=>'Enter Rounds'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_protection_level=>'C'
+,p_page_component_map=>'11'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20221009135900'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(58989849940616683422)
+,p_plug_name=>'Breadcrumb'
+,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986592559371702443)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_menu_id=>wwv_flow_imp.id(46986483063942702397)
+,p_plug_source_type=>'NATIVE_BREADCRUMB'
+,p_menu_template_id=>wwv_flow_imp.id(46986654645437702471)
+);
+end;
+/
+prompt --application/pages/page_00060
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>60
+,p_user_interface_id=>wwv_flow_imp.id(46986677909852702488)
+,p_name=>'View Results'
+,p_alias=>'VIEW-RESULTS'
+,p_step_title=>'View Results'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_page_is_public_y_n=>'Y'
+,p_page_component_map=>'03'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20221009214914'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(58989730356100961600)
+,p_plug_name=>'Breadcrumb'
+,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
+,p_component_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986592559371702443)
+,p_plug_display_sequence=>10
+,p_plug_display_point=>'REGION_POSITION_01'
+,p_menu_id=>wwv_flow_imp.id(46986483063942702397)
+,p_plug_source_type=>'NATIVE_BREADCRUMB'
+,p_menu_template_id=>wwv_flow_imp.id(46986654645437702471)
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(106623657478402405520)
+,p_plug_name=>'{items}'
+,p_region_name=>'itemsRegion'
+,p_region_template_options=>'#DEFAULT#'
+,p_plug_template=>wwv_flow_imp.id(46986519704134702414)
+,p_plug_display_sequence=>20
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(108296151279429485789)
+,p_plug_name=>'Results'
+,p_region_name=>'itemsRegion'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(46986580184360702438)
+,p_plug_display_sequence=>30
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(108296150341164485780)
+,p_name=>'Players Ranks'
+,p_parent_plug_id=>wwv_flow_imp.id(108296151279429485789)
+,p_template=>wwv_flow_imp.id(46986580184360702438)
+,p_display_sequence=>10
+,p_region_template_options=>'#DEFAULT#:t-Region--removeHeader js-removeLandmark:t-Region--noUI:t-Region--scrollBody'
+,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
+,p_display_point=>'SUB_REGIONS'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'with score_points as (',
+'    select 1 rank, 25 points from dual union all',
+'    select 2 rank, 21 points from dual union all',
+'    select 3 rank, 18 points from dual union all',
+'    select 4 rank, 16 points from dual union all',
+'    select 5 rank, 15 points from dual union all',
+'    select 6 rank, 14 points from dual union all',
+'    select 7 rank, 13 points from dual union all',
+'    select 8 rank, 12 points from dual union all',
+'    select 9 rank, 11 points from dual union all',
+'    select 10 rank, 10 points from dual union all',
+'    select 11 rank,  9 points from dual union all',
+'    select 12 rank,  9 points from dual union all',
+'    select 13 rank,  9 points from dual union all',
+'    select 14 rank,  9 points from dual union all',
+'    select 15 rank,  9 points from dual union all',
+'    select 16 rank,  9 points from dual union all',
+'    select 17 rank,  9 points from dual union all',
+'    select 18 rank,  9 points from dual union all',
+'    select 19 rank,  9 points from dual union all',
+'    select 20 rank,  8 points from dual union all',
+'    select 21 rank,  8 points from dual union all',
+'    select 22 rank,  8 points from dual union all',
+'    select 23 rank,  8 points from dual union all',
+'    select 24 rank,  8 points from dual union all',
+'    select 25 rank,  8 points from dual union all',
+'    select 26 rank,  8 points from dual union all',
+'    select 27 rank,  8 points from dual union all',
+'    select 28 rank,  8 points from dual union all',
+'    select 29 rank,  7 points from dual union all',
+'    select 30 rank,  7 points from dual union all',
+'    select 31 rank,  7 points from dual union all',
+'    select 32 rank,  7 points from dual union all',
+'    select 33 rank,  7 points from dual union all',
+'    select 34 rank,  7 points from dual union all',
+'    select 35 rank,  7 points from dual',
+')',
+'select r.player_id, r.player_name, r.easy, r.hard, r.total_score, r.pos, p.points',
+'from (',
+'    select r.player_id, r.player_name, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos',
+'    from (',
+'      select player_id, player_name, easy, hard, easy + hard total_score',
+'      from (',
+'        select r.player_id, r.player_name',
+'             , r.under_par',
+'             , c.course_mode',
+'          from wmg_rounds_v r, wmg_courses c',
+'        where r.course_id = c.id',
+'           and r.week = :P60_WEEK',
+'        )',
+'       pivot (',
+'         sum(under_par) for course_mode in (',
+'          ''E'' EASY, ''H'' HARD',
+'         )',
+'        )',
+'    ) r',
+') r',
+', score_points p',
+'where r.pos = p.rank (+)',
+'order by r.pos, r.player_name',
+''))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P60_WEEK'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_num_rows=>200
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_num_rows_type=>'ROWS_X_TO_Y_OF_Z'
+,p_pagination_display_position=>'BOTTOM_RIGHT'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(58990502191049709188)
+,p_query_column_id=>1
+,p_column_alias=>'PLAYER_ID'
+,p_column_display_sequence=>20
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(58990501368565709188)
+,p_query_column_id=>2
+,p_column_alias=>'PLAYER_NAME'
+,p_column_display_sequence=>30
+,p_column_heading=>'Player'
+,p_use_as_row_header=>'N'
+,p_column_link=>'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P100_WEEK.,#PLAYER_ID#'
+,p_column_linktext=>'#PLAYER_NAME#'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(56015646459290939744)
+,p_query_column_id=>3
+,p_column_alias=>'EASY'
+,p_column_display_sequence=>50
+,p_column_heading=>'Easy'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(56015646566524939745)
+,p_query_column_id=>4
+,p_column_alias=>'HARD'
+,p_column_display_sequence=>60
+,p_column_heading=>'Hard'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(58990500980275709187)
+,p_query_column_id=>5
+,p_column_alias=>'TOTAL_SCORE'
+,p_column_display_sequence=>70
+,p_column_heading=>'Total Score'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(58990501734129709188)
+,p_query_column_id=>6
+,p_column_alias=>'POS'
+,p_column_display_sequence=>10
+,p_column_heading=>'Rank'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(56015646844134939748)
+,p_query_column_id=>7
+,p_column_alias=>'POINTS'
+,p_column_display_sequence=>80
+,p_column_heading=>'Points'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'CENTER'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990481012454704231)
+,p_name=>'P60_WEEK'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_prompt=>'Week'
+,p_display_as=>'NATIVE_SELECT_LIST'
+,p_lov=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select week d, week r',
+'from (',
+'select distinct week',
+'from wmg_rounds_v',
+')',
+'order by 1 desc'))
+,p_lov_display_null=>'YES'
+,p_cHeight=>1
+,p_colspan=>2
+,p_grid_column_css_classes=>'col-xss-6 col-xs-6 col-sm-6 col-md-6'
+,p_field_template=>wwv_flow_imp.id(46986650580145702469)
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'SUBMIT'
+,p_attribute_03=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990481446347704231)
+,p_name=>'P60_TOTAL_PLAYERS'
+,p_item_sequence=>20
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_use_cache_before_default=>'NO'
+,p_prompt=>'Total Players'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select count(distinct players_id)',
+'        from wmg_rounds ',
+'       where week = :P60_WEEK'))
+,p_source_type=>'QUERY'
+,p_display_as=>'NATIVE_DISPLAY_ONLY'
+,p_begin_on_new_line=>'N'
+,p_colspan=>2
+,p_grid_column_css_classes=>'col-xss-6 col-xs-6 col-sm-6 col-md-6'
+,p_display_when=>'P60_WEEK'
+,p_display_when_type=>'ITEM_IS_NOT_NULL'
+,p_field_template=>wwv_flow_imp.id(46986650580145702469)
+,p_item_css_classes=>'u-textCenter'
+,p_item_template_options=>'#DEFAULT#'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'VALUE'
+,p_attribute_04=>'Y'
+,p_attribute_05=>'PLAIN'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990481812299704231)
+,p_name=>'P60_H'
+,p_item_sequence=>30
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990482283542704232)
+,p_name=>'P60_MODE'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990482603233704232)
+,p_name=>'P60_EASY'
+,p_item_sequence=>50
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_use_cache_before_default=>'NO'
+,p_item_default=>'Easy Course'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select name',
+'    from wmg_courses_v',
+'   where course_id in (',
+'      select distinct course_id',
+'        from wmg_rounds ',
+'       where week = :P60_WEEK ',
+'    )',
+'   and course_mode = ''E'''))
+,p_source_type=>'QUERY'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(58990483056463704232)
+,p_name=>'P60_HARD'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(106623657478402405520)
+,p_use_cache_before_default=>'NO'
+,p_item_default=>'Hard Course'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select name',
+'    from wmg_courses_v',
+'   where course_id in (',
+'      select distinct course_id',
+'        from wmg_rounds ',
+'       where week = :P60_WEEK ',
+'    )',
+'   and course_mode = ''H'''))
+,p_source_type=>'QUERY'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+end;
+/
 prompt --application/pages/page_00100
 begin
 wwv_flow_imp_page.create_page(
@@ -30794,7 +31800,6 @@ wwv_flow_imp_page.create_page(
 '}'))
 ,p_page_template_options=>'#DEFAULT#'
 ,p_page_is_public_y_n=>'Y'
-,p_protection_level=>'C'
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'After selecting the season & week, via the "Week" drop down, ',
 'this page will show relevant information and stadistics about that week.<br>',
@@ -30806,7 +31811,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221001150018'
+,p_last_upd_yyyymmddhh24miss=>'20221009214930'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(47486927506229033323)
@@ -32506,14 +33511,24 @@ wwv_flow_imp_page.create_report_region(
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select r.*, rank() over (order by r.total_score) pos',
 'from (',
-'select player_id, player_name, sum(under_par) total_score',
-'  from wmg_rounds_v',
-'  where week = :P100_WEEK ',
-' group by player_id, player_name',
-' order by 3',
-' fetch first 15 rows only',
+'  select player_id, player_name, easy, hard, easy + hard total_score',
+'  from (',
+'    select r.player_id, r.player_name',
+'         , r.under_par',
+'         , c.course_mode',
+'      from wmg_rounds_v r, wmg_courses c',
+'    where r.course_id = c.id',
+'       and r.week = :P100_WEEK',
+'    )',
+'   pivot (',
+'     sum(under_par) for course_mode in (',
+'      ''E'' EASY, ''H'' HARD',
+'     )',
+'    )',
 ') r',
-'order by pos, r.player_name'))
+'order by pos, r.player_name',
+'fetch first 15 rows only',
+''))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P100_WEEK'
 ,p_lazy_loading=>false
@@ -32546,10 +33561,32 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_report_columns(
- p_id=>wwv_flow_imp.id(49305650281082776603)
+ p_id=>wwv_flow_imp.id(56015646617068939746)
 ,p_query_column_id=>3
+,p_column_alias=>'EASY'
+,p_column_display_sequence=>50
+,p_column_heading=>'Easy'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(56015646762584939747)
+,p_query_column_id=>4
+,p_column_alias=>'HARD'
+,p_column_display_sequence=>60
+,p_column_heading=>'Hard'
+,p_use_as_row_header=>'N'
+,p_column_alignment=>'RIGHT'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(49305650281082776603)
+,p_query_column_id=>5
 ,p_column_alias=>'TOTAL_SCORE'
-,p_column_display_sequence=>40
+,p_column_display_sequence=>70
 ,p_column_heading=>'Total Score'
 ,p_use_as_row_header=>'N'
 ,p_column_alignment=>'RIGHT'
@@ -32558,7 +33595,7 @@ wwv_flow_imp_page.create_report_columns(
 );
 wwv_flow_imp_page.create_report_columns(
  p_id=>wwv_flow_imp.id(49305651092824776611)
-,p_query_column_id=>4
+,p_query_column_id=>6
 ,p_column_alias=>'POS'
 ,p_column_display_sequence=>10
 ,p_column_heading=>'#'
@@ -32764,6 +33801,9 @@ wwv_flow_imp_page.create_jet_chart(
 ,p_gauge_plot_area=>'on'
 ,p_show_gauge_value=>true
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_jet_chart_series(
  p_id=>wwv_flow_imp.id(47468031666227193298)
 ,p_chart_id=>wwv_flow_imp.id(47468031168835193298)
@@ -32789,9 +33829,6 @@ wwv_flow_imp_page.create_jet_chart_series(
 ,p_items_label_display_as=>'LABEL'
 ,p_threshold_display=>'onIndicator'
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(94935952475262333856)
 ,p_plug_name=>'&P100_EASY.'
@@ -34664,6 +35701,15 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_clob_language=>'PLSQL'
 ,p_error_display_location=>'INLINE_IN_NOTIFICATION'
 );
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(56015646363970939743)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_BOX_BODY'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Refresh MV'
+,p_process_sql_clob=>'dbms_mview.refresh(''wmg_rounds_unpivot_mv'');'
+,p_process_clob_language=>'PLSQL'
+);
 end;
 /
 prompt --application/pages/page_00110
@@ -34696,10 +35742,11 @@ wwv_flow_imp_page.create_page(
 '}',
 ''))
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
+,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20220920014055'
+,p_last_upd_yyyymmddhh24miss=>'20221005180814'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(98299060405746359013)

@@ -7,3 +7,68 @@ identification:
 appearance: 
   user-interface: Desktop # 46986677909852702488
 
+regions: 
+- # ====== Region: {AutoDetectTimeZone.js} =====================
+  id: 47577408716670657321
+  identification: 
+    title: '{AutoDetectTimeZone.js}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      <div id="apex_wait_overlay" class="apex_wait_overlay" style="visibility: visible;"></div>
+      <div class="tzx" style="color: rgb(164, 164, 164);font-size: 2.5em;z-index: 20000;position: relative;margin-top: 60px;width: 100%;line-height: 1.2em;text-align: center;">
+        Determining Time Zone <span aria-hidden="true" class="fa fa-ellipsis-h fa-3x fa-anim-flash"></span>
+      </div>
+      
+      <script type="text/javascript">
+      var tzx;
+      try {tzx = Intl.DateTimeFormat().resolvedOptions().timeZone;}
+      catch (e) {tzx = "America/Chicago";}
+      tzx=tzx===undefined?"America/Chicago":tzx;
+      // var lLink = window.location.href.replace(/\#[a-z\_]+\#/gi, "").replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + '\u0026tz='+tzx;
+      var lLink = window.location.href;
+      console.log({lLink});
+      var a = lLink.match(/\#.+$/) || [""];  // extract a possible anchor
+      console.log({a});
+      lLink = lLink.replace(/\#.+$/gi,"");
+      lLink = lLink.replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + '\u0026tz='+ encodeURIComponent( tzx) + a[0];
+      
+      console.log({lLink});
+      
+      // reload page with new tz set
+      window.location.href = lLink;
+      </script>
+
+  layout: 
+    sequence: -1
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    render-components: Above Content
+
+  advanced: 
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_util.get_session_time_zone() is null and 1=2
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+

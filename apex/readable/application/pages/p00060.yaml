@@ -1,0 +1,783 @@
+---
+# ====== Page: View Results ==================================
+id: 60
+identification: 
+  name: View Results
+  alias: VIEW-RESULTS
+  title: View Results
+
+appearance: 
+  user-interface: Desktop # 46986677909852702488
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Is Public
+  deep-linking: Application Default
+  page-access-protection: Unrestricted
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Breadcrumb ==================================
+  id: 58989730356100961600
+  identification: 
+    title: Breadcrumb
+    type: Breadcrumb
+
+  source: 
+    breadcrumb: Breadcrumb # 46986483063942702397
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Title Bar # 46986592559371702443
+    template-options: 
+    - '#DEFAULT#'
+    - t-BreadcrumbRegion--useBreadcrumbTitle
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      breadcrumb-template: Breadcrumb # 46986654645437702471
+      template-options: 
+      - '#DEFAULT#'
+
+- # ====== Region: {items} =====================================
+  id: 106623657478402405520
+  identification: 
+    title: '{items}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: itemsRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Players Ranks ===============================
+  id: 108296150341164485780
+  identification: 
+    title: Players Ranks
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with score_points as (
+          select 1 rank, 25 points from dual union all
+          select 2 rank, 21 points from dual union all
+          select 3 rank, 18 points from dual union all
+          select 4 rank, 16 points from dual union all
+          select 5 rank, 15 points from dual union all
+          select 6 rank, 14 points from dual union all
+          select 7 rank, 13 points from dual union all
+          select 8 rank, 12 points from dual union all
+          select 9 rank, 11 points from dual union all
+          select 10 rank, 10 points from dual union all
+          select 11 rank,  9 points from dual union all
+          select 12 rank,  9 points from dual union all
+          select 13 rank,  9 points from dual union all
+          select 14 rank,  9 points from dual union all
+          select 15 rank,  9 points from dual union all
+          select 16 rank,  9 points from dual union all
+          select 17 rank,  9 points from dual union all
+          select 18 rank,  9 points from dual union all
+          select 19 rank,  9 points from dual union all
+          select 20 rank,  8 points from dual union all
+          select 21 rank,  8 points from dual union all
+          select 22 rank,  8 points from dual union all
+          select 23 rank,  8 points from dual union all
+          select 24 rank,  8 points from dual union all
+          select 25 rank,  8 points from dual union all
+          select 26 rank,  8 points from dual union all
+          select 27 rank,  8 points from dual union all
+          select 28 rank,  8 points from dual union all
+          select 29 rank,  7 points from dual union all
+          select 30 rank,  7 points from dual union all
+          select 31 rank,  7 points from dual union all
+          select 32 rank,  7 points from dual union all
+          select 33 rank,  7 points from dual union all
+          select 34 rank,  7 points from dual union all
+          select 35 rank,  7 points from dual
+      )
+      select r.player_id, r.player_name, r.easy, r.hard, r.total_score, r.pos, p.points
+      from (
+          select r.player_id, r.player_name, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
+          from (
+            select player_id, player_name, easy, hard, easy + hard total_score
+            from (
+              select r.player_id, r.player_name
+                   , r.under_par
+                   , c.course_mode
+                from wmg_rounds_v r, wmg_courses c
+              where r.course_id = c.id
+                 and r.week = :P60_WEEK
+              )
+             pivot (
+               sum(under_par) for course_mode in (
+                'E' EASY, 'H' HARD
+               )
+              )
+          ) r
+      ) r
+      , score_points p
+      where r.pos = p.rank (+)
+      order by r.pos, r.player_name
+      
+    page-items-to-submit: 
+    - P60_WEEK
+
+  layout: 
+    sequence: 10
+    parent-region: Results # 108296151279429485789
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y of Z (no pagination)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: EASY ========================================
+    id: 56015646459290939744
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 56015646566524939745
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS ======================================
+    id: 56015646844134939748
+    identification: 
+      column-name: POINTS
+      type: Plain Text
+
+    heading: 
+      heading: Points
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 58990500980275709187
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total Score
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 58990501368565709188
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P100_WEEK.,#PLAYER_ID#'
+        page: 110 # Player Round Details
+        clear-cache: 110
+        values: 
+          p110_week: '&P100_WEEK.'
+          p110_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 58990501734129709188
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 58990502191049709188
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Results =====================================
+  id: 108296151279429485789
+  identification: 
+    title: Results
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    static-id: itemsRegion
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P60_WEEK =================================
+  id: 58990481012454704231
+  identification: 
+    name: P60_WEEK
+    type: Select List
+
+  label: 
+    label: Week
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: Submit Page
+    execute-validations: false
+
+  layout: 
+    sequence: 10
+    region: '{items}' # 106623657478402405520
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select week d, week r
+      from (
+      select distinct week
+      from wmg_rounds_v
+      )
+      order by 1 desc
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_TOTAL_PLAYERS ========================
+  id: 58990481446347704231
+  identification: 
+    name: P60_TOTAL_PLAYERS
+    type: Display Only
+
+  label: 
+    label: Total Players
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 20
+    region: '{items}' # 106623657478402405520
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-textCenter
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(distinct players_id)
+              from wmg_rounds 
+             where week = :P60_WEEK
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P60_WEEK
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_H ====================================
+  id: 58990481812299704231
+  identification: 
+    name: P60_H
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 30
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_MODE =================================
+  id: 58990482283542704232
+  identification: 
+    name: P60_MODE
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 40
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+    maintain-session-state: Per Session (Disk)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_EASY =================================
+  id: 58990482603233704232
+  identification: 
+    name: P60_EASY
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P60_WEEK 
+          )
+         and course_mode = 'E'
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: Easy Course
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_HARD =================================
+  id: 58990483056463704232
+  identification: 
+    name: P60_HARD
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 60
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P60_WEEK 
+          )
+         and course_mode = 'H'
+    used: Always, replacing any existing value in session state
+    maintain-session-state: Per Session (Disk)
+
+  default: 
+    type: Static
+    static-value: Hard Course
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+

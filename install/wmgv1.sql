@@ -7,6 +7,9 @@ create table wmg_players (
 )
 ;
 
+create unique index wmg_players_u01 on wmg_players (lower(account));
+create unique index wmg_players_u01 on wmg_players (lower(name));
+
 -- comments
 comment on column players.account is 'discord name';
 
@@ -55,11 +58,11 @@ create table wmg_rounds (
 ;
 
 -- table index
-create index rounds_i1 on rounds (course_id);
-create index rounds_i82 on rounds (players_id);
-create index rounds_01 on rounds (week);
+create index rounds_i1 on wmg_rounds (course_id);
+create index rounds_i2 on wmg_rounds (players_id);
+create index rounds_01 on wmg_rounds (week);
 
-alter table rounds add constraint
+alter table wmg_rounds add constraint
 rounds_one_uk unique (players_id,week,course_id)
 /
 
