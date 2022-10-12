@@ -8,6 +8,11 @@ Analysis Application for the [Walkabout Mini Golf](https://www.mightycoconut.com
 ### Basic Data Model Structure
 
 ```
+tournaments
+  tournament_sessions
+    tournament_courses
+    tournament_players
+
 courses
     course_strokes
 players
