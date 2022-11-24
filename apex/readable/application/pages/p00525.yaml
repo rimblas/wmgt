@@ -7,7 +7,6 @@ identification:
   title: Tournament Details
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -193,7 +192,10 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -248,7 +250,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -306,7 +310,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -364,7 +370,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -422,7 +430,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -475,7 +485,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -527,11 +539,13 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: Static
     static-value: Y
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -589,7 +603,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -647,7 +663,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -696,7 +715,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -742,7 +764,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -788,7 +813,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -834,7 +862,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -980,7 +1011,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -988,16 +1019,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 56143601660056235919
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 56143602529042235919
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 56143601798864235919
       fire-when-event-result-is: True
@@ -1017,7 +1049,7 @@ processes:
       update wmg_tournaments
       set current_flag = null;
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1040,7 +1072,7 @@ processes:
     type: Form - Initialization
     form-region: Tournament Details # 56143590532243235911
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -1058,7 +1090,7 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1072,7 +1104,7 @@ processes:
     name: Close Dialog
     type: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)

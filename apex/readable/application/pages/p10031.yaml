@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -754,7 +753,7 @@ regions:
       show: false
 
     advanced: 
-      javascript-initialization-code: |
+      initialization-javascript-function: |
         function( options ){ 
         
             this.pieSliceLabel = function(dataContext) {
@@ -780,7 +779,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -857,7 +856,9 @@ page-items:
     type: Static Value
     static-value: REPORT
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -913,7 +914,9 @@ page-items:
     type: Static Value
     static-value: 900
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -962,7 +965,7 @@ dynamic-actions:
   identification: 
     name: Refresh Report
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -971,11 +974,12 @@ dynamic-actions:
     item(s): 
     - P10031_TIMEFRAME
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986967467225704075
     identification: 
       action: Refresh
@@ -984,13 +988,13 @@ dynamic-actions:
       selection-type: Region
       region: Top Users # 46986957784988704047
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Report # 46986957903815704047
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986970830943704077
     identification: 
       action: Refresh
@@ -999,7 +1003,7 @@ dynamic-actions:
       selection-type: Region
       region: Top Users # 46986957784988704047
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Refresh Report # 46986957903815704047
       fire-when-event-result-is: True

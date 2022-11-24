@@ -7,7 +7,6 @@ identification:
   title: Notes
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -436,11 +435,13 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: ABOUT
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -516,7 +517,7 @@ dynamic-actions:
   identification: 
     name: Refresh Report
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
@@ -525,11 +526,12 @@ dynamic-actions:
     item(s): 
     - P510_NOTE_TYPE
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 50429446592003004849
     identification: 
       action: Refresh
@@ -538,7 +540,7 @@ dynamic-actions:
       selection-type: Region
       region: Notes # 56005294053321464926
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Report # 50429446495883004848
       fire-when-event-result-is: True
@@ -549,7 +551,7 @@ dynamic-actions:
   identification: 
     name: Edit Report - Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -557,11 +559,12 @@ dynamic-actions:
     selection-type: Region
     region: Notes # 56005294053321464926
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56005298647826464929
     identification: 
       action: Refresh
@@ -570,7 +573,7 @@ dynamic-actions:
       selection-type: Region
       region: Notes # 56005294053321464926
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Edit Report - Dialog Closed # 56005298170662464929
       fire-when-event-result-is: True
@@ -581,7 +584,7 @@ dynamic-actions:
   identification: 
     name: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   when: 
@@ -589,16 +592,17 @@ dynamic-actions:
     selection-type: Button
     button: CLOSE # 56015642135023939701
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 56015642363526939703
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Close Dialog # 56015642239737939702
       fire-when-event-result-is: True

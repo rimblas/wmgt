@@ -7,7 +7,6 @@ identification:
   title: WMGT
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -18,15 +17,20 @@ navigation-menu:
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
 
 css: 
   inline: '#optionsRegion .t-HeroRegion-title {display: none;}'
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
-  page-access-protection: Arguments Must Have Checksum
+  page-access-protection: Unrestricted
   form-auto-complete: Off
   browser-cache: Application Default
 
@@ -41,6 +45,203 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Next Tournament =============================
+  id: 24735740413470583646
+  identification: 
+    title: Next Tournament
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select s.session_date
+           , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
+           , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
+      from wmg_tournament_sessions_v s
+         , wmg_courses ec
+         , wmg_courses hc
+      where s.easy_course_id = ec.id (+)
+        and s.hard_course_id = hc.id (+)
+        and s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and session_date+1 > sysdate
+      Order by session_date
+      fetch first 1 rows only
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 4
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--info
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: SESSION_DATE ================================
+    id: 24735740504360583647
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Session Date
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmDay, fmMonth fmDD, YYYY
+
+    column-formatting: 
+      html-expression: |
+        The next tournament session is on #SESSION_DATE#.<br>
+        The courses are:<br>
+        • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
+        • #HARD_COURSE_CODE# - #HARD_COURSE#
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_CODE ============================
+    id: 24735740660122583648
+    identification: 
+      column-name: EASY_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_CODE ============================
+    id: 24735740743520583649
+    identification: 
+      column-name: HARD_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 24735740822580583650
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 57207806103846896001
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: WMG Tournament ==============================
   id: 46986695303177702576
   identification: 
@@ -93,7 +294,7 @@ regions:
     list: Page Navigation # 46986883504791703654
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -140,7 +341,7 @@ regions:
     list: Tournament Options # 55884590206608414057
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -183,4 +384,85 @@ regions:
       - t-Cards--4cols
       - t-Cards--hideBody
       - t-Cards--animRaiseCard
+
+computations: 
+- # ====== Computation: G_CURRENT_SESSION_ID ===================
+  id: 2316748674575093601
+  identification: 
+    item-name: G_CURRENT_SESSION_ID
+
+  execution: 
+    sequence: 10
+    point: After Header
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select s.id
+      from wmg_tournament_sessions s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and s.session_date+1 > sysdate
+      order by s.session_date
+      fetch first 1 rows only
+
+- # ====== Computation: G_REGISTRATION_ID ======================
+  id: 2316748859420093603
+  identification: 
+    item-name: G_REGISTRATION_ID
+
+  execution: 
+    sequence: 20
+    point: After Header
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select tp.id
+      from wmg_tournament_players tp
+         , wmg_players p
+      where tp.player_id = p.id
+        and tp.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.account_login = :APP_USER
+        and tp.active_ind = 'Y'
+
+processes: 
+- # ====== Process: Init Courses ===============================
+  id: 15526039077281949501
+  identification: 
+    name: Init Courses
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+      select s.easy_course_id
+           , s.hard_course_id
+        into :G_COURSE_ID_EASY
+           , :G_COURSE_ID_HARD
+      from wmg_tournament_sessions_v s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and s.session_date+1 > sysdate
+      order by session_date
+      fetch first 1 rows only;
+      exception 
+      when NO_DATA_FOUND then
+        :G_COURSE_ID_EASY:= null;
+        :G_COURSE_ID_HARD:= null;
+      end;
+      
+
+  execution: 
+    sequence: 10
+    point: After Header
+    run-process: Once Per Page Visit (default)
 

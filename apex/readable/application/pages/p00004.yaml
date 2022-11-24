@@ -7,7 +7,6 @@ identification:
   title: Courses & Strokes
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -22,6 +21,11 @@ navigation:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -1210,7 +1214,7 @@ dynamic-actions:
   identification: 
     name: Edit Report - Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -1218,11 +1222,12 @@ dynamic-actions:
     selection-type: Region
     region: Course Strokes # 46986728918122702963
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986738346036702969
     identification: 
       action: Refresh
@@ -1231,7 +1236,7 @@ dynamic-actions:
       selection-type: Region
       region: Course Strokes # 46986728918122702963
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Edit Report - Dialog Closed # 46986737882516702968
       fire-when-event-result-is: True

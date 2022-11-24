@@ -7,7 +7,6 @@ identification:
   title: Session Analysis
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -95,8 +94,13 @@ css:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
-  page-access-protection: Arguments Must Have Checksum
+  page-access-protection: Unrestricted
   form-auto-complete: Off
   browser-cache: Application Default
 
@@ -493,7 +497,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -791,14 +795,24 @@ regions:
     sql-query: |
       select r.*, rank() over (order by r.total_score) pos
       from (
-      select player_id, player_name, sum(under_par) total_score
-        from wmg_rounds_v
-        where week = :P100_WEEK 
-       group by player_id, player_name
-       order by 3
-       fetch first 15 rows only
+        select player_id, player_name, easy, hard, easy + hard total_score
+        from (
+          select r.player_id, r.player_name
+               , r.under_par
+               , c.course_mode
+            from wmg_rounds_v r, wmg_courses c
+          where r.course_id = c.id
+             and r.week = :P100_WEEK
+          )
+         pivot (
+           sum(under_par) for course_mode in (
+            'E' EASY, 'H' HARD
+           )
+          )
       ) r
       order by pos, r.player_name
+      fetch first 15 rows only
+      
     page-items-to-submit: 
     - P100_WEEK
 
@@ -880,7 +894,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 40
+      sequence: 70
       column-alignment: end
 
     accessibility: 
@@ -984,6 +998,70 @@ regions:
 
     layout: 
       sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 56015646617068939746
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 56015646762584939747
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1584,6 +1662,38 @@ regions:
              , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
              , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
              , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 700 display_seq
+             , 'Condors of Better'
+             , +4 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 4 <= h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 4 <= h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 4 <= h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 4 <= h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 4 <= h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 4 <= h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 4 <= h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 4 <= h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 4 <= h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 4 <= h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 4 <= h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 4 <= h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 4 <= h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 4 <= h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 4 <= h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 4 <= h18 then 1 else 0 end) a18
           from wmg_rounds_v r, week_courses w
          where r.week = w.week
            and r.course_id = w.course_id
@@ -2766,6 +2876,38 @@ regions:
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
+        select 700 display_seq
+             , 'Condors of Better'
+             , +4 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 4 <= h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 4 <= h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 4 <= h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 4 <= h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 4 <= h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 4 <= h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 4 <= h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 4 <= h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 4 <= h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 4 <= h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 4 <= h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 4 <= h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 4 <= h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 4 <= h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 4 <= h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 4 <= h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
         select 1000 display_seq
              , 'Aces'
              , 99 data_filter
@@ -3745,7 +3887,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -3851,7 +3993,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -4184,7 +4326,7 @@ regions:
       identification: 
         name: Top 3
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -4310,7 +4452,7 @@ regions:
       identification: 
         name: Extra Player
 
-      execution-options: 
+      execution: 
         sequence: 40
 
       source: 
@@ -4572,7 +4714,7 @@ regions:
       identification: 
         name: Easy
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -4790,7 +4932,7 @@ regions:
       identification: 
         name: Hard
 
-      execution-options: 
+      execution: 
         sequence: 20
 
       source: 
@@ -5124,12 +5266,12 @@ regions:
       show: false
 
     series: 
-    - # ====== Series: Series 1 ====================================
+    - # ====== Series: Top 10 Finishers ============================
       id: 47468040808000193303
       identification: 
-        name: Series 1
+        name: Top 10 Finishers
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -5171,6 +5313,7 @@ regions:
           where r.players_id = p.id
             and r.course_id = c.id
             and cs.course_id(+) = c.id
+            and :P100_PLAYERS_FILTER = 'TOP'
           )
           , round_unpivot as (
             select *
@@ -5236,9 +5379,10 @@ regions:
           group by account
           order by 2 desc
         page-items-to-submit: 
+        - P100_PLAYERS_FILTER
         - P100_WEEK
-        - P100_HN
         - P100_PLAYER_ID
+        - P100_HN
 
       column-mapping: 
         label: ACCOUNT
@@ -5259,8 +5403,8 @@ regions:
       identification: 
         name: Extra Player
 
-      execution-options: 
-        sequence: 20
+      execution: 
+        sequence: 30
 
       source: 
         location: Local Database
@@ -5375,6 +5519,66 @@ regions:
         type: Item is NOT NULL
         item: P100_PLAYER_ID
 
+    - # ====== Series: Top 10 Ranks ================================
+      id: 56015646926201939749
+      identification: 
+        name: Top 10 Ranks
+
+      execution: 
+        sequence: 5
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select account
+               , total
+          from (
+              select account
+                  , total
+                  , rank() over (order by total desc) pos
+              from (
+                  select p.account
+                  , sum(r.par * -1) total
+                  from wmg_rounds_unpivot_mv r
+                  , wmg_courses c
+                  , wmg_players p
+                  where r.player_id = p.id
+                  and r.week = :P100_WEEK
+                  and :P100_PLAYERS_FILTER = 'ALL'
+                  and r.course_id = c.id
+                  and (
+                      (:P100_HN <= 18 and c.course_mode = 'E'  and r.h <= :P100_HN)
+                  or 
+                  (
+                      :P100_HN > 18 and (c.course_mode = 'E'  or (r.h <= :P100_HN - 18 and c.course_mode = 'H' ))
+                  )
+                  )
+                  group by p.account
+              )
+          )
+          where pos <= 10
+          order by pos, account
+        page-items-to-submit: 
+        - P100_PLAYERS_FILTER
+        - P100_WEEK
+        - P100_PLAYERS_FILTER
+        - P100_HN
+
+      column-mapping: 
+        label: ACCOUNT
+        value: TOTAL
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: true
+        position: Automatic
+
+      performance: 
+        maximum-rows-to-process: 15
+
     axes: 
     - # ====== Axis: x =============================================
       id: 47633179922889701342
@@ -5479,7 +5683,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -5550,7 +5756,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -5580,7 +5788,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -5607,7 +5818,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -5664,7 +5878,10 @@ page-items:
               from wmg_rounds 
              where week = :P100_WEEK
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -5704,11 +5921,14 @@ page-items:
           )
          and course_mode = 'E'
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: Easy Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -5744,11 +5964,14 @@ page-items:
           )
          and course_mode = 'H'
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: Hard Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -5812,16 +6035,81 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: 1
 
+  session-state: 
+    storage: Per Session (Persistent)
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_PLAYERS_FILTER ======================
+  id: 48035498845330866804
+  identification: 
+    name: P100_PLAYERS_FILTER
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 20
+    region: Positions over time # 94935960575573333859
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: ALL
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: TOGGLE_PLAYERS ==============================
+  id: 48035498632821866802
+  identification: 
+    button-name: TOGGLE_PLAYERS
+    label: All Players
+
+  layout: 
+    sequence: 20
+    region: Positions over time # 94935960575573333859
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-list
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Cumulative Chart ============
@@ -5829,7 +6117,7 @@ dynamic-actions:
   identification: 
     name: Refresh Cumulative Chart
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   when: 
@@ -5838,11 +6126,12 @@ dynamic-actions:
     item(s): 
     - P100_PLAYER_ID
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 48035498561833866801
     identification: 
       action: Refresh
@@ -5851,13 +6140,13 @@ dynamic-actions:
       selection-type: Region
       region: Cumulative Performance # 94935955149037333857
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Cumulative Chart # 5007620983014972550
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 52997261291343034403
     identification: 
       action: Refresh
@@ -5866,7 +6155,7 @@ dynamic-actions:
       selection-type: Region
       region: Positions over time # 94935960575573333859
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Refresh Cumulative Chart # 5007620983014972550
       fire-when-event-result-is: True
@@ -5877,7 +6166,7 @@ dynamic-actions:
   identification: 
     name: Nested Report Result Drill
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -5885,11 +6174,12 @@ dynamic-actions:
     selection-type: jQuery Selector
     jquery-selector: .drill
 
-  advanced: 
+  execution: 
     event-scope: Dynamic
+    type: Immediate
 
   actions: 
-  - # ====== Action: PLUGIN_UC_NESTED_REPORTS ====================
+  - # ====== Action: United Codes Nested Reports =================
     id: 47486927497414033322
     identification: 
       action: United Codes Nested Reports
@@ -5992,13 +6282,13 @@ dynamic-actions:
       selection-type: jQuery Selector
       jquery-selector: '#statsRegion'
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Nested Report Result Drill # 47486927373642033321
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_SET_VALUE ============================
+  - # ====== Action: Set Value ===================================
     id: 47577406821202657302
     identification: 
       action: Set Value
@@ -6013,7 +6303,7 @@ dynamic-actions:
       item(s): 
       - P100_H
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Nested Report Result Drill # 47486927373642033321
       fire-when-event-result-is: True
@@ -6026,17 +6316,17 @@ dynamic-actions:
   identification: 
     name: Sticky Items
 
-  execution-options: 
+  execution: 
     sequence: 40
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
 
-  advanced: 
+  execution: 
     event-scope: Static
 
   actions: 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 47633179353719701336
     identification: 
       action: Execute JavaScript Code
@@ -6051,7 +6341,7 @@ dynamic-actions:
       selection-type: Region
       region: '{items}' # 47633176682467701309
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Sticky Items # 47633179279657701335
       fire-when-event-result-is: True
@@ -6062,7 +6352,7 @@ dynamic-actions:
   identification: 
     name: Time Chart Refresh
 
-  execution-options: 
+  execution: 
     sequence: 50
 
   when: 
@@ -6071,11 +6361,12 @@ dynamic-actions:
     item(s): 
     - P100_HN
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 47633180381839701346
     identification: 
       action: Refresh
@@ -6084,7 +6375,7 @@ dynamic-actions:
       selection-type: Region
       region: Positions over time # 94935960575573333859
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Time Chart Refresh # 47633180271789701345
       fire-when-event-result-is: True
@@ -6095,7 +6386,7 @@ dynamic-actions:
   identification: 
     name: Advance Hole Slider
 
-  execution-options: 
+  execution: 
     sequence: 60
 
   when: 
@@ -6103,11 +6394,12 @@ dynamic-actions:
     selection-type: jQuery Selector
     jquery-selector: .hnSliderAdv
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_SET_VALUE ============================
+  - # ====== Action: Set Value ===================================
     id: 47633180513118701348
     identification: 
       action: Set Value
@@ -6122,7 +6414,7 @@ dynamic-actions:
       item(s): 
       - P100_HN
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Advance Hole Slider # 47633180442318701347
       fire-when-event-result-is: True
@@ -6130,12 +6422,69 @@ dynamic-actions:
       stop-execution-on-error: true
       wait-for-result: true
 
+- # ====== Dynamic Action: Toggle Players ======================
+  id: 48035498985675866805
+  identification: 
+    name: Toggle Players
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: TOGGLE_PLAYERS # 48035498632821866802
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48035499026963866806
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        if ($v("P100_PLAYERS_FILTER") === "ALL") {
+          $(this.triggeringElement).find(".t-Button-label").text("Top 10 Finishers");
+          $(this.triggeringElement).find(".t-Icon").removeClass("fa-list").addClass("fa-list-ol");
+          $s("P100_PLAYERS_FILTER", "TOP");
+        }
+        else {
+          $(this.triggeringElement).find(".t-Button-label").text("All Players");
+          $(this.triggeringElement).find(".t-Icon").removeClass("fa-list-ol").addClass("fa-list");
+          $s("P100_PLAYERS_FILTER", "ALL");
+        }
+
+    execution: 
+      sequence: 10
+      event: Toggle Players # 48035498985675866805
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 48035499196923866807
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Positions over time # 94935960575573333859
+
+    execution: 
+      sequence: 20
+      event: Toggle Players # 48035498985675866805
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Nested Report Result Drill (Hover) ==
   id: 49305652783522776628
   identification: 
     name: Nested Report Result Drill (Hover)
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
@@ -6147,14 +6496,15 @@ dynamic-actions:
     type: JavaScript expression
     javascript-expression: '!isExpanding'
 
-  advanced: 
+  execution: 
     event-scope: Dynamic
+    type: Immediate
 
   security: 
     authorization-scheme: Administration Rights # 46986682652284702496
 
   actions: 
-  - # ====== Action: NATIVE_SET_VALUE ============================
+  - # ====== Action: Set Value ===================================
     id: 49305652843896776629
     identification: 
       action: Set Value
@@ -6169,7 +6519,7 @@ dynamic-actions:
       item(s): 
       - P100_H
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Nested Report Result Drill (Hover) # 49305652783522776628
       fire-when-event-result-is: True
@@ -6177,7 +6527,7 @@ dynamic-actions:
       stop-execution-on-error: true
       wait-for-result: true
 
-  - # ====== Action: PLUGIN_UC_NESTED_REPORTS ====================
+  - # ====== Action: United Codes Nested Reports =================
     id: 49305652989452776630
     identification: 
       action: United Codes Nested Reports
@@ -6280,7 +6630,7 @@ dynamic-actions:
       selection-type: jQuery Selector
       jquery-selector: '#statsRegion'
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Nested Report Result Drill (Hover) # 49305652783522776628
       fire-when-event-result-is: True
@@ -6295,7 +6645,7 @@ dynamic-actions:
   identification: 
     name: Nested Report Callback
 
-  execution-options: 
+  execution: 
     sequence: 80
 
   when: 
@@ -6303,11 +6653,12 @@ dynamic-actions:
     selection-type: Region
     region: '&P100_EASY. - Stats' # 94454808801107282731
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 49305653271729776633
     identification: 
       action: Execute JavaScript Code
@@ -6317,7 +6668,7 @@ dynamic-actions:
         console.log("CALLBACK!", {isExpanding},this.data);
         isExpanding = this.data.isExpanding;
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Nested Report Callback # 49305653111946776632
       fire-when-event-result-is: True
@@ -6328,7 +6679,7 @@ dynamic-actions:
   identification: 
     name: Decrease Hole Slider
 
-  execution-options: 
+  execution: 
     sequence: 70
 
   when: 
@@ -6336,11 +6687,12 @@ dynamic-actions:
     selection-type: jQuery Selector
     jquery-selector: .hnSliderRew
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_SET_VALUE ============================
+  - # ====== Action: Set Value ===================================
     id: 52997261108767034402
     identification: 
       action: Set Value
@@ -6355,7 +6707,7 @@ dynamic-actions:
       item(s): 
       - P100_HN
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Decrease Hole Slider # 52997261028124034401
       fire-when-event-result-is: True
@@ -6369,7 +6721,7 @@ computations:
   identification: 
     item-name: P100_WEEK
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Regions
 
@@ -6390,11 +6742,27 @@ processes:
     language: PL/SQL
     pl/sql-code: "apex_util.set_preference('WMG_WEEK', :P100_WEEK);"
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
 
   error: 
     display-location: Inline in Notification
+
+- # ====== Process: Refresh MV =================================
+  id: 56015646363970939743
+  identification: 
+    name: Refresh MV
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+    run-process: Once Per Page Visit (default)
 

@@ -87,6 +87,10 @@ select
     nvl(r.s16 - cs.h16, 0) +
     nvl(r.s17 - cs.h17, 0) +
     nvl(r.s18 - cs.h18, 0) under_par
+  , r.created_on
+  , r.created_by
+  , r.updated_on
+  , r.updated_by
 from 
     wmg_rounds r,
     wmg_players p,

@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
 
@@ -119,7 +118,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -127,16 +126,17 @@ dynamic-actions:
     selection-type: Button
     button: CLOSE # 46987023046368704293
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46987033099138704299
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46987023273714704293
       fire-when-event-result-is: True

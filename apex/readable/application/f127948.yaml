@@ -25,7 +25,7 @@ advanced:
   allow-feedback: true
   logging: true
   debugging: true
-  compatibility-mode: 21.2 / 22.1
+  compatibility-mode: 21.2 / 22.1 / 22.2
 
 authentication: 
   public-user: APEX_PUBLIC_USER
@@ -78,6 +78,42 @@ progressive-web-app:
   screen-orientation: Landscape Primary
   ios-status-bar-style: Translucent
 
+navigation: 
+  home-url: 
+    url: 'f?p=&APP_ID.:1:&SESSION.'
+    page: 1 # Home
+
+  login-url: 
+    url: 'f?p=&APP_ID.:LOGIN:&APP_SESSION.::&DEBUG.:::'
+    page: LOGIN
+
+navigation-menu: 
+  list-template: Top Navigation Mega Menu # 46986644253953702466
+  template-options: 
+  - '#DEFAULT#'
+  list-position: Top
+  list: Navigation Menu # 46986483541938702397
+
+navigation-bar: 
+  implementation: List
+  list: Navigation Bar # 46986677670123702487
+  list-template: Navigation Bar # 46986640423418702464
+  template-options: 
+  - '#DEFAULT#'
+
+javascript: 
+  include-jquery-migrate: false
+
+css: 
+  file-urls: 
+  - '#APP_FILES#css/global#MIN#.css'
+
+attributes: 
+  theme: Universal Theme # 42
+  global-page: 0
+  enable-end-users-to-choose-theme-style: true
+  add-"built-with-apex"-to-footer: true
+
 substitutions: 
 - # ====== Substitution: APP_NAME ==============================
   id: 1
@@ -122,46 +158,4 @@ application-settings:
 
   comments: 
     comments: The default access level given to authenticated users who are not in the access control list
-
-user-interfaces: 
-- # ====== User Interface: Desktop =============================
-  id: 46986677909852702488
-  identification: 
-    name: Desktop
-
-  navigation: 
-    home-url: 
-      url: 'f?p=&APP_ID.:1:&SESSION.'
-      page: 1 # Home
-
-    login-url: 
-      url: 'f?p=&APP_ID.:LOGIN:&APP_SESSION.::&DEBUG.:::'
-      page: LOGIN
-
-  navigation-menu: 
-    list-template: Top Navigation Mega Menu # 46986644253953702466
-    template-options: 
-    - '#DEFAULT#'
-    list-position: Top
-    list: Navigation Menu # 46986483541938702397
-
-  navigation-bar: 
-    implementation: List
-    list: Navigation Bar # 46986677670123702487
-    list-template: Navigation Bar # 46986640423418702464
-    template-options: 
-    - '#DEFAULT#'
-
-  javascript: 
-    include-jquery-migrate: false
-
-  css: 
-    file-urls: 
-    - '#APP_FILES#css/global#MIN#.css'
-
-  attributes: 
-    theme: Universal Theme # 42
-    global-page: 0
-    enable-end-users-to-choose-theme-style: true
-    add-"built-with-apex"-to-footer: true
 

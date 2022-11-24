@@ -242,6 +242,87 @@
     user-defined-attributes: 
       translatable: false
 
+  - # ====== Entry: Rooms ========================================
+    id: 58989707945457953662
+    label: 
+      label: Rooms
+
+    icon: 
+      image/icon-css-classes: fa-file-o
+
+    layout: 
+      sequence: 80
+
+    is-current: 
+      type: Pages
+      pages: 
+      - 40
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:40:&APP_SESSION.::&DEBUG.:::'
+        page: 40 # Rooms
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: View Results =================================
+    id: 58989729834847961599
+    label: 
+      label: View Results
+
+    icon: 
+      image/icon-css-classes: fa-file-o
+
+    layout: 
+      sequence: 100
+
+    is-current: 
+      type: Pages
+      pages: 
+      - 60
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:60:&APP_SESSION.::&DEBUG.:::'
+        page: 60 # View Results
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Enter Rounds =================================
+    id: 58989849472220683421
+    label: 
+      label: Enter Rounds
+
+    icon: 
+      image/icon-css-classes: fa-file-o
+
+    layout: 
+      sequence: 90
+
+    is-current: 
+      type: Pages
+      pages: 
+      - 50
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:50:&APP_SESSION.::&DEBUG.:::'
+        page: 50 # Enter Rounds
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
 - # ====== List: Navigation Bar ================================
   id: 46986677670123702487
   identification: 
@@ -1026,6 +1107,37 @@
     type: Static Values
 
   entries: 
+  - # ====== Entry: No Tournament ================================
+    id: 2317599750470165219
+    label: 
+      label: No Tournament
+
+    icon: 
+      image/icon-css-classes: fa-number-1
+
+    layout: 
+      sequence: 15
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+        page: 1 # Home
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: No current tournament
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':G_CURRENT_SESSION_ID is null'
+
   - # ====== Entry: Session Analysis =============================
     id: 55884590488739414059
     label: 
@@ -1068,8 +1180,9 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
-        page: 1 # Home
+        url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:30:::'
+        page: 30 # Registration
+        clear-cache: 30
 
     click-counting: 
       count-clicks: false
@@ -1078,6 +1191,11 @@
       translatable: false
       1.: fa-file-signature
       7.: Sign-up / Un-register / Change Times
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is null)'
 
   - # ====== Entry: Rooms ========================================
     id: 55884591288574414060
@@ -1095,8 +1213,8 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
-        page: 1 # Home
+        url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.::::'
+        page: 40 # Rooms
 
     click-counting: 
       count-clicks: false
@@ -1122,8 +1240,11 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
-        page: 1 # Home
+        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:P50_COURSE_ID:&G_COURSE_ID_EASY.:'
+        page: 50 # Enter Rounds
+        clear-cache: 50
+        values: 
+          p50_course_id: '&G_COURSE_ID_EASY.'
 
     click-counting: 
       count-clicks: false
@@ -1148,8 +1269,8 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
-        page: 1 # Home
+        url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::::'
+        page: 60 # View Results
 
     click-counting: 
       count-clicks: false
@@ -1212,4 +1333,36 @@
     user-defined-attributes: 
       translatable: false
       7.: How does this work?
+
+  - # ====== Entry: Change Registration ==========================
+    id: 56477738600450440563
+    label: 
+      label: Change Registration
+
+    icon: 
+      image/icon-css-classes: fa-number-1
+
+    layout: 
+      sequence: 12
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.::::'
+        page: 30 # Registration
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: fa-file-signature
+      7.: Un-register / Change Times
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is not null)'
 

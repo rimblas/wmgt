@@ -7,7 +7,6 @@ identification:
   title: WMG - Log In
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Login # 46986494461795702403
   template-options: 
@@ -38,6 +37,11 @@ css:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -180,7 +184,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -233,7 +239,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -279,7 +287,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   server-side-condition: 
     type: Expression
@@ -330,7 +340,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   server-side-condition: 
     type: Expression
@@ -405,6 +417,44 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: LOGIN_DISCORD ===============================
+  id: 56015647009712939750
+  identification: 
+    button-name: LOGIN_DISCORD
+    label: Sign In with Discord
+
+  layout: 
+    sequence: 20
+    region: Sign In # 47577408628042657320
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    css-classes: 
+    - discord-style
+    icon: fa-discord
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1000:&SESSION.:APEX_AUTHENTICATION=discord:&DEBUG.:::'
+      page: 1000 # auth
+      request: APEX_AUTHENTICATION=discord
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Never
+
 processes: 
 - # ====== Process: Login ======================================
   id: 46986692912112702574
@@ -421,7 +471,7 @@ processes:
           p_password => :P9999_PASSWORD,
           p_set_persistent_auth => nvl(:P9999_PERSISTENT_AUTH, 'N') = 'Y' );
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -443,7 +493,7 @@ processes:
           p_username => lower(:P9999_USERNAME),
           p_consent  => :P9999_REMEMBER = 'Y' );
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -464,7 +514,7 @@ processes:
       :P9999_USERNAME := apex_authentication.get_login_username_cookie;
       :P9999_REMEMBER := case when :P9999_USERNAME is not null then 'Y' end;
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -478,7 +528,7 @@ processes:
   settings: 
     type: Clear all Items on the Current Page
 
-  execution-options: 
+  execution: 
     sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)

@@ -7,7 +7,6 @@ identification:
   title: Tournament Registration
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Minimal (No Navigation) # 46986501077006702405
   template-options: 
@@ -17,7 +16,7 @@ navigation-menu:
   override-user-interface-level: false
 
 navigation: 
-  cursor-focus: Do not focus cursor
+  cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
 css: 
@@ -31,9 +30,20 @@ css:
         max-width: 50%;
         flex-basis: auto;
     }
+    
+    #P30_PLAYER_ID_CONTAINERx,
+    #P30_REMEMBER_ME_IND_CONTAINERx {
+        display: inline-flex;
+        width: max-content;
+    }
 
 security: 
-  authentication: Page Requires Authentication
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -67,7 +77,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -116,25 +126,31 @@ regions:
           select s.session_date
           from wmg_tournament_sessions s
           where s.tournament_id in (
-          select ID
-            from WMG_TOURNAMENTS
-           where current_flag = 'Y'
+              select id
+                from wmg_tournaments
+               where current_flag = 'Y'
           )
+            and s.completed_ind = 'N'
+          order by s.session_date
           fetch first 1 rows only
       )
       select APEX_ITEM.RADIOGROUP(
             p_idx              => 1
           , p_value            => slots.d
-          , p_attributes       => 'class="slotOption"') selection
-       , slots.d slot
-       , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
-       , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') at time zone tz.tz local_tz
+          , p_attributes       => 'class="slotOption" data-slot="' || slots.d || '"'
+          , p_selected_value   => decode(slots.d, s.time_slot, slots.d, '')) selection
+          , slots.d slot
+          , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
+          , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') at time zone tz.tz local_tz
       from ts s
          , tz
          , slots
+         , (select time_slot from wmg_tournament_players tp where tp.tournament_session_id = :G_CURRENT_SESSION_ID and tp.player_id = :P30_PLAYER_ID and tp.active_ind = 'Y') s
+      where slots.d = s.time_slot (+)
       order by slots.t
     page-items-to-submit: 
     - P30_TZ
+    - P30_PLAYER_ID
 
   layout: 
     sequence: 20
@@ -480,6 +496,92 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P30_ACTIVE_IND ===========================
+  id: 2316748762990093602
+  identification: 
+    name: P30_ACTIVE_IND
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 45
+    region: Registration # 24735738743925583629
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P30_REMEMBER_ME_IND ======================
+  id: 2316749890786093613
+  identification: 
+    name: P30_REMEMBER_ME_IND
+    type: Switch
+
+  label: 
+    label: Remember Me?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 15
+    region: Registration # 24735738743925583629
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    authorization-scheme: Must Not Be Public User
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Rember your Discord account with your current login.
+
 - # ====== Page Item: P30_PLAYER_ID ============================
   id: 56479072097480745968
   identification: 
@@ -514,6 +616,7 @@ page-items:
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
     width: 30
 
   validation: 
@@ -531,7 +634,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -558,7 +663,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 15
+    sequence: 25
     region: Registration # 24735738743925583629
     position: BODY
     alignment: Left
@@ -582,7 +687,14 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_REGISTRATION_ID
 
   security: 
     session-state-protection: Unrestricted
@@ -646,11 +758,13 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: SQL Query
     sql-query: 'select sessiontimezone tz from dual '
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -661,6 +775,41 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: UNREGISTER ==================================
+  id: 2316748965142093604
+  identification: 
+    button-name: UNREGISTER
+    label: Unregister
+
+  layout: 
+    sequence: 10
+    region: '{Buttons}' # 52997261434694034405
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--danger
+    - t-Button--simple
+    - t-Button--iconLeft
+    icon: fa-check
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_REGISTRATION_ID
+
 - # ====== Button: CANCEL ======================================
   id: 52997261599890034406
   identification: 
@@ -701,7 +850,7 @@ buttons:
     label: Signup!
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: '{Buttons}' # 52997261434694034405
     position: NEXT
     start-new-layout: false
@@ -730,7 +879,7 @@ buttons:
     label: Register New Player
 
   layout: 
-    sequence: 25
+    sequence: 35
     region: Registration # 24735738743925583629
     position: BODY
     start-new-layout: false
@@ -760,13 +909,86 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+  server-side-condition: 
+    type: Item is NULL
+    item: G_REGISTRATION_ID
+
 dynamic-actions: 
-- # ====== Dynamic Action: Refresh Time SLots ==================
+- # ====== Dynamic Action: Refresh Slots =======================
+  id: 2316749036944093605
+  identification: 
+    name: Refresh Slots
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P30_PLAYER_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 2316749152734093606
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Time Slots # 24735738905404583631
+
+    execution: 
+      sequence: 10
+      event: Refresh Slots # 2316749036944093605
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Highlight Slot Selection event ======
+  id: 2316749235087093607
+  identification: 
+    name: Highlight Slot Selection event
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.CUSTOM.CUSTOM
+    custom-event: highlightSlot
+    selection-type: JavaScript Expression
+    javascript-expression: document
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 2316749356882093608
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $("#slotsRegion").find(".is-active").removeClass();
+        $(this.triggeringElement).parents("tr").addClass("is-active");
+
+    execution: 
+      sequence: 10
+      event: Highlight Slot Selection event # 2316749235087093607
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Time Slots ==================
   id: 57207806962069896009
   identification: 
-    name: Refresh Time SLots
+    name: Refresh Time Slots
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
@@ -775,11 +997,12 @@ dynamic-actions:
     item(s): 
     - P30_TZ
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 57207807077490896010
     identification: 
       action: Refresh
@@ -788,18 +1011,18 @@ dynamic-actions:
       selection-type: Region
       region: Time Slots # 24735738905404583631
 
-    execution-options: 
+    execution: 
       sequence: 10
-      event: Refresh Time SLots # 57207806962069896009
+      event: Refresh Time Slots # 57207806962069896009
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Highlight Slot Selection ============
+- # ====== Dynamic Action: Trigger Highlight Slot Selection ====
   id: 57207807411513896014
   identification: 
-    name: Highlight Slot Selection
+    name: Trigger Highlight Slot Selection
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   when: 
@@ -811,28 +1034,13 @@ dynamic-actions:
     type: JavaScript expression
     javascript-expression: '$(".slotOption:checked").length > 0'
 
-  advanced: 
+  execution: 
     event-scope: Dynamic
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
-    id: 57207807514248896015
-    identification: 
-      action: Execute JavaScript Code
-
-    settings: 
-      code: |
-        $("#slotsRegion").find(".is-active").removeClass();
-        $(this.triggeringElement).parents("tr").addClass("is-active");
-
-    execution-options: 
-      sequence: 10
-      event: Highlight Slot Selection # 57207807411513896014
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-  - # ====== Action: NATIVE_ENABLE ===============================
-    id: 57207807682932896016
+  - # ====== Action: Enable ======================================
+    id: 2316749520377093610
     identification: 
       action: Enable
 
@@ -840,14 +1048,31 @@ dynamic-actions:
       selection-type: Button
       button: SIGNUP # 52997261988465034410
 
-    execution-options: 
-      sequence: 20
-      event: Highlight Slot Selection # 57207807411513896014
+    execution: 
+      sequence: 40
+      event: Trigger Highlight Slot Selection # 57207807411513896014
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_DISABLE ==============================
-    id: 57207807785190896017
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 2316749616628093611
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $("#slotsRegion").find(".is-active").removeClass();
+        $(this.triggeringElement).parents("tr").addClass("is-active");
+        apex.event.trigger("highlightSlot");
+
+    execution: 
+      sequence: 30
+      event: Trigger Highlight Slot Selection # 57207807411513896014
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Disable =====================================
+    id: 2316749702055093612
     identification: 
       action: Disable
 
@@ -855,33 +1080,142 @@ dynamic-actions:
       selection-type: Button
       button: SIGNUP # 52997261988465034410
 
-    execution-options: 
+    execution: 
       sequence: 10
-      event: Highlight Slot Selection # 57207807411513896014
+      event: Trigger Highlight Slot Selection # 57207807411513896014
       fire-when-event-result-is: False
       fire-on-initialization: true
 
 processes: 
-- # ====== Process: Signup =====================================
-  id: 52997262016247034411
+- # ====== Process: Remember Me ================================
+  id: 2316749906108093614
   identification: 
-    name: Signup
+    name: Remember Me
     type: Execute Code
 
   source: 
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
-      if nvl(:G_ENROLLED_IND, 'N') = 'N' then
-       :G_ENROLLED_IND := 'Y';
-      else
-       :G_ENROLLED_IND := 'N';
-      end if;
+      update wmg_players
+        set account_login = :APP_USER
+          , prefered_tz = :P30_TZ
+      where id = :P30_PLAYER_ID;
 
-  execution-options: 
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Item = Value
+    item: P30_REMEMBER_ME_IND
+    value: Y
+
+- # ====== Process: init =======================================
+  id: 2316750034725093615
+  identification: 
+    name: init
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+      if :G_REGISTRATION_ID is not null then
+          select tp.player_id
+               , decode(p.account_login, :APP_USER, 'Y', 'N')
+               , p.prefered_tz
+            into :P30_PLAYER_ID
+               , :P30_REMEMBER_ME_IND
+               , :P30_TZ
+          from wmg_tournament_players tp
+             , wmg_players p
+          where tp.player_id = p.id
+            and tp.id = :G_REGISTRATION_ID;
+      else
+          select p.id player_id
+               , decode(p.account_login, :APP_USER, 'Y', 'N')
+               , p.prefered_tz
+            into :P30_PLAYER_ID
+               , :P30_REMEMBER_ME_IND
+               , :P30_TZ
+          from wmg_players p
+         where p.account_login = :APP_USER;
+      
+      end if;
+      
+      exception
+      when NO_DATA_FOUND then
+        if :APP_USER <> 'nobody' then
+         :P30_REMEMBER_ME_IND := 'Y';
+        end if;
+      end;
+      
+
+  execution: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Signup/Unregister ==========================
+  id: 52997262016247034411
+  identification: 
+    name: Signup/Unregister
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      if :REQUEST = 'UNREGISTER' then
+        :G_ENROLLED_IND := 'N';
+        :G_REGISTRATION_ID := null;
+      else 
+        :G_ENROLLED_IND := 'Y';
+      end if;
+      
+      merge into wmg_tournament_players p
+       using (
+         select :G_CURRENT_SESSION_ID tournament_session_id
+              , :P30_PLAYER_ID player_id
+              , decode(:REQUEST, 'UNREGISTER', 'N', 'Y') active_ind
+              , apex_application.g_f01(1) time_slot
+           from dual
+        ) np
+       on (p.tournament_session_id = np.tournament_session_id
+        and p.player_id = np.player_id
+       )
+      when matched then
+        update
+           set time_slot = np.time_slot
+             , active_ind = np.active_ind
+      when not matched then
+        insert (
+            tournament_session_id
+          , player_id
+          , time_slot
+          , active_ind
+        )
+        values (
+            :G_CURRENT_SESSION_ID
+          , :P30_PLAYER_ID
+          , apex_application.g_f01(1)
+          , :P30_ACTIVE_IND
+        );
+      
+
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Signed-up processed!
 
   error: 
     display-location: Inline in Notification
@@ -892,7 +1226,7 @@ branches:
   identification: 
     name: Go To Page 1
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 

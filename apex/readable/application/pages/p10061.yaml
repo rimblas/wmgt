@@ -7,7 +7,6 @@ identification:
   title: Help
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -25,6 +24,11 @@ navigation:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -48,7 +52,7 @@ regions:
   id: 46987056899263704322
   identification: 
     title: Search Dialog
-    type: PL/SQL Dynamic Content
+    type: PL/SQL Dynamic Content [Legacy]
 
   source: 
     pl/sql-code: |
@@ -122,7 +126,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Checksum Required - Session Level

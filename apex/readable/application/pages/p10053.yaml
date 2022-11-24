@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -736,7 +735,7 @@ dynamic-actions:
   identification: 
     name: Refresh Report
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -744,11 +743,12 @@ dynamic-actions:
     selection-type: Region
     region: Manage Feedback # 46987024415185704293
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46987055348016704320
     identification: 
       action: Refresh
@@ -757,7 +757,7 @@ dynamic-actions:
       selection-type: Region
       region: Manage Feedback # 46987024415185704293
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Report # 46987024319970704293
       fire-when-event-result-is: True

@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -127,7 +126,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -297,7 +296,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -456,7 +455,7 @@ regions:
       identification: 
         name: Series 1
 
-      execution-options: 
+      execution: 
         sequence: 10
 
       source: 
@@ -940,7 +939,9 @@ page-items:
     type: Static Value
     static-value: 900
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -1089,7 +1090,7 @@ dynamic-actions:
   identification: 
     name: Change Filters
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -1098,11 +1099,12 @@ dynamic-actions:
     item(s): 
     - P10030_TIMEFRAME
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986923712989704019
     identification: 
       action: Refresh
@@ -1111,13 +1113,13 @@ dynamic-actions:
       selection-type: Region
       region: Hourly Page Events # 46986901060892703679
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Change Filters # 46986902009510703679
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986924217129704019
     identification: 
       action: Refresh
@@ -1126,13 +1128,13 @@ dynamic-actions:
       selection-type: Region
       region: Top Users # 46986901406326703679
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Change Filters # 46986902009510703679
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986924748784704019
     identification: 
       action: Refresh
@@ -1141,13 +1143,13 @@ dynamic-actions:
       selection-type: Region
       region: Most Active Pages # 46986901213579703679
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Change Filters # 46986902009510703679
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986925248227704020
     identification: 
       action: Refresh
@@ -1156,13 +1158,13 @@ dynamic-actions:
       selection-type: Region
       region: Recent Errors # 46986901610545703679
 
-    execution-options: 
+    execution: 
       sequence: 40
       event: Change Filters # 46986902009510703679
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986925748292704020
     identification: 
       action: Refresh
@@ -1171,7 +1173,7 @@ dynamic-actions:
       selection-type: Region
       region: Latest Activity # 46986901781952703679
 
-    execution-options: 
+    execution: 
       sequence: 50
       event: Change Filters # 46986902009510703679
       fire-when-event-result-is: True

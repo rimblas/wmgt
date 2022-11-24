@@ -7,7 +7,6 @@ identification:
   title: Player Round Details
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -46,6 +45,11 @@ css:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -364,6 +368,39 @@ regions:
              , sum(case when s16>1 and s16 + 3 = h16 then 1 else 0 end) a16
              , sum(case when s17>1 and s17 + 3 = h17 then 1 else 0 end) a17
              , sum(case when s18>1 and s18 + 3 = h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
+        select 700 display_seq
+             , 'Condors of Better'
+             , +4 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 4 <= h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 4 <= h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 4 <= h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 4 <= h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 4 <= h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 4 <= h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 4 <= h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 4 <= h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 4 <= h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 4 <= h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 4 <= h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 4 <= h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 4 <= h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 4 <= h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 4 <= h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 4 <= h18 then 1 else 0 end) a18
           from wmg_rounds_v r, week_courses w
          where r.week = w.week
            and r.course_id = w.course_id
@@ -2514,6 +2551,39 @@ regions:
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
+        select 700 display_seq
+             , 'Condors of Better'
+             , +4 data_filter
+             , w.course_mode
+             , '' drill_class
+             , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
+             , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
+             , sum(case when s3>1 and s3  + 4 <= h3 then 1 else 0 end) a3
+             , sum(case when s4>1 and s4  + 4 <= h4 then 1 else 0 end) a4
+             , sum(case when s5>1 and s5  + 4 <= h5 then 1 else 0 end) a5
+             , sum(case when s6>1 and s6  + 4 <= h6 then 1 else 0 end) a6
+             , sum(case when s7>1 and s7  + 4 <= h7 then 1 else 0 end) a7
+             , sum(case when s8>1 and s8  + 4 <= h8 then 1 else 0 end) a8
+             , sum(case when s9>1 and s9  + 4 <= h9 then 1 else 0 end) a9
+             , sum(case when s10>1 and s10 + 4 <= h10 then 1 else 0 end) a10
+             , sum(case when s11>1 and s11 + 4 <= h11 then 1 else 0 end) a11
+             , sum(case when s12>1 and s12 + 4 <= h12 then 1 else 0 end) a12
+             , sum(case when s13>1 and s13 + 4 <= h13 then 1 else 0 end) a13
+             , sum(case when s14>1 and s14 + 4 <= h14 then 1 else 0 end) a14
+             , sum(case when s15>1 and s15 + 4 <= h15 then 1 else 0 end) a15
+             , sum(case when s16>1 and s16 + 4 <= h16 then 1 else 0 end) a16
+             , sum(case when s17>1 and s17 + 4 <= h17 then 1 else 0 end) a17
+             , sum(case when s18>1 and s18 + 4 <= h18 then 1 else 0 end) a18
+          from wmg_rounds_v r, week_courses w
+         where r.week = w.week
+           and r.course_id = w.course_id
+           and r.player_id = :P110_PLAYER_ID
+          group by w.course_mode
+        ) r
+      union all
+      select r.*
+           , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
+       from (
         select 1000 display_seq
              , 'Aces'
              , 99 data_filter
@@ -3420,7 +3490,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -3478,7 +3551,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -3494,7 +3569,7 @@ dynamic-actions:
   identification: 
     name: Refresh on Change
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -3503,11 +3578,12 @@ dynamic-actions:
     item(s): 
     - P110_PLAYER_ID
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 49305651629244776617
     identification: 
       action: Refresh
@@ -3516,13 +3592,13 @@ dynamic-actions:
       selection-type: Region
       region: Player Round Details # 98800129858927712032
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 50429442582077004809
     identification: 
       action: Refresh
@@ -3531,13 +3607,13 @@ dynamic-actions:
       selection-type: Region
       region: Easy Stats # 145264662457556461223
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 50429445104772004835
     identification: 
       action: Refresh
@@ -3546,7 +3622,7 @@ dynamic-actions:
       selection-type: Region
       region: Hard Stats # 50429442663637004810
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True

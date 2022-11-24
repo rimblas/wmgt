@@ -39,3 +39,29 @@
   real-application-security: 
     ras-mode: Disabled
 
+- # ====== Authentication: discord =============================
+  id: 59552956776150527602
+  identification: 
+    name: discord
+
+  settings: 
+    type: Social Sign-In
+    credential-store: 59546004836816152886
+    authentication-provider: Generic OAuth2 Provider
+    authorization-endpoint-url: 'https://discord.com/api/oauth2/authorize?client_id=1029188717895753769&redirect_uri=https%3A%2F%2Fapex.oracle.com%2Fpls%2Fapex%2Fapex_authentication.callback&response_type=code&scope=identify'
+    token-endpoint-url: 'https://discord.com/api/oauth2/authorize?client_id=1029188717895753769&redirect_uri=https%3A%2F%2Fapex.oracle.com%2Fpls%2Fapex%2Fapex_authentication.callback&response_type=code&scope=identify'
+    token-authentication-method: Client ID in Body
+    scope: identify
+    username: identity
+    convert-username-to-upper-case: false
+    verify-attributes: false
+
+  session-not-valid: 
+    redirect-to: Login Page
+
+  login-processing: 
+    switch-in-session: true
+
+  real-application-security: 
+    ras-mode: Disabled
+

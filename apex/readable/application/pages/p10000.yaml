@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -349,7 +348,7 @@ regions:
   id: 46987071358123704330
   identification: 
     title: ACL Information
-    type: PL/SQL Dynamic Content
+    type: PL/SQL Dynamic Content [Legacy]
 
   source: 
     pl/sql-code: |
@@ -906,7 +905,7 @@ dynamic-actions:
   identification: 
     name: Refresh Report
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -914,11 +913,12 @@ dynamic-actions:
     selection-type: Button
     button: ADD_USER # 46987070980473704330
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46987075936135704481
     identification: 
       action: Refresh
@@ -927,7 +927,7 @@ dynamic-actions:
       selection-type: Region
       region: User Counts Report # 46987071781746704330
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Report # 46987075441073704480
       fire-when-event-result-is: True

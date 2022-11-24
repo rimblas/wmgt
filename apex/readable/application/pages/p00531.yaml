@@ -7,7 +7,6 @@ identification:
   title: Wmg Tournaments
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -150,7 +149,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -205,7 +207,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -263,7 +267,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -321,7 +328,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -379,7 +388,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -437,7 +448,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -495,11 +508,13 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: Static
     static-value: Y
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -560,7 +575,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -618,7 +636,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -632,7 +653,7 @@ page-items:
   id: 56149476247202424563
   identification: 
     name: P531_CREATED_ON
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Created On
@@ -677,7 +698,9 @@ page-items:
     data-type: TIMESTAMP WITH LOCAL TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -735,7 +758,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -749,7 +775,7 @@ page-items:
   id: 56149477425213424564
   identification: 
     name: P531_UPDATED_ON
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Updated On
@@ -794,7 +820,9 @@ page-items:
     data-type: TIMESTAMP WITH LOCAL TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -852,7 +880,10 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1000,7 +1031,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -1008,16 +1039,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 56149482916959424567
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 56149483892551424568
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 56149483009015424567
       fire-when-event-result-is: True
@@ -1029,7 +1061,7 @@ validations:
   identification: 
     name: P531_CREATED_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 90
 
   validation: 
@@ -1047,7 +1079,7 @@ validations:
   identification: 
     name: P531_UPDATED_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 110
 
   validation: 
@@ -1068,7 +1100,7 @@ processes:
     type: Form - Initialization
     form-region: Wmg Tournaments # 56149471787590424560
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -1086,7 +1118,7 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1100,7 +1132,7 @@ processes:
     name: Close Dialog
     type: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1117,7 +1149,7 @@ branches:
   identification: 
     name: Redirect to new
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 
@@ -1138,7 +1170,7 @@ branches:
   identification: 
     name: Redirect to all
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: After Processing
 

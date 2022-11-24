@@ -7,7 +7,6 @@ identification:
   title: Sessions
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Left Side Column # 46986486780108702399
   template-options: 
@@ -1546,7 +1545,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -1576,7 +1577,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -1736,7 +1740,7 @@ dynamic-actions:
   identification: 
     name: Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 40
 
   when: 
@@ -1744,11 +1748,12 @@ dynamic-actions:
     selection-type: Region
     region: ' Sessions' # 56149511741270424767
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56149523691544424861
     identification: 
       action: Refresh
@@ -1757,13 +1762,13 @@ dynamic-actions:
       selection-type: Region
       region: ' Sessions' # 56149511741270424767
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Dialog Closed # 56149511867539424767
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 56149524146184424861
     identification: 
       action: Execute JavaScript Code
@@ -1771,7 +1776,7 @@ dynamic-actions:
     settings: 
       code: apex.message.showPageSuccess('Tournament Sessions row(s) updated.');
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Dialog Closed # 56149511867539424767
       fire-when-event-result-is: True
@@ -1782,7 +1787,7 @@ dynamic-actions:
   identification: 
     name: Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -1790,11 +1795,12 @@ dynamic-actions:
     selection-type: Region
     region: Tournament # 56149497056352424756
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56149543157541424880
     identification: 
       action: Refresh
@@ -1803,13 +1809,13 @@ dynamic-actions:
       selection-type: Region
       region: Tournament # 56149497056352424756
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Dialog Closed # 56149542568998424880
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 56149543624225424880
     identification: 
       action: Execute JavaScript Code
@@ -1817,7 +1823,7 @@ dynamic-actions:
     settings: 
       code: apex.message.showPageSuccess('Tournaments row(s) updated.');
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Dialog Closed # 56149542568998424880
       fire-when-event-result-is: True
@@ -1828,7 +1834,7 @@ dynamic-actions:
   identification: 
     name: Perform Search
 
-  execution-options: 
+  execution: 
     sequence: 150
 
   when: 
@@ -1841,11 +1847,12 @@ dynamic-actions:
     type: JavaScript expression
     javascript-expression: 'this.browserEvent.which === apex.jQuery.ui.keyCode.ENTER '
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56149544469298424881
     identification: 
       action: Refresh
@@ -1854,18 +1861,18 @@ dynamic-actions:
       selection-type: Region
       region: Master Records # 56149491397333424580
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Perform Search # 56149542688497424880
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_CANCEL_EVENT =========================
+  - # ====== Action: Cancel Event ================================
     id: 56149544980113424881
     identification: 
       action: Cancel Event
 
-    execution-options: 
+    execution: 
       sequence: 30
       event: Perform Search # 56149542688497424880
       fire-when-event-result-is: True

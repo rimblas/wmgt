@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
 
@@ -147,7 +146,10 @@ page-items:
   source: 
     type: Null
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -174,7 +176,10 @@ page-items:
   source: 
     type: Null
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -204,7 +209,10 @@ page-items:
       select sys.owa_util.get_cgi_env('user-agent') x
       from dual
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -258,7 +266,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -309,7 +319,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -380,7 +393,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -388,16 +401,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46987025722935704295
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46987026535605704295
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46987025816836704295
       fire-when-event-result-is: True
@@ -409,7 +423,7 @@ validations:
   identification: 
     name: At least One Feedback Required
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   validation: 
@@ -447,7 +461,7 @@ processes:
           );
       end;
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -467,7 +481,7 @@ branches:
   identification: 
     name: Go To Page 10051
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 

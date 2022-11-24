@@ -7,7 +7,6 @@ identification:
   title: About/Rules
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -36,6 +35,11 @@ css:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -303,7 +307,7 @@ dynamic-actions:
   identification: 
     name: Refresh Report
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
@@ -312,11 +316,12 @@ dynamic-actions:
     item(s): 
     - P20_NOTE_TYPE
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56024871165455993153
     identification: 
       action: Refresh
@@ -325,7 +330,7 @@ dynamic-actions:
       selection-type: Region
       region: Notes # 112030159442963458048
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Refresh Report # 56024870675791993152
       fire-when-event-result-is: True
@@ -336,7 +341,7 @@ dynamic-actions:
   identification: 
     name: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   when: 
@@ -344,16 +349,17 @@ dynamic-actions:
     selection-type: Button
     button: CLOSE # 56024865925991993133
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 56024872026752993154
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Close Dialog # 56024871542413993154
       fire-when-event-result-is: True
@@ -364,7 +370,7 @@ dynamic-actions:
   identification: 
     name: Edit Report - Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -372,11 +378,12 @@ dynamic-actions:
     selection-type: Region
     region: Notes # 112030159442963458048
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 56024872969273993154
     identification: 
       action: Refresh
@@ -385,7 +392,7 @@ dynamic-actions:
       selection-type: Region
       region: Notes # 112030159442963458048
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Edit Report - Dialog Closed # 56024872439333993154
       fire-when-event-result-is: True

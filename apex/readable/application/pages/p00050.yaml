@@ -7,7 +7,6 @@ identification:
   title: Enter Rounds
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -19,6 +18,130 @@ navigation-menu:
 navigation: 
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
+
+javascript: 
+  file-urls: 
+  - '#APP_FILES#knockout-3.5.0.js'
+  - '#APP_FILES#knockout-pre-rendered.min.js'
+  function-and-global-variable-declaration: |
+    to_number = function(v) {
+        let n = parseInt(v);
+        return  isNaN(n) ? 0 : n;
+    }
+    
+    function roundTotal() {
+      var self = this;
+      self.s1 = ko.observable(0);
+      self.s2 = ko.observable(0);
+      self.s3 = ko.observable(0);
+      self.s4 = ko.observable(0);
+      self.s5 = ko.observable(0);
+      self.s6 = ko.observable(0);
+      self.s7 = ko.observable(0);
+      self.s8 = ko.observable(0);
+      self.s9 = ko.observable(0);
+      self.s10 = ko.observable(0);
+      self.s11 = ko.observable(0);
+      self.s12 = ko.observable(0);
+      self.s13 = ko.observable(0);
+      self.s14 = ko.observable(0);
+      self.s15 = ko.observable(0);
+      self.s16 = ko.observable(0);
+      self.s17 = ko.observable(0);
+      self.s18 = ko.observable(0);
+      self.par = ko.observable(0);
+    
+      self.total = ko.computed(function() {
+        return ( 
+               to_number(self.s1()) +
+               to_number(self.s2()) +
+               to_number(self.s3()) +
+               to_number(self.s4()) +
+               to_number(self.s5()) +
+               to_number(self.s6()) +
+               to_number(self.s7()) +
+               to_number(self.s8()) +
+               to_number(self.s9()) +
+               to_number(self.s10()) +
+               to_number(self.s11()) +
+               to_number(self.s12()) +
+               to_number(self.s13()) +
+               to_number(self.s14()) +
+               to_number(self.s15()) +
+               to_number(self.s16()) +
+               to_number(self.s17()) +
+               to_number(self.s18())
+               ) - to_number(self.par());
+      }, self);
+    }
+    
+  execute-when-page-loads: |
+    // start the knowckout viewModel to provide live SUM of scores
+    var viewModel = new roundTotal();
+    ko.applyBindings(viewModel);
+
+css: 
+  inline: |
+    #P50_WEEK {text-transform: uppercase;}
+    #scoresRegion .t-Form-labelContainer label {
+            border: 1px solid;
+        border-radius: 100%;
+        width: 28px;
+        text-align: center;
+    }
+    #scoresRegion .t-Form-inputContainer {
+     justify-content: center;
+      margin-top: 5px;
+    }
+    
+    #scoresRegion,
+    #roundScores {
+        flex-direction: row;
+        justify-content: space-evenly;
+        display: flex;
+    }
+    #roundScores .t-Form-labelContainer {
+    text-align:center;
+    }
+    .number_field,
+    #P50_SCORE_DISPLAY {
+        font-family: Menlo,Consolas,monospace;
+        padding: 4px;
+    }
+    #P50_SCORE_DISPLAY {
+        min-width: 40px;
+        display: block;
+        text-align: center;
+    
+        border-radius: var(--a-field-input-border-radius,.125rem);
+        border-color: var(--a-field-input-state-border-color,var(--a-field-input-border-color));
+        border-width: var(--a-field-input-border-width,1px);
+        border-style: solid;
+    }
+    
+    .dupEntry {
+        color: orange;
+        margin-left: 5px;
+        display: none;
+    }
+    
+    @media only screen and (max-width: 900px) {
+        #roundScores .t-Form-inputContainer.col.col-null {
+          padding: 1px;
+        }
+        #scoresRegion .t-Form-labelContainer {
+          padding: 0 3px;
+        }
+        .number_field,
+        #P50_SCORE_DISPLAY {
+          font-family: Menlo,Consolas,monospace;
+          padding: 3px;
+        }
+        #P50_SCORE_DISPLAY {
+          min-width: 30px;
+        }
+    
+    }
 
 security: 
   authentication: Page Requires Authentication
@@ -38,6 +161,123 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Round Scores - Hard} =======================
+  id: 30658980642446839834
+  identification: 
+    title: '{Round Scores - Hard}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: roundScores
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Round Scores} ==============================
+  id: 30659119124433557079
+  identification: 
+    title: '{Round Scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: Round - Easy # 62511256013557336788
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: roundScores
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Round Scores - Easy} =======================
+  id: 30659209697938564499
+  identification: 
+    title: '{Round Scores - Easy}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: roundScores
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Never
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Breadcrumb ==================================
   id: 58989849940616683422
   identification: 
@@ -79,4 +319,6292 @@ regions:
       breadcrumb-template: Breadcrumb # 46986654645437702471
       template-options: 
       - '#DEFAULT#'
+
+- # ====== Region: Round - Easy ================================
+  id: 62511256013557336788
+  identification: 
+    title: Round - Easy
+    type: Form
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_ROUNDS
+    include-rowid-column: false
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+
+- # ====== Region: {scores} ====================================
+  id: 125428335911324188017
+  identification: 
+    title: '{scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{Course Strokes - Hard}' # 157280432707918967157
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: scoresRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {scores} ====================================
+  id: 125428498964364908390
+  identification: 
+    title: '{scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{Course Strokes}' # 157280595760959687530
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: scoresRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Course Strokes - Hard} =====================
+  id: 157280432707918967157
+  identification: 
+    title: '{Course Strokes - Hard}'
+    type: Form
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSE_STROKES
+    include-rowid-column: false
+    page-items-to-submit: 
+    - P50_COURSE_ID
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: scoresRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P50_COURSE_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+
+- # ====== Region: {Course Strokes} ============================
+  id: 157280595760959687530
+  identification: 
+    title: '{Course Strokes}'
+    type: Form
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSE_STROKES
+    include-rowid-column: false
+    page-items-to-submit: 
+    - P50_COURSE_ID
+
+  layout: 
+    sequence: 10
+    parent-region: Round - Easy # 62511256013557336788
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    static-id: scoresRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P50_COURSE_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+
+page-items: 
+- # ====== Page Item: P50_COURSE_STROKE_ID_1 ===================
+  id: 15524339300827912859
+  identification: 
+    name: P50_COURSE_STROKE_ID_1
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: '{Course Strokes - Hard}' # 157280432707918967157
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: ID
+    data-type: NUMBER
+    query-only: true
+    primary-key: true
+
+  default: 
+    type: SQL Query
+    sql-query: |
+      select id
+      from wmg_course_strokes
+      where course_id = :P50_COURSE_ID
+      fetch first 1 rows only
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H1_1 =================================
+  id: 15524340302280912862
+  identification: 
+    name: P50_H1_1
+    type: Display Only
+
+  label: 
+    label: 1
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 30
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H1
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H2_1 =================================
+  id: 15524340731018912862
+  identification: 
+    name: P50_H2_1
+    type: Display Only
+
+  label: 
+    label: 2
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 40
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H2
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H3_1 =================================
+  id: 15524341134757912862
+  identification: 
+    name: P50_H3_1
+    type: Display Only
+
+  label: 
+    label: 3
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 50
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H3
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H4_1 =================================
+  id: 15524341537641912863
+  identification: 
+    name: P50_H4_1
+    type: Display Only
+
+  label: 
+    label: 4
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 60
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H4
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H5_1 =================================
+  id: 15524341993947912863
+  identification: 
+    name: P50_H5_1
+    type: Display Only
+
+  label: 
+    label: 5
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 70
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H5
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H6_1 =================================
+  id: 15524342367710912863
+  identification: 
+    name: P50_H6_1
+    type: Display Only
+
+  label: 
+    label: 6
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 80
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H6
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H7_1 =================================
+  id: 15524342726526912863
+  identification: 
+    name: P50_H7_1
+    type: Display Only
+
+  label: 
+    label: 7
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 90
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H7
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H8_1 =================================
+  id: 15524343147205912863
+  identification: 
+    name: P50_H8_1
+    type: Display Only
+
+  label: 
+    label: 8
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 100
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H8
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H9_1 =================================
+  id: 15524343537297912864
+  identification: 
+    name: P50_H9_1
+    type: Display Only
+
+  label: 
+    label: 9
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 110
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H9
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H10_1 ================================
+  id: 15524343936552912864
+  identification: 
+    name: P50_H10_1
+    type: Display Only
+
+  label: 
+    label: 10
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 120
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H10
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H11_1 ================================
+  id: 15524344355490912864
+  identification: 
+    name: P50_H11_1
+    type: Display Only
+
+  label: 
+    label: 11
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 130
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H11
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H12_1 ================================
+  id: 15524344793543912864
+  identification: 
+    name: P50_H12_1
+    type: Display Only
+
+  label: 
+    label: 12
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 140
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H12
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H13_1 ================================
+  id: 15524345112064912864
+  identification: 
+    name: P50_H13_1
+    type: Display Only
+
+  label: 
+    label: 13
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 150
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H13
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H14_1 ================================
+  id: 15524345514173912865
+  identification: 
+    name: P50_H14_1
+    type: Display Only
+
+  label: 
+    label: 14
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 160
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H14
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H15_1 ================================
+  id: 15524345950764912865
+  identification: 
+    name: P50_H15_1
+    type: Display Only
+
+  label: 
+    label: 15
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 170
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H15
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H16_1 ================================
+  id: 15524346304546912865
+  identification: 
+    name: P50_H16_1
+    type: Display Only
+
+  label: 
+    label: 16
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 180
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H16
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H17_1 ================================
+  id: 15524346787136912865
+  identification: 
+    name: P50_H17_1
+    type: Display Only
+
+  label: 
+    label: 17
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 190
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H17
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H18_1 ================================
+  id: 15524347124048912866
+  identification: 
+    name: P50_H18_1
+    type: Display Only
+
+  label: 
+    label: 18
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 200
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes - Hard}' # 157280432707918967157
+    column: H18
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_PAR_1 ================================
+  id: 15524347524367912866
+  identification: 
+    name: P50_PAR_1
+    type: Display Only
+
+  label: 
+    label: Par
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 210
+    region: '{scores}' # 125428335911324188017
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select course_par from wmg_courses_v
+      where course_id= :P50_COURSE_ID
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S1_2 =================================
+  id: 15524364240803916619
+  identification: 
+    name: P50_S1_2
+    type: Number Field
+
+  label: 
+    label: H1
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 60
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s1"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S2_2 =================================
+  id: 15524364614906916620
+  identification: 
+    name: P50_S2_2
+    type: Number Field
+
+  label: 
+    label: H2
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 70
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s2"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S3_2 =================================
+  id: 15524365071473916620
+  identification: 
+    name: P50_S3_2
+    type: Number Field
+
+  label: 
+    label: H3
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 80
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s3"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S4_2 =================================
+  id: 15524365412536916620
+  identification: 
+    name: P50_S4_2
+    type: Number Field
+
+  label: 
+    label: H4
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 90
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s4"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S5_2 =================================
+  id: 15524365884547916620
+  identification: 
+    name: P50_S5_2
+    type: Number Field
+
+  label: 
+    label: H5
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 100
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s5"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S6_2 =================================
+  id: 15524366245212916621
+  identification: 
+    name: P50_S6_2
+    type: Number Field
+
+  label: 
+    label: H6
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 110
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s6"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S7_2 =================================
+  id: 15524366600709916621
+  identification: 
+    name: P50_S7_2
+    type: Number Field
+
+  label: 
+    label: H7
+    alignment: Left
+
+  settings: 
+    number-alignment: End
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 120
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s7"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S8_2 =================================
+  id: 15524367035051916621
+  identification: 
+    name: P50_S8_2
+    type: Number Field
+
+  label: 
+    label: H8
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 130
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s8"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S9_2 =================================
+  id: 15524367476491916621
+  identification: 
+    name: P50_S9_2
+    type: Number Field
+
+  label: 
+    label: H9
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 140
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s9"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S10_2 ================================
+  id: 15524367883190916621
+  identification: 
+    name: P50_S10_2
+    type: Number Field
+
+  label: 
+    label: H10
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 150
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s10"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S11_2 ================================
+  id: 15524368231094916622
+  identification: 
+    name: P50_S11_2
+    type: Number Field
+
+  label: 
+    label: H11
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 160
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s11"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S12_2 ================================
+  id: 15524368678268916622
+  identification: 
+    name: P50_S12_2
+    type: Number Field
+
+  label: 
+    label: H12
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 170
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s12"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S13_2 ================================
+  id: 15524369092022916622
+  identification: 
+    name: P50_S13_2
+    type: Number Field
+
+  label: 
+    label: H13
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 180
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s13"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S14_2 ================================
+  id: 15524369488732916622
+  identification: 
+    name: P50_S14_2
+    type: Number Field
+
+  label: 
+    label: H14
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 190
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s14"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S15_2 ================================
+  id: 15524369837203916623
+  identification: 
+    name: P50_S15_2
+    type: Number Field
+
+  label: 
+    label: H15
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 200
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s15"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S16_2 ================================
+  id: 15524370285268916623
+  identification: 
+    name: P50_S16_2
+    type: Number Field
+
+  label: 
+    label: H16
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 210
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s16"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S17_2 ================================
+  id: 15524370614372916623
+  identification: 
+    name: P50_S17_2
+    type: Number Field
+
+  label: 
+    label: H17
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 220
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s17"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S18_2 ================================
+  id: 15524371036856916623
+  identification: 
+    name: P50_S18_2
+    type: Number Field
+
+  label: 
+    label: H18
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 230
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s18"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_SCORE_2 ==============================
+  id: 15524371492014916624
+  identification: 
+    name: P50_SCORE_2
+    type: Display Only
+
+  label: 
+    label: Score
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 240
+    region: '{Round Scores - Hard}' # 30658980642446839834
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - 'data-bind="text:'
+    - total"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_ID ===================================
+  id: 15524502858955633231
+  identification: 
+    name: P50_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: ID
+    data-type: NUMBER
+    query-only: true
+    primary-key: true
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_WEEK =================================
+  id: 15524503204711633232
+  identification: 
+    name: P50_WEEK
+    type: Text Field with autocomplete
+
+  label: 
+    label: Week
+    alignment: Left
+
+  settings: 
+    search: Contains & Ignore Case
+    fetch-on-type: false
+
+  layout: 
+    sequence: 20
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 1
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
+    - col-sm-3
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 10
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select week
+      from wmg_tournament_sessions
+      order by round_num
+    display-extra-values: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: WEEK
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_util.get_preference('WMG_WEEK')
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  read-only: 
+    type: Item is NOT NULL
+    item: P50_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: SnWn
+
+- # ====== Page Item: P50_COURSE_ID ============================
+  id: 15524503658785633232
+  identification: 
+    name: P50_COURSE_ID
+    type: Select List
+
+  label: 
+    label: Course
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: Submit Page
+    execute-validations: false
+
+  layout: 
+    sequence: 30
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
+    - col-sm-4
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select prepared_name d, course_id r
+      from wmg_courses_v
+      where course_id in (
+      select course_id
+      from wmg_tournament_courses
+      where tournament_session_id  in (
+      select id
+      from wmg_tournament_sessions
+      where week= :P50_WEEK
+      )
+      )
+    display-extra-values: true
+    display-null-value: false
+
+  cascading-list-of-values: 
+    parent-item(s): 
+    - P50_WEEK
+    parent-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: COURSE_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_util.get_preference('ROUND_COURSE_ID')
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  read-only: 
+    type: Item is NOT NULL
+    item: P50_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_PLAYERS_ID ===========================
+  id: 15524504019692633232
+  identification: 
+    name: P50_PLAYERS_ID
+    type: Popup LOV
+
+  label: 
+    label: Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 40
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-6
+    - col-sm-5
+
+  appearance: 
+    template: Required - Floating # 46986651846996702470
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46986755001384703560
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: <span class="fa fa-warning fa-2x dupEntry" aria-hidden="true"></span>
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: PLAYERS_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  read-only: 
+    type: Item is NOT NULL
+    item: P50_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_ROOM_NAME ============================
+  id: 15524504433196633233
+  identification: 
+    name: P50_ROOM_NAME
+    type: Text Field
+
+  label: 
+    label: Room Name
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 60
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - hidden-md-down
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 60
+
+  validation: 
+    value-required: false
+    maximum-length: 1020
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: ROOM_NAME
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_ROUND_PLAYED_ON ======================
+  id: 15524504870945633233
+  identification: 
+    name: P50_ROUND_PLAYED_ON
+    type: Date Picker
+
+  label: 
+    label: Round Played On
+    alignment: Left
+
+  settings: 
+    show-time: false
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: No
+    use-defaults: true
+
+  layout: 
+    sequence: 70
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - hidden-md-down
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+    maximum-length: 255
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: ROUND_PLAYED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  server-side-condition: 
+    type: Never
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_DUP_IND ==============================
+  id: 15524505224487633233
+  identification: 
+    name: P50_DUP_IND
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 90
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_COURSE_STROKE_ID =====================
+  id: 15524507872655633237
+  identification: 
+    name: P50_COURSE_STROKE_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: '{Course Strokes}' # 157280595760959687530
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: ID
+    data-type: NUMBER
+    query-only: true
+    primary-key: true
+
+  default: 
+    type: SQL Query
+    sql-query: |
+      select id
+      from wmg_course_strokes
+      where course_id = :P50_COURSE_ID
+      fetch first 1 rows only
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Checksum Required - Session Level
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H1 ===================================
+  id: 15524508873596633238
+  identification: 
+    name: P50_H1
+    type: Display Only
+
+  label: 
+    label: 1
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 30
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H1
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H2 ===================================
+  id: 15524509213041633239
+  identification: 
+    name: P50_H2
+    type: Display Only
+
+  label: 
+    label: 2
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 40
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H2
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H3 ===================================
+  id: 15524509607913633239
+  identification: 
+    name: P50_H3
+    type: Display Only
+
+  label: 
+    label: 3
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 50
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H3
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H4 ===================================
+  id: 15524510034714633239
+  identification: 
+    name: P50_H4
+    type: Display Only
+
+  label: 
+    label: 4
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 60
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H4
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H5 ===================================
+  id: 15524510404320633240
+  identification: 
+    name: P50_H5
+    type: Display Only
+
+  label: 
+    label: 5
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 70
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H5
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H6 ===================================
+  id: 15524510843497633240
+  identification: 
+    name: P50_H6
+    type: Display Only
+
+  label: 
+    label: 6
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 80
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H6
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H7 ===================================
+  id: 15524511292303633240
+  identification: 
+    name: P50_H7
+    type: Display Only
+
+  label: 
+    label: 7
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 90
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H7
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H8 ===================================
+  id: 15524511657117633240
+  identification: 
+    name: P50_H8
+    type: Display Only
+
+  label: 
+    label: 8
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 100
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H8
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H9 ===================================
+  id: 15524512026990633241
+  identification: 
+    name: P50_H9
+    type: Display Only
+
+  label: 
+    label: 9
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 110
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H9
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H10 ==================================
+  id: 15524512453543633241
+  identification: 
+    name: P50_H10
+    type: Display Only
+
+  label: 
+    label: 10
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 120
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H10
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H11 ==================================
+  id: 15524512814199633241
+  identification: 
+    name: P50_H11
+    type: Display Only
+
+  label: 
+    label: 11
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 130
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H11
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H12 ==================================
+  id: 15524513298189633242
+  identification: 
+    name: P50_H12
+    type: Display Only
+
+  label: 
+    label: 12
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 140
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H12
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H13 ==================================
+  id: 15524513644884633242
+  identification: 
+    name: P50_H13
+    type: Display Only
+
+  label: 
+    label: 13
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 150
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H13
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H14 ==================================
+  id: 15524514064106633242
+  identification: 
+    name: P50_H14
+    type: Display Only
+
+  label: 
+    label: 14
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 160
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H14
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H15 ==================================
+  id: 15524514459779633242
+  identification: 
+    name: P50_H15
+    type: Display Only
+
+  label: 
+    label: 15
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 170
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H15
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H16 ==================================
+  id: 15524514855503633243
+  identification: 
+    name: P50_H16
+    type: Display Only
+
+  label: 
+    label: 16
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 180
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H16
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H17 ==================================
+  id: 15524515207737633243
+  identification: 
+    name: P50_H17
+    type: Display Only
+
+  label: 
+    label: 17
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 190
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H17
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H18 ==================================
+  id: 15524515601893633243
+  identification: 
+    name: P50_H18
+    type: Display Only
+
+  label: 
+    label: 18
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 200
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '{Course Strokes}' # 157280595760959687530
+    column: H18
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_PAR ==================================
+  id: 15524516024525633243
+  identification: 
+    name: P50_PAR
+    type: Display Only
+
+  label: 
+    label: Par
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 210
+    region: '{scores}' # 125428498964364908390
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select course_par from wmg_courses_v
+      where course_id= :P50_COURSE_ID
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S1 ===================================
+  id: 15524522151096633248
+  identification: 
+    name: P50_S1
+    type: Number Field
+
+  label: 
+    label: H1
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 60
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s1"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S1
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S2 ===================================
+  id: 15524522510777633249
+  identification: 
+    name: P50_S2
+    type: Number Field
+
+  label: 
+    label: H2
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 70
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s2"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S2
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S3 ===================================
+  id: 15524522903207633249
+  identification: 
+    name: P50_S3
+    type: Number Field
+
+  label: 
+    label: H3
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 80
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s3"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S3
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S4 ===================================
+  id: 15524523334817633249
+  identification: 
+    name: P50_S4
+    type: Number Field
+
+  label: 
+    label: H4
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 90
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s4"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S4
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S5 ===================================
+  id: 15524523774189633249
+  identification: 
+    name: P50_S5
+    type: Number Field
+
+  label: 
+    label: H5
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 100
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s5"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S5
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S6 ===================================
+  id: 15524524119611633250
+  identification: 
+    name: P50_S6
+    type: Number Field
+
+  label: 
+    label: H6
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 110
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s6"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S6
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S7 ===================================
+  id: 15524524512468633250
+  identification: 
+    name: P50_S7
+    type: Number Field
+
+  label: 
+    label: H7
+    alignment: Left
+
+  settings: 
+    number-alignment: End
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 120
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s7"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S7
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S8 ===================================
+  id: 15524524981932633250
+  identification: 
+    name: P50_S8
+    type: Number Field
+
+  label: 
+    label: H8
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 130
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s8"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S8
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S9 ===================================
+  id: 15524525316663633250
+  identification: 
+    name: P50_S9
+    type: Number Field
+
+  label: 
+    label: H9
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 140
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s9"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S9
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S10 ==================================
+  id: 15524525737055633251
+  identification: 
+    name: P50_S10
+    type: Number Field
+
+  label: 
+    label: H10
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 150
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s10"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S10
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S11 ==================================
+  id: 15524526195440633251
+  identification: 
+    name: P50_S11
+    type: Number Field
+
+  label: 
+    label: H11
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 160
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s11"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S11
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S12 ==================================
+  id: 15524526596662633251
+  identification: 
+    name: P50_S12
+    type: Number Field
+
+  label: 
+    label: H12
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 170
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s12"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S12
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S13 ==================================
+  id: 15524526929394633251
+  identification: 
+    name: P50_S13
+    type: Number Field
+
+  label: 
+    label: H13
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 180
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s13"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S13
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S14 ==================================
+  id: 15524527312025633252
+  identification: 
+    name: P50_S14
+    type: Number Field
+
+  label: 
+    label: H14
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 190
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s14"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S14
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S15 ==================================
+  id: 15524527712203633252
+  identification: 
+    name: P50_S15
+    type: Number Field
+
+  label: 
+    label: H15
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 200
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s15"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S15
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S16 ==================================
+  id: 15524528133511633252
+  identification: 
+    name: P50_S16
+    type: Number Field
+
+  label: 
+    label: H16
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 210
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s16"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S16
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S17 ==================================
+  id: 15524528593827633252
+  identification: 
+    name: P50_S17
+    type: Number Field
+
+  label: 
+    label: H17
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 220
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s17"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S17
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S18 ==================================
+  id: 15524528997262633253
+  identification: 
+    name: P50_S18
+    type: Number Field
+
+  label: 
+    label: H18
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 230
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s18"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round - Easy # 62511256013557336788
+    column: S18
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_SCORE ================================
+  id: 15524529338554633253
+  identification: 
+    name: P50_SCORE
+    type: Display Only
+
+  label: 
+    label: Score
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 240
+    region: '{Round Scores}' # 30659119124433557079
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - 'data-bind="text:'
+    - total"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S1_1 =================================
+  id: 15524592932480640650
+  identification: 
+    name: P50_S1_1
+    type: Number Field
+
+  label: 
+    label: H1
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 60
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s1"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S2_1 =================================
+  id: 15524593300078640651
+  identification: 
+    name: P50_S2_1
+    type: Number Field
+
+  label: 
+    label: H2
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 70
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s2"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S3_1 =================================
+  id: 15524593822798640651
+  identification: 
+    name: P50_S3_1
+    type: Number Field
+
+  label: 
+    label: H3
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 80
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s3"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S4_1 =================================
+  id: 15524594212135640651
+  identification: 
+    name: P50_S4_1
+    type: Number Field
+
+  label: 
+    label: H4
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 90
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s4"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S5_1 =================================
+  id: 15524594634997640652
+  identification: 
+    name: P50_S5_1
+    type: Number Field
+
+  label: 
+    label: H5
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 100
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s5"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S6_1 =================================
+  id: 15524595080928640652
+  identification: 
+    name: P50_S6_1
+    type: Number Field
+
+  label: 
+    label: H6
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 110
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s6"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S7_1 =================================
+  id: 15524595482394640652
+  identification: 
+    name: P50_S7_1
+    type: Number Field
+
+  label: 
+    label: H7
+    alignment: Left
+
+  settings: 
+    number-alignment: End
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 120
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s7"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S8_1 =================================
+  id: 15524595805275640652
+  identification: 
+    name: P50_S8_1
+    type: Number Field
+
+  label: 
+    label: H8
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 130
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s8"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S9_1 =================================
+  id: 15524596207111640653
+  identification: 
+    name: P50_S9_1
+    type: Number Field
+
+  label: 
+    label: H9
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 140
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s9"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S10_1 ================================
+  id: 15524596725138640653
+  identification: 
+    name: P50_S10_1
+    type: Number Field
+
+  label: 
+    label: H10
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 150
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s10"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S11_1 ================================
+  id: 15524597116538640653
+  identification: 
+    name: P50_S11_1
+    type: Number Field
+
+  label: 
+    label: H11
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 160
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s11"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S12_1 ================================
+  id: 15524597525784640653
+  identification: 
+    name: P50_S12_1
+    type: Number Field
+
+  label: 
+    label: H12
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 170
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s12"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S13_1 ================================
+  id: 15524597902049640654
+  identification: 
+    name: P50_S13_1
+    type: Number Field
+
+  label: 
+    label: H13
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 180
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s13"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S14_1 ================================
+  id: 15524598330187640654
+  identification: 
+    name: P50_S14_1
+    type: Number Field
+
+  label: 
+    label: H14
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 190
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s14"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S15_1 ================================
+  id: 15524598786123640654
+  identification: 
+    name: P50_S15_1
+    type: Number Field
+
+  label: 
+    label: H15
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 200
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s15"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S16_1 ================================
+  id: 15524599124872640654
+  identification: 
+    name: P50_S16_1
+    type: Number Field
+
+  label: 
+    label: H16
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 210
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s16"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S17_1 ================================
+  id: 15524599500738640655
+  identification: 
+    name: P50_S17_1
+    type: Number Field
+
+  label: 
+    label: H17
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 220
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s17"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_S18_1 ================================
+  id: 15524599919154640655
+  identification: 
+    name: P50_S18_1
+    type: Number Field
+
+  label: 
+    label: H18
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 230
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - s18"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_SCORE_1 ==============================
+  id: 15524600363430640655
+  identification: 
+    name: P50_SCORE_1
+    type: Display Only
+
+  label: 
+    label: Score
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 240
+    region: '{Round Scores - Easy}' # 30659209697938564499
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - 'data-bind="text:'
+    - total"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: ADD =========================================
+  id: 15524502490498633230
+  identification: 
+    button-name: ADD
+    label: Add Player
+
+  layout: 
+    sequence: 80
+    region: Round - Easy # 62511256013557336788
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-plus
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7::'
+      page: 7 # Player
+      clear-cache: 7
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Init Player LOV =====================
+  id: 18806434163525512245
+  identification: 
+    name: Init Player LOV
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: United Codes List Extension =================
+    id: 18806434520925512249
+    identification: 
+      action: United Codes List Extension
+
+    settings: 
+      type: Page item
+      page-item: P50_PLAYERS_ID
+      page-returning-item-value: P7_ID
+      action: Set Value
+      button-location: Stretch
+
+    affected-elements: 
+      selection-type: Button
+      button: ADD # 15524502490498633230
+
+    execution: 
+      sequence: 10
+      event: Init Player LOV # 18806434163525512245
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+validations: 
+- # ====== Validation: Week format =============================
+  id: 15525201979647654900
+  identification: 
+    name: Week format
+
+  execution: 
+    sequence: 10
+
+  validation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: "regexp_like(:P9_WEEK, 'S[0-9]+W[0-9]+')"
+    always-execute: false
+
+  error: 
+    error-message: Week format is SnWn. i.e. S1W1, S12W2
+    display-location: Inline with Field and in Notification
+
+computations: 
+- # ====== Computation: P50_WEEK ===============================
+  id: 15525189957419653462
+  identification: 
+    item-name: P50_WEEK
+
+  execution: 
+    sequence: 20
+    point: After Submit
+
+  computation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: 'upper(:P9_WEEK)'
+
+processes: 
+- # ====== Process: Initialize form Course - Hard ==============
+  id: 15524195877427630173
+  identification: 
+    name: Initialize form Course - Hard
+    type: Form - Initialization
+
+  execution: 
+    sequence: 30
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Initialize form Round - Easy ===============
+  id: 15524280045604900184
+  identification: 
+    name: Initialize form Round - Easy
+    type: Form - Initialization
+    form-region: Round - Easy # 62511256013557336788
+
+  execution: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Get Course Strokes - Easy ==================
+  id: 15524301792880903138
+  identification: 
+    name: Get Course Strokes - Easy
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      select id
+      into :P9_COURSE_STROKE_ID
+      from wmg_course_strokes
+      where course_id = :P9_COURSE_ID
+      fetch first 1 rows only;
+
+  execution: 
+    sequence: 20
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: Process form Round - Easy ==================
+  id: 15525449272861931178
+  identification: 
+    name: Process form Round - Easy
+    type: Form - Automatic Row Processing (DML)
+
+  settings: 
+    target-type: Region Source
+    prevent-lost-updates: true
+    lock-row: Yes
+    return-primary-key(s)-after-insert: true
+
+  execution: 
+    sequence: 40
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Round saved.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE
 

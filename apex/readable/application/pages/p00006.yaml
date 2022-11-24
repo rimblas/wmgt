@@ -7,7 +7,6 @@ identification:
   title: Players
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -22,6 +21,11 @@ navigation:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -391,7 +395,7 @@ dynamic-actions:
   identification: 
     name: Edit Report - Dialog Closed
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -399,11 +403,12 @@ dynamic-actions:
     selection-type: Region
     region: Players # 46986748357479703263
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_REFRESH ==============================
+  - # ====== Action: Refresh =====================================
     id: 46986750984828703265
     identification: 
       action: Refresh
@@ -412,7 +417,7 @@ dynamic-actions:
       selection-type: Region
       region: Players # 46986748357479703263
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Edit Report - Dialog Closed # 46986750457179703265
       fire-when-event-result-is: True

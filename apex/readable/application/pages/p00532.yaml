@@ -7,7 +7,6 @@ identification:
   title: Tournament Sessions
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -179,7 +178,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -241,7 +242,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -274,7 +277,10 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -330,7 +336,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -348,7 +357,8 @@ page-items:
     alignment: Right
 
   settings: 
-    number-alignment: Right
+    number-alignment: End
+    virtual-keyboard: Text
 
   layout: 
     sequence: 40
@@ -381,7 +391,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -395,7 +407,7 @@ page-items:
   id: 56149526821089424864
   identification: 
     name: P532_SESSION_DATE
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Session Date
@@ -440,7 +452,9 @@ page-items:
     data-type: DATE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -498,7 +512,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -512,7 +528,7 @@ page-items:
   id: 56149527639003424865
   identification: 
     name: P532_OPEN_REGISTRATION_ON
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Open Registration On
@@ -557,7 +573,9 @@ page-items:
     data-type: TIMESTAMP WITH TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -571,7 +589,7 @@ page-items:
   id: 56149528420758424865
   identification: 
     name: P532_CLOSE_REGISTRATION_ON
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Close Registration On
@@ -616,7 +634,9 @@ page-items:
     data-type: TIMESTAMP WITH TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -668,7 +688,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -679,7 +701,7 @@ page-items:
   id: 56149529684294424866
   identification: 
     name: P532_COMPLETED_ON
-    type: Date Picker
+    type: Date Picker (JET) [Deprecated]
 
   label: 
     label: Completed On
@@ -724,7 +746,9 @@ page-items:
     data-type: TIMESTAMP WITH LOCAL TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -872,7 +896,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -880,16 +904,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 56149537478443424871
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 56149538314474424871
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 56149537573814424871
       fire-when-event-result-is: True
@@ -901,7 +926,7 @@ validations:
   identification: 
     name: P532_OPEN_REGISTRATION_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 60
 
   validation: 
@@ -919,7 +944,7 @@ validations:
   identification: 
     name: P532_CLOSE_REGISTRATION_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 70
 
   validation: 
@@ -937,7 +962,7 @@ validations:
   identification: 
     name: P532_COMPLETED_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 90
 
   validation: 
@@ -956,7 +981,7 @@ computations:
   identification: 
     item-name: P532_EASY_COURSE_ID
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Regions
 
@@ -973,7 +998,7 @@ computations:
   identification: 
     item-name: P532_HARD_COURSE_ID
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Before Regions
 
@@ -1029,7 +1054,7 @@ processes:
         values (c2.tournament_session_id, c2.course_no, c2.course_id);
       
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1044,7 +1069,7 @@ processes:
     type: Form - Initialization
     form-region: Tournament Sessions # 56149524865750424863
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -1062,7 +1087,7 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1080,7 +1105,7 @@ processes:
     items-to-return-: 
     - REQUEST
 
-  execution-options: 
+  execution: 
     sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)

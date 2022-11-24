@@ -7,7 +7,6 @@ identification:
   title: View Results
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Normal
   page-template: Theme Default
   template-options: 
@@ -20,8 +19,51 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  inline: |
+    .points {
+        color: white;
+        font-weight: 700;
+    }
+    .top {
+        background-color: hsl(220deg 100% 40%);
+    }
+    .p9 {
+        background-color: hsl(220deg 100% 48%);
+    }
+    .p8 {
+        background-color: hsl(220deg 100% 55%);
+    }
+    .p7 {
+        background-color: hsl(220deg 100% 61%);
+    }
+    .p6 {
+        background-color: hsl(220deg 100% 67%);
+    }
+    .p5 {
+        background-color: hsl(220deg 100% 73%);
+    }
+    .p4 {
+        background-color: hsl(220deg 100% 79%);
+    }
+    .p3 {
+        background-color: hsl(220deg 100% 85%);
+    }
+    .p2 {
+        background-color: hsl(220deg 100% 91%);
+    }
+    .p1 {
+        background-color: hsl(220deg 100% 95%);
+    }
+    
+
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -129,43 +171,45 @@ regions:
     type: SQL Query
     sql-query: |
       with score_points as (
-          select 1 rank, 25 points from dual union all
-          select 2 rank, 21 points from dual union all
-          select 3 rank, 18 points from dual union all
-          select 4 rank, 16 points from dual union all
-          select 5 rank, 15 points from dual union all
-          select 6 rank, 14 points from dual union all
-          select 7 rank, 13 points from dual union all
-          select 8 rank, 12 points from dual union all
-          select 9 rank, 11 points from dual union all
-          select 10 rank, 10 points from dual union all
-          select 11 rank,  9 points from dual union all
-          select 12 rank,  9 points from dual union all
-          select 13 rank,  9 points from dual union all
-          select 14 rank,  9 points from dual union all
-          select 15 rank,  9 points from dual union all
-          select 16 rank,  9 points from dual union all
-          select 17 rank,  9 points from dual union all
-          select 18 rank,  9 points from dual union all
-          select 19 rank,  9 points from dual union all
-          select 20 rank,  8 points from dual union all
-          select 21 rank,  8 points from dual union all
-          select 22 rank,  8 points from dual union all
-          select 23 rank,  8 points from dual union all
-          select 24 rank,  8 points from dual union all
-          select 25 rank,  8 points from dual union all
-          select 26 rank,  8 points from dual union all
-          select 27 rank,  8 points from dual union all
-          select 28 rank,  8 points from dual union all
-          select 29 rank,  7 points from dual union all
-          select 30 rank,  7 points from dual union all
-          select 31 rank,  7 points from dual union all
-          select 32 rank,  7 points from dual union all
-          select 33 rank,  7 points from dual union all
-          select 34 rank,  7 points from dual union all
-          select 35 rank,  7 points from dual
+          select 1 rank, 25 points, 'top' point_class from dual union all
+          select 2 rank, 21 points, 'top' point_class from dual union all
+          select 3 rank, 18 points, 'top' point_class from dual union all
+          select 4 rank, 16 points, 'top' point_class from dual union all
+          select 5 rank, 15 points, 'top' point_class from dual union all
+          select 6 rank, 14 points, 'top' point_class from dual union all
+          select 7 rank, 13 points, 'top' point_class from dual union all
+          select 8 rank, 12 points, 'top' point_class from dual union all
+          select 9 rank, 11 points, 'top' point_class from dual union all
+          select 10 rank, 10 points, 'p10' point_class from dual union all
+          select 11 rank,  9 points, 'p9' point_class from dual union all
+          select 12 rank,  9 points, 'p9' point_class from dual union all
+          select 13 rank,  9 points, 'p9' point_class from dual union all
+          select 14 rank,  9 points, 'p9' point_class from dual union all
+          select 15 rank,  9 points, 'p9' point_class from dual union all
+          select 16 rank,  9 points, 'p9' point_class from dual union all
+          select 17 rank,  9 points, 'p9' point_class from dual union all
+          select 18 rank,  9 points, 'p9' point_class from dual union all
+          select 19 rank,  9 points, 'p9' point_class from dual union all
+          select 20 rank,  8 points, 'p8' point_class from dual union all
+          select 21 rank,  8 points, 'p8' point_class from dual union all
+          select 22 rank,  8 points, 'p8' point_class from dual union all
+          select 23 rank,  8 points, 'p8' point_class from dual union all
+          select 24 rank,  8 points, 'p8' point_class from dual union all
+          select 25 rank,  8 points, 'p8' point_class from dual union all
+          select 26 rank,  8 points, 'p8' point_class from dual union all
+          select 27 rank,  8 points, 'p8' point_class from dual union all
+          select 28 rank,  8 points, 'p8' point_class from dual union all
+          select 29 rank,  7 points, 'p7' point_class from dual union all
+          select 30 rank,  7 points, 'p7' point_class from dual union all
+          select 31 rank,  7 points, 'p7' point_class from dual union all
+          select 32 rank,  7 points, 'p7' point_class from dual union all
+          select 33 rank,  7 points, 'p7' point_class from dual union all
+          select 34 rank,  7 points, 'p7' point_class from dual union all
+          select 35 rank,  7 points, 'p7' point_class from dual
       )
-      select r.player_id, r.player_name, r.easy, r.hard, r.total_score, r.pos, p.points
+      select r.player_id, r.player_name, r.easy, r.hard, r.total_score, r.pos
+           , p.points
+           , p.point_class
       from (
           select r.player_id, r.player_name, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
           from (
@@ -231,8 +275,9 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
-      - t-Report--altRowsDefault
-      - t-Report--rowHighlight
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--verticalBorders
       - t-Report--hideNoPagination
 
     pagination: 
@@ -260,6 +305,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: POINT_CLASS =================================
+    id: 2316752978009093644
+    identification: 
+      column-name: POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY ========================================
     id: 56015646459290939744
     identification: 
@@ -341,6 +401,9 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: '<span class="points #POINT_CLASS#">#POINTS#</span>'
+
     sorting: 
       sortable: false
 
@@ -363,7 +426,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Total Score
+      heading: Total
       alignment: center
 
     layout: 
@@ -407,11 +470,11 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P100_WEEK.,#PLAYER_ID#'
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P60_WEEK.,#PLAYER_ID#'
         page: 110 # Player Round Details
         clear-cache: 110
         values: 
-          p110_week: '&P100_WEEK.'
+          p110_week: '&P60_WEEK.'
           p110_player_id: '#PLAYER_ID#'
 
       link-text: '#PLAYER_NAME#'
@@ -576,7 +639,9 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -636,7 +701,10 @@ page-items:
               from wmg_rounds 
              where week = :P60_WEEK
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -667,7 +735,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -694,7 +765,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -730,11 +804,14 @@ page-items:
           )
          and course_mode = 'E'
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: Easy Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -770,14 +847,58 @@ page-items:
           )
          and course_mode = 'H'
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: Hard Course
 
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Hoist Classes to TD =================
+  id: 2316753045247093645
+  identification: 
+    name: Hoist Classes to TD
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Players Ranks # 108296150341164485780
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 2316753113317093646
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $("td .points").each(
+          function(){
+            var $el = $(this),
+                c = $el.attr("class");
+        
+            $el.parent("td").addClass(c);
+          }
+        )
+
+    execution: 
+      sequence: 10
+      event: Hoist Classes to TD # 2316753045247093645
+      fire-when-event-result-is: True
+      fire-on-initialization: true
 

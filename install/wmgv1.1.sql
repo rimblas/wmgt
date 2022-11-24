@@ -111,6 +111,8 @@ create table wmg_tournament_players (
     time_slot                      varchar2(5 char) constraint wmg_tournament_pla_time_slo_ck
                                    check (time_slot in ('00:00','04:00','08:00','12:00','16:00','20:00')) not null,
     room_no                        number,
+    active_ind                     varchar2(1) constraint wmg_tournament_players_ck_active
+      check (active_ind in ('Y', 'N')) not null 
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
     updated_on                     timestamp with local time zone,
@@ -119,8 +121,7 @@ create table wmg_tournament_players (
 ;
 
 -- table index
-create index wmg_tournament_pla_i1 on wmg_tournament_players (player_id);
-create index wmg_tournament_pla_i2 on wmg_tournament_players (tournament_session_id);
+create unique index wmg_tournament_pla_u1 on wmg_tournament_players (tournament_session_id,player_id);
 
 -- comments
 comment on table wmg_tournament_players is 'Players signed up for a specific session';

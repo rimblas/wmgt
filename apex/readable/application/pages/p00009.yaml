@@ -7,7 +7,6 @@ identification:
   title: Round
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -117,10 +116,10 @@ css:
     .number_field,
     #P9_SCORE_DISPLAY {
         font-family: Menlo,Consolas,monospace;
-        padding: 8px;
+        padding: 4px;
     }
     #P9_SCORE_DISPLAY {
-        min-width: 50px;
+        min-width: 40px;
         display: block;
         text-align: center;
     
@@ -133,17 +132,20 @@ css:
     .dupEntry {
         color: orange;
         margin-left: 5px;
-       display: none;
+        display: none;
     }
     
     @media only screen and (max-width: 900px) {
         #roundScores .t-Form-inputContainer.col.col-null {
           padding: 1px;
         }
+        #scoresRegion .t-Form-labelContainer {
+          padding: 0 3px;
+        }
         .number_field,
         #P9_SCORE_DISPLAY {
           font-family: Menlo,Consolas,monospace;
-          padding: 5px;
+          padding: 3px;
         }
         #P9_SCORE_DISPLAY {
           min-width: 30px;
@@ -410,7 +412,10 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -456,10 +461,26 @@ page-items:
     value-required: true
 
   list-of-values: 
-    type: Shared Component
-    list-of-values: COURSES # 46986710799770702952
+    type: SQL Query
+    sql-query: |
+      select prepared_name d, course_id r
+      from wmg_courses_v
+      where course_id in (
+      select course_id
+      from wmg_tournament_courses
+      where tournament_session_id  in (
+      select id
+      from wmg_tournament_sessions
+      where week= :P9_WEEK
+      )
+      )
     display-extra-values: true
-    display-null-value: true
+    display-null-value: false
+
+  cascading-list-of-values: 
+    parent-item(s): 
+    - P9_WEEK
+    parent-required: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -470,12 +491,14 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: Expression
     language: PL/SQL
     pl/sql-expression: apex_util.get_preference('ROUND_COURSE_ID')
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -547,7 +570,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -576,7 +601,7 @@ page-items:
     display-as: Popup
     minimum-date: None
     maximum-date: None
-    multiple-months: false
+    multiple-months: No
     use-defaults: true
 
   layout: 
@@ -612,10 +637,15 @@ page-items:
     data-type: TIMESTAMP WITH LOCAL TIME ZONE
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
+
+  server-side-condition: 
+    type: Never
 
   security: 
     session-state-protection: Unrestricted
@@ -672,7 +702,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -694,6 +726,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 60
@@ -731,7 +764,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -753,6 +788,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 70
@@ -790,7 +826,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -812,6 +850,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 80
@@ -849,7 +888,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -871,6 +912,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 90
@@ -908,7 +950,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -930,6 +974,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 100
@@ -967,7 +1012,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -989,6 +1036,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 110
@@ -1026,7 +1074,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1047,7 +1097,8 @@ page-items:
     alignment: Left
 
   settings: 
-    number-alignment: Right
+    number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 120
@@ -1085,7 +1136,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1107,6 +1160,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 130
@@ -1144,7 +1198,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1166,6 +1222,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 140
@@ -1203,7 +1260,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1225,6 +1284,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 150
@@ -1262,7 +1322,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1284,6 +1346,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 160
@@ -1320,7 +1383,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1342,6 +1407,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 170
@@ -1378,7 +1444,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1400,6 +1468,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 180
@@ -1436,7 +1505,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1458,6 +1529,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 190
@@ -1494,7 +1566,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1516,6 +1590,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 200
@@ -1552,7 +1627,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1574,6 +1651,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 210
@@ -1610,7 +1688,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1632,6 +1712,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 220
@@ -1668,7 +1749,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1690,6 +1773,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 230
@@ -1726,7 +1810,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1778,7 +1864,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -1789,18 +1878,15 @@ page-items:
   id: 47348557775096808505
   identification: 
     name: P9_WEEK
-    type: Text Field
+    type: Text Field with autocomplete
 
   label: 
     label: Week
     alignment: Left
 
   settings: 
-    subtype: Text
-    trim-spaces: Leading and Trailing
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    search: Contains & Ignore Case
+    fetch-on-type: false
 
   layout: 
     sequence: 20
@@ -1827,6 +1913,14 @@ page-items:
     value-required: false
     maximum-length: 10
 
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select week
+      from wmg_tournament_sessions
+      order by round_num
+    display-extra-values: true
+
   advanced: 
     warn-on-unsaved-changes: Page Default
 
@@ -1836,15 +1930,14 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: Expression
     language: PL/SQL
     pl/sql-expression: apex_util.get_preference('WMG_WEEK')
 
-  quick-picks: 
-    show-quick-picks: false
+  session-state: 
+    storage: Per Request (Memory Only)
 
   read-only: 
     type: Item is NOT NULL
@@ -1853,6 +1946,7 @@ page-items:
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
+    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
   help: 
@@ -1881,7 +1975,6 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: SQL Query
@@ -1890,6 +1983,10 @@ page-items:
       from wmg_course_strokes
       where course_id = :P9_COURSE_ID
       fetch first 1 rows only
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -1938,7 +2035,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -1987,7 +2087,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2036,7 +2139,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2085,7 +2191,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2134,7 +2243,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2183,7 +2295,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2232,7 +2347,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2281,7 +2399,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2330,7 +2451,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2379,7 +2503,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2428,7 +2555,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2477,7 +2607,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2526,7 +2659,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2575,7 +2711,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2624,7 +2763,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2673,7 +2815,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2722,7 +2867,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2771,7 +2919,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -2824,7 +2975,10 @@ page-items:
       select course_par from wmg_courses_v
       where course_id= :P9_COURSE_ID
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -2851,11 +3005,44 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
 
   default: 
     type: Static
     static-value: N
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_PLAYER_NAME ===========================
+  id: 52997262272040034413
+  identification: 
+    name: P9_PLAYER_NAME
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 100
+    region: Round # 46986753890975703559
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -3071,7 +3258,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -3079,16 +3266,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46986771380611703569
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46986772219241703570
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46986771477810703569
       fire-when-event-result-is: True
@@ -3099,17 +3287,17 @@ dynamic-actions:
   identification: 
     name: Init Player LOV
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
 
-  advanced: 
+  execution: 
     event-scope: Static
 
   actions: 
-  - # ====== Action: PLUGIN_UNITEDCODES_LIST_EXTENSION ===========
+  - # ====== Action: United Codes List Extension =================
     id: 47348558681300808514
     identification: 
       action: United Codes List Extension
@@ -3125,7 +3313,7 @@ dynamic-actions:
       selection-type: Button
       button: ADD # 47348558488223808512
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Init Player LOV # 47348558512324808513
       fire-when-event-result-is: True
@@ -3136,7 +3324,7 @@ dynamic-actions:
   identification: 
     name: Auto Tab
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   when: 
@@ -3144,11 +3332,12 @@ dynamic-actions:
     selection-type: jQuery Selector
     jquery-selector: .number_field[name^='P9_S'
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 47633180766760701350
     identification: 
       action: Execute JavaScript Code
@@ -3178,7 +3367,7 @@ dynamic-actions:
             console.log("not a number");
         }
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Auto Tab # 47633180672606701349
       fire-when-event-result-is: True
@@ -3189,7 +3378,7 @@ dynamic-actions:
   identification: 
     name: Check for Dup Players
 
-  execution-options: 
+  execution: 
     sequence: 40
 
   when: 
@@ -3199,11 +3388,12 @@ dynamic-actions:
     - P9_WEEK
     - P9_PLAYERS_ID
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_EXECUTE_PLSQL_CODE ===================
+  - # ====== Action: Execute Server-side Code ====================
     id: 50429445377773004837
     identification: 
       action: Execute Server-side Code
@@ -3240,7 +3430,7 @@ dynamic-actions:
       - P9_DUP_IND
       suppress-change-event: false
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Check for Dup Players # 50429445295615004836
       fire-when-event-result-is: True
@@ -3253,7 +3443,7 @@ dynamic-actions:
   identification: 
     name: Show Dup Alert
 
-  execution-options: 
+  execution: 
     sequence: 50
 
   when: 
@@ -3267,15 +3457,16 @@ dynamic-actions:
     item: P9_DUP_IND
     value: N
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   server-side-condition: 
     type: Item is NULL
     item: P9_ID
 
   actions: 
-  - # ====== Action: NATIVE_HIDE =================================
+  - # ====== Action: Hide ========================================
     id: 50429445645363004840
     identification: 
       action: Hide
@@ -3284,13 +3475,13 @@ dynamic-actions:
       selection-type: jQuery Selector
       jquery-selector: .dupEntry
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: True
       fire-on-initialization: true
 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 50429445728452004841
     identification: 
       action: Execute JavaScript Code
@@ -3298,13 +3489,13 @@ dynamic-actions:
     settings: 
       code: apex.message.clearErrors();
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_SHOW =================================
+  - # ====== Action: Show ========================================
     id: 50429445836638004842
     identification: 
       action: Show
@@ -3313,13 +3504,13 @@ dynamic-actions:
       selection-type: jQuery Selector
       jquery-selector: .dupEntry
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: False
       fire-on-initialization: false
 
-  - # ====== Action: NATIVE_JAVASCRIPT_CODE ======================
+  - # ====== Action: Execute JavaScript Code =====================
     id: 50429445943471004843
     identification: 
       action: Execute JavaScript Code
@@ -3336,10 +3527,45 @@ dynamic-actions:
              }
         ]);
 
-    execution-options: 
+    execution: 
       sequence: 20
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: False
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Week Changes ========================
+  id: 56015646112744939741
+  identification: 
+    name: Week Changes
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P9_WEEK
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 56015646244661939742
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P9_COURSE_ID
+
+    execution: 
+      sequence: 10
+      event: Week Changes # 56015646112744939741
+      fire-when-event-result-is: True
       fire-on-initialization: false
 
 validations: 
@@ -3348,7 +3574,7 @@ validations:
   identification: 
     name: P9_ROUND_PLAYED_ON must be timestamp
 
-  execution-options: 
+  execution: 
     sequence: 30
 
   validation: 
@@ -3366,7 +3592,7 @@ validations:
   identification: 
     name: Week format
 
-  execution-options: 
+  execution: 
     sequence: 40
 
   validation: 
@@ -3386,7 +3612,7 @@ computations:
   identification: 
     item-name: P9_WEEK
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Submit
 
@@ -3403,7 +3629,7 @@ processes:
     type: Form - Initialization
     form-region: Round # 46986753890975703559
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -3421,13 +3647,13 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
 
   success-message: 
-    success-message: Round saved.
+    success-message: '&P9_PLAYER_NAME. round saved.'
 
   error: 
     display-location: Inline in Notification
@@ -3442,7 +3668,7 @@ processes:
     name: Close Dialog
     type: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -3467,7 +3693,7 @@ processes:
       apex_util.set_preference('ROUND_COURSE_ID', :P9_COURSE_ID);
       apex_util.set_preference('WMG_WEEK', :P9_WEEK)
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -3482,7 +3708,7 @@ processes:
     type: Form - Initialization
     form-region: '{Course Strokes}' # 141756093638378054301
 
-  execution-options: 
+  execution: 
     sequence: 30
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -3503,10 +3729,37 @@ processes:
       where course_id = :P9_COURSE_ID
       fetch first 1 rows only;
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Before Header
     run-process: Once Per Page Visit (default)
+
+- # ====== Process: Set Player Name for Message ================
+  id: 52997262374550034414
+  identification: 
+    name: Set Player Name for Message
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      select name
+      Into :P9_PLAYER_NAME
+      From wmg_players
+      Where id = :P9_PLAYERS_ID;
+
+  execution: 
+    sequence: 5
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE
 
 branches: 
 - # ====== Branch: Add Again ===================================
@@ -3514,7 +3767,7 @@ branches:
   identification: 
     name: Add Again
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 

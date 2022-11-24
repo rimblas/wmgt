@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -182,7 +181,9 @@ page-items:
           and t.ui_type_name   = 'DESKTOP'
           and s.is_current = 'Yes'
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -250,15 +251,13 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select ui.theme_style_by_user_pref
-        from apex_application_themes t, apex_appl_user_interfaces ui
-       where ui.application_id = t.application_id
-         and ui.theme_number   = t.theme_number
-         and t.application_id  = :app_id 
-         and t.ui_type_name    = 'DESKTOP'
-         and t.is_current      = 'Yes'
+      select a.theme_style_by_user_pref
+        from apex_applications a
+       where a.application_id  = :app_id
     used: Always, replacing any existing value in session state
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -329,7 +328,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -337,16 +336,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46986896342377703671
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46986897109066703671
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46986896489053703671
       fire-when-event-result-is: True
@@ -377,7 +377,7 @@ processes:
           end loop;
       end if;
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -423,7 +423,7 @@ processes:
           end loop;
       end;
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -440,7 +440,7 @@ branches:
   identification: 
     name: Branch to Admin Page
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 

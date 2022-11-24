@@ -8,7 +8,6 @@ identification:
   page-group: Administration # 46986684228947702497
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
 
@@ -167,7 +166,10 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -197,11 +199,14 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
 
   default: 
     type: Static
     static-value: '&APP_ID.'
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -254,7 +259,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -313,7 +320,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -461,7 +470,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -469,16 +478,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46986998535090704109
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46986999373713704109
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46986998670474704109
       fire-when-event-result-is: True
@@ -490,7 +500,7 @@ validations:
   identification: 
     name: Cannot remove yourself from administrator
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   validation: 
@@ -527,7 +537,7 @@ processes:
     type: Form - Initialization
     form-region: Form on Manage User Access # 46986997465922704108
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Header
     run-process: Once Per Page Visit (default)
@@ -545,7 +555,7 @@ processes:
     lock-row: No
     return-primary-key(s)-after-insert: false
 
-  execution-options: 
+  execution: 
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -559,7 +569,7 @@ processes:
     name: Close Dialog
     type: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)

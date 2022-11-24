@@ -7,7 +7,6 @@ identification:
   title: Player
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -25,6 +24,11 @@ navigation:
 
 security: 
   authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -150,7 +154,10 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -205,7 +212,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -263,7 +272,9 @@ page-items:
     data-type: VARCHAR2
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -293,7 +304,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -440,7 +454,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -448,16 +462,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46986744377215703260
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46986745256671703261
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46986744427290703260
       fire-when-event-result-is: True
@@ -468,7 +483,7 @@ dynamic-actions:
   identification: 
     name: Match Name
 
-  execution-options: 
+  execution: 
     sequence: 20
 
   when: 
@@ -477,11 +492,12 @@ dynamic-actions:
     item(s): 
     - P7_ACCOUNT
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_SET_VALUE ============================
+  - # ====== Action: Set Value ===================================
     id: 47348558875961808516
     identification: 
       action: Set Value
@@ -496,7 +512,7 @@ dynamic-actions:
       item(s): 
       - P7_NAME
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Match Name # 47348558705439808515
       fire-when-event-result-is: True
@@ -516,7 +532,7 @@ processes:
     type: Form - Initialization
     form-region: Player # 46986741552156703258
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -534,7 +550,7 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -552,7 +568,7 @@ processes:
     items-to-return-: 
     - P7_ID
 
-  execution-options: 
+  execution: 
     sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -570,7 +586,7 @@ branches:
   identification: 
     name: This new record is a registration
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: After Processing
 

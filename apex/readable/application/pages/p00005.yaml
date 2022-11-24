@@ -7,7 +7,6 @@ identification:
   title: Course Stroke
 
 appearance: 
-  user-interface: Desktop # 46986677909852702488
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
@@ -190,7 +189,8 @@ page-items:
     alignment: Left
 
   settings: 
-    number-alignment: Right
+    number-alignment: End
+    virtual-keyboard: Text
 
   layout: 
     sequence: 210
@@ -222,7 +222,9 @@ page-items:
       select course_par from wmg_courses_v
       where course_id= :P5_COURSE_ID
     used: Only when current value in session state is null
-    maintain-session-state: Per Session (Disk)
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   quick-picks: 
     show-quick-picks: false
@@ -255,7 +257,10 @@ page-items:
     data-type: NUMBER
     query-only: true
     primary-key: true
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Checksum Required - Session Level
@@ -312,7 +317,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -338,6 +345,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 30
@@ -370,7 +378,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -392,6 +402,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 40
@@ -424,7 +435,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -446,6 +459,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 50
@@ -478,7 +492,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -500,6 +516,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 60
@@ -532,7 +549,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -554,6 +573,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 70
@@ -586,7 +606,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -608,6 +630,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 80
@@ -640,7 +663,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -662,6 +687,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 90
@@ -694,7 +720,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -716,6 +744,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 100
@@ -748,7 +777,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -770,6 +801,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 110
@@ -802,7 +834,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -824,6 +858,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 120
@@ -856,7 +891,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -878,6 +915,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 130
@@ -910,7 +948,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -932,6 +972,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 140
@@ -964,7 +1005,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -986,6 +1029,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 150
@@ -1018,7 +1062,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1040,6 +1086,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 160
@@ -1072,7 +1119,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1094,6 +1143,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 170
@@ -1126,7 +1176,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1148,6 +1200,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 180
@@ -1180,7 +1233,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1202,6 +1257,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 190
@@ -1234,7 +1290,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1256,6 +1314,7 @@ page-items:
 
   settings: 
     number-alignment: Center
+    virtual-keyboard: Text
 
   layout: 
     sequence: 200
@@ -1288,7 +1347,9 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
-    maintain-session-state: Per Request (Memory Only)
+
+  session-state: 
+    storage: Per Request (Memory Only)
 
   quick-picks: 
     show-quick-picks: false
@@ -1433,7 +1494,7 @@ dynamic-actions:
   identification: 
     name: Cancel Dialog
 
-  execution-options: 
+  execution: 
     sequence: 10
 
   when: 
@@ -1441,16 +1502,17 @@ dynamic-actions:
     selection-type: Button
     button: CANCEL # 46986724901572702960
 
-  advanced: 
+  execution: 
     event-scope: Static
+    type: Immediate
 
   actions: 
-  - # ====== Action: NATIVE_DIALOG_CANCEL ========================
+  - # ====== Action: Cancel Dialog ===============================
     id: 46986725891833702961
     identification: 
       action: Cancel Dialog
 
-    execution-options: 
+    execution: 
       sequence: 10
       event: Cancel Dialog # 46986725070058702960
       fire-when-event-result-is: True
@@ -1464,7 +1526,7 @@ processes:
     type: Form - Initialization
     form-region: Course Stroke # 46986709961535702951
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
@@ -1482,7 +1544,7 @@ processes:
     lock-row: Yes
     return-primary-key(s)-after-insert: true
 
-  execution-options: 
+  execution: 
     sequence: 10
     point: Processing
     run-process: Once Per Page Visit (default)
@@ -1496,7 +1558,7 @@ processes:
     name: Close Dialog
     type: Close Dialog
 
-  execution-options: 
+  execution: 
     sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
