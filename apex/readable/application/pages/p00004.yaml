@@ -94,11 +94,11 @@ regions:
     link: 
       link-column: Link to Custom Target
       target: 
-        url: 'f?p=&APP_ID.:5:&SESSION.::&DEBUG.:RP,:P5_ID:#COURSE_STROKE_ID##ID#\'
-        page: 5 # Course Stroke
-        clear-cache: RP
+        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:RP,3:P3_ID:#COURSE_ID##ID#\'
+        page: 3 # Course
+        clear-cache: RP,3
         values: 
-          p5_id: '#COURSE_STROKE_ID##ID#\'
+          p3_id: '#COURSE_ID##ID#\'
 
       link-icon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
       authorization-scheme: Contribution Rights # 46986682878463702496
@@ -353,7 +353,7 @@ regions:
       id: 46986730219791702964
       identification: 
         column-name: H1
-        type: Plain Text
+        type: Link
 
       heading: 
         heading: H1
@@ -371,6 +371,16 @@ regions:
 
       appearance: 
         format-mask: 990
+
+      link: 
+        target: 
+          url: 'f?p=&APP_ID.:15:&SESSION.::&DEBUG.::P15_COURSE_ID,P15_HOLE:#COURSE_ID#,1'
+          page: 15 # Hole Preview
+          values: 
+            p15_course_id: '#COURSE_ID#'
+            p15_hole: 1
+
+        link-text: '#H1#'
 
       column-filter: 
         type: Default Based on Column Type

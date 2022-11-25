@@ -55,6 +55,117 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Previews ====================================
+  id: 7048715519953770742
+  identification: 
+    title: Previews
+    type: Cards
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSE_PREVIEWS_V
+    include-rowid-column: false
+    where-clause: 'course_id = :P3_ID'
+    page-items-to-submit: 
+    - P3_ID
+
+  order-by: 
+    type: Static Value
+    order-by-clause: HOLE
+
+  layout: 
+    sequence: 25
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Cards Container # 46986526868601702416
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P3_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 7048715686755770743
+    appearance: 
+      layout: Grid
+      grid-columns: Auto
+
+    card: 
+      primary-key-column-1: ID
+
+    title: 
+      advanced-formatting: false
+      column: HOLE
+
+    subtitle: 
+      advanced-formatting: false
+
+    body: 
+      advanced-formatting: false
+
+    secondary-body: 
+      advanced-formatting: false
+
+    icon-and-badge: 
+      icon-source: No Icon
+
+    media: 
+      advanced-formatting: false
+      source: BLOB Column
+      blob-column: IMAGE_PREVIEW
+      position: Body
+      appearance: Auto
+      sizing: Fit
+
+    blob-attributes: 
+      mime-type-column: MIMETYPE
+      last-updated-column: IMAGE_LAST_UPDATE
+
+    performance: 
+      lazy-loading: true
+
+    pagination: 
+      type: Scroll
+      show-total-row-count: false
+
+    actions: 
+    - # ====== Action: FULL_CARD ===================================
+      id: 7048716013712770747
+      identification: 
+        type: Full Card
+
+      layout: 
+        sequence: 10
+
+      link: 
+        type: Redirect to Page in this Application
+        target: 
+          url: 'f?p=&APP_ID.:13:&SESSION.::&DEBUG.::P13_ID:&ID.'
+          page: 13 # Preview Uploads
+          values: 
+            p13_id: '&ID.'
+
 - # ====== Region: Course ======================================
   id: 46986696689601702653
   identification: 
@@ -1603,6 +1714,42 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: ADD_PREVIEW =================================
+  id: 7048715708283770744
+  identification: 
+    button-name: ADD_PREVIEW
+    label: Add Preview
+
+  layout: 
+    sequence: 10
+    region: Previews # 7048715519953770742
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 10
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-file-image-o
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:13:&SESSION.::&DEBUG.:13:P13_COURSE_ID:&P3_ID.'
+      page: 13 # Preview Uploads
+      clear-cache: 13
+      values: 
+        p13_course_id: '&P3_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: CANCEL ======================================
   id: 46986700103848702656
   identification: 
@@ -1734,6 +1881,72 @@ buttons:
     item: P3_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Refresh on Close ====================
+  id: 7048715839148770745
+  identification: 
+    name: Refresh on Close
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: ADD_PREVIEW # 7048715708283770744
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 7048715988224770746
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Previews # 7048715519953770742
+
+    execution: 
+      sequence: 10
+      event: Refresh on Close # 7048715839148770745
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Edit =====================
+  id: 20752037865462361505
+  identification: 
+    name: Refresh on Edit
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Region
+    region: Previews # 7048715519953770742
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 20752037948546361506
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Previews # 7048715519953770742
+
+    execution: 
+      sequence: 10
+      event: Refresh on Edit # 20752037865462361505
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 46986700284731702656
   identification: 
