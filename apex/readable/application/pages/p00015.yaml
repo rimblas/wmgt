@@ -16,6 +16,8 @@ appearance:
   - t-PageBody--noContentPadding
 
 dialog: 
+  css-classes: 
+  - previewPage
   chained: true
 
 navigation-menu: 
@@ -32,7 +34,7 @@ advanced:
   enable-meta-tags: false
 
 security: 
-  deep-linking: Application Default
+  deep-linking: Enabled
   page-access-protection: Unrestricted
   form-auto-complete: Off
   browser-cache: Application Default
@@ -71,6 +73,10 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: true
@@ -257,7 +263,10 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", $v("P15_COURSE_ID_DISPLAY") + " - " + $v("P15_HOLE"))
+      code: |
+        setTimeout(function(){
+        apex.util.getTopApex().jQuery(".ui-dialog-content.js-dialogReady").dialog("option", "title", $v("P15_COURSE_ID_DISPLAY") + " - " + $v("P15_HOLE"));
+        }, 1);
 
     execution: 
       sequence: 10

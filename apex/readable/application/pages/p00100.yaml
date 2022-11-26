@@ -51,6 +51,7 @@ javascript:
       }
     
       $s("P100_H", H);
+      console.log("Parent", $(el).parents(".t-Region"));
       if ( $(el).parents(".t-Region").hasClass("hard") ) {
         $s("P100_MODE", "H");
       }
@@ -163,7 +164,7 @@ regions:
       select :P100_H h
            , apex_page.get_url(p_page => 16
                              , p_items=>'P16_C,P16_H'
-                             , p_values => :P100_HARD_ID || ',' || :P100_H) url
+                             , p_values => course_id || ',' || :P100_H) url
       from wmg_course_previews_v
       where course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
         and hole = nvl(:P100_H,0)
@@ -189,6 +190,10 @@ regions:
     - '#DEFAULT#'
     - js-dialog-size600x400
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     static-id: holePreview
@@ -314,6 +319,10 @@ regions:
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     static-id: statsRegion
@@ -452,6 +461,10 @@ regions:
     - t-Region--noUI
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -621,6 +634,10 @@ regions:
     - '#DEFAULT#'
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -946,6 +963,10 @@ regions:
     - '#DEFAULT#'
     render-components: Above Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
   advanced: 
     static-id: itemsRegion
     region-display-selector: false
@@ -1014,6 +1035,10 @@ regions:
     - t-Region--noUI
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -1361,6 +1386,10 @@ regions:
     - t-Region--scrollBody
     render-components: Above Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
@@ -1526,6 +1555,10 @@ regions:
     - '#DEFAULT#'
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: true
@@ -1936,6 +1969,10 @@ regions:
     - hard
     - courseStats
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -3143,6 +3180,10 @@ regions:
     - courseStats
     render-components: Above Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
@@ -3980,6 +4021,10 @@ regions:
     - t-BreadcrumbRegion--useBreadcrumbTitle
     render-components: Below Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
@@ -4018,6 +4063,10 @@ regions:
     - '#DEFAULT#'
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -4119,6 +4168,10 @@ regions:
     - '#DEFAULT#'
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -4446,6 +4499,10 @@ regions:
     - i-h480
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -4838,6 +4895,10 @@ regions:
     - '#DEFAULT#'
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
@@ -5394,6 +5455,10 @@ regions:
     - i-h480
     - t-Region--scrollBody
     render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
     region-display-selector: false
