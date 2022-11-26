@@ -38,6 +38,30 @@ javascript:
        return n;
     
     }
+    
+    // view hole preview
+    function viewH(el) {
+      let H;
+      let elID = el.id;
+      H = elID.split("H")[1];
+    
+      if (!H) {
+        // we do not have a Hole number, abort
+        return;
+      }
+    
+      $s("P100_H", H);
+      if ( $(el).parents(".t-Region").hasClass("hard") ) {
+        $s("P100_MODE", "H");
+      }
+      else {
+        $s("P100_MODE", "E");
+      }
+    
+      apex.region("holePreview").refresh();
+      $("#holePreview").popup("open");
+    }
+    
 
 css: 
   inline: |
@@ -126,6 +150,149 @@ help:
     
 
 regions: 
+- # ====== Region: Hole Preview ================================
+  id: 20752039964291361526
+  identification: 
+    title: Hole Preview
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select :P100_H h
+           , apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => :P100_HARD_ID || ',' || :P100_H) url
+      from wmg_course_previews_v
+      where course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
+        and hole = nvl(:P100_H,0)
+    page-items-to-submit: 
+    - P100_EASY_ID
+    - P100_HARD_ID
+    - P100_MODE
+    - P100_H
+
+  layout: 
+    sequence: 1
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  advanced: 
+    static-id: holePreview
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No preview available yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: H ===========================================
+    id: 21350211115212136903
+    identification: 
+      column-name: H
+      type: Plain Text
+
+    heading: 
+      heading: H
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <img src="#URL#">
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: URL =========================================
+    id: 21350211390026136905
+    identification: 
+      column-name: URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: {Stats} =====================================
   id: 47486927506229033323
   identification: 
@@ -1766,7 +1933,8 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
-    - easyMode
+    - hard
+    - courseStats
     render-components: Above Content
 
   advanced: 
@@ -2971,7 +3139,8 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
-    - easyMode
+    - easy
+    - courseStats
     render-components: Above Content
 
   advanced: 
@@ -5710,6 +5879,66 @@ page-items:
   help: 
     inline-help-text: 'Select an extra player to compare against. '
 
+- # ====== Page Item: P100_EASY_ID =============================
+  id: 20752038629113361513
+  identification: 
+    name: P100_EASY_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 60
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_HARD_ID =============================
+  id: 20752038781058361514
+  identification: 
+    name: P100_HARD_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 90
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P100_WEEK ================================
   id: 47468027814670193295
   identification: 
@@ -5957,7 +6186,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 60
+    sequence: 80
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6170,6 +6399,39 @@ dynamic-actions:
     execution: 
       sequence: 20
       event: Refresh Cumulative Chart # 5007620983014972550
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Preview Hole ========================
+  id: 20752038891961361515
+  identification: 
+    name: Preview Hole
+
+  execution: 
+    sequence: 100
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: th
+
+  execution: 
+    event-scope: Dynamic
+    static-container-(jquery-selector): .courseStats
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 20752038990247361516
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: viewH(this.triggeringElement);
+
+    execution: 
+      sequence: 10
+      event: Preview Hole # 20752038891961361515
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -6743,6 +7005,28 @@ computations:
     pl/sql-expression: apex_util.get_preference('WMG_WEEK')
 
 processes: 
+- # ====== Process: Init =======================================
+  id: 20752038428662361511
+  identification: 
+    name: Init
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      select s.easy_course_id
+           , s.hard_course_id 
+       into :P100_EASY_ID
+          , :P100_HARD_ID
+      from wmg_tournament_sessions_v s
+      where s.week = :P100_WEEK;
+
+  execution: 
+    sequence: 20
+    point: Before Regions
+    run-process: Once Per Page Visit (default)
+
 - # ====== Process: Save Week ==================================
   id: 47468042135126193311
   identification: 

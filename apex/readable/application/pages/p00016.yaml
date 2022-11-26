@@ -1,0 +1,151 @@
+---
+# ====== Page: Inline Hole Download ==========================
+id: 16
+identification: 
+  name: Inline Hole Download
+  alias: VIEW
+  title: Inline Hole Download
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Enabled
+  page-access-protection: Unrestricted
+  form-auto-complete: Off
+  browser-cache: Disabled
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+page-items: 
+- # ====== Page Item: P16_C ====================================
+  id: 20752042311404361550
+  identification: 
+    name: P16_C
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 9
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P16_H ====================================
+  id: 21350210902266136901
+  identification: 
+    name: P16_H
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 19
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+processes: 
+- # ====== Process: Download Hole Preview ======================
+  id: 20752042264090361549
+  identification: 
+    name: Download Hole Preview
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      <<download>>
+      begin
+      
+        sys.htp.init;
+      
+        for f in (
+          select image_preview
+               , 'Hole ' || to_char(hole) alt_text
+               , filename
+               , mimetype
+          from wmg_course_previews_v
+          where course_id = :P16_C
+            and hole = :P16_H
+        )
+        loop
+          sys.owa_util.mime_header(f.mimetype, FALSE );
+          sys.htp.p('Content-length: ' || sys.dbms_lob.getlength( f.image_preview ));
+          sys.htp.p('Content-Disposition: inline; filename="' || f.filename || '"' );
+          --sys.htp.p('Cache-Control: max-age=3600');  -- tell the browser to cache for one hour, adjust as necessary
+          sys.owa_util.http_header_close;
+          sys.wpg_docload.download_file( f.image_preview );
+          
+        end loop;
+      
+        apex_application.stop_apex_engine;
+      
+      end download;
+      
+      
+      
+
+  execution: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+

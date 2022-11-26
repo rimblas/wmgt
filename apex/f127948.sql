@@ -31,14 +31,14 @@ prompt APPLICATION 127948 - WMGT
 --   Exported By:     JORGE@RIMBLAS.COM
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     51
---       Items:                  330
+--     Pages:                     52
+--       Items:                  338
 --       Computations:             9
 --       Validations:             10
---       Processes:               67
---       Regions:                162
+--       Processes:               70
+--       Regions:                165
 --       Buttons:                 97
---       Dynamic Actions:         63
+--       Dynamic Actions:         66
 --     Shared Components:
 --       Logic:
 --         Items:                  5
@@ -47,7 +47,7 @@ prompt APPLICATION 127948 - WMGT
 --       Navigation:
 --         Lists:                  9
 --         Breadcrumbs:            1
---           Entries:             13
+--           Entries:             14
 --       Security:
 --         Authentication:         3
 --         Authorization:          4
@@ -124,7 +124,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'WMGT'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221125045223'
+,p_last_upd_yyyymmddhh24miss=>'20221126202400'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>13
 ,p_print_server_type=>'INSTANCE'
@@ -282,6 +282,15 @@ wwv_flow_imp_shared.create_list_item(
 ,p_list_item_icon=>'fa-file-o'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'60'
+);
+wwv_flow_imp_shared.create_list_item(
+ p_id=>wwv_flow_imp.id(21348850966998816406)
+,p_list_item_display_sequence=>110
+,p_list_item_link_text=>'Inline Hole Download'
+,p_list_item_link_target=>'f?p=&APP_ID.:16:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_icon=>'fa-file-o'
+,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
+,p_list_item_current_for_pages=>'16'
 );
 wwv_flow_imp_shared.create_list_item(
  p_id=>wwv_flow_imp.id(46987061503295704325)
@@ -2340,6 +2349,12 @@ begin
 wwv_flow_imp_shared.create_menu(
  p_id=>wwv_flow_imp.id(46986483063942702397)
 ,p_name=>'Breadcrumb'
+);
+wwv_flow_imp_shared.create_menu_option(
+ p_id=>wwv_flow_imp.id(21348851827869816408)
+,p_short_name=>'Inline Hole Download'
+,p_link=>'f?p=&APP_ID.:16:&APP_SESSION.::&DEBUG.:::'
+,p_page_id=>16
 );
 wwv_flow_imp_shared.create_menu_option(
  p_id=>wwv_flow_imp.id(46986483248407702397)
@@ -31603,22 +31618,49 @@ wwv_flow_imp_page.create_page(
 ,p_name=>'Hole Preview'
 ,p_alias=>'HOLE-PREVIEW'
 ,p_page_mode=>'MODAL'
-,p_step_title=>'Hole Preview'
+,p_step_title=>'Loading Preview...'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_step_template=>wwv_flow_imp.id(46986483863455702398)
 ,p_page_template_options=>'#DEFAULT#:js-dialog-class-t-Drawer--pullOutEnd:js-dialog-class-t-Drawer--md:t-PageBody--noContentPadding'
 ,p_page_is_public_y_n=>'Y'
-,p_page_component_map=>'11'
+,p_page_component_map=>'17'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221125042331'
+,p_last_upd_yyyymmddhh24miss=>'20221126161246'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(20752038338742361510)
+,p_plug_name=>'No preview available yet'
+,p_region_template_options=>'#DEFAULT#:t-Region--noBorder:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(46986580184360702438)
+,p_plug_display_sequence=>39
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_plug_display_condition_type=>'NOT_EXISTS'
+,p_plug_display_when_condition=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select 1',
+'from wmg_course_previews_v',
+'where course_id = :P15_COURSE_ID',
+'  and hole = :P15_HOLE'))
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(7048716191951770748)
 ,p_name=>'P15_COURSE_ID'
 ,p_item_sequence=>9
-,p_display_as=>'NATIVE_HIDDEN'
+,p_prompt=>'Course'
+,p_display_as=>'NATIVE_DISPLAY_ONLY'
+,p_named_lov=>'COURSES'
+,p_grid_label_column_span=>0
+,p_grid_column_css_classes=>'u-vh'
+,p_field_template=>wwv_flow_imp.id(46986650295547702469)
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
 ,p_attribute_01=>'Y'
+,p_attribute_02=>'LOV'
+,p_attribute_04=>'Y'
+,p_attribute_05=>'PLAIN'
 );
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(7048716284150770749)
@@ -31633,14 +31675,105 @@ wwv_flow_imp_page.create_page_item(
 ,p_item_sequence=>29
 ,p_prompt=>'Image Preview'
 ,p_display_as=>'NATIVE_DISPLAY_IMAGE'
+,p_grid_label_column_span=>0
 ,p_field_template=>wwv_flow_imp.id(46986650295547702469)
-,p_item_template_options=>'#DEFAULT#'
+,p_item_template_options=>'#DEFAULT#:t-Form-fieldContainer--stretchInputs'
 ,p_attribute_01=>'SQL'
 ,p_attribute_06=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select image_preview',
+'     , ''Hole '' || to_char(hole) alt_text',
+'     , '''' file_name',
+'     , mimetype',
 'from wmg_course_previews_v',
 'where course_id = :P15_COURSE_ID',
 '  and hole = :P15_HOLE'))
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(20752038143730361508)
+,p_name=>'Set Title'
+,p_event_sequence=>10
+,p_bind_type=>'bind'
+,p_bind_event_type=>'ready'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(20752038287031361509)
+,p_event_id=>wwv_flow_imp.id(20752038143730361508)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", $v("P15_COURSE_ID_DISPLAY") + " - " + $v("P15_HOLE"))'
+);
+end;
+/
+prompt --application/pages/page_00016
+begin
+wwv_flow_imp_page.create_page(
+ p_id=>16
+,p_name=>'Inline Hole Download'
+,p_alias=>'VIEW'
+,p_step_title=>'Inline Hole Download'
+,p_autocomplete_on_off=>'OFF'
+,p_page_template_options=>'#DEFAULT#'
+,p_page_is_public_y_n=>'Y'
+,p_browser_cache=>'N'
+,p_deep_linking=>'Y'
+,p_page_component_map=>'11'
+,p_last_updated_by=>'JORGE@RIMBLAS.COM'
+,p_last_upd_yyyymmddhh24miss=>'20221126180211'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(20752042311404361550)
+,p_name=>'P16_C'
+,p_item_sequence=>9
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(21350210902266136901)
+,p_name=>'P16_H'
+,p_item_sequence=>19
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(20752042264090361549)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_HEADER'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Download Hole Preview'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'<<download>>',
+'begin',
+'',
+'  sys.htp.init;',
+'',
+'  for f in (',
+'    select image_preview',
+'         , ''Hole '' || to_char(hole) alt_text',
+'         , filename',
+'         , mimetype',
+'    from wmg_course_previews_v',
+'    where course_id = :P16_C',
+'      and hole = :P16_H',
+'  )',
+'  loop',
+'    sys.owa_util.mime_header(f.mimetype, FALSE );',
+'    sys.htp.p(''Content-length: '' || sys.dbms_lob.getlength( f.image_preview ));',
+'    sys.htp.p(''Content-Disposition: inline; filename="'' || f.filename || ''"'' );',
+'    --sys.htp.p(''Cache-Control: max-age=3600'');  -- tell the browser to cache for one hour, adjust as necessary',
+'    sys.owa_util.http_header_close;',
+'    sys.wpg_docload.download_file( f.image_preview );',
+'    ',
+'  end loop;',
+'',
+'  apex_application.stop_apex_engine;',
+'',
+'end download;',
+'',
+'',
+''))
+,p_process_clob_language=>'PLSQL'
 );
 end;
 /
@@ -35355,7 +35488,31 @@ wwv_flow_imp_page.create_page(
 '   }',
 '   return n;',
 '',
-'}'))
+'}',
+'',
+'// view hole preview',
+'function viewH(el) {',
+'  let H;',
+'  let elID = el.id;',
+'  H = elID.split("H")[1];',
+'',
+'  if (!H) {',
+'    // we do not have a Hole number, abort',
+'    return;',
+'  }',
+'',
+'  $s("P100_H", H);',
+'  if ( $(el).parents(".t-Region").hasClass("hard") ) {',
+'    $s("P100_MODE", "H");',
+'  }',
+'  else {',
+'    $s("P100_MODE", "E");',
+'  }',
+'',
+'  apex.region("holePreview").refresh();',
+'  $("#holePreview").popup("open");',
+'}',
+''))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'span.drill {',
 '    cursor: pointer;',
@@ -35420,7 +35577,59 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221125011100'
+,p_last_upd_yyyymmddhh24miss=>'20221126195932'
+);
+wwv_flow_imp_page.create_report_region(
+ p_id=>wwv_flow_imp.id(20752039964291361526)
+,p_name=>'Hole Preview'
+,p_region_name=>'holePreview'
+,p_template=>wwv_flow_imp.id(46986570183476702434)
+,p_display_sequence=>1
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_region_template_options=>'#DEFAULT#:js-dialog-size600x400'
+,p_component_template_options=>'#DEFAULT#:t-Report--stretch:t-Report--staticRowColors:t-Report--rowHighlightOff:t-Report--noBorders'
+,p_source_type=>'NATIVE_SQL_REPORT'
+,p_query_type=>'SQL'
+,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select :P100_H h',
+'     , apex_page.get_url(p_page => 16',
+'                       , p_items=>''P16_C,P16_H''',
+'                       , p_values => :P100_HARD_ID || '','' || :P100_H) url',
+'from wmg_course_previews_v',
+'where course_id = decode(:P100_MODE, ''H'', :P100_HARD_ID, :P100_EASY_ID)',
+'  and hole = nvl(:P100_H,0)'))
+,p_ajax_enabled=>'Y'
+,p_ajax_items_to_submit=>'P100_EASY_ID,P100_HARD_ID,P100_MODE,P100_H'
+,p_lazy_loading=>false
+,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
+,p_query_headings_type=>'NO_HEADINGS'
+,p_query_num_rows=>15
+,p_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_query_no_data_found=>'- No preview available yet -'
+,p_csv_output=>'N'
+,p_prn_output=>'N'
+,p_sort_null=>'L'
+,p_plug_query_strip_html=>'N'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(21350211115212136903)
+,p_query_column_id=>1
+,p_column_alias=>'H'
+,p_column_display_sequence=>20
+,p_column_heading=>'H'
+,p_use_as_row_header=>'N'
+,p_column_html_expression=>'<img src="#URL#">'
+,p_disable_sort_column=>'N'
+,p_derived_column=>'N'
+,p_include_in_export=>'Y'
+);
+wwv_flow_imp_page.create_report_columns(
+ p_id=>wwv_flow_imp.id(21350211390026136905)
+,p_query_column_id=>2
+,p_column_alias=>'URL'
+,p_column_display_sequence=>30
+,p_hidden_column=>'Y'
+,p_derived_column=>'N'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(47486927506229033323)
@@ -35442,7 +35651,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_parent_plug_id=>wwv_flow_imp.id(47486927506229033323)
 ,p_template=>wwv_flow_imp.id(46986580184360702438)
 ,p_display_sequence=>15
-,p_region_css_classes=>'easyMode'
+,p_region_css_classes=>'hard courseStats'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--noBorder:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
 ,p_display_point=>'SUB_REGIONS'
@@ -36103,7 +36312,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_parent_plug_id=>wwv_flow_imp.id(47486927506229033323)
 ,p_template=>wwv_flow_imp.id(46986580184360702438)
 ,p_display_sequence=>5
-,p_region_css_classes=>'easyMode'
+,p_region_css_classes=>'easy courseStats'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--noBorder:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
 ,p_display_point=>'SUB_REGIONS'
@@ -38901,6 +39110,22 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_06=>'0'
 );
 wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(20752038629113361513)
+,p_name=>'P100_EASY_ID'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(47633176682467701309)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(20752038781058361514)
+,p_name=>'P100_HARD_ID'
+,p_item_sequence=>90
+,p_item_plug_id=>wwv_flow_imp.id(47633176682467701309)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47468027814670193295)
 ,p_name=>'P100_WEEK'
 ,p_item_sequence=>10
@@ -38989,7 +39214,7 @@ wwv_flow_imp_page.create_page_item(
 wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(47633179865156701341)
 ,p_name=>'P100_HARD'
-,p_item_sequence=>60
+,p_item_sequence=>80
 ,p_item_plug_id=>wwv_flow_imp.id(47633176682467701309)
 ,p_use_cache_before_default=>'NO'
 ,p_item_default=>'Hard Course'
@@ -39461,6 +39686,9 @@ wwv_flow_imp_page.create_page_da_event(
 ,p_execution_type=>'IMMEDIATE'
 ,p_bind_event_type=>'click'
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(48035499026963866806)
 ,p_event_id=>wwv_flow_imp.id(48035498985675866805)
@@ -39480,9 +39708,6 @@ wwv_flow_imp_page.create_page_da_action(
 '  $s("P100_PLAYERS_FILTER", "ALL");',
 '}'))
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_page_da_action(
  p_id=>wwv_flow_imp.id(48035499196923866807)
 ,p_event_id=>wwv_flow_imp.id(48035498985675866805)
@@ -39492,6 +39717,26 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(94935960575573333859)
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(20752038891961361515)
+,p_name=>'Preview Hole'
+,p_event_sequence=>100
+,p_triggering_element_type=>'JQUERY_SELECTOR'
+,p_triggering_element=>'th'
+,p_bind_type=>'live'
+,p_bind_delegate_to_selector=>'.courseStats'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'click'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(20752038990247361516)
+,p_event_id=>wwv_flow_imp.id(20752038891961361515)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'viewH(this.triggeringElement);'
 );
 wwv_flow_imp_page.create_page_process(
  p_id=>wwv_flow_imp.id(47468042135126193311)
@@ -39512,6 +39757,21 @@ wwv_flow_imp_page.create_page_process(
 ,p_process_sql_clob=>'dbms_mview.refresh(''wmg_rounds_unpivot_mv'');'
 ,p_process_clob_language=>'PLSQL'
 );
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(20752038428662361511)
+,p_process_sequence=>20
+,p_process_point=>'BEFORE_BOX_BODY'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Init'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select s.easy_course_id',
+'     , s.hard_course_id ',
+' into :P100_EASY_ID',
+'    , :P100_HARD_ID',
+'from wmg_tournament_sessions_v s',
+'where s.week = :P100_WEEK;'))
+,p_process_clob_language=>'PLSQL'
+);
 end;
 /
 prompt --application/pages/page_00110
@@ -39524,6 +39784,30 @@ wwv_flow_imp_page.create_page(
 ,p_step_title=>'Player Round Details'
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
+,p_javascript_code=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'// view hole preview',
+'function viewH(el) {',
+'  let H;',
+'  let elID = el.id;',
+'  H = elID.split("H")[1];',
+'',
+'  if (!H) {',
+'    // we do not have a Hole number, abort',
+'    return;',
+'  }',
+'',
+'  $s("P110_H", H);',
+'  if ( $(el).parents(".t-Region").hasClass("hard") ) {',
+'    $s("P110_MODE", "H");',
+'  }',
+'  else {',
+'    $s("P110_MODE", "E");',
+'  }',
+'',
+'  apex.region("holePreview").refresh();',
+'  $("#holePreview").popup("open");',
+'}',
+''))
 ,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '@media (min-width: 640px) {',
 '#statsRegion  .container {',
@@ -39545,9 +39829,43 @@ wwv_flow_imp_page.create_page(
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
-,p_page_component_map=>'03'
+,p_page_component_map=>'25'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221016203328'
+,p_last_upd_yyyymmddhh24miss=>'20221126202400'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(42125082501335925577)
+,p_plug_name=>'Hole Preview'
+,p_region_name=>'holePreview'
+,p_region_template_options=>'#DEFAULT#:js-dialog-size600x400'
+,p_plug_template=>wwv_flow_imp.id(46986570183476702434)
+,p_plug_display_sequence=>50
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_function_body_language=>'PLSQL'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'declare',
+'  l_course_id wmg_courses.id%type;',
+'  l_url varchar2(1000);',
+'begin',
+'  l_course_id := case when :P110_MODE = ''H'' then :P110_HARD_ID else :P110_EASY_ID end;',
+'',
+'  l_url := apex_page.get_url(p_page => 16',
+'                       , p_items=>''P16_C,P16_H''',
+'                       , p_values => l_course_id || '','' || :P110_H',
+'                       , p_plain_url => true);',
+'',
+'  return ''<img src="'' || l_url || ''">'';',
+'',
+'exception',
+'  when others then',
+'    return ''<span>No preview yet</span>'';',
+'',
+'end;',
+''))
+,p_lazy_loading=>false
+,p_plug_source_type=>'NATIVE_DYNAMIC_CONTENT'
+,p_ajax_items_to_submit=>'P110_EASY_ID,P110_HARD_ID,P110_MODE,P110_H'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(98299060405746359013)
@@ -39567,7 +39885,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_parent_plug_id=>wwv_flow_imp.id(98299060405746359013)
 ,p_template=>wwv_flow_imp.id(46986580184360702438)
 ,p_display_sequence=>30
-,p_region_css_classes=>'hardMode'
+,p_region_css_classes=>'courseStats hard'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--noBorder:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
 ,p_new_grid_row=>false
@@ -39943,7 +40261,7 @@ wwv_flow_imp_page.create_report_region(
 ''))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P110_WEEK,P110_PLAYER_ID'
-,p_lazy_loading=>true
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -40233,7 +40551,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_parent_plug_id=>wwv_flow_imp.id(98299060405746359013)
 ,p_template=>wwv_flow_imp.id(46986580184360702438)
 ,p_display_sequence=>20
-,p_region_css_classes=>'easyMode'
+,p_region_css_classes=>'courseStats easy'
 ,p_region_template_options=>'#DEFAULT#:t-Region--noPadding:t-Region--removeHeader js-removeLandmark:t-Region--noBorder:t-Region--scrollBody'
 ,p_component_template_options=>'#DEFAULT#:t-Report--altRowsDefault:t-Report--rowHighlight:t-Report--hideNoPagination'
 ,p_display_point=>'SUB_REGIONS'
@@ -40608,7 +40926,7 @@ wwv_flow_imp_page.create_report_region(
 ''))
 ,p_ajax_enabled=>'Y'
 ,p_ajax_items_to_submit=>'P110_WEEK,P110_PLAYER_ID'
-,p_lazy_loading=>true
+,p_lazy_loading=>false
 ,p_query_row_template=>wwv_flow_imp.id(46986618016296702453)
 ,p_query_num_rows=>15
 ,p_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -41259,6 +41577,38 @@ wwv_flow_imp_page.create_report_columns(
 ,p_include_in_export=>'Y'
 );
 wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(21350211564670136907)
+,p_name=>'P110_MODE'
+,p_item_sequence=>50
+,p_item_plug_id=>wwv_flow_imp.id(98800129858927712032)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(21350211640488136908)
+,p_name=>'P110_H'
+,p_item_sequence=>60
+,p_item_plug_id=>wwv_flow_imp.id(98800129858927712032)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'N'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(21350211784426136909)
+,p_name=>'P110_HARD_ID'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_imp.id(98800129858927712032)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(21373737690232865751)
+,p_name=>'P110_EASY_ID'
+,p_item_sequence=>30
+,p_item_plug_id=>wwv_flow_imp.id(98800129858927712032)
+,p_display_as=>'NATIVE_HIDDEN'
+,p_attribute_01=>'Y'
+);
+wwv_flow_imp_page.create_page_item(
  p_id=>wwv_flow_imp.id(49305651340947776614)
 ,p_name=>'P110_WEEK'
 ,p_item_sequence=>10
@@ -41333,6 +41683,41 @@ wwv_flow_imp_page.create_page_da_action(
 ,p_action=>'NATIVE_REFRESH'
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_imp.id(50429442663637004810)
+);
+wwv_flow_imp_page.create_page_da_event(
+ p_id=>wwv_flow_imp.id(21373110714061570678)
+,p_name=>'Preview Hole'
+,p_event_sequence=>20
+,p_triggering_element_type=>'JQUERY_SELECTOR'
+,p_triggering_element=>'th'
+,p_bind_type=>'live'
+,p_bind_delegate_to_selector=>'.courseStats'
+,p_execution_type=>'IMMEDIATE'
+,p_bind_event_type=>'click'
+);
+wwv_flow_imp_page.create_page_da_action(
+ p_id=>wwv_flow_imp.id(21373111152138570679)
+,p_event_id=>wwv_flow_imp.id(21373110714061570678)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'viewH(this.triggeringElement);'
+);
+wwv_flow_imp_page.create_page_process(
+ p_id=>wwv_flow_imp.id(21373758945854870768)
+,p_process_sequence=>10
+,p_process_point=>'BEFORE_BOX_BODY'
+,p_process_type=>'NATIVE_PLSQL'
+,p_process_name=>'Init'
+,p_process_sql_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'select s.easy_course_id',
+'     , s.hard_course_id ',
+' into :P110_EASY_ID',
+'    , :P110_HARD_ID',
+'from wmg_tournament_sessions_v s',
+'where s.week = :P110_WEEK;'))
+,p_process_clob_language=>'PLSQL'
 );
 end;
 /

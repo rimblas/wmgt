@@ -4,7 +4,7 @@ id: 15
 identification: 
   name: Hole Preview
   alias: HOLE-PREVIEW
-  title: Hole Preview
+  title: Loading Preview...
 
 appearance: 
   page-mode: Modal Dialog
@@ -47,20 +47,94 @@ advanced:
 server-cache: 
   caching: Disabled
 
+regions: 
+- # ====== Region: No preview available yet ====================
+  id: 20752038338742361510
+  identification: 
+    title: No preview available yet
+    type: Static Content
+
+  layout: 
+    sequence: 39
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from wmg_course_previews_v
+      where course_id = :P15_COURSE_ID
+        and hole = :P15_HOLE
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 page-items: 
 - # ====== Page Item: P15_COURSE_ID ============================
   id: 7048716191951770748
   identification: 
     name: P15_COURSE_ID
-    type: Hidden
+    type: Display Only
+
+  label: 
+    label: Course
+    alignment: Left
 
   settings: 
-    value-protected: true
+    format: Plain Text
+    based-on: Display Value of List of Values
+    show-line-breaks: true
+    send-on-page-submit: true
 
   layout: 
     sequence: 9
     region: No Parent
     position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 0
+    column-css-classes: 
+    - u-vh
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: COURSES # 46986710799770702952
+    display-extra-values: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -122,6 +196,9 @@ page-items:
     based-on: BLOB Column returned by SQL statement
     sql-statement: |
       select image_preview
+           , 'Hole ' || to_char(hole) alt_text
+           , '' file_name
+           , mimetype
       from wmg_course_previews_v
       where course_id = :P15_COURSE_ID
         and hole = :P15_HOLE
@@ -136,12 +213,13 @@ page-items:
     column: Automatic
     new-column: true
     column-span: Automatic
-    label-column-span: Page Template Default
+    label-column-span: 0
 
   appearance: 
     template: Hidden # 46986650295547702469
     template-options: 
     - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -156,4 +234,34 @@ page-items:
   security: 
     session-state-protection: Unrestricted
     restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Set Title ===========================
+  id: 20752038143730361508
+  identification: 
+    name: Set Title
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 20752038287031361509
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: apex.util.getTopApex().jQuery(".ui-dialog-content").dialog("option", "title", $v("P15_COURSE_ID_DISPLAY") + " - " + $v("P15_HOLE"))
+
+    execution: 
+      sequence: 10
+      event: Set Title # 20752038143730361508
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 

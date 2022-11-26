@@ -23,6 +23,32 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
+javascript: 
+  function-and-global-variable-declaration: |
+    // view hole preview
+    function viewH(el) {
+      let H;
+      let elID = el.id;
+      H = elID.split("H")[1];
+    
+      if (!H) {
+        // we do not have a Hole number, abort
+        return;
+      }
+    
+      $s("P110_H", H);
+      if ( $(el).parents(".t-Region").hasClass("hard") ) {
+        $s("P110_MODE", "H");
+      }
+      else {
+        $s("P110_MODE", "E");
+      }
+    
+      apex.region("holePreview").refresh();
+      $("#holePreview").popup("open");
+    }
+    
+
 css: 
   inline: |
     @media (min-width: 640px) {
@@ -66,6 +92,72 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Hole Preview ================================
+  id: 42125082501335925577
+  identification: 
+    title: Hole Preview
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      declare
+        l_course_id wmg_courses.id%type;
+        l_url varchar2(1000);
+      begin
+        l_course_id := case when :P110_MODE = 'H' then :P110_HARD_ID else :P110_EASY_ID end;
+      
+        l_url := apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => l_course_id || ',' || :P110_H
+                             , p_plain_url => true);
+      
+        return '<img src="' || l_url || '">';
+      
+      exception
+        when others then
+          return '<span>No preview yet</span>';
+      
+      end;
+      
+    page-items-to-submit: 
+    - P110_EASY_ID
+    - P110_HARD_ID
+    - P110_MODE
+    - P110_H
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  advanced: 
+    static-id: holePreview
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
 - # ====== Region: Hard Stats ==================================
   id: 50429442663637004810
   identification: 
@@ -465,7 +557,8 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
-    - hardMode
+    - courseStats
+    - hard
     render-components: Above Content
 
   advanced: 
@@ -497,7 +590,7 @@ regions:
       partial-page-refresh: true
 
     performance: 
-      lazy-loading: true
+      lazy-loading: false
       maximum-rows-to-process: 100
 
     break-formatting: 
@@ -2638,7 +2731,8 @@ regions:
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
-    - easyMode
+    - courseStats
+    - easy
     render-components: Above Content
 
   advanced: 
@@ -2670,7 +2764,7 @@ regions:
       partial-page-refresh: true
 
     performance: 
-      lazy-loading: true
+      lazy-loading: false
       maximum-rows-to-process: 100
 
     break-formatting: 
@@ -3451,6 +3545,126 @@ regions:
       escape-special-characters: true
 
 page-items: 
+- # ====== Page Item: P110_MODE ================================
+  id: 21350211564670136907
+  identification: 
+    name: P110_MODE
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 50
+    region: Player Round Details # 98800129858927712032
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P110_H ===================================
+  id: 21350211640488136908
+  identification: 
+    name: P110_H
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 60
+    region: Player Round Details # 98800129858927712032
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P110_HARD_ID =============================
+  id: 21350211784426136909
+  identification: 
+    name: P110_HARD_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: Player Round Details # 98800129858927712032
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P110_EASY_ID =============================
+  id: 21373737690232865751
+  identification: 
+    name: P110_EASY_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: Player Round Details # 98800129858927712032
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P110_WEEK ================================
   id: 49305651340947776614
   identification: 
@@ -3564,6 +3778,39 @@ page-items:
     restricted-characters: All characters can be saved.
 
 dynamic-actions: 
+- # ====== Dynamic Action: Preview Hole ========================
+  id: 21373110714061570678
+  identification: 
+    name: Preview Hole
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: th
+
+  execution: 
+    event-scope: Dynamic
+    static-container-(jquery-selector): .courseStats
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 21373111152138570679
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: viewH(this.triggeringElement);
+
+    execution: 
+      sequence: 10
+      event: Preview Hole # 21373110714061570678
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh on Change ===================
   id: 49305651562201776616
   identification: 
@@ -3627,4 +3874,27 @@ dynamic-actions:
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+processes: 
+- # ====== Process: Init =======================================
+  id: 21373758945854870768
+  identification: 
+    name: Init
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      select s.easy_course_id
+           , s.hard_course_id 
+       into :P110_EASY_ID
+          , :P110_HARD_ID
+      from wmg_tournament_sessions_v s
+      where s.week = :P110_WEEK;
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+    run-process: Once Per Page Visit (default)
 
