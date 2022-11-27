@@ -124,7 +124,7 @@ wwv_flow_imp.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'WMGT'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221126215826'
+,p_last_upd_yyyymmddhh24miss=>'20221127061952'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>13
 ,p_print_server_type=>'INSTANCE'
@@ -9092,7 +9092,7 @@ wwv_flow_imp_shared.create_theme_style(
 ,p_css_file_urls=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '#APEX_FILES#libraries/oracle-fonts/oraclesans-apex#MIN#.css?v=#APEX_VERSION#',
 '#THEME_FILES#css/Redwood#MIN#.css?v=#APEX_VERSION#'))
-,p_is_current=>false
+,p_is_current=>true
 ,p_is_public=>true
 ,p_is_accessible=>false
 ,p_theme_roller_input_file_urls=>'#THEME_FILES#less/theme/Redwood-Theme.less'
@@ -9104,7 +9104,7 @@ wwv_flow_imp_shared.create_theme_style(
  p_id=>wwv_flow_imp.id(21386950746647109493)
 ,p_theme_id=>42
 ,p_name=>'Vita'
-,p_is_current=>true
+,p_is_current=>false
 ,p_is_public=>true
 ,p_is_accessible=>true
 ,p_theme_roller_input_file_urls=>'#THEME_FILES#less/theme/Vita.less'
@@ -32056,7 +32056,7 @@ wwv_flow_imp_page.create_page(
 ,p_deep_linking=>'Y'
 ,p_page_component_map=>'17'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221126215231'
+,p_last_upd_yyyymmddhh24miss=>'20221127055418'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(20752038338742361510)
@@ -32112,7 +32112,7 @@ wwv_flow_imp_page.create_page_item(
 ,p_attribute_06=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'select image_preview',
 '     , ''Hole '' || to_char(hole) alt_text',
-'     , '''' file_name',
+'     , filename file_name',
 '     , mimetype',
 'from wmg_course_previews_v',
 'where course_id = :P15_COURSE_ID',
@@ -35936,13 +35936,27 @@ wwv_flow_imp_page.create_page(
 '  }',
 '',
 '  $s("P100_H", H);',
-'  console.log("Parent", $(el).parents(".t-Region"));',
+'  // console.log("Parent", $(el).parents(".t-Region"));',
 '  if ( $(el).parents(".t-Region").hasClass("hard") ) {',
 '    $s("P100_MODE", "H");',
 '  }',
 '  else {',
 '    $s("P100_MODE", "E");',
 '  }',
+'',
+'  apex.region("holePreview").refresh();',
+'  $("#holePreview").popup("open");',
+'}',
+'',
+'// view hole preview',
+'function viewH2(mode, hole) {',
+'  if (!hole) {',
+'    // we do not have a Hole number, abort',
+'    return;',
+'  }',
+'',
+'  $s("P100_H", hole);',
+'  $s("P100_MODE", mode);',
 '',
 '  apex.region("holePreview").refresh();',
 '  $("#holePreview").popup("open");',
@@ -36012,7 +36026,7 @@ wwv_flow_imp_page.create_page(
 ''))
 ,p_page_component_map=>'03'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221126215826'
+,p_last_upd_yyyymmddhh24miss=>'20221127061122'
 );
 wwv_flow_imp_page.create_report_region(
  p_id=>wwv_flow_imp.id(20752039964291361526)
@@ -36053,7 +36067,7 @@ wwv_flow_imp_page.create_report_columns(
 ,p_column_display_sequence=>20
 ,p_column_heading=>'H'
 ,p_use_as_row_header=>'N'
-,p_column_html_expression=>'<img src="#URL#">'
+,p_column_html_expression=>'<img style="max-width: 100%" src="#URL#">'
 ,p_disable_sort_column=>'N'
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
@@ -37696,7 +37710,7 @@ wwv_flow_imp_page.create_report_region(
 ,p_query_type=>'SQL'
 ,p_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'with course_unpivot as (',
-'   select week, course_id, course_code, course_name, h, score, par',
+'   select week, course_id, course_code, course_mode, course_name, h, score, par',
 '    from wmg_rounds_v',
 '    unpivot (',
 '      (score, par) for h in (',
@@ -37723,59 +37737,63 @@ wwv_flow_imp_page.create_report_region(
 '  where week = :P100_WEEK',
 ')',
 ', whole_totals as (',
-'      select course_id, course_code, h, sum(score) total',
+'      select course_id, course_code, course_mode, h, sum(score) total',
 '        from course_unpivot',
-'       group by course_id, course_code, h',
+'       group by course_id, course_code, course_mode, h',
 ')',
 ', whole_pars as (',
-'      select course_id, course_code, h, sum(par) total',
+'      select course_id, course_code, course_mode, h, sum(par) total',
 '        from course_unpivot',
-'       group by course_id, course_code, h',
+'       group by course_id, course_code, course_mode,  h',
 ')',
 'select ''Tournament Strokes'' highlight, ''E + H'' what, sum(total) total',
 '  from whole_totals',
 'union all',
 'select ''Hole with most Aces''',
-'     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
+'     , ''<a href="javascript:viewH2('''''' || course_mode || '''''','' || h || '')">'' ',
+'--     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
 '      || course_code || '' - H'' || to_char(h) || ''</a>'' what',
 '     , total',
 'from ( ',
-'       select course_id, course_code, h, sum(score) total',
+'       select course_mode, course_code, h, sum(score) total',
 '        from course_unpivot',
 '       where score = 1',
-'       group by course_id, course_code, h',
+'       group by course_mode, course_code, h',
 '       order by total desc',
 '       fetch first 1 rows only',
 ')',
 'union all',
 'select ''Easiest hole (strokes)''',
-'     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
+'     , ''<a href="javascript:viewH2('''''' || course_mode || '''''','' || h || '')">'' ',
+'     -- || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
 '      || course_code || '' - H'' || to_char(h) || ''</a>'' what',
 '     , total',
 'from ( ',
-'       select course_id, course_code, h, total',
+'       select course_mode, course_code, h, total',
 '        from whole_totals',
 '       order by total',
 '       fetch first 1 rows only',
 ')',
 'union all',
 'select ''Most difficult hole (strokes)''',
-'     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
+'     , ''<a href="javascript:viewH2('''''' || course_mode || '''''','' || h || '')">'' ',
+'--     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
 '      || course_code || '' - H'' || to_char(h) || ''</a>'' what',
 '     , total',
 'from ( ',
-'       select course_id, course_code, h, total',
+'       select course_mode, course_code, h, total',
 '        from whole_totals',
 '       order by total desc',
 '       fetch first 1 rows only',
 ')',
 'union all',
 'select ''Most difficult hole (Over Par) [WIP]''',
-'     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
+'     , ''<a href="javascript:viewH2('''''' || course_mode || '''''','' || h || '')">'' ',
+'--     , ''<a href="'' || apex_page.get_url(p_page => 15, p_items => ''P15_COURSE_ID,P15_HOLE'', p_values => course_id || '','' || h) || ''">''',
 '      || course_code || '' - H'' || to_char(h) || ''</a>'' what',
 '     , total',
 'from ( ',
-'       select course_id, course_code, h, total',
+'       select course_mode, course_code, h, total',
 '        from whole_pars',
 '       order by total desc',
 '       fetch first 1 rows only',
@@ -38074,6 +38092,9 @@ wwv_flow_imp_page.create_report_columns(
 ,p_derived_column=>'N'
 ,p_include_in_export=>'Y'
 );
+end;
+/
+begin
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(94935947672531333853)
 ,p_plug_name=>'Breadcrumb'
@@ -38088,9 +38109,6 @@ wwv_flow_imp_page.create_page_plug(
 ,p_menu_template_id=>wwv_flow_imp.id(46986654645437702471)
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
-end;
-/
-begin
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(94935951006409333855)
 ,p_plug_name=>'Chart 2'
@@ -40260,13 +40278,14 @@ wwv_flow_imp_page.create_page(
 'td.t-Report-cell[headers~="WHO"] {',
 '    white-space: nowrap;',
 '}',
-''))
+'',
+'#holePreview img {max-width: 100%;}'))
 ,p_page_template_options=>'#DEFAULT#:ui-dialog--stretch'
 ,p_page_is_public_y_n=>'Y'
 ,p_protection_level=>'C'
 ,p_page_component_map=>'25'
 ,p_last_updated_by=>'JORGE@RIMBLAS.COM'
-,p_last_upd_yyyymmddhh24miss=>'20221126202400'
+,p_last_upd_yyyymmddhh24miss=>'20221127061952'
 );
 wwv_flow_imp_page.create_page_plug(
  p_id=>wwv_flow_imp.id(42125082501335925577)

@@ -51,13 +51,27 @@ javascript:
       }
     
       $s("P100_H", H);
-      console.log("Parent", $(el).parents(".t-Region"));
+      // console.log("Parent", $(el).parents(".t-Region"));
       if ( $(el).parents(".t-Region").hasClass("hard") ) {
         $s("P100_MODE", "H");
       }
       else {
         $s("P100_MODE", "E");
       }
+    
+      apex.region("holePreview").refresh();
+      $("#holePreview").popup("open");
+    }
+    
+    // view hole preview
+    function viewH2(mode, hole) {
+      if (!hole) {
+        // we do not have a Hole number, abort
+        return;
+      }
+    
+      $s("P100_H", hole);
+      $s("P100_MODE", mode);
     
       apex.region("holePreview").refresh();
       $("#holePreview").popup("open");
@@ -266,7 +280,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <img src="#URL#">
+      html-expression: '<img style="max-width: 100%" src="#URL#">'
 
     sorting: 
       sortable: true
@@ -355,7 +369,7 @@ regions:
     type: SQL Query
     sql-query: |
       with course_unpivot as (
-         select week, course_id, course_code, course_name, h, score, par
+         select week, course_id, course_code, course_mode, course_name, h, score, par
           from wmg_rounds_v
           unpivot (
             (score, par) for h in (
@@ -382,59 +396,63 @@ regions:
         where week = :P100_WEEK
       )
       , whole_totals as (
-            select course_id, course_code, h, sum(score) total
+            select course_id, course_code, course_mode, h, sum(score) total
               from course_unpivot
-             group by course_id, course_code, h
+             group by course_id, course_code, course_mode, h
       )
       , whole_pars as (
-            select course_id, course_code, h, sum(par) total
+            select course_id, course_code, course_mode, h, sum(par) total
               from course_unpivot
-             group by course_id, course_code, h
+             group by course_id, course_code, course_mode,  h
       )
       select 'Tournament Strokes' highlight, 'E + H' what, sum(total) total
         from whole_totals
       union all
       select 'Hole with most Aces'
-           , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
+      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_id, course_code, h, sum(score) total
+             select course_mode, course_code, h, sum(score) total
               from course_unpivot
              where score = 1
-             group by course_id, course_code, h
+             group by course_mode, course_code, h
              order by total desc
              fetch first 1 rows only
       )
       union all
       select 'Easiest hole (strokes)'
-           , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
+           -- || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_id, course_code, h, total
+             select course_mode, course_code, h, total
               from whole_totals
              order by total
              fetch first 1 rows only
       )
       union all
       select 'Most difficult hole (strokes)'
-           , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
+      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_id, course_code, h, total
+             select course_mode, course_code, h, total
               from whole_totals
              order by total desc
              fetch first 1 rows only
       )
       union all
       select 'Most difficult hole (Over Par) [WIP]'
-           , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
+      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_id, course_code, h, total
+             select course_mode, course_code, h, total
               from whole_pars
              order by total desc
              fetch first 1 rows only
