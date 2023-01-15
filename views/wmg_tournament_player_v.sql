@@ -27,6 +27,7 @@ select t.id                              tournament_id
      , ts.updated_by                     tournament_session_updated_by
      , tp.id                             tournament_player_id
      , tp.time_slot                      time_slot
+     , tp.room_no                        room_no
      , tp.created_on                     tournament_player_created
      , tp.created_by                     tournament_player_created_by
      , tp.updated_on                     tournament_player_updated
