@@ -68,6 +68,19 @@ css:
         white-space: nowrap;
     }
     
+    .courseStats th[id^='H'] {
+        cursor: help;
+    }
+    /* Hole preview bubble */
+    .courseStats th[id^='H']:before {
+        content: "\f0e5";
+        font-family: 'Font APEX Small'!important;
+        position: absolute;
+        top: 0;
+        padding: 0 0 0 2px;
+    }
+    
+    
     #holePreview img {max-width: 100%;}
 
 security: 
@@ -184,7 +197,7 @@ regions:
          and course_mode = 'H'
       )
       select 1 display_seq
-           , prepared_name
+           , code prepared_name
            , null data_filter
            , null course_mode
            , 'disabled' drill_class
@@ -1459,6 +1472,7 @@ regions:
         from WMG_ROUNDS_V
         where week = :P110_WEEK
           and player_id = :P110_PLAYER_ID
+      order by course_mode, course_code
     page-items-to-submit: 
     - P110_WEEK
     - P110_PLAYER_ID
@@ -1559,9 +1573,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      default-sequence: 1
-      direction: Ascending
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1623,7 +1635,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1655,7 +1667,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1690,7 +1702,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1725,7 +1737,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1760,7 +1772,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1795,7 +1807,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1830,7 +1842,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1865,7 +1877,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1900,7 +1912,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1935,7 +1947,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1970,7 +1982,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2005,7 +2017,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2040,7 +2052,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2075,7 +2087,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2110,7 +2122,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2145,7 +2157,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2180,7 +2192,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2215,7 +2227,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2250,7 +2262,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2285,7 +2297,7 @@ regions:
       highlight-words: 1
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2335,7 +2347,7 @@ regions:
       html-expression: '#ROUND_STROKES# /#UNDER_PAR#'
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2370,7 +2382,7 @@ regions:
          and course_mode = 'E'
       )
       select 1 display_seq
-           , prepared_name
+           , code prepared_name
            , null data_filter
            , null course_mode
            , 'disabled' drill_class
@@ -3798,6 +3810,35 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+buttons: 
+- # ====== Button: OK ==========================================
+  id: 40380892228454957240
+  identification: 
+    button-name: OK
+    label: Ok
+
+  layout: 
+    sequence: 10
+    region: Hole Preview # 42125082501335925577
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 dynamic-actions: 
 - # ====== Dynamic Action: Preview Hole ========================
   id: 21373110714061570678
@@ -3829,6 +3870,39 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Preview Hole # 21373110714061570678
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close Preview =======================
+  id: 40380892361648957241
+  identification: 
+    name: Close Preview
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: OK # 40380892228454957240
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 40380892491311957242
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Hole Preview # 42125082501335925577
+
+    execution: 
+      sequence: 10
+      event: Close Preview # 40380892361648957241
       fire-when-event-result-is: True
       fire-on-initialization: false
 

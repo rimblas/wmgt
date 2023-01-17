@@ -79,6 +79,23 @@ javascript:
       }, self);
     }
     
+    // view hole preview
+    function viewH(el) {
+      let hLabel, H;
+      let elID = el.id;
+      hLabel = elID.split("_")[1];
+      H = hLabel.split("H")[1];
+    
+      if (!H) {
+        // we do not have a Hole number, abort
+        return;
+      }
+    
+      $s("P9_H", H);
+    
+      apex.region("holePreview").refresh();
+      $("#holePreview").popup("open");
+    }
   execute-when-page-loads: |
     // this was an attempt to switch to number inputs on mobile devices, but it needs work, hence the XXX
     $(".XXXnumber_field[name^='P9_S'").each (function() {
@@ -102,6 +119,10 @@ css:
     #scoresRegion .t-Form-inputContainer {
      justify-content: center;
       margin-top: 5px;
+    }
+    
+    #scoresRegion .t-Form-fieldContainer {
+        cursor: help;
     }
     
     #scoresRegion,
@@ -307,6 +328,77 @@ regions:
       output-as: Text (escape special characters)
       show-line-breaks: true
 
+- # ====== Region: Hole Preview ================================
+  id: 50843967799661633692
+  identification: 
+    title: Hole Preview
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return '<img style="max-width: 100%" src="'
+      || apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => :P9_COURSE_ID || ',' || nvl(:P9_H,0)
+                             , p_plain_url => true)
+      || '">';
+      
+      
+    page-items-to-submit: 
+    - P9_COURSE_ID
+    - P9_H
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: holePreview
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |
+      old report:
+      /*
+      select :P9_H h
+           , apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => course_id || ',' || :P9_H
+                             , p_plain_url => true) url
+      from wmg_course_previews_v
+      where course_id = :P9_COURSE_ID
+        and hole = nvl(:P9_H,0)
+      */
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
 - # ====== Region: {scores} ====================================
   id: 109903996841783275161
   identification: 
@@ -409,6 +501,36 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P9_H =====================================
+  id: 24442381683789124332
+  identification: 
+    name: P9_H
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 110
+    region: Round # 46986753890975703559
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P9_ID ====================================
   id: 46986754163883703559
   identification: 
@@ -3273,6 +3395,38 @@ buttons:
     item: P9_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Preview Hole ========================
+  id: 24442381769108124333
+  identification: 
+    name: Preview Hole
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: '#scoresRegion .t-Form-fieldContainer'
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 24442381877578124334
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: viewH(this.triggeringElement);
+
+    execution: 
+      sequence: 10
+      event: Preview Hole # 24442381769108124333
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 46986771477810703569
   identification: 
@@ -3367,9 +3521,9 @@ dynamic-actions:
         var nextEl, e = this.triggeringElement.name;
         var n = parseInt(e.substr(4));
         
-        // console.log({n}, this.browserEvent);
+        console.log({n}, this.browserEvent, this.browserEvent.keyCode);
         
-        if (this.browserEvent.keyCode >= 48 && this.browserEvent.keyCode <= 57) {
+        if ((this.browserEvent.keyCode >= 48 && this.browserEvent.keyCode <= 57) || (this.browserEvent.keyCode >= 96 && this.browserEvent.keyCode <= 105)) {
             if (n >= 1 && n <= 18) {
                 if (n==18) {
                     n=1;

@@ -606,6 +606,36 @@ page-items:
   help: 
     help-text: Rember your Discord account with your current login.
 
+- # ====== Page Item: P30_PAGE_ID_PREV =========================
+  id: 24442383302420124349
+  identification: 
+    name: P30_PAGE_ID_PREV
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 55
+    region: Registration # 24735738743925583629
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P30_PLAYER_ID ============================
   id: 56479072097480745968
   identification: 
@@ -765,6 +795,11 @@ page-items:
     sql-query: |
       with tz_regions as (
       select sessiontimezone tz from dual union all
+      select 'UTC' tz from dual union all
+      select 'Asia/Dubai' tz from dual union all
+      select 'Europe/London' tz from dual union all
+      select 'Europe/Berlin' tz from dual union all
+      select 'Europe/Madrid' tz from dual union all
       select 'US/Central' tz from dual union all
       select 'US/Michigan' tz from dual union all
       select 'US/Eastern' tz from dual union all
@@ -861,9 +896,9 @@ buttons:
   behavior: 
     action: Redirect to Page in this Application
     target: 
-      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:1::'
-      page: 1 # Home
-      clear-cache: 1
+      url: 'f?p=&APP_ID.:&P30_PAGE_ID_PREV.:&SESSION.::&DEBUG.:&P30_PAGE_ID_PREV.::'
+      page: '&P30_PAGE_ID_PREV.'
+      clear-cache: '&P30_PAGE_ID_PREV.'
 
     warn-on-unsaved-changes: Do Not Check
 

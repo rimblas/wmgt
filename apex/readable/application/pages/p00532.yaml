@@ -40,6 +40,53 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Rooms =======================================
+  id: 40380891457618957232
+  identification: 
+    title: Rooms
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item = Value
+    item: P532_ROOMS_DEFINED_FLAG
+    value: Y
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Tournament Sessions =========================
   id: 56149524865750424863
   identification: 
@@ -134,6 +181,144 @@ regions:
       show-line-breaks: true
 
 page-items: 
+- # ====== Page Item: P532_ROOMS_DEFINED_BY ====================
+  id: 40380891529820957233
+  identification: 
+    name: P532_ROOMS_DEFINED_BY
+    type: Display Only
+
+  label: 
+    label: Rooms Set By
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 10
+    region: Rooms # 40380891457618957232
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 3
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: ROOMS_DEFINED_BY
+    data-type: VARCHAR2
+    query-only: true
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_ROOMS_DEFINED_FLAG ==================
+  id: 40380891611704957234
+  identification: 
+    name: P532_ROOMS_DEFINED_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 130
+    region: Tournament Sessions # 56149524865750424863
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: ROOMS_DEFINED_FLAG
+    data-type: VARCHAR2
+    query-only: true
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_ROOMS_DEFINED_ON ====================
+  id: 40380891710230957235
+  identification: 
+    name: P532_ROOMS_DEFINED_ON
+    type: Display Only
+
+  label: 
+    label: On
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 20
+    region: Rooms # 40380891457618957232
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 1
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+    format-mask: 'DD-MON-YYYY HH:MIPM'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Sessions # 56149524865750424863
+    column: ROOMS_DEFINED_ON
+    data-type: TIMESTAMP WITH TIME ZONE
+    query-only: true
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P532_EASY_COURSE_ID ======================
   id: 56015645078624939730
   identification: 

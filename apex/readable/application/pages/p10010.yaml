@@ -131,7 +131,9 @@ regions:
         from apex_application_build_options,
         (select apex_lang.message('APEX.FEATURE.CONFIG.ENABLED') enabled, apex_lang.message('APEX.FEATURE.CONFIG.DISABLED') disabled from dual) m
        where application_id = :APP_ID 
-       and feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
+       and (feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
+      or build_option_name = 'Feature: Handle Registrations'
+      )
 
   layout: 
     sequence: 10

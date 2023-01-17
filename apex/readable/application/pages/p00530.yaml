@@ -177,7 +177,7 @@ regions:
               or upper(x."CODE") like '%'||upper(:P530_SEARCH)||'%'
               or upper(x."NAME") like '%'||upper(:P530_SEARCH)||'%'
           )
-      order by decode(current_flag, 'Y', 1, 2), "CODE"
+      order by decode(current_flag, 'Y', 1, 2), "CODE" desc
     page-items-to-submit: 
     - P530_SEARCH
 

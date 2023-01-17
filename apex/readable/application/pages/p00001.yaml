@@ -20,7 +20,9 @@ navigation:
   warn-on-unsaved-changes: false
 
 css: 
-  inline: '#optionsRegion .t-HeroRegion-title {display: none;}'
+  inline: |
+    #optionsRegion .t-HeroRegion-title {display: none;}
+    [headers="PLAYERS"] {vertical-align: baseline;}
 
 security: 
   authentication: Page Is Public
@@ -45,6 +47,423 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Most h1n Last Season ========================
+  id: 24442381952412124335
+  identification: 
+    title: Most h1n Last Season
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.*, rank() over (order by r.hn1 desc) pos
+      from (
+          select substr(r.week,1,3) season
+           , p.account
+           , sum(r.score) hn1
+        from wmg_rounds_unpivot_mv r
+           , wmg_players p
+           , wmg_courses_v c
+      where r.player_id = p.id
+      and c.course_id = r.course_id
+      and r.score = 1
+       and r.week like 'S07%'
+      group by substr(r.week,1,3)
+      , p.account
+      order by 3 desc
+      ) r
+      
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 4
+    new-column: true
+    column-span: 3
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ACCOUNT =====================================
+    id: 24442382089838124336
+    identification: 
+      column-name: ACCOUNT
+      type: Plain Text
+
+    heading: 
+      heading: Account
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HN1 =========================================
+    id: 24442382324270124339
+    identification: 
+      column-name: HN1
+      type: Plain Text
+
+    heading: 
+      heading: Hn1
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SEASON ======================================
+    id: 24442382426151124340
+    identification: 
+      column-name: SEASON
+      type: Plain Text
+
+    heading: 
+      heading: Season
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 24442382956228124345
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Most h1n Last 2 Seasons =====================
+  id: 24442382516674124341
+  identification: 
+    title: Most h1n Last 2 Seasons
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.*, rank() over (order by r.hn1 desc) pos
+      from (
+      select p.account
+           , sum(r.score) hn1
+        from wmg_rounds_unpivot_mv r
+           , wmg_players p
+           , wmg_courses_v c
+      where r.player_id = p.id
+      and c.course_id = r.course_id
+      and r.score = 1
+      -- r.week like 'S07%'
+      group by p.account
+      order by 2 desc
+      ) r
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 3
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ACCOUNT =====================================
+    id: 24442382713644124343
+    identification: 
+      column-name: ACCOUNT
+      type: Plain Text
+
+    heading: 
+      heading: Account
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HN1 =========================================
+    id: 24442382851853124344
+    identification: 
+      column-name: HN1
+      type: Plain Text
+
+    heading: 
+      heading: Hn1
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 24442383064332124346
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Next Tournament =============================
   id: 24735740413470583646
   identification: 
@@ -58,6 +477,7 @@ regions:
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
       from wmg_tournament_sessions_v s
          , wmg_courses ec
          , wmg_courses hc
@@ -69,7 +489,7 @@ regions:
            where current_flag = 'Y'
       )
       and session_date+1 > sysdate
-      Order by session_date
+      order by session_date
       fetch first 1 rows only
 
   layout: 
@@ -155,7 +575,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 10
+      sequence: 20
       column-alignment: start
 
     accessibility: 
@@ -167,6 +587,8 @@ regions:
     column-formatting: 
       html-expression: |
         The next tournament session is on #SESSION_DATE#.<br>
+        <span class="u-vh">Registered Players: <b>#PLAYERS#</b><br></span>
+        <br>
         The courses are:<br>
         • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
         • #HARD_COURSE_CODE# - #HARD_COURSE#
@@ -193,7 +615,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 20
+      sequence: 40
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -208,7 +630,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 30
+      sequence: 50
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -223,7 +645,22 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 40
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 40380888303300957201
+    identification: 
+      column-name: PLAYERS
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -238,7 +675,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 50
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -315,6 +752,7 @@ regions:
     template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
+    - margin-bottom-md
     render-components: Above Content
 
   accessibility: 
@@ -379,14 +817,14 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  security: 
-    authorization-scheme: Administration Rights # 46986682652284702496
-
   server-cache: 
     caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Handle Registrations' # 40382414873609991608
 
   attributes: 
     appearance: 

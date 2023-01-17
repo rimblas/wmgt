@@ -59,6 +59,10 @@ create table wmg_tournament_sessions (
     week                           varchar2(10 char),
     open_registration_on           timestamp with time zone,
     close_registration_on          timestamp with time zone,
+    registration_closed_flag       varchar2(1),
+    rooms_defined_flag             varchar2(1),
+    rooms_defined_by               varchar2(60 char),
+    rooms_defined_on               timestamp with time zone,
     completed_ind                  varchar2(1 char) constraint wmg_tournament_completed_i_ck
                                    check (completed_ind in ('Y','N')) not null,
     completed_on                   timestamp with local time zone,

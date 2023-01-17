@@ -1,10 +1,10 @@
 ---
-# ====== Page: Rooms =========================================
+# ====== Page: Room Selections & Assignments =================
 id: 40
 identification: 
-  name: Rooms
+  name: Room Selections & Assignments
   alias: ROOMS
-  title: Rooms
+  title: Room Selections & Assignments
 
 appearance: 
   page-mode: Normal
@@ -27,7 +27,17 @@ navigation:
   warn-on-unsaved-changes: true
 
 css: 
-  inline: '.room h2 {font-weight: bold;}'
+  inline: |
+    .room h2 {font-weight: bold;}
+    mark.player {display: block;}
+    td#ROOM_NO {
+      border-bottom: 1px solid;
+      font-size: 1.7em;
+      font-weight: 800;
+      padding: 5px 0 3px 0px;
+    }
+    .t-Report-colHead {display: none;}
+    
 
 security: 
   authentication: Page Is Public
@@ -62,11 +72,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '00:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 29
@@ -105,28 +126,31 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
+      before-row: <hr>
+      column-break-format: 'WMGT #ROOM_NO#'
 
     advanced: 
       strip-html: false
@@ -150,6 +174,38 @@ regions:
 
     heading: 
       heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380888859088957206
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room
       alignment: center
 
     layout: 
@@ -184,11 +240,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '04:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 39
@@ -227,28 +294,29 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
 
     advanced: 
       strip-html: false
@@ -272,6 +340,38 @@ regions:
 
     heading: 
       heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380888962540957207
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
       alignment: center
 
     layout: 
@@ -306,11 +406,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '08:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 49
@@ -349,28 +460,29 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
 
     advanced: 
       strip-html: false
@@ -394,6 +506,38 @@ regions:
 
     heading: 
       heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380889042724957208
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
       alignment: center
 
     layout: 
@@ -428,11 +572,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '12:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 59
@@ -471,28 +626,29 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
 
     advanced: 
       strip-html: false
@@ -516,6 +672,38 @@ regions:
 
     heading: 
       heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380889154092957209
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
       alignment: center
 
     layout: 
@@ -550,11 +738,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '16:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 69
@@ -593,28 +792,29 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
 
     advanced: 
       strip-html: false
@@ -638,6 +838,38 @@ regions:
 
     heading: 
       heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380889236197957210
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
       alignment: center
 
     layout: 
@@ -672,11 +904,22 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account players
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '<mark class="player"><a href="' ||
+              apex_page.get_url(
+                  p_page => 30
+                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                , p_values => p.player_id || ',' || :APP_PAGE_ID
+              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
+             else
+               apex_escape.html(p.account)
+             end players
       from wmg_tournament_player_v p
       where p.time_slot = '20:00'
-      and p.tournament_session_id = 202
-      order by p.tournament_player_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by p.room_no, p.tournament_player_created
 
   layout: 
     sequence: 79
@@ -715,28 +958,29 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 200
 
     appearance: 
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
 
     advanced: 
       strip-html: false
@@ -763,6 +1007,38 @@ regions:
       alignment: center
 
     layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 40380889327231957211
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
+      alignment: center
+
+    layout: 
       sequence: 10
       column-alignment: start
 
@@ -783,6 +1059,94 @@ regions:
 
     security: 
       escape-special-characters: true
+
+- # ====== Region: {legend} ====================================
+  id: 24442383184650124347
+  identification: 
+    title: '{legend}'
+    type: Static Content
+
+  source: 
+    html-code: Remember all times are in UTC
+
+  layout: 
+    sequence: 89
+    parent-region: No Parent
+    position: REGION_POSITION_05
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Regions} ===================================
+  id: 40380889409532957212
+  identification: 
+    title: '{Regions}'
+    type: Region Display Selector
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      mode: Scroll Window
+      remember-last-selection: false
 
 - # ====== Region: Breadcrumb ==================================
   id: 58989708405516953663
@@ -829,4 +1193,609 @@ regions:
       breadcrumb-template: Breadcrumb # 46986654645437702471
       template-options: 
       - '#DEFAULT#'
+
+- # ====== Region: Next Tournament =============================
+  id: 65122274469799667171
+  identification: 
+    title: Next Tournament
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select s.session_date
+           , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
+           , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
+      from wmg_tournament_sessions_v s
+         , wmg_courses ec
+         , wmg_courses hc
+      where s.easy_course_id = ec.id (+)
+        and s.hard_course_id = hc.id (+)
+        and s.tournament_session_id = :G_CURRENT_SESSION_ID
+      /*
+        and s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and session_date+1 > sysdate
+      */
+      order by session_date
+      fetch first 1 rows only
+
+  layout: 
+    sequence: 5
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 4
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--info
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYERS =====================================
+    id: 40386535573272083537
+    identification: 
+      column-name: PLAYERS
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_CODE ============================
+    id: 40386535800417083538
+    identification: 
+      column-name: EASY_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_CODE ============================
+    id: 40386536296051083538
+    identification: 
+      column-name: HARD_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 40386536668892083538
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 40386537021954083539
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 40386537488549083539
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Session Date
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmDay, fmMonth fmDD, YYYY
+
+    column-formatting: 
+      html-expression: |
+        The next tournament session is on #SESSION_DATE#.<br>
+        Registered Players: <b>#PLAYERS#</b><br>
+        <br>
+        The courses are:<br>
+        • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
+        • #HARD_COURSE_CODE# - #HARD_COURSE#
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+buttons: 
+- # ====== Button: ASSIGN_ROOM =================================
+  id: 24442383289129124348
+  identification: 
+    button-name: ASSIGN_ROOM
+    label: Assign Rooms...
+
+  layout: 
+    sequence: 10
+    region: Breadcrumb # 58989708405516953663
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-refresh
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_00 =====================================
+  id: 40380889514731957213
+  identification: 
+    button-name: EDIT_00
+    label: 'Edit 00:00'
+
+  layout: 
+    sequence: 10
+    region: '00:00' # 7048711940745770706
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\00:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '00:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_04 =====================================
+  id: 40380890525334957223
+  identification: 
+    button-name: EDIT_04
+    label: 'Edit 04:00'
+
+  layout: 
+    sequence: 20
+    region: '04:00' # 7048712164052770708
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\04:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '04:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_08 =====================================
+  id: 40380890629784957224
+  identification: 
+    button-name: EDIT_08
+    label: 'Edit 08:00'
+
+  layout: 
+    sequence: 10
+    region: '08:00' # 7048712302867770710
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\08:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '08:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_12 =====================================
+  id: 40380890763465957225
+  identification: 
+    button-name: EDIT_12
+    label: 'Edit 12:00'
+
+  layout: 
+    sequence: 10
+    region: '12:00' # 7048712542392770712
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\12:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '12:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_16 =====================================
+  id: 40380890847370957226
+  identification: 
+    button-name: EDIT_16
+    label: 'Edit 16:00'
+
+  layout: 
+    sequence: 10
+    region: '16:00' # 7048712784431770714
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\16:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '16:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Button: EDIT_20 =====================================
+  id: 40380890926550957227
+  identification: 
+    button-name: EDIT_20
+    label: 'Edit 20:00'
+
+  layout: 
+    sequence: 10
+    region: '20:00' # 7048712900836770716
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\20:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '20:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
+dynamic-actions: 
+- # ====== Dynamic Action: Submit Room Assignments =============
+  id: 40380891077778957228
+  identification: 
+    name: Submit Room Assignments
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: ASSIGN_ROOM # 24442383289129124348
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Confirm =====================================
+    id: 40380891114372957229
+    identification: 
+      action: Confirm
+
+    settings: 
+      title: Room Assignments
+      message: Are you sure you want to run the room assignments?
+      style: Information
+      icon: fa-question
+      confirm-label: Yes, Assign Rooms
+      cancel-label: Not yet
+
+    execution: 
+      sequence: 10
+      event: Submit Room Assignments # 40380891077778957228
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    server-side-condition: 
+      type: No Rows returned
+      sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y'"
+
+  - # ====== Action: Submit Page =================================
+    id: 40380891252669957230
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: ASSIGN_ROOM
+      show-processing: true
+
+    execution: 
+      sequence: 30
+      event: Submit Room Assignments # 40380891077778957228
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Confirm =====================================
+    id: 40380891342828957231
+    identification: 
+      action: Confirm
+
+    settings: 
+      title: Redo Room Assignments
+      message: |
+        Rooms are already assigned.<br>
+        Are you absolutely sure you want to re-assign the rooms?
+      style: Danger
+      icon: fa-danger
+      confirm-label: Yes, Re-Assign Rooms
+      cancel-label: Nope
+
+    execution: 
+      sequence: 20
+      event: Submit Room Assignments # 40380891077778957228
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y'"
+
+computations: 
+- # ====== Computation: G_REGISTRATION_ID ======================
+  id: 24442383444393124350
+  identification: 
+    item-name: G_REGISTRATION_ID
+
+  execution: 
+    sequence: 20
+    point: After Header
+
+  computation: 
+    type: Static Value
+    static-value: 250
+
+- # ====== Computation: G_CURRENT_SESSION_ID ===================
+  id: 40380888782351957205
+  identification: 
+    item-name: G_CURRENT_SESSION_ID
+
+  execution: 
+    sequence: 10
+    point: After Header
+
+  computation: 
+    type: Static Value
+    static-value: 211
+
+processes: 
+- # ====== Process: New ========================================
+  id: 40817362645960412001
+  identification: 
+    name: New
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: 'wmg_util.assign_rooms(:G_CURRENT_SESSION_ID);'
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
 

@@ -16,6 +16,148 @@
     default-sort: CODE
     sort-direction: Ascending (Nulls Last)
 
+- # ====== List of Values: TIME_SLOTS ==========================
+  id: 40406023018752540107
+  identification: 
+    name: TIME_SLOTS
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with slots_n as (
+          select level n
+           from dual
+           connect by level <= 6
+          )
+      , slots as (
+          select slot || ':00' d, slot t
+          from (
+              select lpad( (n-1)*4,2,0) slot
+              from slots_n
+          )
+      )
+      select d, d r
+      from slots
+      order by t
+      
+
+  column-mapping: 
+    return: R
+    display: D
+    default-sort: Use Order By from Query
+
+- # ====== List of Values: WEEKS ===============================
+  id: 41195241672950310216
+  identification: 
+    name: WEEKS
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select week
+           , week || ': ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') week_info
+          , 'Season ' || prefix_tournament season, 'Week ' || round_num week_no, 'Courses ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') courses
+      from wmg_tournament_sessions_v
+      
+
+  column-mapping: 
+    return: WEEK
+    display: WEEK_INFO
+    default-sort: WEEK
+    sort-direction: Descending (Nulls Last)
+    group: SEASON
+    group-sort-direction: Descending (Nulls Last)
+
+  columns: 
+  - # ====== Column: WEEK ========================================
+    id: 41195308169463331443
+    identification: 
+      column-name: WEEK
+      show: false
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: SEASON ======================================
+    id: 41195308580162331443
+    identification: 
+      column-name: SEASON
+      show: true
+
+    heading: 
+      heading: Season
+
+    layout: 
+      sequence: 20
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: WEEK_NO =====================================
+    id: 41195308991708331443
+    identification: 
+      column-name: WEEK_NO
+      show: true
+
+    heading: 
+      heading: Week No
+
+    layout: 
+      sequence: 30
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: COURSES =====================================
+    id: 41195309378851331443
+    identification: 
+      column-name: COURSES
+      show: true
+
+    heading: 
+      heading: Courses
+
+    layout: 
+      sequence: 40
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: WEEK_INFO ===================================
+    id: 41195309719407331444
+    identification: 
+      column-name: WEEK_INFO
+      show: false
+
+    heading: 
+      heading: Week Info
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: false
+
 - # ====== List of Values: COURSES =============================
   id: 46986710799770702952
   identification: 

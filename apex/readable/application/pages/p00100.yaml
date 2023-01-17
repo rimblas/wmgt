@@ -91,6 +91,19 @@ css:
         margin: auto;
     }
     
+    .courseStats th[id^='H'] {
+        cursor: help;
+    }
+    
+    /* Hole preview bubble */
+    .courseStats th[id^='H']:before {
+        content: "\f0e5";
+        font-family: 'Font APEX Small'!important;
+        position: absolute;
+        top: 0;
+        padding: 0 0 0 2px;
+    }
+    
     .shadow--bottom {
       bottom: 0;
       background: -webkit-linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
@@ -176,12 +189,15 @@ regions:
     type: SQL Query
     sql-query: |
       select :P100_H h
+           , c.prepared_name course
            , apex_page.get_url(p_page => 16
                              , p_items=>'P16_C,P16_H'
-                             , p_values => course_id || ',' || :P100_H) url
-      from wmg_course_previews_v
-      where course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
-        and hole = nvl(:P100_H,0)
+                             , p_values => p.course_id || ',' || :P100_H) url
+      from wmg_course_previews_v p
+         , wmg_courses_v c
+      where p.course_id = c.course_id
+        and p.course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
+        and p.hole = nvl(:P100_H,0)
     page-items-to-submit: 
     - P100_EASY_ID
     - P100_HARD_ID
@@ -211,7 +227,7 @@ regions:
 
   advanced: 
     static-id: holePreview
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -280,7 +296,9 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<img style="max-width: 100%" src="#URL#">'
+      html-expression: |
+        #COURSE#: Hole # #H#
+        <img style="max-width: 100%" src="#URL#">
 
     sorting: 
       sortable: true
@@ -301,6 +319,21 @@ regions:
     id: 21350211390026136905
     identification: 
       column-name: URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE ======================================
+    id: 40380891827018957236
+    identification: 
+      column-name: COURSE
       type: Hidden Column
 
     layout: 
@@ -1052,7 +1085,7 @@ regions:
     - t-Region--removeHeader js-removeLandmark
     - t-Region--noUI
     - t-Region--scrollBody
-    render-components: Above Content
+    render-components: Below Content
 
   accessibility: 
     use-landmark: true
@@ -1614,7 +1647,7 @@ regions:
          and course_mode = 'H'
       )
       select 1 display_seq
-           , prepared_name
+           , code prepared_name
            , null data_filter
            , null course_mode
            , 'disabled' drill_class
@@ -1646,7 +1679,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 80 display_seq
-             , 'Beyond Triple Bogeys'
+             , 'Beyond Triple'
              , -4 data_filter
              , w.course_mode
              , 'disabled' drill_class
@@ -2824,7 +2857,7 @@ regions:
          and course_mode = 'E'
       )
       select 1 display_seq
-           , prepared_name
+           , code prepared_name
            , null data_filter
            , null course_mode
            , 'disabled' drill_class
@@ -2856,7 +2889,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 80 display_seq
-             , 'Beyond Triple Bogeys'
+             , 'Beyond Triple'
              , -4 data_filter
              , w.course_mode
              , 'disabled' drill_class
@@ -6026,15 +6059,19 @@ page-items:
   id: 47468027814670193295
   identification: 
     name: P100_WEEK
-    type: Select List
+    type: Popup LOV
 
   label: 
     label: Week
     alignment: Left
 
   settings: 
-    page-action-on-selection: Submit Page
-    execute-validations: false
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
 
   layout: 
     sequence: 10
@@ -6057,20 +6094,14 @@ page-items:
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
-    height: 1
+    width: 30
 
   validation: 
     value-required: false
 
   list-of-values: 
-    type: SQL Query
-    sql-query: |
-      select week d, week r
-      from (
-      select distinct week
-      from wmg_rounds_v
-      )
-      order by 1 desc
+    type: Shared Component
+    list-of-values: WEEKS # 41195241672950310216
     display-extra-values: true
     display-null-value: true
 
@@ -6407,6 +6438,34 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: OK ==========================================
+  id: 40380891939017957237
+  identification: 
+    button-name: OK
+    label: Ok
+
+  layout: 
+    sequence: 10
+    region: Hole Preview # 20752039964291361526
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 - # ====== Button: TOGGLE_PLAYERS ==============================
   id: 48035498632821866802
   identification: 
@@ -6434,6 +6493,45 @@ buttons:
   behavior: 
     action: Defined by Dynamic Action
     execute-validations: true
+
+- # ====== Button: VIEW_ALL ====================================
+  id: 48035499289198866808
+  identification: 
+    button-name: VIEW_ALL
+    label: View All Standings
+
+  layout: 
+    sequence: 10
+    region: Top Players # 49305650009120776601
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    - t-Button--simple
+    - t-Button--iconRight
+    - t-Button--padTop
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60:P60_WEEK:&P100_WEEK.'
+      page: 60 # View Results
+      clear-cache: 60
+      values: 
+        p60_week: '&P100_WEEK.'
+
+    warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Cumulative Chart ============
@@ -6515,6 +6613,73 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Preview Hole # 20752038891961361515
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close Preview =======================
+  id: 40380892014671957238
+  identification: 
+    name: Close Preview
+
+  execution: 
+    sequence: 110
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: OK # 40380891939017957237
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 40380892124638957239
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Hole Preview # 20752039964291361526
+
+    execution: 
+      sequence: 10
+      event: Close Preview # 40380892014671957238
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Reload on Change ====================
+  id: 40380892567701957243
+  identification: 
+    name: Reload on Change
+
+  execution: 
+    sequence: 120
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P100_WEEK
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 40380892640567957244
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: P100_WEEK
+      show-processing: true
+
+    execution: 
+      sequence: 10
+      event: Reload on Change # 40380892567701957243
       fire-when-event-result-is: True
       fire-on-initialization: false
 

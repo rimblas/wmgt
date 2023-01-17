@@ -25,13 +25,11 @@ regions:
       tzx=tzx===undefined?"America/Chicago":tzx;
       // var lLink = window.location.href.replace(/\#[a-z\_]+\#/gi, "").replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + '\u0026tz='+tzx;
       var lLink = window.location.href;
-      console.log({lLink});
       var a = lLink.match(/\#.+$/) || [""];  // extract a possible anchor
-      console.log({a});
       lLink = lLink.replace(/\#.+$/gi,"");
-      lLink = lLink.replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + '\u0026tz='+ encodeURIComponent( tzx) + a[0];
+      //lLink = lLink.replace(/\&tz\=[0-9]+\:[0-9]+/i, "") + '\u0026tz='+tzx + a[0];
+      lLink = lLink.replace(/\&tz\=[0-9]+\:[0-9]+/i, "") +  (lLink.includes('?') ? '\u0026tz=' : '\u003Ftz=')+tzx + a[0];
       
-      console.log({lLink});
       
       // reload page with new tz set
       window.location.href = lLink;
