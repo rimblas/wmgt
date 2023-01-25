@@ -616,6 +616,7 @@ page-items:
       where week= :P9_WEEK
       )
       )
+      order by case course_mode when 'E' then 1 else 2 end
     display-extra-values: true
     display-null-value: false
 

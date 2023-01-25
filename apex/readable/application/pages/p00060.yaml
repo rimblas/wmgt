@@ -17,9 +17,11 @@ navigation-menu:
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
 
 css: 
+  file-urls: 
+  - '#APP_FILES#css/week-lov#MIN#.css'
   inline: |
     .points {
         color: white;
@@ -1773,7 +1775,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 200
+      number-of-rows: 250
 
     appearance: 
       template-type: Theme
@@ -1792,6 +1794,9 @@ regions:
 
     performance: 
       lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
 
     break-formatting: 
       break-columns: No Break
@@ -2094,15 +2099,18 @@ page-items:
   id: 58990481012454704231
   identification: 
     name: P60_WEEK
-    type: Select List
+    type: Popup LOV
 
   label: 
     label: Week
     alignment: Left
 
   settings: 
-    page-action-on-selection: Submit Page
-    execute-validations: false
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: false
 
   layout: 
     sequence: 10
@@ -2125,20 +2133,14 @@ page-items:
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
-    height: 1
+    width: 30
 
   validation: 
     value-required: false
 
   list-of-values: 
-    type: SQL Query
-    sql-query: |
-      select week d, week r
-      from (
-      select distinct week
-      from wmg_rounds_v
-      )
-      order by 1 desc
+    type: Shared Component
+    list-of-values: WEEKS # 41195241672950310216
     display-extra-values: true
     display-null-value: true
 
@@ -2159,6 +2161,29 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~WEEK.">' +
+           '<div class="content-list">' +
+              '<div class="week-info-list">' +
+                 '<span class="season-name">~SEASON.</span>' +                    
+                 '<span class="week-name">Week ~WEEK_NO.</span>' +
+                 '<hr>' +
+                 '<div class="courses">' +
+                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
+                   '<span class="hard">~HARD_COURSE.</span>' +
+                 '</div>' +
+              '</div>' +
+           '</div>'+
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
 
 - # ====== Page Item: P60_TOTAL_PLAYERS ========================
   id: 58990481446347704231
@@ -2453,4 +2478,38 @@ dynamic-actions:
       event: Hoist Classes to TD # 2316753045247093645
       fire-when-event-result-is: True
       fire-on-initialization: true
+
+- # ====== Dynamic Action: Reload on Change ====================
+  id: 40380892837518957246
+  identification: 
+    name: Reload on Change
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P60_WEEK
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 40380892983400957247
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: REFRESH
+      show-processing: true
+
+    execution: 
+      sequence: 10
+      event: Reload on Change # 40380892837518957246
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 

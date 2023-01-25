@@ -34,6 +34,7 @@ select t.id                              tournament_id
      , tp.updated_by                     tournament_player_updated_by
      , p.id                              player_id
      , p.account                         account
+     , p.country_code                    country_code
   from wmg_tournaments t
      , wmg_tournament_sessions ts
      , wmg_tournament_players tp

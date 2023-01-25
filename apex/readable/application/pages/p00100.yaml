@@ -79,6 +79,8 @@ javascript:
     
 
 css: 
+  file-urls: 
+  - '#APP_FILES#css/week-lov#MIN#.css'
   inline: |
     span.drill {
         cursor: pointer;
@@ -94,6 +96,7 @@ css:
     .courseStats th[id^='H'] {
         cursor: help;
     }
+    
     
     /* Hole preview bubble */
     .courseStats th[id^='H']:before {
@@ -143,6 +146,19 @@ css:
     td.t-Report-cell[headers~="WHO"] {
         white-space: nowrap;
     }
+    
+    .courseStats .t-Region-headerIcon {
+    width: 60px;
+    height: 60px;
+    z-index: 1;
+    }
+    
+    .courseStats .t-Region-headerIcon:hover {
+      transform: scale(2.5);
+      transition: .25s transform;
+    }
+    
+    
 
 security: 
   authentication: Page Is Public
@@ -2014,6 +2030,7 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
+    - t-Region--showIcon
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
@@ -2028,6 +2045,17 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend"><span class="fa fa-comment-o" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole</div>
+      
+      <style>
+      .hard.courseStats .t-Region-headerIcon {
+      background-size: contain;
+      background: url("https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/&P100_HARD_CODE._FULL.JPG");
+      }
+      </style>
 
   server-cache: 
     caching: Disabled
@@ -3224,6 +3252,7 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
+    - t-Region--showIcon
     - t-Region--noBorder
     - t-Region--scrollBody
     css-classes: 
@@ -3238,6 +3267,17 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend"><span class="fa fa-comment-o" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole</div>
+      
+      <style>
+      .easy.courseStats .t-Region-headerIcon {
+      background-size: contain;
+      background: url("https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/&P100_EASY_CODE._FULL.JPG");
+      }
+      </style>
 
   server-cache: 
     caching: Disabled
@@ -6005,7 +6045,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 60
+    sequence: 100
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6035,7 +6075,67 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 90
+    sequence: 130
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_EASY_CODE ===========================
+  id: 40380893090636957248
+  identification: 
+    name: P100_EASY_CODE
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 80
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P100_HARD_CODE ===========================
+  id: 40380893118945957249
+  identification: 
+    name: P100_HARD_CODE
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 120
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6074,7 +6174,7 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: '{items}' # 47633176682467701309
     position: BODY
     alignment: Left
@@ -6082,7 +6182,7 @@ page-items:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 2
+    column-span: 3
     label-column-span: Page Template Default
     column-css-classes: 
     - col-xss-6
@@ -6123,6 +6223,29 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~WEEK.">' +
+           '<div class="content-list">' +
+              '<div class="week-info-list">' +
+                 '<span class="season-name">~SEASON.</span>' +                    
+                 '<span class="week-name">Week ~WEEK_NO.</span>' +
+                 '<hr>' +
+                 '<div class="courses">' +
+                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
+                   '<span class="hard">~HARD_COURSE.</span>' +
+                 '</div>' +
+              '</div>' +
+           '</div>'+
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
+
 - # ====== Page Item: P100_MODE ================================
   id: 47486929972814033347
   identification: 
@@ -6133,7 +6256,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 40
+    sequence: 60
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6163,7 +6286,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 30
+    sequence: 50
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6200,7 +6323,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 20
+    sequence: 40
     region: '{items}' # 47633176682467701309
     position: BODY
     alignment: Left
@@ -6257,7 +6380,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 50
+    sequence: 70
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6265,17 +6388,8 @@ page-items:
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: SQL Query (return single value)
-    sql-query: |
-      select name
-          from wmg_courses_v
-         where course_id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P100_WEEK 
-          )
-         and course_mode = 'E'
-    used: Always, replacing any existing value in session state
+    type: Null
+    used: Only when current value in session state is null
 
   default: 
     type: Static
@@ -6300,7 +6414,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 80
+    sequence: 110
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6308,17 +6422,8 @@ page-items:
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: SQL Query (return single value)
-    sql-query: |
-      select name
-          from wmg_courses_v
-         where course_id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P100_WEEK 
-          )
-         and course_mode = 'H'
-    used: Always, replacing any existing value in session state
+    type: Null
+    used: Only when current value in session state is null
 
   default: 
     type: Static
@@ -6683,6 +6788,43 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Apply Style so we can see the course 
+  id: 40380893201461957250
+  identification: 
+    name: Apply Style so we can see the course image
+
+  execution: 
+    sequence: 130
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: '&P100_EASY. - Stats' # 94454808801107282731
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Style ===================================
+    id: 42089617985163907101
+    identification: 
+      action: Set Style
+
+    settings: 
+      style-name: background-size
+      value: contain
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .courseStats .t-Region-headerIcon
+
+    execution: 
+      sequence: 10
+      event: Apply Style so we can see the course image # 40380893201461957250
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Nested Report Result Drill ==========
   id: 47486927373642033321
   identification: 
@@ -7022,6 +7164,9 @@ dynamic-actions:
     event-scope: Dynamic
     type: Immediate
 
+  server-side-condition: 
+    type: Never
+
   security: 
     authorization-scheme: Administration Rights # 46986682652284702496
 
@@ -7269,6 +7414,21 @@ processes:
           , :P100_HARD_ID
       from wmg_tournament_sessions_v s
       where s.week = :P100_WEEK;
+      
+      select name
+           , code
+        into :P100_EASY
+           , :P100_EASY_CODE
+          from wmg_courses_v
+         where course_id = :P100_EASY_ID;
+      
+      select name
+           , code
+        into :P100_HARD
+           , :P100_HARD_CODE
+          from wmg_courses_v
+         where course_id = :P100_HARD_ID;
+         
 
   execution: 
     sequence: 20

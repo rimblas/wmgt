@@ -58,7 +58,10 @@
     sql-query: |
       select week
            , week || ': ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') week_info
-          , 'Season ' || prefix_tournament season, 'Week ' || round_num week_no, 'Courses ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') courses
+          , prefix_tournament season
+          , round_num week_no
+          , nvl(easy_course_code, 'TBD') easy_course
+          , nvl(hard_course_code, 'TBD') hard_course
       from wmg_tournament_sessions_v
       
 
@@ -122,24 +125,6 @@
     advanced: 
       searchable: true
 
-  - # ====== Column: COURSES =====================================
-    id: 41195309378851331443
-    identification: 
-      column-name: COURSES
-      show: true
-
-    heading: 
-      heading: Courses
-
-    layout: 
-      sequence: 40
-
-    source: 
-      data-type: VARCHAR2
-
-    advanced: 
-      searchable: true
-
   - # ====== Column: WEEK_INFO ===================================
     id: 41195309719407331444
     identification: 
@@ -157,6 +142,42 @@
 
     advanced: 
       searchable: false
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 41628811916895186246
+    identification: 
+      column-name: EASY_COURSE
+      show: true
+
+    heading: 
+      heading: Easy Course
+
+    layout: 
+      sequence: 40
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 41628812492107186246
+    identification: 
+      column-name: HARD_COURSE
+      show: true
+
+    heading: 
+      heading: Hard Course
+
+    layout: 
+      sequence: 50
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
 
 - # ====== List of Values: COURSES =============================
   id: 46986710799770702952

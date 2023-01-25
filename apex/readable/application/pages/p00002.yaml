@@ -19,6 +19,19 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  inline: |
+    .courseIcon {
+    width: 120px;
+    height: 120px;
+    }
+    
+    .courseIcon:hover {
+      transform: scale(2.5);
+      transition: .25s transform;
+    }
+    
+
 security: 
   authentication: Page Is Public
 
@@ -69,6 +82,7 @@ regions:
              NAME,
              COURSE_MODE
            , course_par
+           , 'https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/' || code || '_FULL.JPG' icon
         from WMG_COURSES_V
 
   layout: 
@@ -185,7 +199,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 14
+        sequence: 42
         column-alignment: end
 
       accessibility: 
@@ -208,6 +222,50 @@ regions:
 
       security: 
         escape-special-characters: true
+
+    - # ====== Column: ICON ========================================
+      id: 42089618036012907102
+      identification: 
+        column-name: ICON
+        type: Plain Text
+
+      heading: 
+        heading: Icon
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 12
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-formatting: 
+        html-expression: <img class="courseIcon" src="#ICON#" loading="lazy">
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: false
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+      configuration: 
+        build-option: AWS_IMAGES # 42096263744747372319
 
     - # ====== Column: ID ==========================================
       id: 46986704612763702660
@@ -276,7 +334,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 3
+        sequence: 22
         column-alignment: start
 
       accessibility: 
@@ -324,7 +382,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 4
+        sequence: 32
         column-alignment: center
 
       accessibility: 

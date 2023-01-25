@@ -21,8 +21,22 @@ navigation:
 
 css: 
   inline: |
+    .t-HeroRegion-icon {background-color: whitesmoke;}
+    
     #optionsRegion .t-HeroRegion-title {display: none;}
     [headers="PLAYERS"] {vertical-align: baseline;}
+    
+    .courseIcon {
+    width: 240px;
+    height: 240px;
+    }
+    
+    .courseIcon:hover {
+      transform: scale(1.2);
+      transition: .25s transform;
+    }
+    .nextCourses .name {font-weight: 700; font-size: 1.1em;}
+    
 
 security: 
   authentication: Page Is Public
@@ -47,10 +61,10 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: Most h1n Last Season ========================
+- # ====== Region: Most h1n Current Season =====================
   id: 24442381952412124335
   identification: 
-    title: Most h1n Last Season
+    title: Most h1n Current Season
     type: Classic Report
 
   source: 
@@ -68,7 +82,7 @@ regions:
       where r.player_id = p.id
       and c.course_id = r.course_id
       and r.score = 1
-       and r.week like 'S07%'
+       and r.week like 'S08%'
       group by substr(r.week,1,3)
       , p.account
       order by 3 desc
@@ -273,10 +287,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Most h1n Last 2 Seasons =====================
+- # ====== Region: Most h1n Last 3 Seasons =====================
   id: 24442382516674124341
   identification: 
-    title: Most h1n Last 2 Seasons
+    title: Most h1n Last 3 Seasons
     type: Classic Report
 
   source: 
@@ -500,7 +514,7 @@ regions:
     start-new-row: true
     column: 4
     new-column: true
-    column-span: 6
+    column-span: 7
 
   appearance: 
     template: Alert # 46986514536301702411
@@ -536,6 +550,7 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--noBorders
@@ -590,8 +605,17 @@ regions:
         <span class="u-vh">Registered Players: <b>#PLAYERS#</b><br></span>
         <br>
         The courses are:<br>
-        • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
-        • #HARD_COURSE_CODE# - #HARD_COURSE#
+        
+        <div class="row nextCourses">
+            <div class="col easy">
+                <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
+                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy">
+            </div>
+            <div class="col hard">
+                <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
+                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy">
+            </div>
+        </div>
 
     sorting: 
       sortable: false
@@ -708,7 +732,7 @@ regions:
     render-components: Above Content
 
   image: 
-    file-url: '#APP_FILES#icons/app-icon-512.png'
+    file-url: '#APP_FILES#img/26f3.svg'
 
   accessibility: 
     use-landmark: true
@@ -723,6 +747,11 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |
+      //emoji-css.afeld.me/emoji.css
+      <i class="em em-golfer" aria-role="presentation" aria-label="Mini Golf"></i>
 
   attributes: 
     settings: 
