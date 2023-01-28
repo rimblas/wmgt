@@ -1,4 +1,5 @@
 create or replace view wmg_courses_v 
+as
 select 
     c.id                                         course_id,
     c.code                                       code,

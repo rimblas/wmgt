@@ -238,7 +238,7 @@ begin
 
   end loop; 
 
- log('.. Stamp room assignments', l_scope);
+  log('.. Stamp room assignments', l_scope);
   update wmg_tournament_sessions
      set rooms_defined_flag = 'Y'
        , rooms_defined_by   = coalesce(sys_context('APEX$SESSION','APP_USER'),user) 
