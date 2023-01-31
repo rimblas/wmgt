@@ -28,7 +28,10 @@ css:
         font-weight: 700;
     }
     .top {
-        background-color: hsl(220deg 100% 40%);
+        background-color: hsl(220deg 100% 39%);
+    }
+    .p10 {
+        background-color: hsl(220deg 100% 43%);
     }
     .p9 {
         background-color: hsl(220deg 100% 48%);
@@ -1575,52 +1578,6 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Breadcrumb ==================================
-  id: 58989730356100961600
-  identification: 
-    title: Breadcrumb
-    type: Breadcrumb
-
-  source: 
-    breadcrumb: Breadcrumb # 46986483063942702397
-
-  layout: 
-    sequence: 10
-    parent-region: No Parent
-    position: REGION_POSITION_01
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Title Bar # 46986592559371702443
-    template-options: 
-    - '#DEFAULT#'
-    - t-BreadcrumbRegion--useBreadcrumbTitle
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    appearance: 
-      breadcrumb-template: Breadcrumb # 46986654645437702471
-      template-options: 
-      - '#DEFAULT#'
-
 - # ====== Region: {items} =====================================
   id: 106623657478402405520
   identification: 
@@ -2396,6 +2353,42 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: ABOUT =======================================
+  id: 207034433006404
+  identification: 
+    button-name: ABOUT
+    label: About the points
+
+  layout: 
+    sequence: 10
+    region: Results # 108296151279429485789
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--mobileHideLabel
+    - t-Button--iconRight
+    icon: fa-question-circle-o
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:20:P20_NOTE_TYPE:POINTS'
+      page: 20 # About/Rules
+      clear-cache: 20
+      values: 
+        p20_note_type: POINTS
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: DOWNLOAD ====================================
   id: 24442381510936124331
   identification: 
@@ -2411,7 +2404,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471

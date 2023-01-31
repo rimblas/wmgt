@@ -6,6 +6,33 @@
     type: Static Values
 
   entries: 
+  - # ====== Entry: Course Analysis ==============================
+    id: 431516303732995
+    label: 
+      label: Course Analysis
+
+    icon: 
+      image/icon-css-classes: fa-dashboard
+
+    layout: 
+      sequence: 110
+
+    is-current: 
+      type: Pages
+      pages: 
+      - 200
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:200:&APP_SESSION.::&DEBUG.:::'
+        page: 200 # Course Analysis
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
   - # ====== Entry: Home =========================================
     id: 46986694444635702575
     label: 
@@ -631,7 +658,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     is-current: 
       type: Target Page
@@ -656,7 +683,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 30
+      sequence: 35
 
     is-current: 
       type: Target Page
@@ -692,7 +719,7 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:'
+        url: 'f?p=&APP_ID.:6:&SESSION.::&DEBUG.::::'
         page: 6 # Players
 
     click-counting: 
@@ -700,6 +727,10 @@
 
     user-defined-attributes: 
       translatable: false
+
+    server-side-condition: 
+      type: Current Page != Page
+      page: 1
 
   - # ====== Entry: Rounds =======================================
     id: 46986885132664703655
@@ -710,7 +741,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 50
+      sequence: 20
 
     is-current: 
       type: Target Page

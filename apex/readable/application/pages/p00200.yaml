@@ -1,0 +1,1576 @@
+---
+# ====== Page: Course Analysis ===============================
+id: 200
+identification: 
+  name: Course Analysis
+  alias: COURSE-ANALYSIS
+  title: Course Analysis
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+javascript: 
+  function-and-global-variable-declaration: |
+    function drill(pScore) {
+        $s("P200_S", pScore);
+        apex.region("playersDrilldown").refresh();
+        openModal("playersDrilldown");
+    }
+
+css: 
+  inline: '#P200_H_DISPLAY {width: 6rem;}'
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Application Default
+  page-access-protection: Unrestricted
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: How Hard is this Course? ====================
+  id: 207295142006407
+  identification: 
+    title: How Hard is this Course?
+    type: Chart
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: courseStatsChart
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 207414929006408
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Yes
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: false
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Std Dev =====================================
+      id: 207575687006409
+      identification: 
+        name: Std Dev
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select course_id, course_code, h, difficulty
+          from  wmg_course_stats_v
+          where course_id = :P200_COURSE_ID
+          
+        page-items-to-submit: 
+        - P200_COURSE_ID
+
+      column-mapping: 
+        label: H
+        value: DIFFICULTY
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_H", #H#)'
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 20
+
+      advanced: 
+        static-id: stddev
+
+    - # ====== Series: Strokes =====================================
+      id: 465755643830697
+      identification: 
+        name: Strokes
+
+      execution: 
+        sequence: 20
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select course_id, course_code, h, score_avg
+          from  wmg_course_stats_v
+          where course_id = :P200_COURSE_ID
+          
+        page-items-to-submit: 
+        - P200_COURSE_ID
+
+      column-mapping: 
+        label: H
+        value: SCORE_AVG
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_H", #H#)'
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 20
+
+      advanced: 
+        static-id: strokes
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 207636250006410
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 207721060006411
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+- # ====== Region: All Courses by Difficulty ===================
+  id: 464380989830684
+  identification: 
+    title: All Courses by Difficulty
+    type: Chart
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 464545727830685
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Yes
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: false
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: false
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 464615058830686
+      identification: 
+        name: Series 1
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select course_id, course_name, course_code label, difficulty value
+          , course_name || '<br>Difficulty ' || difficulty tooltip
+          from ( 
+              select s.course_id, c.name course_name, s.course_code, sum(s.score_avg) difficulty
+              from  wmg_course_stats_v s
+                  , wmg_courses c
+              where s.course_id = c.id
+              group by s.course_id, c.name, s.course_code
+          )
+          order by value
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+        custom-tooltip: TOOLTIP
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_COURSE_ID", "#COURSE_ID#")'
+
+      label: 
+        show: true
+        position: Automatic
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 464717919830687
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 464850185830688
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+- # ====== Region: How Hard is the Hole (Stroke Histogram)? ====
+  id: 464947577830689
+  identification: 
+    title: How Hard is the Hole (Stroke Histogram)?
+    type: Chart
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 465054727830690
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Yes
+      behavior: Smooth
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: false
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: false
+      show-value: true
+
+    legend: 
+      show: true
+      position: Automatic
+      hide-and-show-behavior: Rescale
+
+    messages: 
+      when-no-data-found: ← Select a hole from the course
+
+    series: 
+    - # ====== Series: Strokes =====================================
+      id: 465131210830691
+      identification: 
+        name: Strokes
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select score, count(*) value
+          from  wmg_rounds_unpivot_mv
+          where course_id = :P200_COURSE_ID
+            and h = :P200_H
+          group  by score
+          order by score
+        page-items-to-submit: 
+        - P200_COURSE_ID
+        - P200_H
+
+      column-mapping: 
+        label: SCORE
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:drill(#SCORE#);'
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 200
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 465213787830692
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 465343607830693
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Players =====================================
+  id: 467170211830711
+  identification: 
+    title: Players
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select p.account, u.score, count(*) times
+      from  wmg_rounds_unpivot_mv u
+         , wmg_players p
+      where u.player_id = p.id
+        and u.course_id = :P200_COURSE_ID
+        and u.h = :P200_H
+        and u.score = :P200_S
+      group by p.account, u.score
+      order by p.account
+    page-items-to-submit: 
+    - P200_COURSE_ID
+    - P200_H
+    - P200_S
+
+  layout: 
+    sequence: 60
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Dialog # 46986560960549702430
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: playersDrilldown
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: SCORE =======================================
+    id: 467243479830712
+    identification: 
+      column-name: SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Score
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 467411163830714
+    identification: 
+      column-name: ACCOUNT
+      type: Plain Text
+
+    heading: 
+      heading: Account
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TIMES =======================================
+    id: 467665132830716
+    identification: 
+      column-name: TIMES
+      type: Plain Text
+
+    heading: 
+      heading: Times
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Hole Preview ================================
+  id: 20761221369842642927
+  identification: 
+    title: Hole Preview
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select :P200_H h
+           , c.prepared_name course
+           , apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => p.course_id || ',' || :P200_H) url
+      from wmg_course_previews_v p
+         , wmg_courses_v c
+      where 1 = 1 
+        and p.course_id = c.course_id
+        and c.course_id = :P200_COURSE_ID
+        and p.hole = nvl(:P200_H,0)
+    page-items-to-submit: 
+    - P200_COURSE_ID
+    - P200_H
+
+  layout: 
+    sequence: 70
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-autoheight
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: holePreview
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |2
+           , 'https://apex.oracle.com/pls/apex/jrimblas/wmgt/preview?c=' || c.code || '&h=' || :P100_H url
+      
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No preview available yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: H ===========================================
+    id: 660848501469486
+    identification: 
+      column-name: H
+      type: Plain Text
+
+    heading: 
+      heading: H
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        #COURSE#: Hole # #H#
+        <img style="max-width: 100%" src="#URL#">
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE ======================================
+    id: 661275692469486
+    identification: 
+      column-name: COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: URL =========================================
+    id: 661635113469487
+    identification: 
+      column-name: URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
+- # ====== Page Item: P200_COURSE_ID ===========================
+  id: 464017776830680
+  identification: 
+    name: P200_COURSE_ID
+    type: Popup LOV
+
+  label: 
+    label: Course
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: How Hard is this Course? # 207295142006407
+    position: NEXT
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: COURSES # 46986710799770702952
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P200_EMPTY ===============================
+  id: 464331061830683
+  identification: 
+    name: P200_EMPTY
+    type: Display Only
+
+  label: 
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 10
+    region: All Courses by Difficulty # 464380989830684
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Select a course below to see their difficulty per hole
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P200_H ===================================
+  id: 466798668830708
+  identification: 
+    name: P200_H
+    type: Display Only
+
+  label: 
+    label: Hole
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 10
+    region: How Hard is the Hole (Stroke Histogram)? # 464947577830689
+    position: PREVIOUS
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P200_S ===================================
+  id: 467501990830715
+  identification: 
+    name: P200_S
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: Players # 467170211830711
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: SHOW_STROKES ================================
+  id: 465811123830698
+  identification: 
+    button-name: SHOW_STROKES
+    label: By Strokes
+
+  layout: 
+    sequence: 20
+    region: How Hard is this Course? # 207295142006407
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--pillStart
+    icon: fa-number-1-o
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: SHOW_SCORE ==================================
+  id: 465919254830699
+  identification: 
+    button-name: SHOW_SCORE
+    label: By Score
+
+  layout: 
+    sequence: 30
+    region: How Hard is this Course? # 207295142006407
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--pillEnd
+    icon: fa-soccer-ball-o
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: PREVIEW =====================================
+  id: 467770013830717
+  identification: 
+    button-name: PREVIEW
+    label: Hole Preview
+
+  layout: 
+    sequence: 20
+    region: How Hard is the Hole (Stroke Histogram)? # 464947577830689
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--pillStart
+    icon: fa-comment-o
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: OK ==========================================
+  id: 662047600469489
+  identification: 
+    button-name: OK
+    label: Ok
+
+  layout: 
+    sequence: 10
+    region: Hole Preview # 20761221369842642927
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: CLOSE =======================================
+  id: 664716276503473
+  identification: 
+    button-name: CLOSE
+    label: Ok
+
+  layout: 
+    sequence: 20
+    region: Players # 467170211830711
+    position: CLOSE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh on Change ===================
+  id: 464113265830681
+  identification: 
+    name: Refresh on Change
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P200_COURSE_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 464200889830682
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: How Hard is this Course? # 207295142006407
+
+    execution: 
+      sequence: 10
+      event: Refresh on Change # 464113265830681
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 465423643830694
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: How Hard is the Hole (Stroke Histogram)? # 464947577830689
+
+    execution: 
+      sequence: 20
+      event: Refresh on Change # 464113265830681
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: New =================================
+  id: 465983898830700
+  identification: 
+    name: New
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: SHOW_STROKES # 465811123830698
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 466114922830701
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: 'apex.region("courseStatsChart").widget().ojChart({hiddenCategories: ["stddev"]});'
+
+    execution: 
+      sequence: 10
+      event: New # 465983898830700
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Show Std ============================
+  id: 466176837830702
+  identification: 
+    name: Show Std
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: SHOW_SCORE # 465919254830699
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 466333564830703
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: 'apex.region("courseStatsChart").widget().ojChart({hiddenCategories: ["strokes"]});'
+
+    execution: 
+      sequence: 10
+      event: Show Std # 466176837830702
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Default to Score Avg ================
+  id: 466675667830706
+  identification: 
+    name: Default to Score Avg
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: How Hard is this Course? # 207295142006407
+
+  execution: 
+    event-scope: Once
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 466697366830707
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: 'apex.region("courseStatsChart").widget().ojChart({hiddenCategories: ["stddev"]});'
+
+    execution: 
+      sequence: 10
+      event: Default to Score Avg # 466675667830706
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Hole Stats ==================
+  id: 466973325830709
+  identification: 
+    name: Refresh Hole Stats
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P200_H
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 467025458830710
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: How Hard is the Hole (Stroke Histogram)? # 464947577830689
+
+    execution: 
+      sequence: 10
+      event: Refresh Hole Stats # 466973325830709
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Hole Preview ========================
+  id: 467789249830718
+  identification: 
+    name: Hole Preview
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: PREVIEW # 467770013830717
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Open Region =================================
+    id: 467897243830719
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Hole Preview # 20761221369842642927
+
+    execution: 
+      sequence: 10
+      event: Hole Preview # 467789249830718
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 468001056830720
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Hole Preview # 20761221369842642927
+
+    execution: 
+      sequence: 20
+      event: Hole Preview # 467789249830718
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close Preview =======================
+  id: 468155522830721
+  identification: 
+    name: Close Preview
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: OK # 662047600469489
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 664594988503472
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Hole Preview # 20761221369842642927
+
+    execution: 
+      sequence: 10
+      event: Close Preview # 468155522830721
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close Player Drill Down =============
+  id: 664841419503474
+  identification: 
+    name: Close Player Drill Down
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CLOSE # 664716276503473
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 664909201503475
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Players # 467170211830711
+
+    execution: 
+      sequence: 10
+      event: Close Player Drill Down # 664841419503474
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

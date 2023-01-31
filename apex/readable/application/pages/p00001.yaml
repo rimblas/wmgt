@@ -35,6 +35,7 @@ css:
       transform: scale(1.2);
       transition: .25s transform;
     }
+    .nextCourses {text-align: center;}
     .nextCourses .name {font-weight: 700; font-size: 1.1em;}
     
 
@@ -90,12 +91,12 @@ regions:
       
 
   layout: 
-    sequence: 40
+    sequence: 30
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
-    column: 4
+    start-new-row: false
+    column: Automatic
     new-column: true
     column-span: 3
 
@@ -123,7 +124,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 15
+      number-of-rows: 10
 
     appearance: 
       template-type: Theme
@@ -287,10 +288,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Most h1n Last 3 Seasons =====================
+- # ====== Region: Most h1n Over the last &P1_TOTAL_WEEKS. weeks
   id: 24442382516674124341
   identification: 
-    title: Most h1n Last 3 Seasons
+    title: Most h1n Over the last &P1_TOTAL_WEEKS. weeks
     type: Classic Report
 
   source: 
@@ -313,12 +314,12 @@ regions:
       ) r
 
   layout: 
-    sequence: 50
+    sequence: 59
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: false
-    column: Automatic
+    start-new-row: true
+    column: 10
     new-column: true
     column-span: 3
 
@@ -346,7 +347,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 15
+      number-of-rows: 10
 
     appearance: 
       template-type: Theme
@@ -490,7 +491,11 @@ regions:
     sql-query: |
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
+           , (select min(r.under_par) from  wmg_rounds_v r where r.course_id = s.easy_course_id) easy_record
+           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.easy_course_id) easy_stats_url
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
+           , (select min(r.under_par) from  wmg_rounds_v r where r.course_id = s.hard_course_id) hard_record
+           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
            , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
       from wmg_tournament_sessions_v s
          , wmg_courses ec
@@ -507,14 +512,14 @@ regions:
       fetch first 1 rows only
 
   layout: 
-    sequence: 10
+    sequence: 19
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
-    column: 4
+    start-new-row: false
+    column: Automatic
     new-column: true
-    column-span: 7
+    column-span: Automatic
 
   appearance: 
     template: Alert # 46986514536301702411
@@ -522,7 +527,7 @@ regions:
     - '#DEFAULT#'
     - t-Alert--colorBG
     - t-Alert--horizontal
-    - t-Alert--defaultIcons
+    - t-Alert--noIcon
     - t-Alert--info
     render-components: Above Content
 
@@ -543,7 +548,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 15
+      number-of-rows: 10
 
     appearance: 
       template-type: Theme
@@ -579,6 +584,66 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: EASY_RECORD =================================
+    id: 206705189006401
+    identification: 
+      column-name: EASY_RECORD
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_RECORD =================================
+    id: 206794835006402
+    identification: 
+      column-name: HARD_RECORD
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_STATS_URL ==============================
+    id: 465571518830695
+    identification: 
+      column-name: EASY_STATS_URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_STATS_URL ==============================
+    id: 465603171830696
+    identification: 
+      column-name: HARD_STATS_URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 120
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: SESSION_DATE ================================
     id: 24735740504360583647
     identification: 
@@ -609,11 +674,15 @@ regions:
         <div class="row nextCourses">
             <div class="col easy">
                 <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
-                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy">
+                <div class="score">Best Score #EASY_RECORD#</div>
+                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
+                <div class="info">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
             </div>
             <div class="col hard">
                 <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
-                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy">
+                <div class="score">Best Score #HARD_RECORD#</div>
+                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
+                <div class="info">How hard is #HARD_COURSE_CODE#? <a href="#HARD_STATS_URL#">See here</a></div>
             </div>
         </div>
 
@@ -699,7 +768,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 70
+      sequence: 90
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -727,6 +796,11 @@ regions:
     template: Hero # 46986552355884702427
     template-options: 
     - '#DEFAULT#'
+    - t-HeroRegion--noPadding
+    - t-HeroRegion--headingFontAlt
+    - margin-top-sm
+    - margin-bottom-sm
+    - margin-left-sm
     css-classes: 
     - hidden-sm-down
     render-components: Above Content
@@ -741,6 +815,9 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Never
 
   server-cache: 
     caching: Disabled
@@ -768,14 +845,14 @@ regions:
     list: Page Navigation # 46986883504791703654
 
   layout: 
-    sequence: 30
+    sequence: 9
     parent-region: No Parent
     position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 2
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
@@ -804,9 +881,9 @@ regions:
       template-options: 
       - '#DEFAULT#'
       - u-colors
-      - t-Cards--featured t-Cards--block force-fa-lg
+      - t-Cards--compact
       - t-Cards--displayIcons
-      - t-Cards--4cols
+      - t-Cards--stacked
       - t-Cards--hideBody
       - t-Cards--animColorFill
 
@@ -820,7 +897,7 @@ regions:
     list: Tournament Options # 55884590206608414057
 
   layout: 
-    sequence: 20
+    sequence: 40
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -868,7 +945,54 @@ regions:
       - t-Cards--hideBody
       - t-Cards--animRaiseCard
 
+page-items: 
+- # ====== Page Item: P1_TOTAL_WEEKS ===========================
+  id: 204063454006374
+  identification: 
+    name: P1_TOTAL_WEEKS
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Most h1n Over the last &P1_TOTAL_WEEKS. weeks # 24442382516674124341
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 computations: 
+- # ====== Computation: P1_TOTAL_WEEKS =========================
+  id: 204167332006375
+  identification: 
+    item-name: P1_TOTAL_WEEKS
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(distinct week)
+      from  wmg_rounds
+      
+
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
   id: 2316748674575093601
   identification: 

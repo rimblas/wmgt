@@ -112,7 +112,8 @@ regions:
       select NOTE_TYPE,
              NOTES
         from WMG_NOTES
-      order by note_type, DISPLAY_SEQ
+      where (:P20_NOTE_TYPE is null or :P20_NOTE_TYPE = note_type)
+      order by case note_type when 'ABOUT' then 1 when 'RULES' then 2 else 3 end, DISPLAY_SEQ
 
   layout: 
     sequence: 10
@@ -243,6 +244,37 @@ regions:
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
+
+page-items: 
+- # ====== Page Item: P20_NOTE_TYPE ============================
+  id: 206884037006403
+  identification: 
+    name: P20_NOTE_TYPE
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Notes # 112030159442963458048
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
 buttons: 
 - # ====== Button: EDIT ========================================

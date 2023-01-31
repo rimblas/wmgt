@@ -1817,9 +1817,9 @@ regions:
       show-counts: true
       zero-count-entries: Hide
       sort-by-top-counts: false
-      show-selected-first: false
+      show-selected-first: true
       maximum-displayed-entries: 7
-      display-filter-initially: false
+      display-filter-initially: true
 
     actions-menu: 
       filter: true
@@ -1884,6 +1884,10 @@ regions:
 
     multiple-values: 
       type: No
+
+    default: 
+      type: Item
+      item: P8_PID
 
     security: 
       store-value-encrypted-in-session-state: true
@@ -2057,8 +2061,8 @@ regions:
       show-counts: true
       zero-count-entries: Hide
       sort-by-top-counts: false
-      show-selected-first: false
-      client-side-filtering: false
+      show-selected-first: true
+      client-side-filtering: true
 
     suggestions: 
       type: None
@@ -2111,6 +2115,10 @@ regions:
 
     multiple-values: 
       type: No
+
+    default: 
+      type: Item
+      item: P8_PID
 
     security: 
       store-value-encrypted-in-session-state: true
@@ -4460,51 +4468,36 @@ regions:
         font-color: '#000000'
         alignment: center
 
-- # ====== Region: Breadcrumb ==================================
-  id: 46986786489100703578
+page-items: 
+- # ====== Page Item: P8_PID ===================================
+  id: 204229645006376
   identification: 
-    title: Breadcrumb
-    type: Breadcrumb
+    name: P8_PID
+    type: Hidden
 
-  source: 
-    breadcrumb: Breadcrumb # 46986483063942702397
+  settings: 
+    value-protected: true
 
   layout: 
-    sequence: 20
-    parent-region: No Parent
-    position: REGION_POSITION_01
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Title Bar # 46986592559371702443
-    template-options: 
-    - '#DEFAULT#'
-    - t-BreadcrumbRegion--useBreadcrumbTitle
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
+    sequence: 10
+    region: Facets # 24366258824746604925
+    position: BODY
 
   advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
+    warn-on-unsaved-changes: Page Default
 
-  server-cache: 
-    caching: Disabled
+  source: 
+    type: Null
+    used: Only when current value in session state is null
 
-  customization: 
-    customizable: Not Customizable By End Users
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
-  attributes: 
-    appearance: 
-      breadcrumb-template: Breadcrumb # 46986654645437702471
-      template-options: 
-      - '#DEFAULT#'
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
 buttons: 
 - # ====== Button: CREATE ======================================
@@ -4544,6 +4537,39 @@ buttons:
     authorization-scheme: Contribution Rights # 46986682878463702496
 
 dynamic-actions: 
+- # ====== Dynamic Action: Highlight hn1 's ====================
+  id: 206484776006399
+  identification: 
+    name: Highlight hn1 's
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Rounds # 24365664312610598847
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Add u-bold to "1" ===========================
+    id: 206595124006400
+    identification: 
+      name: Add u-bold to "1"
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $("[headers^=S]").each(function(idx){if ($( this ).text() == "1") {$(this).addClass("u-bold");}})
+
+    execution: 
+      sequence: 10
+      event: Highlight hn1 's # 206484776006399
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Refresh after new add ===============
   id: 24366259668756604933
   identification: 
@@ -4562,6 +4588,21 @@ dynamic-actions:
     type: Immediate
 
   actions: 
+  - # ====== Action: Refresh =====================================
+    id: 206392548006398
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Facets # 24366258824746604925
+
+    execution: 
+      sequence: 20
+      event: Refresh after new add # 24366259668756604933
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
   - # ====== Action: Refresh =====================================
     id: 24366259795642604934
     identification: 

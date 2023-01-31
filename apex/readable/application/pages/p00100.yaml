@@ -211,8 +211,9 @@ regions:
                              , p_values => p.course_id || ',' || :P100_H) url
       from wmg_course_previews_v p
          , wmg_courses_v c
-      where p.course_id = c.course_id
-        and p.course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
+      where 1 = 1 
+        and p.course_id = c.course_id
+        and c.course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
         and p.hole = nvl(:P100_H,0)
     page-items-to-submit: 
     - P100_EASY_ID
@@ -234,6 +235,7 @@ regions:
     template: Inline Popup # 46986570183476702434
     template-options: 
     - '#DEFAULT#'
+    - js-dialog-autoheight
     - js-dialog-size600x400
     render-components: Above Content
 
@@ -251,6 +253,11 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |2
+           , 'https://apex.oracle.com/pls/apex/jrimblas/wmgt/preview?c=' || c.code || '&h=' || :P100_H url
+      
 
   attributes: 
     layout: 
@@ -294,6 +301,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: URL =========================================
+    id: 203945929006373
+    identification: 
+      column-name: URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: H ===========================================
     id: 21350211115212136903
     identification: 
@@ -324,21 +346,6 @@ regions:
 
     advanced: 
       compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: URL =========================================
-    id: 21350211390026136905
-    identification: 
-      column-name: URL
-      type: Hidden Column
-
-    layout: 
-      sequence: 40
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -4086,52 +4093,6 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Breadcrumb ==================================
-  id: 94935947672531333853
-  identification: 
-    title: Breadcrumb
-    type: Breadcrumb
-
-  source: 
-    breadcrumb: Breadcrumb # 46986483063942702397
-
-  layout: 
-    sequence: 10
-    parent-region: No Parent
-    position: REGION_POSITION_01
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Title Bar # 46986592559371702443
-    template-options: 
-    - '#DEFAULT#'
-    - t-BreadcrumbRegion--useBreadcrumbTitle
-    render-components: Below Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    appearance: 
-      breadcrumb-template: Breadcrumb # 46986654645437702471
-      template-options: 
-      - '#DEFAULT#'
-
 - # ====== Region: Chart 2 =====================================
   id: 94935951006409333855
   identification: 
@@ -6614,7 +6575,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471

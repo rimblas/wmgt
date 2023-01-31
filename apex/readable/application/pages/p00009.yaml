@@ -608,13 +608,13 @@ page-items:
       select prepared_name d, course_id r
       from wmg_courses_v
       where course_id in (
-      select course_id
-      from wmg_tournament_courses
-      where tournament_session_id  in (
-      select id
-      from wmg_tournament_sessions
-      where week= :P9_WEEK
-      )
+          select course_id
+          from wmg_tournament_courses
+          where tournament_session_id  in (
+              select id
+              from wmg_tournament_sessions
+              where week= :P9_WEEK
+          )
       )
       order by case course_mode when 'E' then 1 else 2 end
     display-extra-values: true
@@ -3340,7 +3340,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Icon # 46986652388380702470
