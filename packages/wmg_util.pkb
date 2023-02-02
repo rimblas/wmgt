@@ -39,6 +39,7 @@ begin
   $IF $$LOGGER $THEN
   logger.log(p_text => p_msg, p_scope => p_ctx);
   $ELSE
+  -- dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
   $END
 
@@ -69,6 +70,46 @@ when p_player_count = 9 then 1 --  Rooms 3 + 3 + 3
 */
 
 end rooms;
+
+
+/**
+ * Given a Tournament Session return Y when the Rooms are set and defined
+ * N when they are not
+ *
+ *
+ * @example
+ *   :G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is not null) and wmg_util.rooms_set(:G_CURRENT_SESSION_ID) = 'N'
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created 
+ * @param tournament_session_id 
+ * @return Y/N
+ */
+function rooms_set(p_tournament_session_id in wmg_tournament_sessions.id%type )
+   return varchar2
+is
+  l_scope  scope_t := gc_scope_prefix || 'rooms_set';
+  l_rooms_defined_flag wmg_tournament_sessions.rooms_defined_flag%type;
+begin
+  log('START', l_scope);
+
+  select nvl(rooms_defined_flag, 'N')
+    into l_rooms_defined_flag
+    from wmg_tournament_sessions 
+   where id = p_tournament_session_id;
+   
+  return l_rooms_defined_flag;
+
+  exception
+    when no_data_found then
+      return 'N';
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end rooms_set;
+
 
 
 ------------------------------------------------------------------------------
@@ -200,7 +241,7 @@ begin
        and time_slot = time_slots.time_slot
        and active_ind = 'Y';
 
-    log('.. Assigning Rooms for ' || time_slots.time_slot || ' playesr ' || l_room_id_tbl.count, l_scope);
+    log('.. Assigning Rooms for ' || time_slots.time_slot || ' players ' || l_room_id_tbl.count, l_scope);
     
     l_players := l_room_id_tbl.count;
     l_rooms := rooms(p_player_count => l_players);
@@ -213,7 +254,12 @@ begin
     loop
 
       
-      l_next_player := get_next_player();
+      if l_rooms = 1 then
+        -- hey we only have one room, just assign the available players
+        l_next_player := l_players;
+      else
+        l_next_player := get_next_player();
+      end if;
       l_room_id_tbl(l_next_player).room_no := l_room;
 
       log('.. Room ' || l_room || ' = ' || players_on_room(l_room) || ' player(s)', l_scope);

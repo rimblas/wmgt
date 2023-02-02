@@ -6,7 +6,7 @@ select t.id                              tournament_id
      , t.prefix_tournament               prefix_tournament
      , t.prefix_session                  prefix_session
      , t.current_flag                    current_flag
-     , t.active_ind                      active_ind
+     , t.active_ind                      tournament_active_ind
      , t.url                             url
      , t.notes                           notes
      , t.created_on                      tournament_created
@@ -28,6 +28,7 @@ select t.id                              tournament_id
      , tp.id                             tournament_player_id
      , tp.time_slot                      time_slot
      , tp.room_no                        room_no
+     , tp.active_ind                     active_ind
      , tp.created_on                     tournament_player_created
      , tp.created_by                     tournament_player_created_by
      , tp.updated_on                     tournament_player_updated

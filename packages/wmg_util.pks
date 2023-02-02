@@ -8,6 +8,8 @@ is
 --*
 --------------------------------------------------------------------------------
 
+function rooms_set(p_tournament_session_id in wmg_tournament_sessions.id%type )
+   return varchar2;
 
 --------------------------------------------------------------------------------
 procedure assign_rooms(
