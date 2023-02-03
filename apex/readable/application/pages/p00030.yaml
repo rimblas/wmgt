@@ -8,12 +8,19 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Minimal (No Navigation) # 46986501077006702405
+  page-template: Theme Default
   template-options: 
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: false
+  override-user-interface-level: true
+  list: Tournament Options # 55884590206608414057
+  list-position: Top
+  list-template: Top Navigation Tabs # 46986647224831702467
+  template-options: 
+  - '#DEFAULT#'
+  - t-NavTabs--inlineLabels-lg
+  - t-NavTabs--displayLabels-sm
 
 navigation: 
   cursor-focus: First item on page
@@ -598,7 +605,7 @@ page-items:
     storage: Per Session (Persistent)
 
   security: 
-    authorization-scheme: Must Not Be Public User
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
@@ -946,7 +953,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
@@ -1156,10 +1163,27 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
-      update wmg_players
-        set account_login = :APP_USER
-          , prefered_tz = :P30_TZ
-      where id = :P30_PLAYER_ID;
+      declare
+        l_player_id wmg_players.id%type;
+      begin
+          begin
+              select id
+                into l_player_id
+                from wmg_players
+               where account_login = :APP_USER
+               fetch first 1 rows only;
+          exception
+            when NO_DATA_FOUND then
+              l_player_id := null;
+          end;
+      
+          if :P30_PLAYER_ID = l_player_id or l_player_id is null then
+              update wmg_players
+                set account_login = :APP_USER
+                  , prefered_tz = :P30_TZ
+              where id = :P30_PLAYER_ID;
+          end if;
+      end;
 
   execution: 
     sequence: 20
@@ -1173,6 +1197,9 @@ processes:
     type: Item = Value
     item: P30_REMEMBER_ME_IND
     value: Y
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
 - # ====== Process: init =======================================
   id: 2316750034725093615

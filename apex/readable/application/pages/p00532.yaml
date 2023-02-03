@@ -19,7 +19,7 @@ navigation-menu:
   override-user-interface-level: false
 
 navigation: 
-  cursor-focus: Do not focus cursor
+  cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
 security: 
@@ -1054,7 +1054,7 @@ buttons:
   id: 56149539668042424872
   identification: 
     button-name: CREATE
-    label: Create
+    label: Add Session
 
   layout: 
     sequence: 40
@@ -1072,6 +1072,7 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconLeft
+    icon: fa-plus
 
   behavior: 
     action: Submit Page
@@ -1084,6 +1085,55 @@ buttons:
     item: P532_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Generate Week =======================
+  id: 665356154503479
+  identification: 
+    name: Generate Week
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P532_ROUND_NUM
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 665411741503480
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select prefix_tournament || prefix_session || lpad(:P532_ROUND_NUM, 2, '0')
+        from wmg_tournaments
+        where id = :P532_TOURNAMENT_ID
+      items-to-submit: 
+      - P532_TOURNAMENT_ID
+      - P532_ROUND_NUM
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P532_WEEK
+
+    execution: 
+      sequence: 10
+      event: Generate Week # 665356154503479
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 56149537573814424871
   identification: 

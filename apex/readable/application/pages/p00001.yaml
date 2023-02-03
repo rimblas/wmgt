@@ -62,6 +62,47 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Next Tournament Info} ======================
+  id: 665559002503481
+  identification: 
+    title: '{Next Tournament Info}'
+    type: Static Content
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Most h1n Current Season =====================
   id: 24442381952412124335
   identification: 
@@ -91,7 +132,7 @@ regions:
       
 
   layout: 
-    sequence: 30
+    sequence: 39
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -314,7 +355,7 @@ regions:
       ) r
 
   layout: 
-    sequence: 59
+    sequence: 49
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -512,11 +553,11 @@ regions:
       fetch first 1 rows only
 
   layout: 
-    sequence: 19
-    parent-region: No Parent
+    sequence: 29
+    parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -529,14 +570,14 @@ regions:
     - t-Alert--horizontal
     - t-Alert--noIcon
     - t-Alert--info
-    render-components: Above Content
+    render-components: Below Content
 
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -898,7 +939,7 @@ regions:
 
   layout: 
     sequence: 40
-    parent-region: No Parent
+    parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -920,7 +961,7 @@ regions:
 
   advanced: 
     static-id: optionsRegion
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 

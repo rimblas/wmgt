@@ -173,6 +173,11 @@ css:
         }
     
     }
+    
+    #subButtonsRegion {
+      display: flex;
+      flex-flow: row-reverse;
+    }
 
 security: 
   authorization-scheme: Contribution Rights # 46986682878463702496
@@ -193,6 +198,48 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Buttons} ===================================
+  id: 666156280503487
+  identification: 
+    title: '{Buttons}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: Round # 46986753890975703559
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: subButtonsRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Round Scores} ==============================
   id: 15134617001851923850
   identification: 
@@ -501,6 +548,39 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P9_PREV_ID ===============================
+  id: 665619576503482
+  identification: 
+    name: P9_PREV_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 120
+    region: Round # 46986753890975703559
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  comments: 
+    comments: This is the ID of the last round that was just entered and can be used to get back to verify a score
+
 - # ====== Page Item: P9_H =====================================
   id: 24442381683789124332
   identification: 
@@ -3193,6 +3273,86 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: BACK_TO_LAST ================================
+  id: 665921433503485
+  identification: 
+    button-name: BACK_TO_LAST
+    label: Back to last scorecard
+
+  layout: 
+    sequence: 10
+    region: '{Buttons}' # 666156280503487
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.:REVIEW:&DEBUG.:9:P9_ID:&P9_PREV_ID.'
+      page: 9 # Round
+      request: REVIEW
+      clear-cache: 9
+      values: 
+        p9_id: '&P9_PREV_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  advanced: 
+    static-id: BACK_TO_LAST_BTN
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_PREV_ID
+
+- # ====== Button: GOTO_CREATE =================================
+  id: 666016062503486
+  identification: 
+    button-name: GOTO_CREATE
+    label: Back to Add Round
+
+  layout: 
+    sequence: 10
+    region: Buttons # 46986770952553703569
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9::'
+      page: 9 # Round
+      clear-cache: 9
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Request = Value
+    value: REVIEW
+
 - # ====== Button: CANCEL ======================================
   id: 46986771380611703569
   identification: 
@@ -3396,6 +3556,45 @@ buttons:
     item: P9_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Start Hiding the Back to Scorecard bu
+  id: 666223949503488
+  identification: 
+    name: Start Hiding the Back to Scorecard button
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P9_S5
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 666375926503489
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $("#BACK_TO_LAST_BTN").animate({
+            opacity: 0.20}, 5000);
+
+    execution: 
+      sequence: 10
+      event: Start Hiding the Back to Scorecard button # 666223949503488
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    server-side-condition: 
+      type: Item is NOT NULL
+      item: P9_PREV_ID
+
 - # ====== Dynamic Action: Preview Hole ========================
   id: 24442381769108124333
   identification: 
@@ -3797,6 +3996,29 @@ computations:
     pl/sql-expression: 'upper(:P9_WEEK)'
 
 processes: 
+- # ====== Process: Save Last Created Record ID ================
+  id: 665740209503483
+  identification: 
+    name: Save Last Created Record ID
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: ':P9_PREV_ID := :P9_ID;'
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN
+
 - # ====== Process: Initialize form Round ======================
   id: 46986773930289703570
   identification: 
@@ -3844,7 +4066,7 @@ processes:
     type: Close Dialog
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -3869,7 +4091,7 @@ processes:
       apex_util.set_preference('WMG_WEEK', :P9_WEEK)
 
   execution: 
-    sequence: 20
+    sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -3949,9 +4171,11 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9::&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_PREV_ID:&P9_PREV_ID.&success_msg=#SUCCESS_MSG#'
       page: 9 # Round
       clear-cache: 9
+      values: 
+        p9_prev_id: '&P9_PREV_ID.'
 
   server-side-condition: 
     when-button-pressed: CREATE_AGAIN # 47620377167974971449

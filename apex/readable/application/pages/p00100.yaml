@@ -98,13 +98,17 @@ css:
     }
     
     
-    /* Hole preview bubble */
+    /* Hole preview photo icon */
     .courseStats th[id^='H']:before {
-        content: "\f0e5";
+        content: "\f03e";
         font-family: 'Font APEX Small'!important;
         position: absolute;
         top: 0;
         padding: 0 0 0 2px;
+    }
+    .courseStats th[id^='H']:before:hover {
+      transform: scale(2.5);
+      transition: .25s transform;
     }
     
     .shadow--bottom {
@@ -123,9 +127,9 @@ css:
     }
     
     #itemsRegion {
-        flex-direction: row;
-        display: flex;
-        flex-wrap: wrap;
+      flex-direction: row;
+      display: flex;
+      flex-wrap: wrap;
       width: 100%;
       background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
     }
@@ -336,7 +340,7 @@ regions:
     column-formatting: 
       html-expression: |
         #COURSE#: Hole # #H#
-        <img style="max-width: 100%" src="#URL#">
+        <img style="max-width: 100%; min-height: 512px" src="#URL#">
 
     sorting: 
       sortable: true
@@ -6504,6 +6508,76 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: EASY_COURSE_STATS_BTN =======================
+  id: 665042214503476
+  identification: 
+    button-name: EASY_COURSE_STATS_BTN
+    label: How hard is it?
+
+  layout: 
+    sequence: 10
+    region: '&P100_EASY. - Stats' # 94454808801107282731
+    position: COPY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:200:&SESSION.::&DEBUG.:200:P200_COURSE_ID:&P100_EASY_ID.'
+      page: 200 # Course Analysis
+      clear-cache: 200
+      values: 
+        p200_course_id: '&P100_EASY_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: HARD_COURSE_STATS_BTN =======================
+  id: 665123120503477
+  identification: 
+    button-name: HARD_COURSE_STATS_BTN
+    label: How hard is it?
+
+  layout: 
+    sequence: 20
+    region: '&P100_HARD. -  Stats' # 49305653389538776634
+    position: COPY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:200:&SESSION.::&DEBUG.:200:P200_COURSE_ID:&P100_HARD_ID.'
+      page: 200 # Course Analysis
+      clear-cache: 200
+      values: 
+        p200_course_id: '&P100_HARD_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: OK ==========================================
   id: 40380891939017957237
   identification: 
