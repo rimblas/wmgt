@@ -3,6 +3,8 @@
 Analysis Application for the [Walkabout Mini Golf](https://www.mightycoconut.com/minigolf) VR game weekly tournaments. 
 (_However, it would work fairly well for any individual play golf round analysis_).
 
+[Live site on OCI](https://rimblas.com/wmgt)
+
 ## Tech Details
 
 ### Basic Data Model Structure
