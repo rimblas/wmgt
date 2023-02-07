@@ -523,7 +523,11 @@ regions:
                  and u.h = :P200_H
                group by u.score
           )
-          select stroke, 'By ' || people || ' players' tooltip, percent 
+          select stroke
+               , people || ' player' || decode(people, 1, '', 's')
+              || ' got it in ' || stroke || ' stroke' || decode(stroke, 1, '', 's') || '<br>' 
+              || '(' || round(percent,1) || '%)' tooltip
+              , percent 
           from (
               select s.stroke, r.people, round(r.people * 100 / all_scores,2) percent
               from  round r

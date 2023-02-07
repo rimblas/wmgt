@@ -103,6 +103,65 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: {Welcome} ===================================
+  id: 668719130503513
+  identification: 
+    title: '{Welcome}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      <img src="https://cdn.discordapp.com/avatars/&G_DISCORD_ID./&G_DISCORD_AVATAR..png">
+      Welcome, &G_DISCORD.!
+      <br><br>
+      G_DISCORD_ID: &G_DISCORD_ID.<br>
+      G_DISCORD_DISCRIMINATOR: &G_DISCORD_DISCRIMINATOR.<br>
+      <br>
+      Username: &APP_USER.<br>
+      
+
+  layout: 
+    sequence: 10
+    parent-region: Page Navigation # 46986885428768703655
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Most h1n Current Season =====================
   id: 24442381952412124335
   identification: 
@@ -548,7 +607,7 @@ regions:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and session_date+1 > sysdate
+      and session_date+1.2 > sysdate
       order by session_date
       fetch first 1 rows only
 
@@ -900,7 +959,7 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-md
-    render-components: Above Content
+    render-components: Below Content
 
   accessibility: 
     use-landmark: true

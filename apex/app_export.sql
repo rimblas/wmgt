@@ -1,1 +1,1 @@
-apex export -applicationId 200 -exporiginalids true -expType READABLE_YAML
+apex export -applicationId 200

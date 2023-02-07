@@ -22,6 +22,11 @@ navigation:
   cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+  inline: 'li .em { margin-right: 5px; }'
+
 security: 
   authentication: Page Is Public
 
@@ -139,6 +144,166 @@ regions:
       show-line-breaks: true
 
 page-items: 
+- # ====== Page Item: P7_ACCOUNT_LOGIN =========================
+  id: 666851241503494
+  identification: 
+    name: P7_ACCOUNT_LOGIN
+    type: Text Field
+
+  label: 
+    label: Login Account
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 50
+    region: Player # 46986741552156703258
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 100
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: ACCOUNT_LOGIN
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_COUNTRY_CODE ==========================
+  id: 666934733503495
+  identification: 
+    name: P7_COUNTRY_CODE
+    type: Popup LOV
+
+  label: 
+    label: Country
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 40
+    region: Player # 46986741552156703258
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 5
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select d, r
+      from (
+      select 'England' d, 'england' r from dual union all
+      select 'Scotland' d, 'scotland' r from dual union all
+      select 'Wales' d, 'wales' r from dual union all
+      select formatted_name d, lower(iso) r
+      from country
+      )
+      order by 1
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: COUNTRY_CODE
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: true
+    label-1: USA
+    value-1: us
+    label-2: Canada
+    value-2: ca
+    label-3: United Kingdom
+    value-3: gb
+    label-4: Spain
+    value-4: es
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~R.">' +
+              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
+                 '<span class="country-name">~D.</span>' +
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
+
 - # ====== Page Item: P7_ID ====================================
   id: 46986741830980703259
   identification: 
@@ -302,7 +467,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 40
+    sequence: 60
     region: Player # 46986741552156703258
     position: BODY
 

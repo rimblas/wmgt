@@ -37,6 +37,25 @@ css:
         --a-button-focus-text-color: var(--a-button-hover-text-color);
         --a-button-focus-border-color: var(--a-button-focus-background-color);
     }
+    
+    .discord-style {
+        --a-button-background-color: #5865F2;
+        border-radius: 0;
+        padding: 0;
+    }
+    .discord-style .t-Button-label {
+        --a-button-text-color: white;
+        font-weight: 700;
+        font-family: 'Ubuntu', sans-serif;
+    }
+    .discord-style img {max-height: 48px; padding-top: 3px;}
+    .discord-style:hover {
+        background-color: #7289DA;
+    }
+    .discord-style:hover .t-Button-label {
+        --a-button-hover-text-color: white;
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -133,6 +152,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: socialSigning
     region-display-selector: true
     exclude-title-from-translation: false
 
@@ -432,10 +452,10 @@ buttons:
   id: 56015647009712939750
   identification: 
     button-name: LOGIN_DISCORD
-    label: Sign In with Discord
+    label: <img src="#APP_FILES#img/discord.svg">
 
   layout: 
-    sequence: 20
+    sequence: 5
     region: Sign In # 47577408628042657320
     position: NEXT
     start-new-layout: false
@@ -449,6 +469,7 @@ buttons:
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--tiny
     - t-Button--iconLeft
     css-classes: 
     - discord-style
@@ -463,8 +484,12 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
-  server-side-condition: 
-    type: Never
+  advanced: 
+    custom-attributes: 
+    - title="Sign
+    - In
+    - with
+    - Discord"
 
 processes: 
 - # ====== Process: Login ======================================

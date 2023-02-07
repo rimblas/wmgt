@@ -1,4 +1,81 @@
 ---
+- # ====== List of Values: COUNTRY =============================
+  id: 2799727923811973
+  identification: 
+    name: COUNTRY
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select d country_name, r country_code, 'em-flag-' || r flag_class
+      from (
+      select 'England' d, 'england' r from dual union all
+      select 'Scotland' d, 'scotland' r from dual union all
+      select 'Wales' d, 'wales' r from dual union all
+      select formatted_name d, lower(iso) r
+      from country
+      )
+      
+
+  column-mapping: 
+    return: COUNTRY_CODE
+    display: COUNTRY_NAME
+    default-sort: COUNTRY_NAME
+    sort-direction: Ascending (Nulls Last)
+
+  columns: 
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 2800224480817631
+    identification: 
+      column-name: COUNTRY_CODE
+      show: false
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: false
+
+  - # ====== Column: COUNTRY_NAME ================================
+    id: 2800672515817633
+    identification: 
+      column-name: COUNTRY_NAME
+      show: true
+
+    heading: 
+      heading: Country Name
+
+    layout: 
+      sequence: 20
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: FLAG_CLASS ==================================
+    id: 2801016111817633
+    identification: 
+      column-name: FLAG_CLASS
+      show: false
+
+    heading: 
+      heading: Flag
+
+    layout: 
+      sequence: 30
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: false
+
 - # ====== List of Values: WMG_COURSES.CODE ====================
   id: 20721954775534046605
   identification: 

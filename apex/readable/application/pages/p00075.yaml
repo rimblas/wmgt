@@ -1,0 +1,752 @@
+---
+# ====== Page: Verify Results ================================
+id: 75
+identification: 
+  name: Verify Results
+  alias: VERIFY-RESULTS
+  title: Verify Results
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  file-urls: 
+  - '#APP_FILES#css/week-lov#MIN#.css'
+  inline: |
+    .mark {
+        background-color: #ff0;
+        color: #000;
+    }
+
+security: 
+  authorization-scheme: Contribution Rights # 46986682878463702496
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Verify Results ==============================
+  id: 3477141442882967
+  identification: 
+    title: Verify Results
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with verification as (
+        select id
+             , rank
+             , username player_name
+             , easy_score
+             , hard_score
+             , total_score
+          from wmg_wmgt_scores_tmp
+      )
+      , scorecards as (
+        select week
+             , pos
+             , player_id
+             , player_name
+             , easy_par
+             , hard_par
+             , total_score
+             , easy_round_id
+             , hard_round_id
+          from wmg_tournament_results_v
+         where week = :P75_WEEK
+      )
+      select rank
+           , player_id
+           , player_name
+           , uploaded_easy_score
+           , uploaded_hard_score
+           , uploaded_total_score
+           , easy_round_id
+           , hard_round_id
+           , easy_par
+           , hard_par
+           , total_score
+           , easy_diff
+           , hard_diff
+           , verification_class
+      from  (
+          select v.rank
+               , s.player_id
+               , nvl(v.player_name, s.player_name) player_name
+               , v.easy_score  uploaded_easy_score
+               , v.hard_score  uploaded_hard_score
+               , v.total_score uploaded_total_score
+               , s.easy_round_id
+               , s.hard_round_id
+               , s.easy_par
+               , s.hard_par
+               , s.total_score
+               , case when (nvl(v.easy_score, -999) != nvl(s.easy_par, -999)) then 'mark' else '' end easy_diff
+               , case when (nvl(v.hard_score, -999) != nvl(s.hard_par, -999)) then 'mark' else '' end hard_diff
+               , case 
+                   when  v.easy_score = s.easy_par
+                     and v.hard_score = s.hard_par
+                     and v.total_score = s.total_score
+                  then 
+                     'Y'
+                   else 
+                     'N'
+                   end verification_class
+                , case 
+         when (s.player_name is null or v.player_name is null )
+          or (v.total_score != s.total_score)
+         then 1
+         else 2 end display_seq
+            from verification v
+            full outer join scorecards s on s.player_name = v.player_name
+      )
+      where (:P75_DIFF_ONLY_FLAG = 'N'
+            or verification_class = 'N')
+      order by display_seq
+         , to_number(rank)
+      
+    page-items-to-submit: 
+    - P75_WEEK
+    - P75_DIFF_ONLY_FLAG
+
+  layout: 
+    sequence: 29
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--hideHeader
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlight
+      - t-Report--inline
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_NAME =================================
+    id: 3469848323873673
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 42
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:P50_PLAYERS_ID,P50_E_ID,P50_H_ID:#PLAYER_ID#,#EASY_ROUND_ID#,#HARD_ROUND_ID##TOURNAMENT_SESSION_ID#'
+        page: 50 # Enter Rounds
+        clear-cache: 50
+        values: 
+          p50_players_id: '#PLAYER_ID#'
+          p50_e_id: '#EASY_ROUND_ID#'
+          p50_h_id: '#HARD_ROUND_ID##TOURNAMENT_SESSION_ID#'
+
+      link-text: '#PLAYER_NAME#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPLOADED_EASY_SCORE =========================
+    id: 3469970673873674
+    identification: 
+      column-name: UPLOADED_EASY_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Submitted<br>Easy Score
+      alignment: center
+
+    layout: 
+      sequence: 52
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#EASY_DIFF#">#UPLOADED_EASY_SCORE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPLOADED_HARD_SCORE =========================
+    id: 3470013354873675
+    identification: 
+      column-name: UPLOADED_HARD_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Submitted <br>Hard Score
+      alignment: center
+
+    layout: 
+      sequence: 62
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#HARD_DIFF#">#UPLOADED_HARD_SCORE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPLOADED_TOTAL_SCORE ========================
+    id: 3470150572873676
+    identification: 
+      column-name: UPLOADED_TOTAL_SCORE
+      type: Hidden Column
+
+    layout: 
+      sequence: 72
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_PAR ====================================
+    id: 3470210530873677
+    identification: 
+      column-name: EASY_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Scoresheets<br>Easy Score
+      alignment: center
+
+    layout: 
+      sequence: 82
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#EASY_DIFF#">#EASY_PAR#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_PAR ====================================
+    id: 3470294311873678
+    identification: 
+      column-name: HARD_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Scoresheets<br>Hard Score
+      alignment: center
+
+    layout: 
+      sequence: 92
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#HARD_DIFF#">#HARD_PAR#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFICATION_CLASS ==========================
+    id: 3470665964873681
+    identification: 
+      column-name: VERIFICATION_CLASS
+      type: Plain Text
+
+    heading: 
+      heading: ✅
+      alignment: center
+
+    layout: 
+      sequence: 12
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="fa cfa-check_#VERIFICATION_CLASS# cfa-1_5x" title="#VERIFICATION_CLASS#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_DIFF ===================================
+    id: 3470867348873683
+    identification: 
+      column-name: EASY_DIFF
+      type: Hidden Column
+
+    layout: 
+      sequence: 112
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_DIFF ===================================
+    id: 3470879256873684
+    identification: 
+      column-name: HARD_DIFF
+      type: Hidden Column
+
+    layout: 
+      sequence: 122
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 3471029863873685
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 32
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_ROUND_ID ===============================
+    id: 3471422889873689
+    identification: 
+      column-name: EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 132
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ROUND_ID ===============================
+    id: 3471495099873690
+    identification: 
+      column-name: HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 142
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK ========================================
+    id: 3477887317883446
+    identification: 
+      column-name: RANK
+      type: Hidden Column
+
+    layout: 
+      sequence: 2
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 3479508990883448
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Hidden Column
+
+    layout: 
+      sequence: 102
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
+- # ====== Page Item: P75_DIFF_ONLY_FLAG =======================
+  id: 3471654447873691
+  identification: 
+    name: P75_DIFF_ONLY_FLAG
+    type: Switch
+
+  label: 
+    label: Show Differences Only
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 19
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Only players with discrepancies will be displayed.
+
+- # ====== Page Item: P75_WEEK =================================
+  id: 3486872111986294
+  identification: 
+    name: P75_WEEK
+    type: Popup LOV
+
+  label: 
+    label: Week
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 9
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 3
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: WEEKS # 41195241672950310216
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~WEEK.">' +
+           '<div class="content-list">' +
+              '<div class="week-info-list">' +
+                 '<span class="season-name">~SEASON.</span>' +                    
+                 '<span class="week-name">Week ~WEEK_NO.</span>' +
+                 '<hr>' +
+                 '<div class="courses">' +
+                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
+                   '<span class="hard">~HARD_COURSE.</span>' +
+                 '</div>' +
+              '</div>' +
+           '</div>'+
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Data ========================
+  id: 3470424051873679
+  identification: 
+    name: Refresh Data
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P75_WEEK
+    - P75_DIFF_ONLY_FLAG
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 3470486735873680
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Verify Results # 3477141442882967
+
+    execution: 
+      sequence: 10
+      event: Refresh Data # 3470424051873679
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+computations: 
+- # ====== Computation: G_CURRENT_SESSION_ID ===================
+  id: 3471328891873688
+  identification: 
+    item-name: G_CURRENT_SESSION_ID
+
+  execution: 
+    sequence: 10
+    point: After Header
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select id
+      from  wmg_tournament_sessions
+         where week = :P75_WEEK
+

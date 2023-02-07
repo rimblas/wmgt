@@ -1,0 +1,129 @@
+---
+- # ====== Data Load Definition: WMGT Official Scores ==========
+  id: 3421795708061688
+  identification: 
+    name: WMGT Official Scores
+
+  target: 
+    type: Table
+    table-owner: Parsing Schema
+    table-name: WMG_WMGT_SCORES_TMP
+    loading-method: Replace
+
+  error-handling: 
+    when-on-error: Stop
+
+  advanced: 
+    commit-interval: 200
+    static-id: WMGT_Official_Scores
+
+  data-profiles: 
+    id: 3420091850061633
+    identification: 
+      name: WMGT Official Scores
+
+    data-profile: 
+      format: CSV
+
+    advanced: 
+      encoding: Western European ISO-8859-1
+      csv-enclosed-by: '"'
+      skip-rows: 5
+      first-line-contains-headers: true
+
+    columns: 
+    - # ====== Column: RANK ========================================
+      id: 3420444233061684
+      identification: 
+        column-name: RANK
+
+      source: 
+        type: Data
+        data-type: VARCHAR2
+        maximum-length: 32
+        primary-key: false
+
+      parsing: 
+        selector-type: Name
+        selector: RANK
+
+      advanced: 
+        sequence: 1
+        hidden: false
+
+    - # ====== Column: USERNAME ====================================
+      id: 3420774770061685
+      identification: 
+        column-name: USERNAME
+
+      source: 
+        type: Data
+        data-type: VARCHAR2
+        maximum-length: 128
+        primary-key: true
+
+      parsing: 
+        selector-type: Name
+        selector: USERNAME
+
+      advanced: 
+        sequence: 2
+        hidden: false
+
+    - # ====== Column: EASY_SCORE ==================================
+      id: 3420999221061686
+      identification: 
+        column-name: EASY_SCORE
+
+      source: 
+        type: Data
+        data-type: VARCHAR2
+        maximum-length: 32
+        primary-key: false
+
+      parsing: 
+        selector-type: Name
+        selector: EASY
+
+      advanced: 
+        sequence: 3
+        hidden: false
+
+    - # ====== Column: HARD_SCORE ==================================
+      id: 3421301634061686
+      identification: 
+        column-name: HARD_SCORE
+
+      source: 
+        type: Data
+        data-type: VARCHAR2
+        maximum-length: 32
+        primary-key: false
+
+      parsing: 
+        selector-type: Name
+        selector: HARD
+
+      advanced: 
+        sequence: 4
+        hidden: false
+
+    - # ====== Column: TOTAL_SCORE =================================
+      id: 3421630765061687
+      identification: 
+        column-name: TOTAL_SCORE
+
+      source: 
+        type: Data
+        data-type: VARCHAR2
+        maximum-length: 32
+        primary-key: false
+
+      parsing: 
+        selector-type: Name
+        selector: TOTAL
+
+      advanced: 
+        sequence: 5
+        hidden: false
+

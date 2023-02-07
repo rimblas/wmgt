@@ -19,6 +19,13 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+  inline: |
+    li .em { margin-right: 5px; }
+    [headers~="COUNTRY_CODE"] {width: 90px;}
+
 security: 
   authentication: Page Is Public
 
@@ -167,6 +174,282 @@ regions:
         alias: 469868348
 
     columns: 
+    - # ====== Column: ACCOUNT_LOGIN ===============================
+      id: 667015247503496
+      identification: 
+        column-name: ACCOUNT_LOGIN
+        type: Plain Text
+
+      heading: 
+        heading: Account Login
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 13
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        authorization-scheme: Tournament Admin # 55893512303411682019
+        escape-special-characters: true
+
+    - # ====== Column: PREFERED_TZ =================================
+      id: 667155120503497
+      identification: 
+        column-name: PREFERED_TZ
+        type: Plain Text
+
+      heading: 
+        heading: Prefered Tz
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 23
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+        escape-special-characters: true
+
+    - # ====== Column: COUNTRY_CODE ================================
+      id: 667199571503498
+      identification: 
+        column-name: COUNTRY_CODE
+        type: Plain Text
+
+      heading: 
+        heading: Country
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 33
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-formatting: 
+        html-expression: <i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="#COUNTRY_CODE# Flag"></i>
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      advanced: 
+        static-id: COUNTRY_CODE
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: CREATED_ON ==================================
+      id: 667283589503499
+      identification: 
+        column-name: CREATED_ON
+        type: Plain Text
+
+      heading: 
+        heading: Created On
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 43
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: CREATED_BY ==================================
+      id: 667416369503500
+      identification: 
+        column-name: CREATED_BY
+        type: Plain Text
+
+      heading: 
+        heading: Created By
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 53
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED_ON ==================================
+      id: 667543639503501
+      identification: 
+        column-name: UPDATED_ON
+        type: Plain Text
+
+      heading: 
+        heading: Updated On
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 63
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: UPDATED_BY ==================================
+      id: 667584525503502
+      identification: 
+        column-name: UPDATED_BY
+        type: Plain Text
+
+      heading: 
+        heading: Updated By
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 73
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
     - # ====== Column: ID ==========================================
       id: 46986748831482703264
       identification: 

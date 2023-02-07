@@ -194,6 +194,7 @@ css:
     }
 
 security: 
+  authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -3095,6 +3096,13 @@ page-items:
     data-type: NUMBER
     query-only: false
     primary-key: false
+
+  default: 
+    type: SQL Query
+    sql-query: |
+      select id
+      from wmg_players
+      where account_login = :APP_USER
 
   session-state: 
     storage: Per Request (Memory Only)

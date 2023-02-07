@@ -81,6 +81,7 @@ javascript:
 css: 
   file-urls: 
   - '#APP_FILES#css/week-lov#MIN#.css'
+  - //emoji-css.afeld.me/emoji.css
   inline: |
     span.drill {
         cursor: pointer;
@@ -97,6 +98,10 @@ css:
         cursor: help;
     }
     
+    td[headers="COUNTRY_CODE"],
+    td[headers="BADGES"] {
+        padding: 0;
+    }
     
     /* Hole preview photo icon */
     .courseStats th[id^='H']:before {
@@ -148,7 +153,7 @@ css:
     }
     }
     td.t-Report-cell[headers~="WHO"] {
-        white-space: nowrap;
+        white-space: break-spaces;
     }
     
     .courseStats .t-Region-headerIcon {
@@ -530,6 +535,10 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - col-sm-8
+    - col-md-8
+    - col-lg-12
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -564,8 +573,10 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--altRowsDefault
       - t-Report--rowHighlight
+      - t-Report--horizontalBorders
 
     pagination: 
       type: No Pagination (Show All Rows)
@@ -1071,11 +1082,31 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
+      with coconut as (
+          select u.week
+               , u.player_id, sum(case when par <= 0 then 1 else 0 end) under_par
+               , sum(case when score = 1 then 1 else 0 end) hn1_count
+            from wmg_rounds_unpivot_mv u
+           where u.week = :P100_WEEK
+           having sum(case when par <= 0 then 1 else 0 end) = 36
+           group by u.week, u.player_id
+      )
+      , cactus as (
+          select u.h, u.score, listagg(u.player_id) players_id
+            from  wmg_rounds_unpivot_mv u
+           where u.week = :P100_WEEK
+             and u.score = 1
+          having count(*) = 1
+           group by u.h, u.score
+      )
       select r.*, rank() over (order by r.total_score) pos
+           , decode(coconut.under_par, 36, 'coconut', '') 
+          || decode(cactus.players_id, null, null, ' cactus') badges
       from (
-        select player_id, player_name, easy, hard, easy + hard total_score
+        select player_id, player_name, country_code, easy, hard
+             , easy + hard total_score
         from (
-          select r.player_id, r.player_name
+          select r.player_id, r.player_name, r.country_code
                , r.under_par
                , c.course_mode
             from wmg_rounds_v r, wmg_courses c
@@ -1088,6 +1119,10 @@ regions:
            )
           )
       ) r
+      , coconut
+      , cactus
+      where r.player_id = coconut.player_id (+)
+        and r.player_id = cactus.players_id (+)
       order by pos, r.player_name
       fetch first 15 rows only
       
@@ -1103,15 +1138,21 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - col-sm-8
+    - col-md-6
+    - col-lg-7
 
   appearance: 
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - t-Region--noPadding
     - i-h240
     - t-Region--removeHeader js-removeLandmark
     - t-Region--noUI
     - t-Region--scrollBody
+    - margin-bottom-md
     render-components: Below Content
 
   accessibility: 
@@ -1138,8 +1179,10 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--altRowsDefault
       - t-Report--rowHighlight
+      - t-Report--horizontalBorders
 
     pagination: 
       type: No Pagination (Show All Rows)
@@ -1165,6 +1208,79 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: BADGES ======================================
+    id: 666501960503491
+    identification: 
+      column-name: BADGES
+      type: Plain Text
+
+    heading: 
+      heading: Badges
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {loop " " BADGES/}
+        <i class="em em-&APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM."></i>
+        {endloop/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 668377205503510
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#"></i>'
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: TOTAL_SCORE =================================
     id: 49305650281082776603
     identification: 
@@ -1208,7 +1324,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 40
       column-alignment: start
 
     accessibility: 
@@ -1387,7 +1503,8 @@ regions:
       from (
           select result, who, total, rank() over (order by total desc) rn
           from (
-          select 'Player(s) with most Aces' result
+          select '<i class="em em-large_blue_diamond" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
+              || 'Player(s) with most Aces' result
                , r.player_name who
                , sum(decode(s1, 1, 1, 0)
                    + decode(s2, 1, 1, 0)
@@ -1454,6 +1571,10 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - col-sm-8
+    - col-md-6
+    - null
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -1462,6 +1583,8 @@ regions:
     - t-Region--removeHeader js-removeLandmark
     - t-Region--noUI
     - t-Region--scrollBody
+    - margin-left-md
+    - margin-right-md
     render-components: Above Content
 
   accessibility: 
@@ -1488,8 +1611,10 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--altRowsDefault
       - t-Report--rowHighlight
+      - t-Report--horizontalBorders
 
     pagination: 
       type: No Pagination (Show All Rows)
@@ -1577,7 +1702,7 @@ regions:
       table-owner: Parsing Schema
 
     security: 
-      escape-special-characters: true
+      escape-special-characters: false
 
   - # ====== Column: WHO =========================================
     id: 49305651100682776612
@@ -1631,6 +1756,7 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - t-Region--noPadding
     - t-Region--scrollBody
     render-components: Above Content
 

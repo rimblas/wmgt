@@ -48,12 +48,16 @@
     type: Social Sign-In
     credential-store: 59554525760223964815
     authentication-provider: Generic OAuth2 Provider
-    authorization-endpoint-url: 'https://discord.com/api/oauth2/authorize?client_id=1029188717895753769&redirect_uri=https%3A%2F%2Fapex.oracle.com%2Fpls%2Fapex%2Fapex_authentication.callback&response_type=code&scope=identify'
-    token-endpoint-url: 'https://discord.com/api/oauth2/authorize?client_id=1029188717895753769&redirect_uri=https%3A%2F%2Fapex.oracle.com%2Fpls%2Fapex%2Fapex_authentication.callback&response_type=code&scope=identify'
-    token-authentication-method: Client ID in Body
+    authorization-endpoint-url: 'https://discord.com/api/oauth2/authorize?client_id=1029188717895753769&redirect_uri=https%3A%2F%2Fdqvo64m7q9ujvqa-wmgt.adb.us-ashburn-1.oraclecloudapps.com%2Fords%2Fapex_authentication.callback&response_type=code&scope=identify'
+    token-endpoint-url: 'https://discord.com/api/oauth2/token'
+    user-info-endpoint-url: 'https://discord.com/api/users/@me'
+    token-authentication-method: Client ID and Client Secret in Body
     scope: identify
-    username: identity
+    authentication-uri-parameters: prompt=none
+    username: '#username#  (discord)'
     convert-username-to-upper-case: false
+    additional-user-attributes: id,username,discriminator,avatar
+    map-additional-user-attributes-to: G_DISCORD_ID,G_DISCORD,G_DISCORD_DISCRIMINATOR,G_DISCORD_AVATAR
     verify-attributes: false
 
   session-not-valid: 
@@ -64,4 +68,7 @@
 
   real-application-security: 
     ras-mode: Disabled
+
+  comments: 
+    comments: 'Avatar: https://cdn.discordapp.com/avatars/{id}/{avatar}.png'
 
