@@ -5,3 +5,5 @@ insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_PLAYER
 insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_PLAYERS_U02', 'That player name is already in use');
 
 insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_TOURNAMENT_PLA_U1', 'That player is already registered.');
+
+insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_PLAYERS_U03', 'That player is already in use.');

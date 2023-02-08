@@ -302,5 +302,75 @@ end assign_rooms;
 
 
 
+
+
+/**
+ * Given a Discord ID see if this player's name matches one of the existing
+ * players.
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created 
+ * @param p_discord_id
+ * @return
+ */
+procedure possible_player_match (
+    p_discord_account in wmg_players.account%type
+  , p_discord_id      in wmg_players.discord_id%type
+  , x_players_tbl     in out nocopy tab_keyval_type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'possible_player_match';
+
+  l_players_arr  varchar2(32767);
+  l_players_tbl  tab_keyval_type := tab_keyval_type();
+  l_found number := 0;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+
+  if p_discord_id is null then
+    null;  -- player is already match to a discord id
+  else
+
+    begin
+      select 1 into l_found from wmg_players where discord_id = p_discord_id;
+    exception
+      when no_data_found then
+        l_players_arr := null;
+    end;
+
+    if l_found = 0 then
+
+      select id, account
+       bulk collect into l_players_tbl
+      from (
+          select p.id, p.account, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
+            from wmg_players p
+      )
+      where similarity >= 74
+      fetch first 5 rows only;
+
+    end if;
+
+  end if;
+
+  x_players_tbl := l_players_tbl;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end possible_player_match;
+
+
+
 end wmg_util;
 /
