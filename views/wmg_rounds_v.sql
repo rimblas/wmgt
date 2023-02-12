@@ -70,24 +70,33 @@ select
     , nvl(r.s17 - cs.h17, 0) par17
     , nvl(r.s18 - cs.h18, 0) par18
 
-   , nvl(r.s1 - cs.h1, 0) +
-    nvl(r.s2 - cs.h2, 0) +
-    nvl(r.s3 - cs.h3, 0) +
-    nvl(r.s4 - cs.h4, 0) +
-    nvl(r.s5 - cs.h5, 0) +
-    nvl(r.s6 - cs.h6, 0) +
-    nvl(r.s7 - cs.h7, 0) +
-    nvl(r.s8 - cs.h8, 0) +
-    nvl(r.s9 - cs.h9, 0) +
-    nvl(r.s10 - cs.h10, 0) +
-    nvl(r.s11 - cs.h11, 0) +
-    nvl(r.s12 - cs.h12, 0) +
-    nvl(r.s13 - cs.h13, 0) +
-    nvl(r.s14 - cs.h14, 0) +
-    nvl(r.s15 - cs.h15, 0) +
-    nvl(r.s16 - cs.h16, 0) +
-    nvl(r.s17 - cs.h17, 0) +
-    nvl(r.s18 - cs.h18, 0) under_par
+   , case when r.override_score is null then
+      nvl(r.s1 - cs.h1, 0) +
+      nvl(r.s2 - cs.h2, 0) +
+      nvl(r.s3 - cs.h3, 0) +
+      nvl(r.s4 - cs.h4, 0) +
+      nvl(r.s5 - cs.h5, 0) +
+      nvl(r.s6 - cs.h6, 0) +
+      nvl(r.s7 - cs.h7, 0) +
+      nvl(r.s8 - cs.h8, 0) +
+      nvl(r.s9 - cs.h9, 0) +
+      nvl(r.s10 - cs.h10, 0) +
+      nvl(r.s11 - cs.h11, 0) +
+      nvl(r.s12 - cs.h12, 0) +
+      nvl(r.s13 - cs.h13, 0) +
+      nvl(r.s14 - cs.h14, 0) +
+      nvl(r.s15 - cs.h15, 0) +
+      nvl(r.s16 - cs.h16, 0) +
+      nvl(r.s17 - cs.h17, 0) +
+      nvl(r.s18 - cs.h18, 0) 
+    else
+      r.override_score 
+    end under_par
+  , r.final_score
+  , case when r.override_score is null then '' else 'Y' end score_override_flag
+  , r.override_reason
+  , r.override_by
+  , r.override_on
   , r.created_on
   , r.created_by
   , r.updated_on

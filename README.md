@@ -35,3 +35,17 @@ Helper core views:
 
 
 
+### WMG_ROUND & WMG_ROUND_V
+
+The `WMG_ROUND_V` view contains just about everything you might need about a player's round.
+
+
+| : Column :            | Description                                                     |
+| --------------------- | --------------------------------------------------------------- |
+| `S[1-18]`             | Strokes taken per hole (1, 2, 3, ...)                           |
+| `ROUND_STROKES`       | Sum of `S[1-18]`                                                |
+| `PAR[1-18]`           | Under par score per hole                                        |
+| `UNDER_PAR`           | Sum of `PAR[1-18]` unless an override is in place               |
+| `FINAL_SCORE`         | Under par score entered by player. It may not match `UNDER_PAR` |
+| `SCORE_OVERRIDE_FLAG` | Y is an override score is in place                              |
+
