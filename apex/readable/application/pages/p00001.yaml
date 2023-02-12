@@ -35,8 +35,10 @@ css:
       transform: scale(1.2);
       transition: .25s transform;
     }
+    
     .nextCourses {text-align: center;}
     .nextCourses .name {font-weight: 700; font-size: 1.1em;}
+    
     
 
 security: 
@@ -70,7 +72,7 @@ regions:
 
   layout: 
     sequence: 19
-    parent-region: No Parent
+    parent-region: '{col2}' # 3472525362873700
     position: BODY
     start-new-layout: false
     start-new-row: false
@@ -89,7 +91,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -162,49 +164,26 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Most h1n Current Season =====================
-  id: 24442381952412124335
+- # ====== Region: {col2} ======================================
+  id: 3472525362873700
   identification: 
-    title: Most h1n Current Season
-    type: Classic Report
-
-  source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      select r.*, rank() over (order by r.hn1 desc) pos
-      from (
-          select substr(r.week,1,3) season
-           , p.account
-           , sum(r.score) hn1
-        from wmg_rounds_unpivot_mv r
-           , wmg_players p
-           , wmg_courses_v c
-      where r.player_id = p.id
-      and c.course_id = r.course_id
-      and r.score = 1
-       and r.week like 'S08%'
-      group by substr(r.week,1,3)
-      , p.account
-      order by 3 desc
-      ) r
-      
+    title: '{col2}'
+    type: Static Content
 
   layout: 
-    sequence: 39
+    sequence: 29
     parent-region: No Parent
     position: BODY
     start-new-layout: false
     start-new-row: false
-    column: Automatic
+    column: 3
     new-column: true
-    column-span: 3
+    column-span: 7
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
-    - t-Region--scrollBody
     render-components: Above Content
 
   accessibility: 
@@ -222,211 +201,54 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    layout: 
-      number-of-rows-type: Static Value
-      number-of-rows: 10
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
-    appearance: 
-      template-type: Theme
-      template: Standard # 46986618016296702453
-      template-options: 
-      - '#DEFAULT#'
-      - t-Report--stretch
-      - t-Report--altRowsDefault
-      - t-Report--rowHighlight
-
-    pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
-    performance: 
-      lazy-loading: false
-
-    break-formatting: 
-      break-columns: No Break
-
-    advanced: 
-      strip-html: false
-      sort-nulls: Last
-
-    heading: 
-      type: Custom Headings
-
-    download: 
-      csv-export-enabled: false
-
-    printing: 
-      enabled: false
-
-  columns: 
-  - # ====== Column: ACCOUNT =====================================
-    id: 24442382089838124336
-    identification: 
-      column-name: ACCOUNT
-      type: Plain Text
-
-    heading: 
-      heading: Account
-      alignment: center
-
-    layout: 
-      sequence: 30
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HN1 =========================================
-    id: 24442382324270124339
-    identification: 
-      column-name: HN1
-      type: Plain Text
-
-    heading: 
-      heading: Hn1
-      alignment: center
-
-    layout: 
-      sequence: 40
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: SEASON ======================================
-    id: 24442382426151124340
-    identification: 
-      column-name: SEASON
-      type: Plain Text
-
-    heading: 
-      heading: Season
-      alignment: center
-
-    layout: 
-      sequence: 20
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: POS =========================================
-    id: 24442382956228124345
-    identification: 
-      column-name: POS
-      type: Plain Text
-
-    heading: 
-      heading: Pos
-      alignment: center
-
-    layout: 
-      sequence: 10
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-- # ====== Region: Most h1n Over the last &P1_TOTAL_WEEKS. weeks
-  id: 24442382516674124341
+- # ====== Region: Match Player to Discord Account =============
+  id: 3472625281873701
   identification: 
-    title: Most h1n Over the last &P1_TOTAL_WEEKS. weeks
-    type: Classic Report
+    title: Match Player to Discord Account
+    type: Dynamic Content
 
   source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      select r.*, rank() over (order by r.hn1 desc) pos
-      from (
-      select p.account
-           , sum(r.score) hn1
-        from wmg_rounds_unpivot_mv r
-           , wmg_players p
-           , wmg_courses_v c
-      where r.player_id = p.id
-      and c.course_id = r.course_id
-      and r.score = 1
-      -- r.week like 'S07%'
-      group by p.account
-      order by 2 desc
-      ) r
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      declare 
+        l_out  varchar2(32767);
+        l_result apex_application_global.vc_arr2;
+      begin
+        l_out := '<img src="' || wmg_discord.avatar(p_discord_id => :G_DISCORD_ID, p_avatar_uri => :G_DISCORD_AVATAR) || '">
+      Hi, ' || :G_DISCORD || '!<br>
+      <br>
+      Hey, we found existing players that may match your Discord name, is one of these you?<br><br>
+      <dl class="t-AVPList t-AVPList--leftAligned">';
+      
+      for i in 1 .. apex_application.g_f01.count
+      loop 
+        l_out := l_out || '<dt class="t-AVPList-label">' || apex_escape.html(apex_application.g_f02(i)) || '</dt>';
+        l_out := l_out || '<dd class="t-AVPList-value"><a href="javascript:void(0);" data-id="' || apex_application.g_f01(i) || '" class="matchDiscord">Yes, this one!</a></dd>';
+      end loop;
+      l_out := l_out || '</dl>';
+      return l_out;
+      end;
 
   layout: 
-    sequence: 49
-    parent-region: No Parent
+    sequence: 10
+    parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
     start-new-row: true
-    column: 10
+    column: Automatic
     new-column: true
-    column-span: 3
+    column-span: Automatic
 
   appearance: 
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--stacked
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -435,8 +257,36 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+       l_players_tbl  wmg_util.tab_keyval_type;
+      begin 
+          wmg_util.possible_player_match(
+              p_discord_account => :G_DISCORD
+            , p_discord_id      => :G_DISCORD_ID
+            , x_players_tbl     => l_players_tbl
+          );
+      
+          if l_players_tbl is null then 
+             return false;
+          else
+             for i in 1.. l_players_tbl.count
+             loop
+                apex_application.g_f01(i) := l_players_tbl(i).key;
+                apex_application.g_f02(i) := l_players_tbl(i).val;
+             end loop;
+             return l_players_tbl.count > 0;
+          end if;
+      end;
+
+  security: 
+    authorization-scheme: Beta Tester # 3554679108597518
 
   server-cache: 
     caching: Disabled
@@ -445,139 +295,8 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    layout: 
-      number-of-rows-type: Static Value
-      number-of-rows: 10
-
-    appearance: 
-      template-type: Theme
-      template: Standard # 46986618016296702453
-      template-options: 
-      - '#DEFAULT#'
-      - t-Report--stretch
-      - t-Report--altRowsDefault
-      - t-Report--rowHighlight
-
-    pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
     performance: 
       lazy-loading: false
-
-    break-formatting: 
-      break-columns: No Break
-
-    advanced: 
-      strip-html: false
-      sort-nulls: Last
-
-    heading: 
-      type: Custom Headings
-
-    download: 
-      csv-export-enabled: false
-
-    printing: 
-      enabled: false
-
-  columns: 
-  - # ====== Column: ACCOUNT =====================================
-    id: 24442382713644124343
-    identification: 
-      column-name: ACCOUNT
-      type: Plain Text
-
-    heading: 
-      heading: Account
-      alignment: center
-
-    layout: 
-      sequence: 20
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HN1 =========================================
-    id: 24442382851853124344
-    identification: 
-      column-name: HN1
-      type: Plain Text
-
-    heading: 
-      heading: Hn1
-      alignment: center
-
-    layout: 
-      sequence: 30
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: POS =========================================
-    id: 24442383064332124346
-    identification: 
-      column-name: POS
-      type: Plain Text
-
-    heading: 
-      heading: Pos
-      alignment: center
-
-    layout: 
-      sequence: 10
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
 
 - # ====== Region: Next Tournament =============================
   id: 24735740413470583646
@@ -612,7 +331,7 @@ regions:
       fetch first 1 rows only
 
   layout: 
-    sequence: 29
+    sequence: 20
     parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
@@ -997,7 +716,7 @@ regions:
     list: Tournament Options # 55884590206608414057
 
   layout: 
-    sequence: 40
+    sequence: 30
     parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
@@ -1023,6 +742,9 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  security: 
+    authorization-scheme: Beta Tester # 3554679108597518
+
   server-cache: 
     caching: Disabled
 
@@ -1046,10 +768,10 @@ regions:
       - t-Cards--animRaiseCard
 
 page-items: 
-- # ====== Page Item: P1_TOTAL_WEEKS ===========================
-  id: 204063454006374
+- # ====== Page Item: P1_MATCH_PLAYER_ID =======================
+  id: 3473096791873706
   identification: 
-    name: P1_TOTAL_WEEKS
+    name: P1_MATCH_PLAYER_ID
     type: Hidden
 
   settings: 
@@ -1057,7 +779,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Most h1n Over the last &P1_TOTAL_WEEKS. weeks # 24442382516674124341
+    region: Match Player to Discord Account # 3472625281873701
     position: BODY
 
   advanced: 
@@ -1076,23 +798,188 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-computations: 
-- # ====== Computation: P1_TOTAL_WEEKS =========================
-  id: 204167332006375
+buttons: 
+- # ====== Button: BETA_TESTER =================================
+  id: 3472123747873696
   identification: 
-    item-name: P1_TOTAL_WEEKS
+    button-name: BETA_TESTER
+    label: I'm a Tester
+
+  layout: 
+    sequence: 40
+    region: '{Next Tournament Info}' # 665559002503481
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-users
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 3554679108597518
+
+dynamic-actions: 
+- # ====== Dynamic Action: Match Player to Discord ID ==========
+  id: 3472953411873704
+  identification: 
+    name: Match Player to Discord ID
 
   execution: 
     sequence: 10
-    point: Before Regions
 
-  computation: 
-    type: SQL Query (return single value)
-    sql-query: |
-      select count(distinct week)
-      from  wmg_rounds
-      
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .matchDiscord
 
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_application.g_f01.count > 0
+
+  actions: 
+  - # ====== Action: get player id ===============================
+    id: 3473013369873705
+    identification: 
+      name: get player id
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P1_MATCH_PLAYER_ID
+
+    execution: 
+      sequence: 20
+      event: Match Player to Discord ID # 3472953411873704
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Assign Discord info to player ===============
+    id: 3473315981873708
+    identification: 
+      name: Assign Discord info to player
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        begin
+        
+        update wmg_players
+            set discord_id = :G_DISCORD_ID
+            , discord_avatar = :G_DISCORD_AVATAR
+            , discord_discriminator = :G_DISCORD_DISCRIMINATOR
+        where id = :P1_MATCH_PLAYER_ID
+          and discord_id is null;
+        
+        exception
+          when DUP_VAL_ON_INDEX then
+           -- Someone already has thay Discord ID
+            :P1_MATCH_PLAYER_ID := -1;
+           -- WKSP_WMGT.WMG_PLAYERS_U03
+        end;
+      items-to-submit: 
+      - P1_MATCH_PLAYER_ID
+      items-to-return: 
+      - P1_MATCH_PLAYER_ID
+      suppress-change-event: false
+
+    execution: 
+      sequence: 30
+      event: Match Player to Discord ID # 3472953411873704
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Oops ========================================
+    id: 3473446683873709
+    identification: 
+      name: Oops
+      action: Alert
+
+    settings: 
+      title: Ooops
+      message: Looks like there's a different player assigned to your Discord user.
+      style: Danger
+      ok-label: Ok
+
+    execution: 
+      sequence: 40
+      event: Match Player to Discord ID # 3472953411873704
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P1_MATCH_PLAYER_ID
+      value: '-1'
+
+  - # ====== Action: Success =====================================
+    id: 3473479827873710
+    identification: 
+      name: Success
+      action: Alert
+
+    settings: 
+      title: Success
+      message: Your Discord account has been mapped
+      style: Success
+      ok-label: Ok
+
+    execution: 
+      sequence: 50
+      event: Match Player to Discord ID # 3472953411873704
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item != Value
+      item: P1_MATCH_PLAYER_ID
+      value: '-1'
+
+  - # ====== Action: Hide ========================================
+    id: 3473586786873711
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Match Player to Discord Account # 3472625281873701
+
+    execution: 
+      sequence: 60
+      event: Match Player to Discord ID # 3472953411873704
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+computations: 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
   id: 2316748674575093601
   identification: 
@@ -1137,6 +1024,28 @@ computations:
         and tp.active_ind = 'Y'
 
 processes: 
+- # ====== Process: I'm a Tester ===============================
+  id: 3472231763873697
+  identification: 
+    name: I'm a Tester
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: ":G_BETA_TESTER_FLAG := 'Y';"
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: BETA_TESTER # 3472123747873696
+
 - # ====== Process: Init Courses ===============================
   id: 15526039077281949501
   identification: 

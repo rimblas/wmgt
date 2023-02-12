@@ -1,0 +1,17 @@
+---
+- # ====== Application Computation: G_PLAYER_ID ================
+  id: 4887183940231839
+  identification: 
+    item-name: G_PLAYER_ID
+
+  execution: 
+    sequence: 10
+    point: AFTER_LOGIN
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select id
+      from wmg_players
+      where (account = :APP_USER or discord_id = :G_DISCORD_ID)
+

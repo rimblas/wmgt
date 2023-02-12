@@ -74,7 +74,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -86,10 +86,12 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '00:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '00:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by decode(s.rooms_open_flag, 'Y', p.room_no, ''), p.tournament_player_created
 
   layout: 
     sequence: 29
@@ -246,7 +248,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -258,10 +260,12 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '04:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '04:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by decode(s.rooms_open_flag, 'Y', p.room_no, ''), p.tournament_player_created
 
   layout: 
     sequence: 39
@@ -416,7 +420,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -428,7 +432,9 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '08:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '08:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by p.room_no, p.tournament_player_created
@@ -586,7 +592,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -598,7 +604,9 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '12:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '12:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by p.room_no, p.tournament_player_created
@@ -756,7 +764,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -768,7 +776,9 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '16:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '16:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by p.room_no, p.tournament_player_created
@@ -926,7 +936,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -938,7 +948,9 @@ regions:
                apex_escape.html(p.account)
              end players
       from wmg_tournament_player_v p
-      where p.time_slot = '20:00'
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '20:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by p.room_no, p.tournament_player_created
@@ -1400,6 +1412,44 @@ regions:
       escape-special-characters: true
 
 buttons: 
+- # ====== Button: OPEN_ROOMS ==================================
+  id: 3819029434911601
+  identification: 
+    button-name: OPEN_ROOMS
+    label: Open Rooms
+
+  layout: 
+    sequence: 20
+    region: Breadcrumb # 58998669373500537434
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--success
+    - t-Button--iconLeft
+    - t-Button--hoverIconPush
+    icon: fa-unlock
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag is null"
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
 - # ====== Button: ASSIGN_ROOM =================================
   id: 24442383289129124348
   identification: 
@@ -1654,6 +1704,35 @@ buttons:
     authorization-scheme: Tournament Admin # 55893512303411682019
 
 dynamic-actions: 
+- # ====== Dynamic Action: Highlight Player ====================
+  id: 4007924469738096
+  identification: 
+    name: Highlight Player
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 4008038280738097
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(".player").parents("tr").addClass("mark")
+
+    execution: 
+      sequence: 10
+      event: Highlight Player # 4007924469738096
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Submit Room Assignments =============
   id: 40380891077778957228
   identification: 
@@ -1775,6 +1854,37 @@ computations:
     comments: This is an override during development
 
 processes: 
+- # ====== Process: Open Rooms =================================
+  id: 3819087288911602
+  identification: 
+    name: Open Rooms
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_tournament_sessions
+         set rooms_open_flag = decode(rooms_open_flag, 'Y', null, 'Y')
+      where id = :G_CURRENT_SESSION_ID;
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Rooms are now open!
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: OPEN_ROOMS # 3819029434911601
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
 - # ====== Process: Run Room Assignments =======================
   id: 40817362645960412001
   identification: 
@@ -1791,6 +1901,12 @@ processes:
     point: Processing
     run-process: Once Per Page Visit (default)
 
+  success-message: 
+    success-message: Rooms have been assigned, don't forget to open up the rooms!
+
   error: 
     display-location: Inline in Notification
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
 
