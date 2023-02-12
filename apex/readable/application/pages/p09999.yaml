@@ -16,7 +16,7 @@ navigation-menu:
   override-user-interface-level: false
 
 navigation: 
-  cursor-focus: First item on page
+  cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
 css: 
@@ -56,6 +56,10 @@ css:
         --a-button-hover-text-color: white;
     }
     
+    .legend {
+        text-align: center;
+        margin: 1rem auto;
+    }
 
 security: 
   authentication: Page Is Public
@@ -80,10 +84,118 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: &APP_NAME. ==================================
+- # ====== Region: About the Discord Login =====================
+  id: 3474043816873715
+  identification: 
+    title: About the Discord Login
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Player Login # 47577408628042657320
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: |
+      <div class="legend">As a player, use Discord to sign-in.<br>
+      It's safe and secure.</div>
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: About Social Login ==========================
+  id: 3474241384873717
+  identification: 
+    title: About Social Login
+    type: Static Content
+
+  source: 
+    html-code: |
+      <b>Q:</b> How does this work?<br>
+      <b>A:</b> You tell Discord who you are, and Discord will let us know your username, avatar, and banner.<br>
+      <br>
+      <b>Q:</b> Ok, but why do you need me to login?<br>
+      <b>A:</b> This way, we ensure that two players with similar names don't accidentally use each other's accounts. 
+      And the Tournament Admins can reach you via Discord.<br>
+      <br>
+      <b>Q:</b> Will you know my email, name, or phone?<br>
+      <b>A:</b> Nope. Zilch. Nada. We don't need it; we don't want it; we don't ask Discord for it.<br>
+      <br>
+      <b>Q:</b> But what exactly is this witchery?<br>
+      <b>A:</b> Ok, if you want to get technical...<br>
+      <br>
+      We're using the <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Oauth2</a> protocol to communicate with Discord securely.<br>
+      You log in to Discord and agree to let us know who you are. Discord then vouches for you and gives us your Discord name, discriminator (that little number next to your name), Avatar pointer, and your Discord ID.<br>
+      
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: aboutSocialLogin
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Admin's Login ===============================
   id: 46986690493641702572
   identification: 
-    title: '&APP_NAME.'
+    title: Admin's Login
     type: Static Content
 
   layout: 
@@ -100,10 +212,8 @@ regions:
     template: Login # 46986577691210702437
     template-options: 
     - '#DEFAULT#'
+    - t-Login-region--headerTitle js-removeLandmark
     render-components: Above Content
-
-  image: 
-    file-url: '#APP_FILES#img/26f3.svg'
 
   accessibility: 
     use-landmark: true
@@ -124,10 +234,10 @@ regions:
       output-as: Text (escape special characters)
       show-line-breaks: true
 
-- # ====== Region: Sign In =====================================
+- # ====== Region: Player Login ================================
   id: 47577408628042657320
   identification: 
-    title: Sign In
+    title: Player Login
     type: Static Content
 
   layout: 
@@ -144,8 +254,10 @@ regions:
     template: Login # 46986577691210702437
     template-options: 
     - '#DEFAULT#'
-    - t-Login-region--headerTitle js-removeLandmark
     render-components: Above Content
+
+  image: 
+    file-url: '#APP_FILES#img/26f3.svg'
 
   accessibility: 
     use-landmark: true
@@ -187,7 +299,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: '&APP_NAME.' # 46986690493641702572
+    region: Admin's Login # 46986690493641702572
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -242,7 +354,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: '&APP_NAME.' # 46986690493641702572
+    region: Admin's Login # 46986690493641702572
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -294,7 +406,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: '&APP_NAME.' # 46986690493641702572
+    region: Admin's Login # 46986690493641702572
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -347,7 +459,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: '&APP_NAME.' # 46986690493641702572
+    region: Admin's Login # 46986690493641702572
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -386,6 +498,40 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: LEARN_MORE ==================================
+  id: 3474134757873716
+  identification: 
+    button-name: LEARN_MORE
+    label: Learn More
+
+  layout: 
+    sequence: 10
+    region: About the Discord Login # 3474043816873715
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - col-xxs-12
+    - col-xs-12
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    - t-Button--link
+    - t-Button--iconLeft
+    - t-Button--stretch
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 - # ====== Button: LOGIN =======================================
   id: 46986692592679702574
   identification: 
@@ -394,7 +540,7 @@ buttons:
 
   layout: 
     sequence: 40
-    region: '&APP_NAME.' # 46986690493641702572
+    region: Admin's Login # 46986690493641702572
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -420,8 +566,8 @@ buttons:
     label: Sign In with Google
 
   layout: 
-    sequence: 10
-    region: Sign In # 47577408628042657320
+    sequence: 50
+    region: Admin's Login # 46986690493641702572
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -456,7 +602,7 @@ buttons:
 
   layout: 
     sequence: 5
-    region: Sign In # 47577408628042657320
+    region: Player Login # 47577408628042657320
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -490,6 +636,40 @@ buttons:
     - In
     - with
     - Discord"
+
+dynamic-actions: 
+- # ====== Dynamic Action: About About =========================
+  id: 3474347635873718
+  identification: 
+    name: About About
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: LEARN_MORE # 3474134757873716
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Open Region =================================
+    id: 3474465114873719
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: About Social Login # 3474241384873717
+
+    execution: 
+      sequence: 10
+      event: About About # 3474347635873718
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
 processes: 
 - # ====== Process: Login ======================================
