@@ -54,8 +54,21 @@ javascript:
       self.s17 = ko.observable(0);
       self.s18 = ko.observable(0);
       self.par = ko.observable(0);
+      self.scoreOverride = ko.observable(0);
+      self.overrideOn = ko.computed(function() {
+        if (!!self.scoreOverride()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+      }, self);
     
       self.total = ko.computed(function() {
+        if (!!self.scoreOverride()) {
+            return to_number(self.scoreOverride());
+        }
+        else
         return ( 
                to_number(self.s1()) +
                to_number(self.s2()) +
@@ -97,41 +110,50 @@ javascript:
       $("#holePreview").popup("open");
     }
   execute-when-page-loads: |
-    // this was an attempt to switch to number inputs on mobile devices, but it needs work, hence the XXX
-    $(".XXXnumber_field[name^='P9_S'").each (function() {
-        this.type = 'number';  // switch to number input so see a mobile friendly field
-        $(this).attr("pattern", "\d*");
-     });
-    
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
     ko.applyBindings(viewModel);
 
 css: 
   inline: |
+    .override {outline: 2px solid red;}
+    #P9_SCORE_CONTAINER span.a-Form-error {
+        position: absolute;
+        top: -14px;
+        left: -14px;
+        right: -20px;
+    }
+    
+    .front9regionRow {padding-right: 0;}
+    .back9regionRow {padding-left: 0;}
+    .not-displayed {opacity: 0;}
+    
     #P9_WEEK {text-transform: uppercase;}
-    #scoresRegion .t-Form-labelContainer label {
-            border: 1px solid;
+    .coursePar .t-Form-labelContainer label {
+       border: 1px solid;
         border-radius: 100%;
         width: 28px;
         text-align: center;
     }
+    .coursePar .t-Form-inputContainer,
     #scoresRegion .t-Form-inputContainer {
      justify-content: center;
       margin-top: 5px;
     }
     
+    .coursePar .t-Form-fieldContainer,
     #scoresRegion .t-Form-fieldContainer {
         cursor: help;
     }
     
-    #scoresRegion,
-    #roundScores {
+    .coursePar,
+    .roundScores {
         flex-direction: row;
         justify-content: space-evenly;
         display: flex;
     }
-    #roundScores .t-Form-labelContainer {
+    
+    .roundScores .t-Form-labelContainer {
     text-align:center;
     }
     .number_field,
@@ -156,11 +178,17 @@ css:
         display: none;
     }
     
+    @media only screen and (max-width: 767px) {
+        .back9regionRow {
+            margin-top: 2rem;
+        }
+    }
+    
     @media only screen and (max-width: 900px) {
-        #roundScores .t-Form-inputContainer.col.col-null {
+        .roundScores .t-Form-inputContainer.col.col-null {
           padding: 1px;
         }
-        #scoresRegion .t-Form-labelContainer {
+        .coursePar .t-Form-labelContainer {
           padding: 0 3px;
         }
         .number_field,
@@ -174,10 +202,12 @@ css:
     
     }
     
-    #subButtonsRegion {
+    .subButtonsRegion {
       display: flex;
       flex-flow: row-reverse;
     }
+    
+    
 
 security: 
   authorization-scheme: Contribution Rights # 46986682878463702496
@@ -205,8 +235,146 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 70
     parent-region: Round # 46986753890975703559
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - subButtonsRegion
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Buttons} ===================================
+  id: 3474654454873721
+  identification: 
+    title: '{Buttons}'
+    type: Static Content
+
+  layout: 
+    sequence: 80
+    parent-region: Round # 46986753890975703559
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - subButtonsRegion
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Score Override ==============================
+  id: 3816124145911572
+  identification: 
+    title: Score Override
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size600x400
+    - js-popup-pos-after
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Override Info ===============================
+  id: 4005493085738072
+  identification: 
+    title: Override Info
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select override_by
+           , '(' || apex_util.get_since(override_on) || ')' override_on
+      from wmg_rounds
+      where id = :P9_ID
+
+  layout: 
+    sequence: 10
+    parent-region: Score Override # 3816124145911572
     position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
@@ -225,7 +393,151 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    static-id: subButtonsRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_OVERRIDE_FLAG
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Contextual Info # 46986613809310702452
+      template-options: 
+      - '#DEFAULT#'
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: OVERRIDE_BY =================================
+    id: 4005660830738073
+    identification: 
+      column-name: OVERRIDE_BY
+      type: Plain Text
+
+    heading: 
+      heading: Override By
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: OVERRIDE_ON =================================
+    id: 4005734638738074
+    identification: 
+      column-name: OVERRIDE_ON
+      type: Plain Text
+
+    heading: 
+      heading: set
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {front9} ====================================
+  id: 4006628275738083
+  identification: 
+    title: '{front9}'
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: Round # 46986753890975703559
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - front9regionRow
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-right-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: front9regionRow
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -240,15 +552,60 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: {Round Scores} ==============================
-  id: 15134617001851923850
+- # ====== Region: {back9} =====================================
+  id: 4006759697738084
   identification: 
-    title: '{Round Scores}'
+    title: '{back9}'
     type: Static Content
 
   layout: 
-    sequence: 20
+    sequence: 60
     parent-region: Round # 46986753890975703559
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - back9regionRow
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-left-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {front9par} =================================
+  id: 4006855323738085
+  identification: 
+    title: '{front9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{front9}' # 4006628275738083
     position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
@@ -260,6 +617,8 @@ regions:
     template: Blank with Attributes (No Grid) # 46986521189613702414
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - coursePar
     render-components: Above Content
 
   accessibility: 
@@ -267,7 +626,135 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    static-id: roundScores
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {front9scores} ==============================
+  id: 4006886951738086
+  identification: 
+    title: '{front9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{front9}' # 4006628275738083
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {back9par} ==================================
+  id: 4007073771738087
+  identification: 
+    title: '{back9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{back9}' # 4006759697738084
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - coursePar
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {back9scores} ===============================
+  id: 4007173026738088
+  identification: 
+    title: '{back9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{back9}' # 4006759697738084
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -446,48 +933,6 @@ regions:
     performance: 
       lazy-loading: false
 
-- # ====== Region: {scores} ====================================
-  id: 109903996841783275161
-  identification: 
-    title: '{scores}'
-    type: Static Content
-
-  layout: 
-    sequence: 10
-    parent-region: '{Course Strokes}' # 141756093638378054301
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: scoresRegion
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
 - # ====== Region: {Course Strokes} ============================
   id: 141756093638378054301
   identification: 
@@ -548,6 +993,115 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P9_H9B_MOBILE_SPACER =====================
+  id: 609998849572877
+  identification: 
+    name: P9_H9B_MOBILE_SPACER
+    type: Display Only
+
+  label: 
+    label: '&nbsp;'
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 120
+    region: '{front9par}' # 4006855323738085
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_S9B ===================================
+  id: 610133074572878
+  identification: 
+    name: P9_S9B
+    type: Number Field
+
+  label: 
+    label: H9b
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Numeric
+
+  layout: 
+    sequence: 150
+    region: '{front9scores}' # 4006886951738086
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P9_PREV_ID ===============================
   id: 665619576503482
   identification: 
@@ -580,6 +1134,163 @@ page-items:
 
   comments: 
     comments: This is the ID of the last round that was just entered and can be used to get back to verify a score
+
+- # ====== Page Item: P9_OVERRIDE_SCORE ========================
+  id: 3816458758911575
+  identification: 
+    name: P9_OVERRIDE_SCORE
+    type: Number Field
+
+  label: 
+    label: New Score
+    alignment: Left
+
+  settings: 
+    number-alignment: Start
+    virtual-keyboard: Numeric
+
+  layout: 
+    sequence: 10
+    region: Score Override # 3816124145911572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 4
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 3
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - scoreOverride"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46986753890975703559
+    column: OVERRIDE_SCORE
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: This score will override whatever number the scorecard reads.
+
+- # ====== Page Item: P9_OVERRIDE_REASON =======================
+  id: 4005779966738075
+  identification: 
+    name: P9_OVERRIDE_REASON
+    type: Textarea
+
+  label: 
+    label: Override Reason
+    alignment: Left
+
+  settings: 
+    resizable: true
+    auto-height: false
+    character-counter: false
+    trim-spaces: Leading and Trailing
+
+  layout: 
+    sequence: 20
+    region: Score Override # 3816124145911572
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Above # 46986651392035702470
+    template-options: 
+    - '#DEFAULT#'
+    width: 40
+    height: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 500
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46986753890975703559
+    column: OVERRIDE_REASON
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Reason for the score override
+
+- # ====== Page Item: P9_OVERRIDE_FLAG =========================
+  id: 4912422798479578
+  identification: 
+    name: P9_OVERRIDE_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: Score Override # 3816124145911572
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P9_H =====================================
   id: 24442381683789124332
@@ -879,18 +1590,18 @@ page-items:
   id: 46986756482357703561
   identification: 
     name: P9_ROOM_NAME
-    type: Text Field
+    type: Text Field with autocomplete
 
   label: 
     label: Room Name
     alignment: Left
 
   settings: 
-    subtype: Text
-    trim-spaces: Leading and Trailing
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    search: Contains & Ignore Case
+    fetch-on-type: true
+    cache: true
+    maximum-values-in-list: 10
+    minimum-search: 1
 
   layout: 
     sequence: 60
@@ -910,11 +1621,15 @@ page-items:
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
-    width: 60
+    width: 30
 
   validation: 
     value-required: false
-    maximum-length: 1020
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: ROOM_NAMES # 4003631379654192
+    display-extra-values: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -929,12 +1644,10 @@ page-items:
   session-state: 
     storage: Per Request (Memory Only)
 
-  quick-picks: 
-    show-quick-picks: false
-
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
+    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P9_S1 ====================================
@@ -949,11 +1662,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 60
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1011,11 +1724,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 70
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1073,11 +1786,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 80
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1135,11 +1848,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 90
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1197,11 +1910,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 100
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1259,11 +1972,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 110
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1321,11 +2034,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 120
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1383,11 +2096,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 130
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1445,11 +2158,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 140
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{front9scores}' # 4006886951738086
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1507,11 +2220,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 150
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1569,11 +2282,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 160
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1630,11 +2343,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 170
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1691,11 +2404,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 180
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1752,11 +2465,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 190
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1813,11 +2526,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 200
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1874,11 +2587,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 210
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1935,11 +2648,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 220
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1996,11 +2709,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 230
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2063,7 +2776,7 @@ page-items:
 
   layout: 
     sequence: 240
-    region: '{Round Scores}' # 15134617001851923850
+    region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2081,7 +2794,11 @@ page-items:
   advanced: 
     custom-attributes: 
     - 'data-bind="text:'
-    - total"
+    - total,
+    - 'css:'
+    - "{'override':"
+    - overrideOn()}"
+    post-text-: '<span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOn()">Override in place</span>'
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -2234,7 +2951,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2286,7 +3003,7 @@ page-items:
 
   layout: 
     sequence: 40
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2338,7 +3055,7 @@ page-items:
 
   layout: 
     sequence: 50
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2390,7 +3107,7 @@ page-items:
 
   layout: 
     sequence: 60
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2442,7 +3159,7 @@ page-items:
 
   layout: 
     sequence: 70
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2494,7 +3211,7 @@ page-items:
 
   layout: 
     sequence: 80
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2546,7 +3263,7 @@ page-items:
 
   layout: 
     sequence: 90
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2598,7 +3315,7 @@ page-items:
 
   layout: 
     sequence: 100
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2650,7 +3367,7 @@ page-items:
 
   layout: 
     sequence: 110
-    region: '{scores}' # 109903996841783275161
+    region: '{front9par}' # 4006855323738085
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2702,7 +3419,7 @@ page-items:
 
   layout: 
     sequence: 120
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2754,7 +3471,7 @@ page-items:
 
   layout: 
     sequence: 130
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2806,7 +3523,7 @@ page-items:
 
   layout: 
     sequence: 140
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2858,7 +3575,7 @@ page-items:
 
   layout: 
     sequence: 150
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2910,7 +3627,7 @@ page-items:
 
   layout: 
     sequence: 160
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2962,7 +3679,7 @@ page-items:
 
   layout: 
     sequence: 170
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3014,7 +3731,7 @@ page-items:
 
   layout: 
     sequence: 180
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3066,7 +3783,7 @@ page-items:
 
   layout: 
     sequence: 190
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3118,7 +3835,7 @@ page-items:
 
   layout: 
     sequence: 200
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3170,7 +3887,7 @@ page-items:
 
   layout: 
     sequence: 210
-    region: '{scores}' # 109903996841783275161
+    region: '{back9par}' # 4007073771738087
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3352,6 +4069,72 @@ buttons:
   server-side-condition: 
     type: Request = Value
     value: REVIEW
+
+- # ====== Button: OVERRIDE_SCORE ==============================
+  id: 3474505388873720
+  identification: 
+    button-name: OVERRIDE_SCORE
+    label: Override Score
+
+  layout: 
+    sequence: 10
+    region: '{Buttons}' # 3474654454873721
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    - t-Button--gapTop
+    icon: fa-pencil-square-o fam-star fam-is-warning
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_ID
+
+  security: 
+    authorization-scheme: Administration Rights # 46986682652284702496
+
+- # ====== Button: APPLY_CHANGES_OVERRIDE ======================
+  id: 4005930571738076
+  identification: 
+    button-name: APPLY_CHANGES_OVERRIDE
+    label: Apply Changes
+
+  layout: 
+    sequence: 10
+    region: Score Override # 3816124145911572
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-check
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
 
 - # ====== Button: CANCEL ======================================
   id: 46986771380611703569
@@ -3595,6 +4378,39 @@ dynamic-actions:
       type: Item is NOT NULL
       item: P9_PREV_ID
 
+- # ====== Dynamic Action: Open Override Parameters ============
+  id: 3816225224911573
+  identification: 
+    name: Open Override Parameters
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: OVERRIDE_SCORE # 3474505388873720
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Open Region =================================
+    id: 3816289284911574
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Score Override # 3816124145911572
+
+    execution: 
+      sequence: 10
+      event: Open Override Parameters # 3816225224911573
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Preview Hole ========================
   id: 24442381769108124333
   identification: 
@@ -3606,7 +4422,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
-    jquery-selector: '#scoresRegion .t-Form-fieldContainer'
+    jquery-selector: .coursePar .t-Form-fieldContainer
 
   execution: 
     event-scope: Static
@@ -3981,6 +4797,23 @@ validations:
     associated-item: P9_WEEK # 47348557775096808505
 
 computations: 
+- # ====== Computation: P9_OVERRIDE_FLAG =======================
+  id: 4912579256479580
+  identification: 
+    item-name: P9_OVERRIDE_FLAG
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select 'Y'
+      from wmg_rounds
+      where id = :P9_ID
+        and override_score is not null
+
 - # ====== Computation: P9_WEEK ================================
   id: 47348558037376808508
   identification: 
@@ -4018,6 +4851,32 @@ processes:
   server-side-condition: 
     type: Request is contained in Value
     value: CREATE,CREATE_AGAIN
+
+- # ====== Process: Save Override Info =========================
+  id: 3819256655911603
+  identification: 
+    name: Save Override Info
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_rounds
+        set override_by = :APP_USER
+          , override_on = current_timestamp
+      where id = :P9_ID;
+
+  execution: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: APPLY_CHANGES_OVERRIDE # 4005930571738076
 
 - # ====== Process: Initialize form Round ======================
   id: 46986773930289703570
@@ -4057,7 +4916,7 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,CREATE_AGAIN,SAVE,DELETE
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_OVERRIDE
 
 - # ====== Process: Close Dialog ===============================
   id: 46986774702296703571
@@ -4066,7 +4925,7 @@ processes:
     type: Close Dialog
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -4075,7 +4934,7 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,SAVE,DELETE
+    value: CREATE,SAVE,DELETE,APPLY_CHANGES
 
 - # ====== Process: Save Last Default Course Values ============
   id: 47348557398943808501
@@ -4091,7 +4950,7 @@ processes:
       apex_util.set_preference('WMG_WEEK', :P9_WEEK)
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -4156,7 +5015,7 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,CREATE_AGAIN,SAVE,DELETE
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_OVERRIDE
 
 branches: 
 - # ====== Branch: Add Again ===================================

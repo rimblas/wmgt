@@ -38,6 +38,16 @@ javascript:
     
     function roundTotal() {
       var self = this;
+    
+      self.escore = ko.observable(0);
+      self.hscore = ko.observable(0);
+    
+      self.scoreOverrideEasy = ko.observable(0);
+      self.scoreOverrideMsgEasy = ko.observable(0);
+    
+      self.scoreOverrideHard = ko.observable(0);
+      self.scoreOverrideMsgHard = ko.observable(0);
+    
       self.es1 = ko.observable(0);
       self.es2 = ko.observable(0);
       self.es3 = ko.observable(0);
@@ -78,7 +88,28 @@ javascript:
       self.hs18 = ko.observable(0);
       self.hardpar = ko.observable(0);
     
+      self.overrideOnEasy = ko.computed(function() {
+        if (!!self.scoreOverrideEasy()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+      }, self);
+      self.overrideOnHard = ko.computed(function() {
+        if (!!self.scoreOverrideHard()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+      }, self);
+    
       self.total_easy = ko.computed(function() {
+        if (!!self.scoreOverrideEasy()) {
+            return to_number(self.scoreOverrideEasy());
+        }
+        else
         return ( 
                to_number(self.es1()) +
                to_number(self.es2()) +
@@ -102,6 +133,10 @@ javascript:
       }, self);
     
       self.total_hard = ko.computed(function() {
+        if (!!self.scoreOverrideHard()) {
+            return to_number(self.scoreOverrideHard());
+        }
+        else
         return ( 
                to_number(self.hs1()) +
                to_number(self.hs2()) +
@@ -123,6 +158,19 @@ javascript:
                to_number(self.hs18())
                ) - to_number(self.hardpar());
       }, self);
+    
+      self.easy_hard_total = ko.computed(function() {
+    // console.log("self.escore()", self.escore(), self.escore().length);
+        if (self.escore().length == 0 || self.escore().length == 0) {
+          return "-";
+        }
+        else
+        return ( 
+               to_number(self.escore()) +
+               to_number(self.hscore())
+               );
+      }, self);
+    
     }
     
   execute-when-page-loads: |
@@ -133,32 +181,68 @@ javascript:
 css: 
   inline: |
     #P50_WEEK {text-transform: uppercase;}
-    #scoresRegion .t-Form-labelContainer label {
-            border: 1px solid;
+    
+    .override {outline: 2px solid red;}
+    #P50_ESCORE_CONTAINER span.a-Form-error,
+    #P50_HSCORE_CONTAINER span.a-Form-error {
+        position: absolute;
+        top: -14px;
+        left: -14px;
+        right: -20px;
+    }
+    
+    .front9regionRow {padding-right: 0;}
+    .back9regionRow {padding-left: 0;}
+    .not-displayed {opacity: 0;}
+    
+    .coursePar .t-Form-labelContainer label {
+       border: 1px solid;
         border-radius: 100%;
         width: 28px;
         text-align: center;
     }
-    #scoresRegion .t-Form-inputContainer {
+    .coursePar .t-Form-inputContainer {
      justify-content: center;
       margin-top: 5px;
     }
     
-    #scoresRegion,
-    #roundScores {
+    .coursePar .t-Form-fieldContainer {
+        cursor: help;
+    }
+    
+    .coursePar,
+    .roundScores {
         flex-direction: row;
         justify-content: space-evenly;
         display: flex;
     }
-    #roundScores .t-Form-labelContainer {
+    
+    .roundScores .t-Form-labelContainer {
     text-align:center;
     }
+    
+    
+    #P50_TOTAL_CONTAINER.apex-item-wrapper--display-only .t-Form-inputContainer {
+        display: inline-block;
+    }
     .number_field,
-    #P50_SCORE_DISPLAY {
+    #P50_TOTAL_DISPLAY,
+    #P50_ESCORE_DISPLAY,
+    #P50_HSCORE_DISPLAY {
         font-family: Menlo,Consolas,monospace;
         padding: 4px;
     }
-    #P50_SCORE_DISPLAY {
+    
+    #P50_TOTAL_DISPLAY {
+        border: 1px solid #333;
+        padding: 4px 20px;
+        font-size: 1.2rem;
+        line-height: 1.7em;
+    }
+    
+    
+    #P50_ESCORE_DISPLAY,
+    #P50_HSCORE_DISPLAY {
         min-width: 40px;
         display: block;
         text-align: center;
@@ -169,32 +253,49 @@ css:
         border-style: solid;
     }
     
+    
+    
     .dupEntry {
         color: orange;
         margin-left: 5px;
         display: none;
     }
     
+    @media only screen and (max-width: 767px) {
+        .back9regionRow {
+            margin-top: 2rem;
+        }
+    }
+    
     @media only screen and (max-width: 900px) {
-        #roundScores .t-Form-inputContainer.col.col-null {
+        .roundScores .t-Form-inputContainer.col.col-null {
           padding: 1px;
         }
-        #scoresRegion .t-Form-labelContainer {
+        .coursePar .t-Form-labelContainer {
           padding: 0 3px;
         }
         .number_field,
-        #P50_SCORE_DISPLAY {
+        #P50_ESCORE_DISPLAY,
+        #P50_HSCORE_DISPLAY {
           font-family: Menlo,Consolas,monospace;
           padding: 3px;
         }
-        #P50_SCORE_DISPLAY {
+        #P50_ESCORE_DISPLAY,
+        #P50_HSCORE_DISPLAY {
           min-width: 30px;
         }
     
+    
     }
+    
+    .subButtonsRegion {
+      display: flex;
+      flex-flow: row-reverse;
+    }
+    
+    
 
 security: 
-  authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -212,33 +313,32 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: WIP =========================================
-  id: 3604836571922243045
+- # ====== Region: Your Results ================================
+  id: 610201051572879
   identification: 
-    title: WIP
+    title: Your Results
     type: Static Content
 
-  source: 
-    html-code: This page is not finished yet
-
   layout: 
-    sequence: 5
-    parent-region: No Parent
-    position: BODY
+    sequence: 10
+    parent-region: '{Player & Round Details}' # 40817362897326412003
+    position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: 4
     new-column: true
     column-span: 6
+    column-css-classes: 
+    - col-xs-12
+    - col-sm-12
+    - col-md-12
+    - null
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
-    - t-Alert--colorBG
-    - t-Alert--horizontal
-    - t-Alert--defaultIcons
-    - t-Alert--warning
+    - t-Region--scrollBody
     render-components: Above Content
 
   accessibility: 
@@ -246,48 +346,6 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: {Round Scores - Hard} =======================
-  id: 30658980642446839834
-  identification: 
-    title: '{Round Scores - Hard}'
-    type: Static Content
-
-  layout: 
-    sequence: 70
-    parent-region: '&P50_HARD_COURSE.' # 47577408860194657322
-    position: BODY
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: roundScores
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -302,15 +360,167 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: {Round Scores - Easy} =======================
-  id: 30659119124433557079
+- # ====== Region: Would you enter your scorecards? ============
+  id: 610682290572884
   identification: 
-    title: '{Round Scores - Easy}'
+    title: Would you enter your scorecards?
+    type: Static Content
+
+  source: 
+    html-code: |
+      You have the obligation to submit your final scores. If you've done that, you're all done with this session of the tournament.<br>
+      <br>
+      That said, you don't have to enter your full scorecard, but it would be greatly appreciated.<br>
+      When you enter your scorecard, our tournament stats are better and almost in real-time.
+
+  layout: 
+    sequence: 15
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--horizontal
+    - t-Alert--customIcons
+    - t-Alert--info
+    - margin-bottom-none
+    icon: fa-question-circle-o
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P50_E_ID is null and :P50_H_ID is null'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: enter your scorecards Buttons ===============
+  id: 3816715717911578
+  identification: 
+    title: enter your scorecards Buttons
+    type: Static Content
+
+  layout: 
+    sequence: 16
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--noBorder
+    - margin-top-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P50_E_ID is null and :P50_H_ID is null'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyfront9} ================================
+  id: 3817277015911584
+  identification: 
+    title: '{easyfront9}'
     type: Static Content
 
   layout: 
     sequence: 20
-    parent-region: '&P50_EASY_COURSE.' # 62511256013557336788
+    parent-region: '{Easy Course Strokes}' # 157280595760959687530
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - front9regionRow
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-right-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyfront9par} =============================
+  id: 3817390979911585
+  identification: 
+    title: '{easyfront9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{easyfront9}' # 3817277015911584
     position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
@@ -322,6 +532,8 @@ regions:
     template: Blank with Attributes (No Grid) # 46986521189613702414
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - coursePar
     render-components: Above Content
 
   accessibility: 
@@ -329,7 +541,444 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    static-id: roundScores
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyfront9scores} ==========================
+  id: 3817645876911587
+  identification: 
+    title: '{easyfront9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{easyfront9}' # 3817277015911584
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyback9} =================================
+  id: 3817745203911588
+  identification: 
+    title: '{easyback9}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: '{Easy Course Strokes}' # 157280595760959687530
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - back9regionRow
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-left-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyback9par} ==============================
+  id: 3817802246911589
+  identification: 
+    title: '{easyback9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{easyback9}' # 3817745203911588
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-left-none
+    css-classes: 
+    - coursePar
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {easyback9scores} ===========================
+  id: 3817892073911590
+  identification: 
+    title: '{easyback9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: '{easyback9}' # 3817745203911588
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-left-none
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardfront9} ================================
+  id: 3818013475911591
+  identification: 
+    title: '{hardfront9}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{Hard Course Strokes}' # 157280432707918967157
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - front9regionRow
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-left-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardback9} =================================
+  id: 3818163165911592
+  identification: 
+    title: '{hardback9}'
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: '{Hard Course Strokes}' # 157280432707918967157
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - back9regionRow
+    - col-sm-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardfront9par} =============================
+  id: 3818275261911593
+  identification: 
+    title: '{hardfront9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{hardfront9}' # 3818013475911591
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - coursePar
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardfront9scores} ==========================
+  id: 3818353298911594
+  identification: 
+    title: '{hardfront9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: '{hardfront9}' # 3818013475911591
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardback9par} ==============================
+  id: 3818405603911595
+  identification: 
+    title: '{hardback9par}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{hardback9}' # 3818163165911592
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - coursePar
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {hardback9scores} ===========================
+  id: 3818519237911596
+  identification: 
+    title: '{hardback9scores}'
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: '{hardback9}' # 3818163165911592
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46986521189613702414
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - roundScores
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -392,7 +1041,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 40
+    sequence: 45
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -405,7 +1054,6 @@ regions:
     template: Buttons Container # 46986522566537702415
     template-options: 
     - '#DEFAULT#'
-    - t-ButtonRegion--stickToBottom
     render-components: Above Content
 
   accessibility: 
@@ -441,7 +1089,7 @@ regions:
     include-rowid-column: false
 
   layout: 
-    sequence: 30
+    sequence: 35
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -496,7 +1144,7 @@ regions:
     include-rowid-column: false
 
   layout: 
-    sequence: 20
+    sequence: 25
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -535,90 +1183,6 @@ regions:
       - Update Row
       - Delete Row
       lost-update-type: Row Values
-
-- # ====== Region: {scores} ====================================
-  id: 125428335911324188017
-  identification: 
-    title: '{scores}'
-    type: Static Content
-
-  layout: 
-    sequence: 10
-    parent-region: '{Hard Course Strokes}' # 157280432707918967157
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: scoresRegion
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: {scores} ====================================
-  id: 125428498964364908390
-  identification: 
-    title: '{scores}'
-    type: Static Content
-
-  layout: 
-    sequence: 10
-    parent-region: '{Easy Course Strokes}' # 157280595760959687530
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Blank with Attributes (No Grid) # 46986521189613702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: scoresRegion
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
 
 - # ====== Region: {Hard Course Strokes} =======================
   id: 157280432707918967157
@@ -739,6 +1303,669 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P50_EASY_COURSE_FINAL_SCORE ==============
+  id: 610278984572880
+  identification: 
+    name: P50_EASY_COURSE_FINAL_SCORE
+    type: Select List
+
+  label: 
+    label: '&P50_EASY_COURSE.'
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 10
+    region: Your Results # 610201051572879
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--large
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: SCORES # 4815189065758226
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'value:'
+    - escore"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_EASY_COURSE.' # 62511256013557336788
+    column: FINAL_SCORE
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_HARD_COURSE_FINAL_SCORE ==============
+  id: 610380190572881
+  identification: 
+    name: P50_HARD_COURSE_FINAL_SCORE
+    type: Select List
+
+  label: 
+    label: '&P50_HARD_COURSE.'
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 20
+    region: Your Results # 610201051572879
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--large
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: SCORES # 4815189065758226
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'value:'
+    - hscore"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_HARD_COURSE.' # 47577408860194657322
+    column: FINAL_SCORE
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_TOTAL ================================
+  id: 610514555572882
+  identification: 
+    name: P50_TOTAL
+    type: Display Only
+
+  label: 
+    label: Total
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 30
+    region: Your Results # 610201051572879
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 3
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--large
+
+  advanced: 
+    custom-attributes: 
+    - 'data-bind="text:'
+    - easy_hard_total"
+    warn-on-unsaved-changes: Ignore
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H9B_MOBILE_SPACER ====================
+  id: 3818657527911597
+  identification: 
+    name: P50_H9B_MOBILE_SPACER
+    type: Display Only
+
+  label: 
+    label: '&nbsp;'
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 120
+    region: '{hardfront9par}' # 3818275261911593
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_HS9B =================================
+  id: 3818717302911598
+  identification: 
+    name: P50_HS9B
+    type: Number Field
+
+  label: 
+    label: H9b
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Text
+
+  layout: 
+    sequence: 150
+    region: '{hardfront9scores}' # 3818353298911594
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+    width: 2
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - hs9"
+    - pattern="\d*"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_HARD_COURSE.' # 47577408860194657322
+    column: S9
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H9EB_MOBILE_SPACER ===================
+  id: 3818780180911599
+  identification: 
+    name: P50_H9EB_MOBILE_SPACER
+    type: Display Only
+
+  label: 
+    label: 9
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 120
+    region: '{easyfront9par}' # 3817390979911585
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46986650426679702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_ES9B =================================
+  id: 3818901116911600
+  identification: 
+    name: P50_ES9B
+    type: Number Field
+
+  label: 
+    label: H9b
+    alignment: Left
+
+  settings: 
+    number-alignment: Center
+    virtual-keyboard: Numeric
+
+  layout: 
+    sequence: 150
+    region: '{easyfront9scores}' # 3817645876911587
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - hidden-md-up
+    - not-displayed
+    width: 2
+
+  validation: 
+    value-required: false
+    maximum-length: 3
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_EASY_OVERRIDE_SCORE ==================
+  id: 3819285453911604
+  identification: 
+    name: P50_EASY_OVERRIDE_SCORE
+    type: Text Field
+
+  label: 
+    label: New
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 60
+    region: '&P50_EASY_COURSE.' # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-vh
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - scoreOverrideEasy"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_EASY_OVERRIDE_REASON =================
+  id: 3819428379911605
+  identification: 
+    name: P50_EASY_OVERRIDE_REASON
+    type: Text Field
+
+  label: 
+    label: New
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 80
+    region: '&P50_EASY_COURSE.' # 62511256013557336788
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-vh
+    width: 200
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - scoreOverrideMsgEasy"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_HARD_OVERRIDE_SCORE ==================
+  id: 3819558480911606
+  identification: 
+    name: P50_HARD_OVERRIDE_SCORE
+    type: Text Field
+
+  label: 
+    label: Hard Score Override
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 70
+    region: '&P50_HARD_COURSE.' # 47577408860194657322
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-vh
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - scoreOverrideHard"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_HARD_OVERRIDE_REASON =================
+  id: 3819592773911607
+  identification: 
+    name: P50_HARD_OVERRIDE_REASON
+    type: Text Field
+
+  label: 
+    label: New
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 90
+    region: '&P50_HARD_COURSE.' # 47577408860194657322
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-vh
+    width: 200
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'textInput:'
+    - scoreOverrideMsgHard"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P50_H_COURSE_STROKE_ID ===================
   id: 15524339300827912859
   identification: 
@@ -790,7 +2017,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -842,7 +2069,7 @@ page-items:
 
   layout: 
     sequence: 40
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -894,7 +2121,7 @@ page-items:
 
   layout: 
     sequence: 50
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -946,7 +2173,7 @@ page-items:
 
   layout: 
     sequence: 60
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -998,7 +2225,7 @@ page-items:
 
   layout: 
     sequence: 70
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1050,7 +2277,7 @@ page-items:
 
   layout: 
     sequence: 80
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1102,7 +2329,7 @@ page-items:
 
   layout: 
     sequence: 90
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1154,7 +2381,7 @@ page-items:
 
   layout: 
     sequence: 100
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1206,7 +2433,7 @@ page-items:
 
   layout: 
     sequence: 110
-    region: '{scores}' # 125428335911324188017
+    region: '{hardfront9par}' # 3818275261911593
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1258,7 +2485,7 @@ page-items:
 
   layout: 
     sequence: 120
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1310,7 +2537,7 @@ page-items:
 
   layout: 
     sequence: 130
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1362,7 +2589,7 @@ page-items:
 
   layout: 
     sequence: 140
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1414,7 +2641,7 @@ page-items:
 
   layout: 
     sequence: 150
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1466,7 +2693,7 @@ page-items:
 
   layout: 
     sequence: 160
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1518,7 +2745,7 @@ page-items:
 
   layout: 
     sequence: 170
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1570,7 +2797,7 @@ page-items:
 
   layout: 
     sequence: 180
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1622,7 +2849,7 @@ page-items:
 
   layout: 
     sequence: 190
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1674,7 +2901,7 @@ page-items:
 
   layout: 
     sequence: 200
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1726,7 +2953,7 @@ page-items:
 
   layout: 
     sequence: 210
-    region: '{scores}' # 125428335911324188017
+    region: '{hardback9par}' # 3818405603911595
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1776,11 +3003,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 60
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1837,11 +3064,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 70
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1898,11 +3125,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 80
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1959,11 +3186,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 90
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2020,11 +3247,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 100
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2081,11 +3308,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 110
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2142,11 +3369,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 120
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2203,11 +3430,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 130
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2264,11 +3491,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 140
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardfront9scores}' # 3818353298911594
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2329,7 +3556,7 @@ page-items:
 
   layout: 
     sequence: 150
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2390,7 +3617,7 @@ page-items:
 
   layout: 
     sequence: 160
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2451,7 +3678,7 @@ page-items:
 
   layout: 
     sequence: 170
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2512,7 +3739,7 @@ page-items:
 
   layout: 
     sequence: 180
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2573,7 +3800,7 @@ page-items:
 
   layout: 
     sequence: 190
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2634,7 +3861,7 @@ page-items:
 
   layout: 
     sequence: 200
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2695,7 +3922,7 @@ page-items:
 
   layout: 
     sequence: 210
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2756,7 +3983,7 @@ page-items:
 
   layout: 
     sequence: 220
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2817,7 +4044,7 @@ page-items:
 
   layout: 
     sequence: 230
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -2880,7 +4107,7 @@ page-items:
 
   layout: 
     sequence: 240
-    region: '{Round Scores - Hard}' # 30658980642446839834
+    region: '{hardback9scores}' # 3818519237911596
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3123,18 +4350,15 @@ page-items:
   id: 15524504433196633233
   identification: 
     name: P50_ROOM_NAME
-    type: Text Field
+    type: Select List
 
   label: 
     label: Room Name
     alignment: Left
 
   settings: 
-    subtype: Text
-    trim-spaces: Leading and Trailing
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    page-action-on-selection: None
+    allow-multi-selection: false
 
   layout: 
     sequence: 40
@@ -3148,17 +4372,23 @@ page-items:
     column-span: Automatic
     label-column-span: Page Template Default
     column-css-classes: 
-    - hidden-md-down
+    - col-md-6
+    - col-sm-4
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
-    width: 60
+    height: 1
 
   validation: 
     value-required: false
-    maximum-length: 1020
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: ROOM_NAMES # 4003631379654192
+    display-extra-values: true
+    display-null-value: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -3332,7 +4562,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3384,7 +4614,7 @@ page-items:
 
   layout: 
     sequence: 40
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3436,7 +4666,7 @@ page-items:
 
   layout: 
     sequence: 50
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3488,7 +4718,7 @@ page-items:
 
   layout: 
     sequence: 60
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3540,7 +4770,7 @@ page-items:
 
   layout: 
     sequence: 70
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3592,7 +4822,7 @@ page-items:
 
   layout: 
     sequence: 80
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3644,7 +4874,7 @@ page-items:
 
   layout: 
     sequence: 90
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3696,7 +4926,7 @@ page-items:
 
   layout: 
     sequence: 100
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3748,7 +4978,7 @@ page-items:
 
   layout: 
     sequence: 110
-    region: '{scores}' # 125428498964364908390
+    region: '{easyfront9par}' # 3817390979911585
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3800,7 +5030,7 @@ page-items:
 
   layout: 
     sequence: 120
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3852,7 +5082,7 @@ page-items:
 
   layout: 
     sequence: 130
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3904,7 +5134,7 @@ page-items:
 
   layout: 
     sequence: 140
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3956,7 +5186,7 @@ page-items:
 
   layout: 
     sequence: 150
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4008,7 +5238,7 @@ page-items:
 
   layout: 
     sequence: 160
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4060,7 +5290,7 @@ page-items:
 
   layout: 
     sequence: 170
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4112,7 +5342,7 @@ page-items:
 
   layout: 
     sequence: 180
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4164,7 +5394,7 @@ page-items:
 
   layout: 
     sequence: 190
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4216,7 +5446,7 @@ page-items:
 
   layout: 
     sequence: 200
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4268,7 +5498,7 @@ page-items:
 
   layout: 
     sequence: 210
-    region: '{scores}' # 125428498964364908390
+    region: '{easyback9par}' # 3817802246911589
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4318,11 +5548,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 60
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4379,11 +5609,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 70
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4441,11 +5671,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 80
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4503,11 +5733,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 90
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4565,11 +5795,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 100
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4627,11 +5857,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 110
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4689,11 +5919,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 120
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4751,11 +5981,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 130
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4813,11 +6043,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 140
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyfront9scores}' # 3817645876911587
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4875,11 +6105,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 150
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4937,11 +6167,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 160
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4999,11 +6229,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 170
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5061,11 +6291,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 180
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5123,11 +6353,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 190
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5185,11 +6415,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 200
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5247,11 +6477,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 210
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5309,11 +6539,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 220
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5371,11 +6601,11 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 230
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5439,7 +6669,7 @@ page-items:
 
   layout: 
     sequence: 240
-    region: '{Round Scores - Easy}' # 30659119124433557079
+    region: '{easyback9scores}' # 3817892073911590
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -5457,7 +6687,11 @@ page-items:
   advanced: 
     custom-attributes: 
     - 'data-bind="text:'
-    - total_easy"
+    - total_easy,
+    - 'css:'
+    - "{'override':"
+    - overrideOnEasy()}"
+    post-text-: '<span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnEasy()">Override in place</span>'
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -5666,6 +6900,95 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: APPLY_CHANGES_RESULT ========================
+  id: 610606236572883
+  identification: 
+    button-name: APPLY_CHANGES_RESULT
+    label: Submit Round
+
+  layout: 
+    sequence: 20
+    region: Your Results # 610201051572879
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-check
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
+
+- # ====== Button: CANCEL ======================================
+  id: 3816487283911576
+  identification: 
+    button-name: CANCEL
+    label: Nah, I'll pass
+
+  layout: 
+    sequence: 10
+    region: enter your scorecards Buttons # 3816715717911578
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:::'
+      page: 60 # View Results
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: ENTER_SCORE_CARDS ===========================
+  id: 3816657852911577
+  identification: 
+    button-name: ENTER_SCORE_CARDS
+    label: Sure, absolutely!
+
+  layout: 
+    sequence: 20
+    region: enter your scorecards Buttons # 3816715717911578
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--success
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 - # ====== Button: ADD =========================================
   id: 15524502490498633230
   identification: 
@@ -5702,10 +7025,10 @@ buttons:
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
 
-- # ====== Button: CREATE ======================================
+- # ====== Button: APPLY_CHANGES ===============================
   id: 42089618344354907105
   identification: 
-    button-name: CREATE
+    button-name: APPLY_CHANGES
     label: Save Round
 
   layout: 
@@ -5730,11 +7053,76 @@ buttons:
     action: Submit Page
     execute-validations: true
     warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
 
   advanced: 
-    static-id: BTN_CREATE
+    static-id: BTN_SAVE
 
 dynamic-actions: 
+- # ====== Dynamic Action: Continue to full scorecard ==========
+  id: 3816811598911579
+  identification: 
+    name: Continue to full scorecard
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: ENTER_SCORE_CARDS # 3816657852911577
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Hide ========================================
+    id: 3816882055911580
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Would you enter your scorecards? # 610682290572884
+
+    execution: 
+      sequence: 10
+      event: Continue to full scorecard # 3816811598911579
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Hide ========================================
+    id: 3817021487911581
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: enter your scorecards Buttons # 3816715717911578
+
+    execution: 
+      sequence: 20
+      event: Continue to full scorecard # 3816811598911579
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Focus ===================================
+    id: 3817138949911582
+    identification: 
+      action: Set Focus
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P50_ES1
+
+    execution: 
+      sequence: 30
+      event: Continue to full scorecard # 3816811598911579
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Init Player LOV =====================
   id: 18806434163525512245
   identification: 
@@ -5811,7 +7199,7 @@ dynamic-actions:
                        $("#P50_HS1").focus();
                     }
                     else {
-                       $("#BTN_CREATE").focus();
+                       $("#BTN_SAVE").focus();
                     }
                     return;
                 }
@@ -5852,6 +7240,32 @@ validations:
     display-location: Inline with Field and in Notification
 
 processes: 
+- # ====== Process: Set Message ================================
+  id: 4007204572738089
+  identification: 
+    name: Set Message
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: null;
+
+  execution: 
+    sequence: 40
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Rounds saved.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
+
 - # ====== Process: Initialize form Round - Hard ===============
   id: 15524195877427630173
   identification: 
@@ -5916,6 +7330,48 @@ processes:
       from wmg_course_strokes
       where course_id = :P50_HARD_COURSE_ID
       fetch first 1 rows only;
+      
+      begin
+          if :P50_PLAYERS_ID is null then
+              select id
+                into :P50_PLAYERS_ID
+                from wmg_players
+               where account_login = :APP_USER;
+          end if;
+      
+          if :P50_PLAYERS_ID is not null then
+             -- check to see if there's rounds already
+             select id
+                  , override_score
+                  , override_reason
+               into :P50_E_ID
+                  , :P50_EASY_OVERRIDE_SCORE
+                  , :P50_EASY_OVERRIDE_REASON
+               from wmg_rounds
+              where week = :P50_WEEK
+                and course_id = :P50_EASY_COURSE_ID
+                and players_id = :P50_PLAYERS_ID;
+      
+             -- check to see if there's rounds already
+             select id
+                  , override_score
+                  , override_reason
+               into :P50_H_ID
+                  , :P50_HARD_OVERRIDE_SCORE
+                  , :P50_HARD_OVERRIDE_REASON
+               from wmg_rounds
+              where week = :P50_WEEK
+                and course_id = :P50_HARD_COURSE_ID
+                and players_id = :P50_PLAYERS_ID;
+      
+          end if;
+      
+      exception
+        when no_data_found then
+          :P50_E_ID := null;
+      end;
+      
+      
 
   execution: 
     sequence: 10
@@ -5948,7 +7404,7 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,CREATE_AGAIN,SAVE,DELETE
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
 
 - # ====== Process: Initialize form Easy Course Strokes ========
   id: 40817363051445412005
@@ -5980,15 +7436,12 @@ processes:
     point: Processing
     run-process: Once Per Page Visit (default)
 
-  success-message: 
-    success-message: Hard Round saved.
-
   error: 
     display-location: Inline in Notification
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,CREATE_AGAIN,SAVE,DELETE
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
 
 - # ====== Process: Sync Week and Player for Hard Course =======
   id: 42089618695700907108
@@ -6023,4 +7476,48 @@ processes:
     sequence: 60
     point: Before Header
     run-process: Once Per Page Visit (default)
+
+branches: 
+- # ====== Branch: Not Ready To Enter ==========================
+  id: 3471968313873694
+  identification: 
+    name: Not Ready To Enter
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:51:&SESSION.::&DEBUG.:51::&success_msg=#SUCCESS_MSG#'
+      page: 51 # Enter Rounds - Not Ready
+      clear-cache: 51
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from  wmg_tournament_sessions
+      where id = :G_TOURNAMENT_SESSION_ID
+        and rooms_defined_flag = 'Y'
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 3554679108597518
+
+- # ====== Branch: View Results ================================
+  id: 4007288626738090
+  identification: 
+    name: View Results
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
+      page: 60 # View Results
+      clear-cache: 60
 
