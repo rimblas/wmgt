@@ -5,6 +5,60 @@ identification:
   name: Global Page
 
 regions: 
+- # ====== Region: Discord Avatar ==============================
+  id: 4008094024738098
+  identification: 
+    title: Discord Avatar
+    type: Static Content
+
+  source: 
+    html-code: |
+      <style>
+      .has-username .t-Icon {
+          background-image: url("https://cdn.discordapp.com/avatars/&G_DISCORD_ID./&G_DISCORD_AVATAR..png");
+          background-size: cover;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+      }
+      .has-username .t-Icon.fa-user:before { content: "";}
+      </style>
+      
+
+  layout: 
+    sequence: -2
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    render-components: Above Content
+
+  advanced: 
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {AutoDetectTimeZone.js} =====================
   id: 47577408716670657321
   identification: 
