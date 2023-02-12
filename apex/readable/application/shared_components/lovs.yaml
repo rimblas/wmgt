@@ -76,6 +76,50 @@
     advanced: 
       searchable: false
 
+- # ====== List of Values: ROOM_NAMES ==========================
+  id: 4003631379654192
+  identification: 
+    name: ROOM_NAMES
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select 'WMGT' || l d, 'WMGT' || l r
+      from (
+          select level l
+          from dual
+          connect by level < 10
+      )
+
+  column-mapping: 
+    return: R
+    display: D
+    default-sort: D
+    sort-direction: Ascending (Nulls Last)
+
+- # ====== List of Values: SCORES ==============================
+  id: 4815189065758226
+  identification: 
+    name: SCORES
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select l d, l r
+      from (
+      select level - 33 l
+      from dual
+      connect by level < 63
+      )
+
+  column-mapping: 
+    return: R
+    display: D
+    default-sort: D
+    sort-direction: Ascending (Nulls Last)
+
 - # ====== List of Values: WMG_COURSES.CODE ====================
   id: 20721954775534046605
   identification: 
