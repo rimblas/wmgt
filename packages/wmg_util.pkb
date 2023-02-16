@@ -352,8 +352,10 @@ begin
       from (
           select p.id, p.account, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
             from wmg_players p
+           where discord_id is null
       )
       where similarity >= 74
+      order by similarity desc
       fetch first 5 rows only;
 
     end if;
