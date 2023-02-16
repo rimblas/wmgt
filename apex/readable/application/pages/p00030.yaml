@@ -1209,7 +1209,9 @@ processes:
       begin
       if :G_REGISTRATION_ID is not null then
           select tp.player_id
-               , decode(p.account_login, :APP_USER, 'Y', 'N')
+               , case 
+                   when (p.account_login = :APP_USER or p.discord_id = :G_DISCORD_ID) then 'Y' else 'N'
+                 end remeber_me
                , p.prefered_tz
             into :P30_PLAYER_ID
                , :P30_REMEMBER_ME_IND
@@ -1220,13 +1222,19 @@ processes:
             and tp.id = :G_REGISTRATION_ID;
       else
           select p.id player_id
-               , decode(p.account_login, :APP_USER, 'Y', 'N')
+               , case 
+                   when (p.account_login = :APP_USER or p.discord_id = :G_DISCORD_ID) then 'Y' else 'N'
+                 end remeber_me
                , p.prefered_tz
             into :P30_PLAYER_ID
                , :P30_REMEMBER_ME_IND
                , :P30_TZ
           from wmg_players p
-         where p.account_login = :APP_USER;
+         where (p.account_login = :APP_USER
+             or p.discord_id = :G_DISCORD_ID
+          )
+          fetch first 1 rows only;
+      
       
       end if;
       

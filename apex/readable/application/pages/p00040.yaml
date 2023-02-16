@@ -64,6 +64,72 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: About the rooms =============================
+  id: 3820738454911618
+  identification: 
+    title: About the rooms
+    type: Static Content
+
+  source: 
+    html-code: |
+      The room names are <i>WMGT1</i>, <i>WMGT2</i>, etc... Find your room and join a few minutes before so you can start your round precisely on time.<br>
+      <br>
+      🚨 <b>VERY IMPORTANT</b> 🚨 <br>
+      <ol>
+          <li>Play the Easy Course round first</li>
+          <li>Take picture</li>
+          <li>Play the Hard Course round last</li>
+          <li>Submit your scores <i>(Posting of pictures is NOT submission of scores)</i></li>
+          <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
+      </ol>
+      <br>
+      Don't forget to go to <a href="https://discord.com/channels/752022800562389015/763542150877020190" target="_blank">#tournament-info</a> and find the link to submit your scores after you finish your rounds!<br>
+      <br>
+      <b>Make sure the timestamp is visible in your pictures</b>
+      (by clicking the 3 dots in the bottom right hand corner)<br>
+      <br>
+      AND<br>
+      <br>
+      If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> until you have <b>asked</b> if someone has taken a picture after the rounds.
+      
+
+  layout: 
+    sequence: 89
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Content Block # 46986548188719702425
+    template-options: 
+    - '#DEFAULT#'
+    - t-ContentBlock--h2
+    - t-ContentBlock--headingFontAlt
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: 00:00 =======================================
   id: 7048711940745770706
   identification: 
@@ -74,7 +140,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -91,7 +157,9 @@ regions:
         and p.time_slot = '00:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by decode(s.rooms_open_flag, 'Y', p.room_no, ''), p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 29
@@ -248,7 +316,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -265,7 +333,9 @@ regions:
         and p.time_slot = '04:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by decode(s.rooms_open_flag, 'Y', p.room_no, ''), p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 39
@@ -420,7 +490,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -437,7 +507,9 @@ regions:
         and p.time_slot = '08:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 49
@@ -592,7 +664,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -609,7 +681,9 @@ regions:
         and p.time_slot = '12:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 59
@@ -764,7 +838,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -781,7 +855,9 @@ regions:
         and p.time_slot = '16:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 69
@@ -936,7 +1012,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
               '<mark class="player"><a href="' ||
               apex_page.get_url(
@@ -953,7 +1029,9 @@ regions:
         and p.time_slot = '20:00'
         and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
-      order by p.room_no, p.tournament_player_created
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_created
 
   layout: 
     sequence: 79
@@ -1411,6 +1489,40 @@ regions:
     security: 
       escape-special-characters: true
 
+page-items: 
+- # ====== Page Item: P40_TD_FLAG ==============================
+  id: 3820283865911614
+  identification: 
+    name: P40_TD_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: '00:00' # 7048711940745770706
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  comments: 
+    comments: Set when a TD is viewing
+
 buttons: 
 - # ====== Button: OPEN_ROOMS ==================================
   id: 3819029434911601
@@ -1477,6 +1589,10 @@ buttons:
   behavior: 
     action: Defined by Dynamic Action
     execute-validations: true
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: 'select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_open_flag is null'
 
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
@@ -1815,6 +1931,26 @@ dynamic-actions:
       sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y'"
 
 computations: 
+- # ====== Computation: P40_TD_FLAG ============================
+  id: 3820380057911615
+  identification: 
+    item-name: P40_TD_FLAG
+
+  execution: 
+    sequence: 30
+    point: After Header
+
+  computation: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      if apex_authorization.is_authorized('Administration Rights')
+      or apex_authorization.is_authorized('Tournament Admin') then
+        return 'Y';
+      else
+        return '';
+      end if;
+
 - # ====== Computation: G_REGISTRATION_ID ======================
   id: 24442383444393124350
   identification: 
@@ -1906,6 +2042,9 @@ processes:
 
   error: 
     display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: ASSIGN_ROOM # 24442383289129124348
 
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
