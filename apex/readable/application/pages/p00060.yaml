@@ -1365,16 +1365,16 @@ regions:
           select 34 rank,  7 points, 'p7' point_class from dual union all
           select 35 rank,  7 points, 'p7' point_class from dual
       )
-      select r.player_id, r.player_name, r.easy, r.hard, r.total_score, r.pos
+      select r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, r.pos
            , p.points
            , p.point_class
            , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
       from (
-          select r.player_id, r.player_name, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
+          select r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
           from (
-            select player_id, player_name, easy, hard, easy + hard total_score
+            select player_id, player_name, country_code, easy, hard, easy + hard total_score
             from (
-              select r.player_id, r.player_name
+              select r.player_id, r.player_name, r.country_code
                    , r.under_par
                    , c.course_mode
                 from wmg_rounds_v r, wmg_courses c
@@ -1471,6 +1471,41 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 610831107572885
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: SELECTED_PLAYER =============================
     id: 4007494937738092
     identification: 
@@ -1643,7 +1678,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 40
       column-alignment: start
 
     accessibility: 
@@ -2355,15 +2390,24 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
+      begin
       select week
         into :P60_WEEK
         from wmg_tournament_sessions_v
        where tournament_session_id = :G_CURRENT_SESSION_ID;
+      exception
+      when NO_DATA_FOUND then
+       null;
+      end;
 
   execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P60_WEEK
 
 branches: 
 - # ====== Branch: Go To Page 1 ================================
@@ -2382,6 +2426,5 @@ branches:
       page: 1 # Home
 
   server-side-condition: 
-    type: Item is NULL
-    item: G_CURRENT_SESSION_ID
+    type: Never
 
