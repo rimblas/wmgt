@@ -999,8 +999,9 @@ computations:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and s.session_date+1 > sysdate
-      order by s.session_date
+      and s.session_date+1 >= trunc(current_timestamp)
+      and s.completed_ind = 'N'
+      order by s.session_date desc
       fetch first 1 rows only
 
 - # ====== Computation: G_REGISTRATION_ID ======================
