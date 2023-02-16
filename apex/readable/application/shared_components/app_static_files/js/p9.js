@@ -31,29 +31,29 @@ function roundTotal() {
 
   self.total = ko.computed(function() {
     if (!!self.scoreOverride()) {
-        return to_number(self.scoreOverride());
+        return wmgt.convert.to_number(self.scoreOverride());
     }
     else
     return ( 
-           to_number(self.s1()) +
-           to_number(self.s2()) +
-           to_number(self.s3()) +
-           to_number(self.s4()) +
-           to_number(self.s5()) +
-           to_number(self.s6()) +
-           to_number(self.s7()) +
-           to_number(self.s8()) +
-           to_number(self.s9()) +
-           to_number(self.s10()) +
-           to_number(self.s11()) +
-           to_number(self.s12()) +
-           to_number(self.s13()) +
-           to_number(self.s14()) +
-           to_number(self.s15()) +
-           to_number(self.s16()) +
-           to_number(self.s17()) +
-           to_number(self.s18())
-           ) - to_number(self.par());
+           wmgt.convert.to_number(self.s1()) +
+           wmgt.convert.to_number(self.s2()) +
+           wmgt.convert.to_number(self.s3()) +
+           wmgt.convert.to_number(self.s4()) +
+           wmgt.convert.to_number(self.s5()) +
+           wmgt.convert.to_number(self.s6()) +
+           wmgt.convert.to_number(self.s7()) +
+           wmgt.convert.to_number(self.s8()) +
+           wmgt.convert.to_number(self.s9()) +
+           wmgt.convert.to_number(self.s10()) +
+           wmgt.convert.to_number(self.s11()) +
+           wmgt.convert.to_number(self.s12()) +
+           wmgt.convert.to_number(self.s13()) +
+           wmgt.convert.to_number(self.s14()) +
+           wmgt.convert.to_number(self.s15()) +
+           wmgt.convert.to_number(self.s16()) +
+           wmgt.convert.to_number(self.s17()) +
+           wmgt.convert.to_number(self.s18())
+           ) - wmgt.convert.to_number(self.par());
   }, self);
 }
 

@@ -41,6 +41,19 @@ css:
     #P50_WEEK {text-transform: uppercase;}
     
     .override {outline: 2px solid red;}
+    .incorrectScoreCheck,
+    .correctScoreCheck {
+        bottom: 0px;
+        position: absolute;
+        right: 0;
+    }
+    .correctScoreCheck {
+        color: green;
+    }
+    .incorrectScoreCheck {
+        color: orange;
+    }
+    
     #P50_ESCORE_CONTAINER span.a-Form-error,
     #P50_HSCORE_CONTAINER span.a-Form-error {
         position: absolute;
@@ -3984,6 +3997,11 @@ page-items:
     custom-attributes: 
     - 'data-bind="text:'
     - total_hard"
+    post-text-: |
+      <span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnHard()">Override in place</span>
+      <span class="correctScoreCheck" data-bind="visible: hardMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
+      <span class="incorrectScoreCheck" data-bind="visible: hardError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
+      
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -6549,7 +6567,11 @@ page-items:
     - 'css:'
     - "{'override':"
     - overrideOnEasy()}"
-    post-text-: '<span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnEasy()">Override in place</span>'
+    post-text-: |
+      <span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnEasy()">Override in place</span>
+      <span class="correctScoreCheck" data-bind="visible: easyMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
+      <span class="incorrectScoreCheck" data-bind="visible: easyError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
+      
     warn-on-unsaved-changes: Page Default
 
   source: 

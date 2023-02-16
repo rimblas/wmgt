@@ -51,13 +51,14 @@ function roundTotal() {
   self.hardpar = ko.observable(0);
 
   self.overrideOnEasy = ko.computed(function() {
-    if (!!self.scoreOverrideEasy()) {
+    if (!!self.scoreOverrideEasy() ) {
         return true;
     }
     else {
         return false;
     }
   }, self);
+
   self.overrideOnHard = ko.computed(function() {
     if (!!self.scoreOverrideHard()) {
         return true;
@@ -69,56 +70,56 @@ function roundTotal() {
 
   self.total_easy = ko.computed(function() {
     if (!!self.scoreOverrideEasy()) {
-        return to_number(self.scoreOverrideEasy());
+        return wmgt.convert.to_number(self.scoreOverrideEasy());
     }
     else
     return ( 
-           to_number(self.es1()) +
-           to_number(self.es2()) +
-           to_number(self.es3()) +
-           to_number(self.es4()) +
-           to_number(self.es5()) +
-           to_number(self.es6()) +
-           to_number(self.es7()) +
-           to_number(self.es8()) +
-           to_number(self.es9()) +
-           to_number(self.es10()) +
-           to_number(self.es11()) +
-           to_number(self.es12()) +
-           to_number(self.es13()) +
-           to_number(self.es14()) +
-           to_number(self.es15()) +
-           to_number(self.es16()) +
-           to_number(self.es17()) +
-           to_number(self.es18())
-           ) - to_number(self.easypar());
+           wmgt.convert.to_number(self.es1()) +
+           wmgt.convert.to_number(self.es2()) +
+           wmgt.convert.to_number(self.es3()) +
+           wmgt.convert.to_number(self.es4()) +
+           wmgt.convert.to_number(self.es5()) +
+           wmgt.convert.to_number(self.es6()) +
+           wmgt.convert.to_number(self.es7()) +
+           wmgt.convert.to_number(self.es8()) +
+           wmgt.convert.to_number(self.es9()) +
+           wmgt.convert.to_number(self.es10()) +
+           wmgt.convert.to_number(self.es11()) +
+           wmgt.convert.to_number(self.es12()) +
+           wmgt.convert.to_number(self.es13()) +
+           wmgt.convert.to_number(self.es14()) +
+           wmgt.convert.to_number(self.es15()) +
+           wmgt.convert.to_number(self.es16()) +
+           wmgt.convert.to_number(self.es17()) +
+           wmgt.convert.to_number(self.es18())
+           ) - wmgt.convert.to_number(self.easypar());
   }, self);
 
   self.total_hard = ko.computed(function() {
     if (!!self.scoreOverrideHard()) {
-        return to_number(self.scoreOverrideHard());
+        return wmgt.convert.to_number(self.scoreOverrideHard());
     }
     else
     return ( 
-           to_number(self.hs1()) +
-           to_number(self.hs2()) +
-           to_number(self.hs3()) +
-           to_number(self.hs4()) +
-           to_number(self.hs5()) +
-           to_number(self.hs6()) +
-           to_number(self.hs7()) +
-           to_number(self.hs8()) +
-           to_number(self.hs9()) +
-           to_number(self.hs10()) +
-           to_number(self.hs11()) +
-           to_number(self.hs12()) +
-           to_number(self.hs13()) +
-           to_number(self.hs14()) +
-           to_number(self.hs15()) +
-           to_number(self.hs16()) +
-           to_number(self.hs17()) +
-           to_number(self.hs18())
-           ) - to_number(self.hardpar());
+           wmgt.convert.to_number(self.hs1()) +
+           wmgt.convert.to_number(self.hs2()) +
+           wmgt.convert.to_number(self.hs3()) +
+           wmgt.convert.to_number(self.hs4()) +
+           wmgt.convert.to_number(self.hs5()) +
+           wmgt.convert.to_number(self.hs6()) +
+           wmgt.convert.to_number(self.hs7()) +
+           wmgt.convert.to_number(self.hs8()) +
+           wmgt.convert.to_number(self.hs9()) +
+           wmgt.convert.to_number(self.hs10()) +
+           wmgt.convert.to_number(self.hs11()) +
+           wmgt.convert.to_number(self.hs12()) +
+           wmgt.convert.to_number(self.hs13()) +
+           wmgt.convert.to_number(self.hs14()) +
+           wmgt.convert.to_number(self.hs15()) +
+           wmgt.convert.to_number(self.hs16()) +
+           wmgt.convert.to_number(self.hs17()) +
+           wmgt.convert.to_number(self.hs18())
+           ) - wmgt.convert.to_number(self.hardpar());
   }, self);
 
   self.easy_hard_total = ko.computed(function() {
@@ -128,9 +129,47 @@ function roundTotal() {
     }
     else
     return ( 
-           to_number(self.escore()) +
-           to_number(self.hscore())
+           wmgt.convert.to_number(self.escore()) +
+           wmgt.convert.to_number(self.hscore())
            );
   }, self);
+
+
+  self.easyMatches = ko.computed(function() {
+    if (!!self.scoreOverrideEasy() || self.es18().length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.escore()) === wmgt.convert.to_number(self.total_easy());
+    }
+  }, self);
+
+  self.easyError = ko.computed(function() {
+    if (!!self.scoreOverrideEasy() || self.es18().length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.escore()) != wmgt.convert.to_number(self.total_easy());
+    }
+  }, self);
+
+  self.hardMatches = ko.computed(function() {
+    if (!!self.scoreOverrideHard() || self.hs18().length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.hscore()) === wmgt.convert.to_number(self.total_hard());
+    }
+  }, self);
+
+  self.hardError = ko.computed(function() {
+    if (!!self.scoreOverrideHard() || self.hs18().length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.hscore()) != wmgt.convert.to_number(self.total_hard());
+    }
+  }, self);
+
 
 }
