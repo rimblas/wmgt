@@ -23,6 +23,11 @@ select t.id                              tournament_id
      , ts.week                           week
      , ts.open_registration_on           open_registration_on
      , ts.close_registration_on          close_registration_on
+     , ts.registration_closed_flag
+     , ts.rooms_open_flag
+     , ts.rooms_defined_flag
+     , ts.rooms_defined_by
+     , ts.rooms_defined_on
      , ts.completed_ind                  completed_ind
      , ts.completed_on                   completed_on
      , e.course_id                       easy_course_id

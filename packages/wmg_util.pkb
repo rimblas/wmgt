@@ -179,7 +179,8 @@ is
     l_player := trunc(dbms_random.value(1,l_room_id_tbl.count));
     loop
       i := i + 1;
-      exit when l_room_id_tbl(l_player).room_no is null and i < l_max;
+      -- exit if the player's room has not been assigned and we're below the max number of player
+      exit when l_room_id_tbl(l_player).room_no is null and i <= l_max;
       l_player := l_player + 1;
       if l_player > l_max then
         l_player := 1;
@@ -352,8 +353,10 @@ begin
       from (
           select p.id, p.account, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
             from wmg_players p
+           where discord_id is null
       )
       where similarity >= 74
+      order by similarity desc
       fetch first 5 rows only;
 
     end if;

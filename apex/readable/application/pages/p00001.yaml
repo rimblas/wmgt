@@ -113,24 +113,27 @@ regions:
 
   source: 
     html-code: |
+      <div class="row">
+          <div class="col">
       <img src="https://cdn.discordapp.com/avatars/&G_DISCORD_ID./&G_DISCORD_AVATAR..png">
+          </div>
+      </div>
       Welcome, &G_DISCORD.!
+      
       <br><br>
-      G_DISCORD_ID: &G_DISCORD_ID.<br>
-      G_DISCORD_DISCRIMINATOR: &G_DISCORD_DISCRIMINATOR.<br>
-      <br>
-      Username: &APP_USER.<br>
       
 
   layout: 
-    sequence: 10
-    parent-region: Page Navigation # 46986885428768703655
-    position: SUB_REGIONS
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - u-tC
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
@@ -158,6 +161,14 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |
+      G_DISCORD_ID: &G_DISCORD_ID.<br>
+      G_DISCORD_DISCRIMINATOR: &G_DISCORD_DISCRIMINATOR.<br>
+      <br>
+      Username: &APP_USER.<br>
+      
 
   attributes: 
     settings: 
@@ -798,6 +809,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P1_DO_NOT_MATCH_FLAG =====================
+  id: 6007460650197081
+  identification: 
+    name: P1_DO_NOT_MATCH_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: '{Next Tournament Info}' # 665559002503481
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: BETA_TESTER =================================
   id: 3472123747873696
@@ -999,8 +1040,9 @@ computations:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and s.session_date+1 > sysdate
-      order by s.session_date
+      and s.session_date+1 >= trunc(current_timestamp)
+      and s.completed_ind = 'N'
+      order by s.session_date desc
       fetch first 1 rows only
 
 - # ====== Computation: G_REGISTRATION_ID ======================
@@ -1067,7 +1109,7 @@ processes:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and s.session_date+1 > sysdate
+      and s.session_date+1 >= trunc(current_timestamp)
       order by session_date
       fetch first 1 rows only;
       exception 
@@ -1081,4 +1123,50 @@ processes:
     sequence: 10
     point: After Header
     run-process: Once Per Page Visit (default)
+
+branches: 
+- # ====== Branch: Go Match existing player to Discord account =
+  id: 6007319317197080
+  identification: 
+    name: Go Match existing player to Discord account
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:17:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 17 # Discord Player Match
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+       l_players_tbl  wmg_util.tab_keyval_type;
+      begin 
+      
+          if :P1_DO_NOT_MATCH_FLAG = 'Y' then
+             -- player doesn't want to be matched
+             return false;
+          end if;
+      
+          wmg_util.possible_player_match(
+              p_discord_account => :G_DISCORD
+            , p_discord_id      => :G_DISCORD_ID
+            , x_players_tbl     => l_players_tbl
+          );
+      
+          if l_players_tbl is null then 
+             -- if there is no match, either they are a match already or we don't have history
+             return false;
+          else
+             return l_players_tbl.count > 0;
+          end if;
+      end;
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 

@@ -70,7 +70,8 @@ select
     , nvl(r.s17 - cs.h17, 0) par17
     , nvl(r.s18 - cs.h18, 0) par18
 
-   , case when r.override_score is null then
+   , case 
+     when r.override_score is null and r.final_score is null then
       nvl(r.s1 - cs.h1, 0) +
       nvl(r.s2 - cs.h2, 0) +
       nvl(r.s3 - cs.h3, 0) +
@@ -90,7 +91,7 @@ select
       nvl(r.s17 - cs.h17, 0) +
       nvl(r.s18 - cs.h18, 0) 
     else
-      r.override_score 
+      coalesce(r.override_score, r.final_score)
     end under_par
   , r.final_score
   , case when r.override_score is null then '' else 'Y' end score_override_flag

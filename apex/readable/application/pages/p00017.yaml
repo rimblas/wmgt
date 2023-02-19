@@ -1,0 +1,521 @@
+---
+# ====== Page: Discord Player Match ==========================
+id: 17
+identification: 
+  name: Discord Player Match
+  alias: DISCORD-PLAYER-MATCH
+  title: Discord Player Match
+
+appearance: 
+  page-mode: Normal
+  page-template: Login # 46986494461795702403
+  template-options: 
+  - '#DEFAULT#'
+  - t-LoginPage--split
+  - t-LoginPage--bg2
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  inline: |
+    :root {
+    --ut-avp-label-width: 60%;
+    }
+    .t-PageBody--login {background-image: none!important;}
+    .t-Login-bg {
+        background-color: blue;
+    }
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: {Info} ======================================
+  id: 6031202310524075
+  identification: 
+    title: '{Info}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--stickToBottom
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Welcome &G_DISCORD.! ========================
+  id: 18014953292042851
+  identification: 
+    title: Welcome &G_DISCORD.!
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      declare 
+        l_out  varchar2(32767);
+        l_result apex_application_global.vc_arr2;
+        l_single boolean := apex_application.g_f01.count = 1;
+      begin
+        l_out := '<br><br>
+      Hey, we found '
+      || case 
+      when l_single then 
+      ' a player that may be a match your Discord name, <b>is this you</b>?'
+      else 
+      ' some players with a possible match to your Discord name, are you one of these?'
+      end
+      || '<br><br>
+      <dl class="t-AVPList t-AVPList--leftAligned">';
+      
+      for i in 1 .. apex_application.g_f01.count
+      loop 
+        l_out := l_out || '<dt class="t-AVPList-label"><a href="javascript:void(0);" data-id="' || apex_application.g_f01(i) || '" class="matchDiscord">' || apex_escape.html(apex_application.g_f02(i)) || '</a></dt>';
+        l_out := l_out || '<dd class="t-AVPList-value"><a href="javascript:void(0);" data-id="' || apex_application.g_f01(i) || '" class="matchDiscord"><span aria-hidden="true" class="fa fa-arrow-circle-o-left"></span> Yes, this one!</a></dd>';
+      end loop;
+      l_out := l_out || '</dl>';
+      return l_out;
+      end;
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Hero # 46986552355884702427
+    template-options: 
+    - '#DEFAULT#'
+    - t-HeroRegion--iconsCircle
+    - t-HeroRegion--headingFontAlt
+    render-components: Above Content
+
+  image: 
+    file-url: '&P17_AVATAR.'
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+       l_players_tbl  wmg_util.tab_keyval_type;
+      begin 
+          wmg_util.possible_player_match(
+              p_discord_account => :G_DISCORD
+            , p_discord_id      => :G_DISCORD_ID
+            , x_players_tbl     => l_players_tbl
+          );
+      
+          if l_players_tbl is null then 
+             return false;
+          else
+             for i in 1.. l_players_tbl.count
+             loop
+                apex_application.g_f01(i) := l_players_tbl(i).key;
+                apex_application.g_f02(i) := l_players_tbl(i).val;
+             end loop;
+             return l_players_tbl.count > 0;
+          end if;
+      end;
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
+page-items: 
+- # ====== Page Item: P17_MATCH_PLAYER_ID ======================
+  id: 6021699787357232
+  identification: 
+    name: P17_MATCH_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: Welcome &G_DISCORD.! # 18014953292042851
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P17_AVATAR ===============================
+  id: 6030928520524072
+  identification: 
+    name: P17_AVATAR
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 20
+    region: Welcome &G_DISCORD.! # 18014953292042851
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P17_WHY ==================================
+  id: 6031148221524074
+  identification: 
+    name: P17_WHY
+    type: Display Only
+
+  label: 
+    label: Why match?
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 10
+    region: '{Info}' # 6031202310524075
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: |
+      Well, for one thing, the Tournament Director is happy because your name matches discord.<br>
+      Plus you get to see your own stats over several weeks. And when you register for the tournament we'll remember your timezone 
+      and make it clear at what time you play.
+      <br>
+      
+
+buttons: 
+- # ====== Button: SKIP ========================================
+  id: 6031289945524076
+  identification: 
+    button-name: SKIP
+    label: Skip
+
+  layout: 
+    sequence: 20
+    region: '{Info}' # 6031202310524075
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::P1_DO_NOT_MATCH_FLAG:Y'
+      page: 1 # Home
+      values: 
+        p1_do_not_match_flag: Y
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Match Player to Discord ID ==========
+  id: 6023018009400606
+  identification: 
+    name: Match Player to Discord ID
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .matchDiscord
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_application.g_f01.count > 0
+
+  actions: 
+  - # ====== Action: Oops ========================================
+    id: 6023414809400610
+    identification: 
+      name: Oops
+      action: Alert
+
+    settings: 
+      title: Ooops
+      message: Looks like there's a different player assigned to your Discord user.
+      style: Danger
+      ok-label: Ok
+
+    execution: 
+      sequence: 40
+      event: Match Player to Discord ID # 6023018009400606
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P17_MATCH_PLAYER_ID
+      value: '-1'
+
+  - # ====== Action: Set Value ===================================
+    id: 6023915287400611
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P17_MATCH_PLAYER_ID
+
+    execution: 
+      sequence: 20
+      event: Match Player to Discord ID # 6023018009400606
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 6024434718400612
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        begin
+        
+        update wmg_players
+            set discord_id = :G_DISCORD_ID
+            , discord_avatar = :G_DISCORD_AVATAR
+            , discord_discriminator = :G_DISCORD_DISCRIMINATOR
+            , account_login = :G_DISCORD
+        where id = :P17_MATCH_PLAYER_ID
+          and discord_id is null;
+        
+        exception
+          when DUP_VAL_ON_INDEX then
+           -- Someone already has thay Discord ID
+            :P17_MATCH_PLAYER_ID := -1;
+           -- WKSP_WMGT.WMG_PLAYERS_U03
+        end;
+      items-to-submit: 
+      - P17_MATCH_PLAYER_ID
+      items-to-return: 
+      - P17_MATCH_PLAYER_ID
+      suppress-change-event: false
+
+    execution: 
+      sequence: 30
+      event: Match Player to Discord ID # 6023018009400606
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Success =====================================
+    id: 6024949997400613
+    identification: 
+      name: Success
+      action: Alert
+
+    settings: 
+      title: Success
+      message: Your Discord account has been mapped
+      style: Success
+      ok-label: Ok
+
+    execution: 
+      sequence: 50
+      event: Match Player to Discord ID # 6023018009400606
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item != Value
+      item: P17_MATCH_PLAYER_ID
+      value: '-1'
+
+  - # ====== Action: Submit Page =================================
+    id: 6025437010400614
+    identification: 
+      action: Submit Page
+
+    settings: 
+      show-processing: true
+
+    execution: 
+      sequence: 60
+      event: Match Player to Discord ID # 6023018009400606
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+computations: 
+- # ====== Computation: P17_AVATAR =============================
+  id: 6031051943524073
+  identification: 
+    item-name: P17_AVATAR
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: 'return  wmg_discord.avatar(p_discord_id => :G_DISCORD_ID, p_avatar_uri => :G_DISCORD_AVATAR);'
+
+branches: 
+- # ====== Branch: Go To Page 1 ================================
+  id: 6031392021524077
+  identification: 
+    name: Go To Page 1
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 1 # Home
+

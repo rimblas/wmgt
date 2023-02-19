@@ -25,90 +25,9 @@ navigation:
 
 javascript: 
   file-urls: 
-  - '#APP_FILES#knockout-3.5.0.js'
-  - '#APP_FILES#knockout-pre-rendered.min.js'
-  function-and-global-variable-declaration: |
-    to_number = function(v) {
-        let n = parseInt(v);
-        return  isNaN(n) ? 0 : n;
-    }
-    
-    function roundTotal() {
-      var self = this;
-      self.s1 = ko.observable(0);
-      self.s2 = ko.observable(0);
-      self.s3 = ko.observable(0);
-      self.s4 = ko.observable(0);
-      self.s5 = ko.observable(0);
-      self.s6 = ko.observable(0);
-      self.s7 = ko.observable(0);
-      self.s8 = ko.observable(0);
-      self.s9 = ko.observable(0);
-      self.s10 = ko.observable(0);
-      self.s11 = ko.observable(0);
-      self.s12 = ko.observable(0);
-      self.s13 = ko.observable(0);
-      self.s14 = ko.observable(0);
-      self.s15 = ko.observable(0);
-      self.s16 = ko.observable(0);
-      self.s17 = ko.observable(0);
-      self.s18 = ko.observable(0);
-      self.par = ko.observable(0);
-      self.scoreOverride = ko.observable(0);
-      self.overrideOn = ko.computed(function() {
-        if (!!self.scoreOverride()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-      }, self);
-    
-      self.total = ko.computed(function() {
-        if (!!self.scoreOverride()) {
-            return to_number(self.scoreOverride());
-        }
-        else
-        return ( 
-               to_number(self.s1()) +
-               to_number(self.s2()) +
-               to_number(self.s3()) +
-               to_number(self.s4()) +
-               to_number(self.s5()) +
-               to_number(self.s6()) +
-               to_number(self.s7()) +
-               to_number(self.s8()) +
-               to_number(self.s9()) +
-               to_number(self.s10()) +
-               to_number(self.s11()) +
-               to_number(self.s12()) +
-               to_number(self.s13()) +
-               to_number(self.s14()) +
-               to_number(self.s15()) +
-               to_number(self.s16()) +
-               to_number(self.s17()) +
-               to_number(self.s18())
-               ) - to_number(self.par());
-      }, self);
-    }
-    
-    // view hole preview
-    function viewH(el) {
-      let hLabel, H;
-      let elID = el.id;
-      hLabel = elID.split("_")[1];
-      H = hLabel.split("H")[1];
-    
-      if (!H) {
-        // we do not have a Hole number, abort
-        return;
-      }
-    
-      $s("P9_H", H);
-    
-      apex.region("holePreview").refresh();
-      $("#holePreview").popup("open");
-    }
+  - '&G_APP_FILES.lib/knockout-3.5.0.js'
+  - '&G_APP_FILES.lib/knockout-pre-rendered.min.js'
+  - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js'
   execute-when-page-loads: |
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
@@ -1614,8 +1533,6 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
-    column-css-classes: 
-    - hidden-md-down
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -4537,7 +4454,7 @@ dynamic-actions:
         var nextEl, e = this.triggeringElement.name;
         var n = parseInt(e.substr(4));
         
-        console.log({n}, this.browserEvent, this.browserEvent.keyCode);
+        apex.debug.message({n}, this.browserEvent, this.browserEvent.keyCode);
         
         if ((this.browserEvent.keyCode >= 48 && this.browserEvent.keyCode <= 57) || (this.browserEvent.keyCode >= 96 && this.browserEvent.keyCode <= 105)) {
             if (n >= 1 && n <= 18) {

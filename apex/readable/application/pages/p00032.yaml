@@ -1,0 +1,124 @@
+---
+# ====== Page: Registrations Closed ==========================
+id: 32
+identification: 
+  name: Registrations Closed
+  alias: REGISTRATIONS-CLOSED
+  title: Registrations Closed
+
+appearance: 
+  page-mode: Modal Dialog
+  dialog-template: Wizard Modal Dialog # 46986513070294702411
+  template-options: 
+  - '#DEFAULT#'
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: {Registrations Closed} ======================
+  id: 3820514968911616
+  identification: 
+    title: '{Registrations Closed}'
+    type: Static Content
+
+  source: 
+    html-code: Hey, the registrations are now closed and the rooms are set. If you registered, go find what room you're playing in.
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+buttons: 
+- # ====== Button: VIEW_ROOMS ==================================
+  id: 3820644446911617
+  identification: 
+    button-name: VIEW_ROOMS
+    label: View Room Assignments
+
+  layout: 
+    sequence: 10
+    region: '{Registrations Closed}' # 3820514968911616
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:::'
+      page: 40 # Room Selections & Assignments
+
+    warn-on-unsaved-changes: Do Not Check
+
