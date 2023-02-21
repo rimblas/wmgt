@@ -9,6 +9,7 @@ create table wmg_wmgt_scores_tmp (
   , easy_score    varchar2(32)
   , hard_score    varchar2(32)
   , total_score   varchar2(32)
+  , points        varchar2(32)
   , created_by      varchar2(60) default on null
                     coalesce(
                         sys_context('APEX$SESSION','app_user')
