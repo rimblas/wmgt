@@ -57,8 +57,60 @@ css:
         display: flex;
         flex-wrap: wrap;
     }
+    }
+    
+    @media (max-width: 640px) {
+    
+        :root {
+            --ut-report-cell-padding-y:.2rem;
+            --ut-report-cell-padding-x:.4rem;
+    
+        }
+        #COURSE_NAME,#COURSE_MODE,
+        td[headers="COURSE_NAME"],
+        td[headers="COURSE_MODE"] {display: none;}
+    
+    .hideFront #S1,
+    .hideFront td[headers="S1"],
+    .hideFront #S2,
+    .hideFront td[headers="S2"],
+    .hideFront #S3,
+    .hideFront td[headers="S3"],
+    .hideFront #S4,
+    .hideFront td[headers="S4"],
+    .hideFront #S5,
+    .hideFront td[headers="S5"],
+    .hideFront #S6,
+    .hideFront td[headers="S6"],
+    .hideFront #S7,
+    .hideFront td[headers="S7"],
+    .hideFront #S8,
+    .hideFront td[headers="S8"],
+    .hideFront #S9,
+    .hideFront td[headers="S9"] {display: none;}
+    
+    .hideBack #S10,
+    .hideBack td[headers="S10"],
+    .hideBack #S11,
+    .hideBack td[headers="S11"],
+    .hideBack #S12,
+    .hideBack td[headers="S12"],
+    .hideBack #S13,
+    .hideBack td[headers="S13"],
+    .hideBack #S14,
+    .hideBack td[headers="S14"],
+    .hideBack #S15,
+    .hideBack td[headers="S15"],
+    .hideBack #S16,
+    .hideBack td[headers="S16"],
+    .hideBack #S17,
+    .hideBack td[headers="S17"],
+    .hideBack #S18,
+    .hideBack td[headers="S18"] {display: none;}
     
     }
+    
+    
     
     #statsRegion .container {
         justify-content: space-evenly;
@@ -106,6 +158,47 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Player Details} ============================
+  id: 4912721602479581
+  identification: 
+    title: '{Player Details}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Hole Preview ================================
   id: 42125082501335925577
   identification: 
@@ -1501,6 +1594,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: roundDetails
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -1624,7 +1718,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Course Code
+      heading: Course <span class="hidden-xs-down">Code</span>
       alignment: start
 
     layout: 
@@ -3578,6 +3672,74 @@ regions:
       escape-special-characters: true
 
 page-items: 
+- # ====== Page Item: P110_FRONT_BACK ==========================
+  id: 4912955741479583
+  identification: 
+    name: P110_FRONT_BACK
+    type: Radio Group
+
+  label: 
+    label: Front / Back
+    alignment: Left
+
+  settings: 
+    number-of-columns: 3
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 30
+    region: '{Player Details}' # 4912721602479581
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 5
+    label-column-span: 0
+    column-css-classes: 
+    - col-xs-8
+    - hidden-md-up
+
+  appearance: 
+    template: Hidden # 46986650295547702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Static Values
+    static-values: 'STATIC2:Full;ALL,Front 9;FRONT,Back 9;BACK'
+    display-extra-values: false
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: ALL
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+  comments: 
+    comments: hidden-sm-up
+
 - # ====== Page Item: P110_MODE ================================
   id: 21350211564670136907
   identification: 
@@ -3716,15 +3878,17 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Player Round Details # 98800129858927712032
+    region: '{Player Details}' # 4912721602479581
     position: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 1
+    column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xs-4
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -3767,7 +3931,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: Player Round Details # 98800129858927712032
+    region: '{Player Details}' # 4912721602479581
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3776,6 +3940,8 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xs-8
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -3840,6 +4006,183 @@ buttons:
     execute-validations: true
 
 dynamic-actions: 
+- # ====== Dynamic Action: Show front & back ===================
+  id: 4913075669479584
+  identification: 
+    name: Show front & back
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P110_FRONT_BACK
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: FRONT: Hide Back 9 ==========================
+    id: 4913086085479585
+    identification: 
+      name: 'FRONT: Hide Back 9'
+      action: Add Class
+
+    settings: 
+      class: hideBack
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Round Details # 98800129858927712032
+
+    execution: 
+      sequence: 30
+      event: Show front & back # 4913075669479584
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: FRONT
+
+  - # ====== Action: FRONT: Show Front 9 =========================
+    id: 4913225910479586
+    identification: 
+      name: 'FRONT: Show Front 9'
+      action: Remove Class
+
+    settings: 
+      class: hideFront
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Round Details # 98800129858927712032
+
+    execution: 
+      sequence: 20
+      event: Show front & back # 4913075669479584
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: FRONT
+
+  - # ====== Action: Show All ====================================
+    id: 4913363220479587
+    identification: 
+      name: Show All
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $("#roundDetails").removeClass("hideBack").removeClass("hideFront");
+
+    execution: 
+      sequence: 10
+      event: Show front & back # 4913075669479584
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: ALL
+
+  - # ====== Action: BACK: Show Back 9 ===========================
+    id: 4913390742479588
+    identification: 
+      name: 'BACK: Show Back 9'
+      action: Remove Class
+
+    settings: 
+      class: hideBack
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Round Details # 98800129858927712032
+
+    execution: 
+      sequence: 60
+      event: Show front & back # 4913075669479584
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: BACK
+
+  - # ====== Action: BACK: Hide Front 9 ==========================
+    id: 4913543760479589
+    identification: 
+      name: 'BACK: Hide Front 9'
+      action: Add Class
+
+    settings: 
+      class: hideFront
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Round Details # 98800129858927712032
+
+    execution: 
+      sequence: 40
+      event: Show front & back # 4913075669479584
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: BACK
+
+- # ====== Dynamic Action: Show Front 9 on Mobile ==============
+  id: 6008166268197088
+  identification: 
+    name: Show Front 9 on Mobile
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: 'apex.theme.mq("(max-width: 640px)")'
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 6008244402197089
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      value: FRONT
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P110_FRONT_BACK
+
+    execution: 
+      sequence: 10
+      event: Show Front 9 on Mobile # 6008166268197088
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
 - # ====== Dynamic Action: Preview Hole ========================
   id: 21373110714061570678
   identification: 

@@ -31,6 +31,26 @@ css:
   - '#APP_FILES#css/week-lov#MIN#.css'
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    @media (max-width: 640px) {
+    
+        :root {
+            --ut-report-cell-padding-y:.2rem;
+            --ut-report-cell-padding-x:.4rem;
+    
+        }
+    }
+    
+    @media (max-width: 639px) {
+      #POS, td[headers="POS"] {
+           --ut-report-cell-padding-x: .4rem;
+           --ut-report-header-cell-padding-x: .2rem;
+      }
+      #COUNTRY_CODE, td[headers="COUNTRY_CODE"] {
+           --ut-report-cell-padding-x: .4rem;
+           --ut-report-header-cell-padding-x: .1rem;
+      }
+    }
+    
     .points {
         color: white;
         font-weight: 700;
@@ -93,138 +113,128 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: {col3} ======================================
-  id: 3472465469873699
-  identification: 
-    title: '{col3}'
-    type: Static Content
-
-  layout: 
-    sequence: 40
-    parent-region: Results # 108296151279429485789
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: 10
-    new-column: true
-    column-span: 3
-
-  appearance: 
-    template: Blank with Attributes # 46986519704134702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: Season Results ==============================
+- # ====== Region: Season &P60_TOURNAMENT. Race ================
   id: 4008199353738099
   identification: 
-    title: Season Results
+    title: Season &P60_TOURNAMENT. Race
     type: Classic Report
 
   source: 
     location: Local Database
     type: SQL Query
     sql-query: |
-      with score_points as (
-          select 1 rank, 25 points, 'top' point_class from dual union all
-          select 2 rank, 21 points, 'top' point_class from dual union all
-          select 3 rank, 18 points, 'top' point_class from dual union all
-          select 4 rank, 16 points, 'top' point_class from dual union all
-          select 5 rank, 15 points, 'top' point_class from dual union all
-          select 6 rank, 14 points, 'top' point_class from dual union all
-          select 7 rank, 13 points, 'top' point_class from dual union all
-          select 8 rank, 12 points, 'top' point_class from dual union all
-          select 9 rank, 11 points, 'top' point_class from dual union all
-          select 10 rank, 10 points, 'p10' point_class from dual union all
-          select 11 rank,  9 points, 'p9' point_class from dual union all
-          select 12 rank,  9 points, 'p9' point_class from dual union all
-          select 13 rank,  9 points, 'p9' point_class from dual union all
-          select 14 rank,  9 points, 'p9' point_class from dual union all
-          select 15 rank,  9 points, 'p9' point_class from dual union all
-          select 16 rank,  9 points, 'p9' point_class from dual union all
-          select 17 rank,  9 points, 'p9' point_class from dual union all
-          select 18 rank,  9 points, 'p9' point_class from dual union all
-          select 19 rank,  9 points, 'p9' point_class from dual union all
-          select 20 rank,  8 points, 'p8' point_class from dual union all
-          select 21 rank,  8 points, 'p8' point_class from dual union all
-          select 22 rank,  8 points, 'p8' point_class from dual union all
-          select 23 rank,  8 points, 'p8' point_class from dual union all
-          select 24 rank,  8 points, 'p8' point_class from dual union all
-          select 25 rank,  8 points, 'p8' point_class from dual union all
-          select 26 rank,  8 points, 'p8' point_class from dual union all
-          select 27 rank,  8 points, 'p8' point_class from dual union all
-          select 28 rank,  8 points, 'p8' point_class from dual union all
-          select 29 rank,  7 points, 'p7' point_class from dual union all
-          select 30 rank,  7 points, 'p7' point_class from dual union all
-          select 31 rank,  7 points, 'p7' point_class from dual union all
-          select 32 rank,  7 points, 'p7' point_class from dual union all
-          select 33 rank,  7 points, 'p7' point_class from dual union all
-          select 34 rank,  7 points, 'p7' point_class from dual union all
-          select 35 rank,  7 points, 'p7' point_class from dual
-      )
-      select r.pos, r.player_id, r.player_name, r.country_code, to_number(null) season_total
-           , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
-           , to_number(null) col1
-           , to_number(null) col2
-           , to_number(null) col3
-           , to_number(null) col4
-           , to_number(null) col5
-           , to_number(null) col6
-           , to_number(null) col7
-           , to_number(null) col8
-           , to_number(null) col9
-           , to_number(null) col10
-           , to_number(null) col11
-           , to_number(null) col12
-      from (
-          select r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
+      with sessions_pivot as (
+          select player_id
+               , max(w1_points)        w1_points
+               , max(w1_session_date)  w1_session_date
+               , max(w2_points)        w2_points
+               , max(w2_session_date)  w2_session_date
+               , max(w3_points)        w3_points
+               , max(w3_session_date)  w3_session_date
+               , max(w4_points)        w4_points
+               , max(w4_session_date)  w4_session_date
+               , max(w5_points)        w5_points
+               , max(w5_session_date)  w5_session_date
+               , max(w6_points)        w6_points
+               , max(w6_session_date)  w6_session_date
+               , max(w7_points)        w7_points
+               , max(w7_session_date)  w7_session_date
+               , max(w8_points)        w8_points
+               , max(w8_session_date)  w8_session_date
+               , max(w9_points)        w9_points
+               , max(w9_session_date)  w9_session_date
+               , max(w10_points)       w10_points
+               , max(w10_session_date) w10_session_date
+               , max(w11_points)       w11_points
+               , max(w11_session_date) w11_session_date
+               , max(w12_points)       w12_points
+               , max(w12_session_date) w12_session_date
           from (
-            select player_id, player_name, country_code, easy, hard, easy + hard total_score
-            from (
-              select r.player_id, r.player_name, r.country_code
-                   , r.under_par
-                   , c.course_mode
-                from wmg_rounds_v r, wmg_courses c
-              where r.course_id = c.id
-                 and r.week = :P60_WEEK
-              )
-             pivot (
-               sum(under_par) for course_mode in (
-                'E' EASY, 'H' HARD
-               )
-              )
-          ) r
+          select p.player_id
+               , p.points
+               , p.discarded_points_flag
+               , ts.tournament_id
+               , ts.round_num
+               , ts.week
+               , ts.session_date
+      --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+          from wmg_tournament_sessions ts
+             , wmg_tournament_players p
+          where ts.id = p.tournament_session_id
+            and ts.tournament_id in (
+              select id
+              from wmg_tournaments
+             where current_flag = 'Y'
+          )
+          order by ts.session_date
+          )
+          pivot (
+              any_value(tournament_id) tournament_id
+            , any_value(round_num)    round_num
+            , any_value(week)         week_num
+            , any_value(session_date) session_date
+            , any_value(points)       points
+            for round_num in (
+                1 as W1
+              , 2 as W2
+              , 3 as W3
+              , 4 as W4
+              , 5 as W5
+              , 6 as W6
+              , 7 as W7
+              , 8 as W8
+              , 9 as W9
+              , 10 as W10
+              , 11 as W11
+              , 12 as W12
+            )
+          )
+          group by player_id
+      )
+      select rank() over (order by r.season_total desc) pos
+           , r.player_id
+           , r.player_name
+           , r.country_code
+           , r.season_total
+           , r.w1_points
+           , r.w2_points
+           , r.w3_points
+           , r.w4_points
+           , r.w5_points
+           , r.w6_points
+           , r.w7_points
+           , r.w8_points
+           , r.w9_points
+           , r.w10_points
+           , r.w11_points
+           , r.w12_points
+        from (
+      	select p.name player_name, p.country_code
+      	   ,   nvl(sp.w1_points,0)
+      	     + nvl(sp.w2_points,0)
+      	     + nvl(sp.w3_points,0)
+      	     + nvl(sp.w4_points,0)
+      	     + nvl(sp.w5_points,0)
+      	     + nvl(sp.w6_points,0)
+      	     + nvl(sp.w7_points,0)
+      	     + nvl(sp.w8_points,0)
+      	     + nvl(sp.w9_points,0)
+      	     + nvl(sp.w10_points,0)
+      	     + nvl(sp.w11_points,0)
+      	     + nvl(sp.w12_points,0) season_total
+      	   , sp.*
+      	from sessions_pivot sp
+      	    , wmg_players p
+      	where p.id = sp.player_id
       ) r
-      , score_points points
-      where r.pos = points.rank (+)
-      order by r.pos, r.player_name
-      
+      order by 5 desc
     page-items-to-submit: 
     - P60_WEEK
 
   layout: 
-    sequence: 30
-    parent-region: Results # 108296151279429485789
-    position: SUB_REGIONS
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -235,9 +245,10 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
-    - t-Region--removeHeader js-removeLandmark
-    - t-Region--noUI
+    - t-Region--noPadding
+    - js-showMaximizeButton
     - t-Region--scrollBody
+    - margin-left-md
     render-components: Above Content
 
   accessibility: 
@@ -247,9 +258,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  security: 
-    authorization-scheme: Administration Rights # 46986682652284702496
 
   server-cache: 
     caching: Disabled
@@ -291,7 +299,31 @@ regions:
       sort-nulls: Last
 
     heading: 
-      type: Custom Headings
+      type: PL/SQL Function Body
+      pl/sql-function-body: |
+        declare 
+          l_headings varchar2(32767);
+        begin
+        
+        select listagg('W' || round_num ||'<br>'|| to_char(session_date, 'MM/DD'), ':') within group (order by session_date)
+        into l_headings
+        from (
+            select ts.tournament_id
+                 , ts.round_num
+                 , ts.week
+                 , ts.session_date
+            from wmg_tournament_sessions ts
+            where ts.tournament_id in (
+                select id
+                from wmg_tournaments
+               where current_flag = 'Y'
+            )
+        );
+        
+          return 'Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
+        end;
+         
+        
 
     download: 
       csv-export-enabled: false
@@ -300,56 +332,6 @@ regions:
       enabled: false
 
   columns: 
-  - # ====== Column: POS =========================================
-    id: 4008305393738100
-    identification: 
-      column-name: POS
-      type: Plain Text
-
-    heading: 
-      heading: '#'
-      alignment: center
-
-    layout: 
-      sequence: 10
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PLAYER_ID ===================================
-    id: 4008476291738101
-    identification: 
-      column-name: PLAYER_ID
-      type: Hidden Column
-
-    layout: 
-      sequence: 20
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: PLAYER_NAME =================================
     id: 4008524835738102
     identification: 
@@ -369,12 +351,12 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P60_WEEK.,#PLAYER_ID#'
-        page: 110 # Player Round Details
-        clear-cache: 110
+        url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_WEEK,P120_PLAYER_ID:&P60_WEEK.,#PLAYER_ID#'
+        page: 120 # Player Highlights
+        clear-cache: 120
         values: 
-          p110_week: '&P60_WEEK.'
-          p110_player_id: '#PLAYER_ID#'
+          p120_week: '&P60_WEEK.'
+          p120_player_id: '#PLAYER_ID#'
 
       link-text: '#PLAYER_NAME#'
 
@@ -393,21 +375,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: SELECTED_PLAYER =============================
-    id: 4009169320738108
-    identification: 
-      column-name: SELECTED_PLAYER
-      type: Hidden Column
-
-    layout: 
-      sequence: 80
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: COUNTRY_CODE ================================
     id: 4009195466738109
     identification: 
@@ -419,7 +386,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 20
       column-alignment: center
 
     accessibility: 
@@ -443,8 +410,224 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: W1_POINTS ===================================
+    id: 6010103427197108
+    identification: 
+      column-name: W1_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W1 Points
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_POINTS ===================================
+    id: 6010569268197112
+    identification: 
+      column-name: W2_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W2 Points
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_POINTS ===================================
+    id: 6010904877197116
+    identification: 
+      column-name: W3_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W3 Points
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_POINTS ===================================
+    id: 6011332026197120
+    identification: 
+      column-name: W4_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W4 Points
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 4
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_POINTS ===================================
+    id: 7606033475066874
+    identification: 
+      column-name: W5_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W5 Points
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 5
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 7606396955066878
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: SEASON_TOTAL ================================
-    id: 4009372746738110
+    id: 7606570538066879
     identification: 
       column-name: SEASON_TOTAL
       type: Plain Text
@@ -455,7 +638,7 @@ regions:
 
     layout: 
       sequence: 50
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -475,83 +658,19 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL1 ========================================
-    id: 4009471603738111
+  - # ====== Column: W6_POINTS ===================================
+    id: 7606581763066880
     identification: 
-      column-name: COL1
+      column-name: W6_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col1
-      alignment: center
-
-    layout: 
-      sequence: 90
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COL2 ========================================
-    id: 4009503098738112
-    identification: 
-      column-name: COL2
-      type: Plain Text
-
-    heading: 
-      heading: Col2
-      alignment: center
-
-    layout: 
-      sequence: 100
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COL3 ========================================
-    id: 4009647755738113
-    identification: 
-      column-name: COL3
-      type: Plain Text
-
-    heading: 
-      heading: Col3
+      heading: W6 Points
       alignment: center
 
     layout: 
       sequence: 110
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -568,22 +687,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 6
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL4 ========================================
-    id: 4009686167738114
+  - # ====== Column: W7_POINTS ===================================
+    id: 7606739235066881
     identification: 
-      column-name: COL4
+      column-name: W7_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col4
+      heading: W7 Points
       alignment: center
 
     layout: 
       sequence: 120
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -600,22 +731,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 7
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL5 ========================================
-    id: 4009847388738115
+  - # ====== Column: W8_POINTS ===================================
+    id: 7606808504066882
     identification: 
-      column-name: COL5
+      column-name: W8_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col5
+      heading: W8 Points
       alignment: center
 
     layout: 
       sequence: 130
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -632,22 +775,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 8
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL6 ========================================
-    id: 4009969286738116
+  - # ====== Column: W9_POINTS ===================================
+    id: 7606942304066883
     identification: 
-      column-name: COL6
+      column-name: W9_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col6
+      heading: W9 Points
       alignment: center
 
     layout: 
       sequence: 140
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -664,22 +819,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 9
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL7 ========================================
-    id: 4009986783738117
+  - # ====== Column: W10_POINTS ==================================
+    id: 7607003136066884
     identification: 
-      column-name: COL7
+      column-name: W10_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col7
+      heading: W10 Points
       alignment: center
 
     layout: 
       sequence: 150
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -696,22 +863,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 10
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL8 ========================================
-    id: 4010101953738118
+  - # ====== Column: W11_POINTS ==================================
+    id: 7607116903066885
     identification: 
-      column-name: COL8
+      column-name: W11_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col8
+      heading: W11 Points
       alignment: center
 
     layout: 
       sequence: 160
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -728,22 +907,34 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 111
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL9 ========================================
-    id: 4010185471738119
+  - # ====== Column: W12_POINTS ==================================
+    id: 7607268166066886
     identification: 
-      column-name: COL9
+      column-name: W12_POINTS
       type: Plain Text
 
     heading: 
-      heading: Col9
+      heading: W12 Points
       alignment: center
 
     layout: 
       sequence: 170
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -760,98 +951,29 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id in (
+            select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+        )
+        and ts.round_num = 12
+
     security: 
       escape-special-characters: true
 
-  - # ====== Column: COL10 =======================================
-    id: 4010357511738120
+  - # ====== Column: PLAYER_ID ===================================
+    id: 7607463446066888
     identification: 
-      column-name: COL10
-      type: Plain Text
-
-    heading: 
-      heading: Col10
-      alignment: center
+      column-name: PLAYER_ID
+      type: Hidden Column
 
     layout: 
       sequence: 180
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COL11 =======================================
-    id: 4010438639738121
-    identification: 
-      column-name: COL11
-      type: Plain Text
-
-    heading: 
-      heading: Col11
-      alignment: center
-
-    layout: 
-      sequence: 190
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COL12 =======================================
-    id: 4911856240479572
-    identification: 
-      column-name: COL12
-      type: Plain Text
-
-    heading: 
-      heading: Col12
-      alignment: center
-
-    layout: 
-      sequence: 200
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -888,9 +1010,9 @@ regions:
       
 
   layout: 
-    sequence: 30
-    parent-region: '{col3}' # 3472465469873699
-    position: BODY
+    sequence: 20
+    parent-region: Other Results # 108296151279429485789
+    position: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1111,11 +1233,11 @@ regions:
       ) r
 
   layout: 
-    sequence: 40
-    parent-region: '{col3}' # 3472465469873699
-    position: BODY
+    sequence: 20
+    parent-region: Other Results # 108296151279429485789
+    position: SUB_REGIONS
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -1318,10 +1440,10 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Players Ranks ===============================
+- # ====== Region: Week &P60_WEEK. Results =====================
   id: 108296150341164485780
   identification: 
-    title: Players Ranks
+    title: Week &P60_WEEK. Results
     type: Classic Report
 
   source: 
@@ -1397,21 +1519,25 @@ regions:
 
   layout: 
     sequence: 20
-    parent-region: Results # 108296151279429485789
-    position: SUB_REGIONS
+    parent-region: No Parent
+    position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
     column-span: 4
+    column-css-classes: 
+    - col-sm-12
+    - col-md-12
 
   appearance: 
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
-    - t-Region--removeHeader js-removeLandmark
-    - t-Region--noUI
+    - t-Region--noPadding
     - t-Region--scrollBody
+    - margin-left-none
+    - margin-right-none
     render-components: Above Content
 
   accessibility: 
@@ -1438,6 +1564,7 @@ regions:
       template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--verticalBorders
@@ -1489,7 +1616,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#"></i>'
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY_CODE#"></i>'
 
     sorting: 
       sortable: false
@@ -1760,14 +1887,14 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Results =====================================
+- # ====== Region: Other Results ===============================
   id: 108296151279429485789
   identification: 
-    title: Results
+    title: Other Results
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 50
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1780,6 +1907,7 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
+    - t-Region--noPadding
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1834,6 +1962,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P60_TOURNAMENT ===========================
+  id: 7607662932066890
+  identification: 
+    name: P60_TOURNAMENT
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 90
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P60_WEEK =================================
   id: 58990481012454704231
   identification: 
@@ -1867,6 +2025,7 @@ page-items:
     - col-xs-6
     - col-sm-6
     - col-md-6
+    - col-lg-3
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -1956,6 +2115,7 @@ page-items:
     - col-xs-6
     - col-sm-6
     - col-md-6
+    - col-lg-3
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -2143,7 +2303,7 @@ buttons:
 
   layout: 
     sequence: 10
-    region: Results # 108296151279429485789
+    region: Week &P60_WEEK. Results # 108296150341164485780
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2185,7 +2345,7 @@ buttons:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 3
     alignment: Left center
 
   appearance: 
@@ -2227,8 +2387,8 @@ buttons:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
-    alignment: Right
+    column-span: 3
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
@@ -2267,7 +2427,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
-    region: Players Ranks # 108296150341164485780
+    region: Week &P60_WEEK. Results # 108296150341164485780
 
   execution: 
     event-scope: Static
@@ -2299,7 +2459,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
-    region: Players Ranks # 108296150341164485780
+    region: Week &P60_WEEK. Results # 108296150341164485780
 
   execution: 
     event-scope: Static
@@ -2391,40 +2551,27 @@ processes:
     language: PL/SQL
     pl/sql-code: |
       begin
-      select week
-        into :P60_WEEK
-        from wmg_tournament_sessions_v
-       where tournament_session_id = :G_CURRENT_SESSION_ID;
+       if :P60_WEEK is null then
+          select week
+            into :P60_WEEK
+            from wmg_tournament_sessions_v
+           where tournament_session_id = :G_CURRENT_SESSION_ID;
+       end if;
+      
+           select prefix_tournament
+            into :P60_TOURNAMENT
+            from wmg_tournament_sessions_v
+           where tournament_session_id = :G_CURRENT_SESSION_ID;
+      
       exception
       when NO_DATA_FOUND then
        null;
       end;
+      
+      
 
   execution: 
     sequence: 10
     point: Before Header
     run-process: Once Per Page Visit (default)
-
-  server-side-condition: 
-    type: Item is NULL
-    item: P60_WEEK
-
-branches: 
-- # ====== Branch: Go To Page 1 ================================
-  id: 4007667221738093
-  identification: 
-    name: Go To Page 1
-
-  execution: 
-    sequence: 10
-    point: Before Header
-
-  behavior: 
-    type: Page or URL (Redirect)
-    target: 
-      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
-      page: 1 # Home
-
-  server-side-condition: 
-    type: Never
 
