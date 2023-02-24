@@ -31,3 +31,13 @@ create index wmg_tournament_ses_i1 on wmg_tournament_sessions (tournament_id);
 comment on column wmg_tournament_sessions.week is 'If prefixes are specified this value gets derived';
 comment on column wmg_tournament_sessions.rooms_open_flag is 'Allows the room definitions to be visible to all players';
 comment on column wmg_tournament_sessions.rooms_defined_flag is 'Indicates the rooms have been defined and set';
+
+create or replace trigger wmg_tournament_sessions_bu
+    before update 
+    on wmg_tournament_sessions
+    for each row
+begin
+    :new.updated_on := current_timestamp;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end wmg_tournament_sessions_bu;
+/
