@@ -39,7 +39,7 @@ begin
   $IF $$LOGGER $THEN
   logger.log(p_text => p_msg, p_scope => p_ctx);
   $ELSE
-  -- dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
+  dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
   $END
 
@@ -372,6 +372,358 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end possible_player_match;
+
+
+
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+/**
+ * PRIVATE
+ * Given a tournament ID and Tournament Session ID make sure we're closing the
+ * the correct week
+ *  1. Must be current tournament
+ *  2. Must be the current session
+ *  3. Rooms must have been defined and open
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 23, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure validate_tournament_state (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'validate_tournament_state';
+
+  l_id wmg_tournaments.id%type;
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  begin
+     -- is the tournament really the current tournament?
+     select id
+       into l_id
+       from wmg_tournaments
+      where id = p_tournament_id
+        and current_flag = 'Y';
+  exception
+    when no_data_found then
+      raise_application_error(e_not_current_tournament, 'Tournament (id ' || p_tournament_id || ') is not the current tournament');
+  end;
+       
+  begin
+     -- is the tournament session correct and part of the current tournament
+     select id
+       into l_id
+       from wmg_tournament_sessions
+      where tournament_id = p_tournament_id
+        and id = p_tournament_session_id;
+  exception
+    when no_data_found then
+      raise_application_error(e_not_correct_session, 'That tournament session is not correct (id ' || p_tournament_session_id || '). Not the current session or not the correct tournament');
+  end;
+
+  log('END', l_scope);
+
+end validate_tournament_state;
+
+
+
+
+
+
+/**
+ * PRIVATE
+ * Given a tournament ID and Tournament Session ID 
+ * Snapshot the points for each player
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 23, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure snapshot_points (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'snapshot_points';
+
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  merge into wmg_tournament_players tp
+  using (
+    select s.id tournament_session_id
+         , p.player_id
+         , p.points
+      from wmg_tournament_session_points_v p
+         , wmg_tournament_sessions s
+     where p.week = s.week
+       and s.id = p_tournament_session_id
+  ) p
+  on (
+        p.tournament_session_id = tp.tournament_session_id
+    and p.player_id = tp.player_id
+  )
+  when matched then
+    update
+       set points = p.points;
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+  log('END', l_scope);
+
+end snapshot_points;
+
+
+
+
+
+
+
+/**
+ * PRIVATE
+ * Given a tournament ID and Tournament Session ID 
+ * Discard the lowest points fom each player
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 23, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure discard_points (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'discard_points';
+
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  update wmg_tournament_players
+     set discarded_points_flag = 'Y' 
+   where id in (
+      with curr_tournament as (
+        select id
+          from wmg_tournaments
+         where id = p_tournament_id
+           and current_flag = 'Y'
+      )
+      , discard as (
+        select floor(count(*)/3) drop_count
+             , count(*) total_sessions
+          from wmg_tournament_sessions ts
+             , curr_tournament
+         where ts.tournament_id = curr_tournament.id
+         and ts.registration_closed_flag = 'Y'
+      )
+      select tournament_player_id
+      from (
+          select p.id tournament_player_id
+               , p.player_id
+               , p.points
+               , p.discarded_points_flag
+               , ts.tournament_id
+               , ts.round_num
+               , ts.week
+               , ts.session_date
+      --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+               , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
+               , count(*) over (partition by p.player_id) sessions_played
+          from wmg_tournament_sessions ts
+             , wmg_tournament_players p
+             , curr_tournament
+          where ts.id = p.tournament_session_id
+            and ts.tournament_id = curr_tournament.id
+          -- and p.player_id in ( 22, 24, 26)
+          order by p.player_id, ts.session_date
+      )
+       , discard
+       -- (total_sessions - sessions_played) is needed in case they did not participate in all sessions
+       where (total_sessions >= sessions_played and discard_order <= (discard.drop_count - (total_sessions - sessions_played)))
+    );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+  log('END', l_scope);
+
+end discard_points;
+
+
+
+
+
+/**
+ * Given a tournament ID perform the necessary steps to close the week
+ *  1. Validate the tournamet and session are correct
+ *  2. Calculate points and assign to each player
+ *  3. Flag Points to discard
+ *  4. Set session as completed
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 20, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure close_tournament_session (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'close_tournament_session';
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  log('.. validations', l_scope);
+  validate_tournament_state(
+      p_tournament_id => p_tournament_id
+    , p_tournament_session_id => p_tournament_session_id
+  );
+
+
+  log('.. snaptshot points', l_scope);
+  snapshot_points(
+      p_tournament_id         => p_tournament_id
+    , p_tournament_session_id => p_tournament_session_id
+  );
+
+
+  log('.. discarding points', l_scope);
+  discard_points(
+      p_tournament_id         => p_tournament_id
+    , p_tournament_session_id => p_tournament_session_id
+  );
+
+
+  log('.. close tournament session', l_scope);
+  update wmg_tournament_sessions ts
+     set ts.completed_ind = 'Y'
+       , ts.completed_on = current_timestamp
+   where ts.id = p_tournament_session_id
+     and ts.tournament_id = p_tournament_id;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end close_tournament_session;
+
+
+
+/**
+ * Given a finishing rank, calculate the score the player will receive
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created 
+ * @param p_rank         rank the player finished
+ * @param p_percent_rank player percent rank (the top 10 do NOT use percent rank)
+ * @param p_player_count players in the field
+ * @return
+ */
+function score_points(
+    p_rank         in number
+  , p_percent_rank in number
+  , p_player_count in number
+)
+return number
+is
+  l_scope  scope_t := gc_scope_prefix || 'score_points';
+  -- l_params logger.tab_param;
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  -- log('BEGIN', l_scope);
+
+  if p_rank <= 10 then
+    return 
+      case p_rank
+      when  1 then 25
+      when  2 then 21 
+      when  3 then 18 
+      when  4 then 16 
+      when  5 then 15 
+      when  6 then 14 
+      when  7 then 13 
+      when  8 then 12 
+      when  9 then 11 
+      when 10 then 10
+      end;
+  else
+    if p_player_count < 21 then
+     return 20 - p_rank;
+    elsif p_percent_rank <= 0.111 then
+      return 9;
+    elsif p_percent_rank <= 0.222 then
+      return 8;
+    elsif p_percent_rank <= 0.333 then
+      return 7;
+    elsif p_percent_rank <= 0.444 then
+      return 6;
+    elsif p_percent_rank <= 0.555 then
+      return 5;
+    elsif p_percent_rank <= 0.666 then
+      return 4;
+    elsif p_percent_rank <= 0.777 then
+      return 3;
+    elsif p_percent_rank <= 0.888 then
+      return 2;
+    else
+      return 1;
+    end if;
+  end if;
+
+
+  -- log('END', l_scope);
+
+exception
+  when OTHERS then
+    log('Unhandled Exception', l_scope);
+    raise;
+end score_points;
 
 
 

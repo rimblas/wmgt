@@ -8,6 +8,10 @@ is
 --*
 --------------------------------------------------------------------------------
 
+e_not_current_tournament constant number := -20000;
+e_not_correct_session    constant number := -20001;
+
+
 type rec_keyval_type is record(
     key      varchar2(10)
   , val      varchar2(250)
@@ -31,6 +35,17 @@ procedure possible_player_match (
   , x_players_tbl     in out nocopy tab_keyval_type
 );
 
+procedure close_tournament_session (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+);
+
+function score_points(
+    p_rank         in number
+  , p_percent_rank in number
+  , p_player_count in number
+)
+return number;
 
 end wmg_util;
 /
