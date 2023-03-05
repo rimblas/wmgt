@@ -74,3 +74,7 @@ function viewH(el) {
   apex.region("holePreview").refresh();
   $("#holePreview").popup("open");
 }
+
+function qhide(pID) {
+  $("[data-id=" + pID + "]").parents("tr").slideUp();
+}

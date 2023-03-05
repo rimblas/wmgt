@@ -28,3 +28,31 @@
     type: Static Value
     static-value: '#APP_FILES#'
 
+- # ====== Application Computation: G_CURRENT_SESSION_ID =======
+  id: 10002913386239989
+  identification: 
+    item-name: G_CURRENT_SESSION_ID
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select s.id
+      from wmg_tournament_sessions s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and s.session_date+1 >= trunc(current_timestamp)
+      and s.completed_ind = 'N'
+      order by s.session_date desc
+      fetch first 1 rows only
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_CURRENT_SESSION_ID
+

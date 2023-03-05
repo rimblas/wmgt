@@ -120,6 +120,121 @@
     default-sort: D
     sort-direction: Ascending (Nulls Last)
 
+- # ====== List of Values: TOURNAMENT_SESSION_PLAYERS ==========
+  id: 11803281247952720
+  identification: 
+    name: TOURNAMENT_SESSION_PLAYERS
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select player_id
+            , account
+            , country_code
+            , room_no
+            , 'WMGT' || room_no room_name
+      from WMG_TOURNAMENT_PLAYER_V 
+      where tournament_session_id = :G_CURRENT_SESSION_ID
+        and active_ind = 'Y'
+
+  column-mapping: 
+    return: PLAYER_ID
+    display: ACCOUNT
+    default-sort: ACCOUNT
+    sort-direction: Ascending (Nulls Last)
+
+  comments: 
+    comments: Active players registered for the tournament
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 11805609040977363
+    identification: 
+      column-name: PLAYER_ID
+      show: false
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: NUMBER
+
+    advanced: 
+      searchable: false
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 11805993577977364
+    identification: 
+      column-name: ACCOUNT
+      show: true
+
+    heading: 
+      heading: Account
+
+    layout: 
+      sequence: 30
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 11806443059977364
+    identification: 
+      column-name: ROOM_NO
+      show: false
+
+    heading: 
+      heading: Room No
+
+    layout: 
+      sequence: 30
+
+    source: 
+      data-type: NUMBER
+
+    advanced: 
+      searchable: false
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 11807503029993174
+    identification: 
+      column-name: COUNTRY_CODE
+      show: false
+
+    heading: 
+      heading: Country Code
+
+    layout: 
+      sequence: 20
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: false
+
+  - # ====== Column: ROOM_NAME ===================================
+    id: 11812236561018268
+    identification: 
+      column-name: ROOM_NAME
+      show: false
+
+    heading: 
+      heading: Room Name
+
+    layout: 
+      sequence: 40
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: false
+
 - # ====== List of Values: WMG_COURSES.CODE ====================
   id: 20721954775534046605
   identification: 

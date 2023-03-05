@@ -59,7 +59,7 @@ css:
     }
     }
     
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
     
         :root {
             --ut-report-cell-padding-y:.2rem;
@@ -70,6 +70,9 @@ css:
         td[headers="COURSE_NAME"],
         td[headers="COURSE_MODE"] {display: none;}
     
+    }
+    
+    @media (max-width: 1199px) {
     .hideFront #S1,
     .hideFront td[headers="S1"],
     .hideFront #S2,
@@ -107,8 +110,8 @@ css:
     .hideBack td[headers="S17"],
     .hideBack #S18,
     .hideBack td[headers="S18"] {display: none;}
-    
     }
+    
     
     
     
@@ -3699,7 +3702,7 @@ page-items:
     label-column-span: 0
     column-css-classes: 
     - col-xs-8
-    - hidden-md-up
+    - hidden-lg-up
 
   appearance: 
     template: Hidden # 46986650295547702469
@@ -3889,6 +3892,8 @@ page-items:
     label-column-span: Page Template Default
     column-css-classes: 
     - col-xs-4
+    - col-sm-4
+    - col-md-4
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -3942,6 +3947,8 @@ page-items:
     label-column-span: Page Template Default
     column-css-classes: 
     - col-xs-8
+    - col-sm-8
+    - col-md-8
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -4154,7 +4161,7 @@ dynamic-actions:
 
   client-side-condition: 
     type: JavaScript expression
-    javascript-expression: 'apex.theme.mq("(max-width: 640px)")'
+    javascript-expression: 'apex.theme.mq("(max-width: 768px)")'
 
   execution: 
     event-scope: Static

@@ -1,0 +1,881 @@
+---
+# ====== Page: Player Tournament Details =====================
+id: 130
+identification: 
+  name: Player Tournament Details
+  alias: PLAYER-TOURNAMENT-DETAILS
+  title: Player Tournament Details
+
+appearance: 
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authorization-scheme: Tournament Admin # 55893512303411682019
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Player Tournament Details ===================
+  id: 11610293936472751
+  identification: 
+    title: Player Tournament Details
+    type: Interactive Grid
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_TOURNAMENT_PLAYER_V
+    include-rowid-column: false
+    where-clause: 'player_id = :P130_PLAYER_ID'
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46986575558905702436
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 11610872480472753
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Add Row
+      - Update Row
+      - Delete Row
+      lost-update-type: Row Values
+      add-row-if-empty: true
+
+    performance: 
+      lazy-loading: false
+
+    appearance: 
+      select-first-row: true
+      fixed-row-height: true
+
+    pagination: 
+      type: Scroll
+      show-total-row-count: true
+
+    toolbar: 
+      show: true
+      controls: 
+      - Search Column Selection
+      - Search Field
+      - Actions Menu
+      - Reset Button
+      - Save Button
+
+    enable-users-to: 
+      save-public-report: false
+      flashback: true
+      define-chart-view: true
+      download: true
+
+    download: 
+      formats: 
+      - CSV
+      - HTML
+      - PDF
+      - Excel
+      send-as-email: true
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 11611251330472755
+      identification: 
+        name: Primary Report
+        alias: 201322
+
+  columns: 
+  - # ====== Column: TOURNAMENT_ID ===============================
+    id: 8210293006109910
+    identification: 
+      column-name: TOURNAMENT_ID
+      type: Hidden
+
+    settings: 
+      value-protected: true
+
+    layout: 
+      sequence: 30
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: TOURNAMENT_ID
+      data-type: NUMBER
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    enable-users-to: 
+      sort: false
+
+  - # ====== Column: APEX$ROW_SELECTOR ===========================
+    id: 11611651153472762
+    identification: 
+      column-name: APEX$ROW_SELECTOR
+      type: Row Selector
+
+    settings: 
+      enable-multi-select: true
+      show-select-all: true
+      hide-control: false
+
+    layout: 
+      sequence: 10
+
+  - # ====== Column: APEX$ROW_ACTION =============================
+    id: 11612118118472763
+    identification: 
+      column-name: APEX$ROW_ACTION
+      type: Actions Menu
+
+    layout: 
+      sequence: 20
+
+  - # ====== Column: ROUND_NUM ===================================
+    id: 11627060466472825
+    identification: 
+      column-name: ROUND_NUM
+      type: Display Only
+
+    heading: 
+      heading: Round Num
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: ROUND_NUM
+      data-type: NUMBER
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 11627983346472827
+    identification: 
+      column-name: SESSION_DATE
+      type: Display Only
+
+    heading: 
+      heading: Session Date
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: SESSION_DATE
+      data-type: DATE
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      lov-type: Distinct Column
+      date-ranges: All
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: WEEK ========================================
+    id: 11629016554472828
+    identification: 
+      column-name: WEEK
+      type: Display Only
+
+    heading: 
+      heading: Week
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: WEEK
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: TOURNAMENT_PLAYER_ID ========================
+    id: 11638074431472847
+    identification: 
+      column-name: TOURNAMENT_PLAYER_ID
+      type: Hidden
+
+    settings: 
+      value-protected: true
+
+    layout: 
+      sequence: 40
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: TOURNAMENT_PLAYER_ID
+      data-type: NUMBER
+      query-only: false
+      primary-key: true
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+
+  - # ====== Column: TIME_SLOT ===================================
+    id: 11639016711472849
+    identification: 
+      column-name: TIME_SLOT
+      type: Select List
+
+    heading: 
+      heading: Time Slot
+      alignment: start
+
+    layout: 
+      sequence: 120
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: TIME_SLOTS # 40406023018752540107
+      display-extra-values: true
+      display-null-value: true
+
+    source: 
+      type: Database Column
+      database-column: TIME_SLOT
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Use List of Values
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 11639993564472850
+    identification: 
+      column-name: ROOM_NO
+      type: Number Field
+
+    heading: 
+      heading: Room No
+      alignment: end
+
+    settings: 
+      number-alignment: Start
+      virtual-keyboard: Numeric
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+
+    source: 
+      type: Database Column
+      database-column: ROOM_NO
+      data-type: NUMBER
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: POINTS ======================================
+    id: 11641000470472851
+    identification: 
+      column-name: POINTS
+      type: Number Field
+
+    heading: 
+      heading: Points
+      alignment: end
+
+    settings: 
+      number-alignment: Start
+      virtual-keyboard: Numeric
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+
+    source: 
+      type: Database Column
+      database-column: POINTS
+      data-type: NUMBER
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: DISCARDED_POINTS_FLAG =======================
+    id: 11641987743472853
+    identification: 
+      column-name: DISCARDED_POINTS_FLAG
+      type: Switch
+
+    heading: 
+      heading: Discarded?
+      alignment: start
+
+    settings: 
+      use-defaults: false
+      on-value: Y
+      on-label: Yes
+
+    layout: 
+      sequence: 150
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+
+    source: 
+      type: Database Column
+      database-column: DISCARDED_POINTS_FLAG
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: ACTIVE_IND ==================================
+    id: 11643054728472854
+    identification: 
+      column-name: ACTIVE_IND
+      type: Hidden
+
+    settings: 
+      value-protected: true
+
+    layout: 
+      sequence: 80
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: ACTIVE_IND
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    enable-users-to: 
+      sort: false
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 11648043272472862
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden
+
+    settings: 
+      value-protected: true
+
+    layout: 
+      sequence: 90
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: PLAYER_ID
+      data-type: NUMBER
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    enable-users-to: 
+      sort: false
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 11649004120472863
+    identification: 
+      column-name: ACCOUNT
+      type: Display Only
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 110
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: ACCOUNT
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 11650073335472865
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Display Only
+
+    heading: 
+      heading: Country
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 100
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COUNTRY # 2799727923811973
+      display-extra-values: true
+
+    source: 
+      type: Database Column
+      database-column: COUNTRY_CODE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Use List of Values
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  printing: 
+    page: 
+      size: Letter
+      orientation: Landscape
+      units: Inches
+      width: 11
+      height: 8.5
+      border-width: 0.5
+      border-color: '#666666'
+
+    page-header: 
+      font: Helvetica
+      font-weight: Normal
+      font-size: 12
+      font-color: '#000000'
+      alignment: center
+      page-header-text: Player Tournament Details
+
+    column-headings: 
+      font: Helvetica
+      font-weight: Bold
+      font-size: 10
+      font-color: '#000000'
+      background-color: '#EEEEEE'
+
+    columns: 
+      font: Helvetica
+      font-weight: Normal
+      font-size: 10
+      font-color: '#000000'
+      background-color: '#FFFFFF'
+
+    page-footer: 
+      font: Helvetica
+      font-weight: Normal
+      font-size: 12
+      font-color: '#000000'
+      alignment: center
+
+page-items: 
+- # ====== Page Item: P130_PLAYER_ID ===========================
+  id: 8210559617109912
+  identification: 
+    name: P130_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Player Tournament Details # 11610293936472751
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+processes: 
+- # ====== Process: Player Tournament Details - Save Interactive
+  id: 11650956082472870
+  identification: 
+    name: Player Tournament Details - Save Interactive Grid Data
+    type: Interactive Grid - Automatic Row Processing (DML)
+    editable-region: Player Tournament Details # 11610293936472751
+
+  settings: 
+    target-type: PL/SQL Code
+    pl/sql-code-to-insert/update/delete: |
+      begin
+          case :APEX$ROW_STATUS
+          when 'U' then
+            update wmg_tournament_players
+              set points = :POINTS
+                , discarded_points_flag = case when :DISCARDED_POINTS_FLAG = 'Y' then 'Y' else '' end
+                , time_slot = :TIME_SLOT
+                , room_no   = :ROOM_NO
+            where id = :TOURNAMENT_PLAYER_ID;
+          end case;
+      end;
+      
+    prevent-lost-updates: true
+    lock-row: Yes
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    execution-scope: For Created and Modified Rows
+

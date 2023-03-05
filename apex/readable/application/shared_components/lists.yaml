@@ -15,7 +15,8 @@
       image/icon-css-classes: fa-dashboard
 
     layout: 
-      sequence: 110
+      sequence: 30
+      parent-entry: Courses # 46986695981453702577
 
     is-current: 
       type: Pages
@@ -24,7 +25,7 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:200:&APP_SESSION.::&DEBUG.:::'
+        url: 'f?p=&APP_ID.:200:&SESSION.::&DEBUG.::::'
         page: 200 # Course Analysis
 
     click-counting: 
@@ -43,6 +44,7 @@
 
     layout: 
       sequence: 130
+      parent-entry: Verify Results # 3476501624882960
 
     is-current: 
       type: Pages
@@ -152,7 +154,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 30
+      sequence: 35
       parent-entry: Courses # 46986695981453702577
 
     is-current: 
@@ -169,10 +171,10 @@
     user-defined-attributes: 
       translatable: false
 
-  - # ====== Entry: Players ======================================
+  - # ====== Entry: All Players ==================================
     id: 46986740499840702970
     label: 
-      label: Players
+      label: All Players
 
     icon: 
       image/icon-css-classes: fa-table
@@ -185,7 +187,7 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:'
+        url: 'f?p=&APP_ID.:6:&SESSION.::&DEBUG.::::'
         page: 6 # Players
 
     click-counting: 
@@ -194,10 +196,10 @@
     user-defined-attributes: 
       translatable: false
 
-  - # ====== Entry: Rounds =======================================
+  - # ====== Entry: All Rounds ===================================
     id: 46986753082827703266
     label: 
-      label: Rounds
+      label: All Rounds
 
     icon: 
       image/icon-css-classes: fa-table
@@ -285,6 +287,7 @@
 
     layout: 
       sequence: 60
+      parent-entry: All Rounds # 46986753082827703266
 
     is-current: 
       type: Pages
@@ -293,7 +296,7 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:12:&APP_SESSION.::&DEBUG.:::'
+        url: 'f?p=&APP_ID.:12:&SESSION.::&DEBUG.::::'
         page: 12 # Rounds
 
     click-counting: 
@@ -314,7 +317,7 @@
       image/icon-css-classes: fa-file-o
 
     layout: 
-      sequence: 70
+      sequence: 200
 
     is-current: 
       type: Pages
@@ -335,46 +338,16 @@
     security: 
       authorization-scheme: Tournament Admin # 55893512303411682019
 
-  - # ====== Entry: Rooms ========================================
-    id: 58989707945457953662
-    label: 
-      label: Rooms
-
-    icon: 
-      image/icon-css-classes: fa-file-o
-
-    layout: 
-      sequence: 80
-
-    is-current: 
-      type: Pages
-      pages: 
-      - 40
-
-    link: 
-      target: 
-        url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.::::'
-        page: 40 # Room Selections & Assignments
-
-    click-counting: 
-      count-clicks: false
-
-    user-defined-attributes: 
-      translatable: false
-
-    server-side-condition: 
-      type: Never
-
   - # ====== Entry: View Results =================================
     id: 58989729834847961599
     label: 
       label: View Results
 
     icon: 
-      image/icon-css-classes: fa-file-o
+      image/icon-css-classes: fa-line-chart
 
     layout: 
-      sequence: 100
+      sequence: 12
 
     is-current: 
       type: Pages
@@ -391,36 +364,6 @@
 
     user-defined-attributes: 
       translatable: false
-
-  - # ====== Entry: Enter Rounds =================================
-    id: 58989849472220683421
-    label: 
-      label: Enter Rounds
-
-    icon: 
-      image/icon-css-classes: fa-file-o
-
-    layout: 
-      sequence: 90
-
-    is-current: 
-      type: Pages
-      pages: 
-      - 50
-
-    link: 
-      target: 
-        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.::::'
-        page: 50 # Enter Rounds
-
-    click-counting: 
-      count-clicks: false
-
-    user-defined-attributes: 
-      translatable: false
-
-    server-side-condition: 
-      type: Never
 
 - # ====== List: Navigation Bar ================================
   id: 46986677670123702487
@@ -1244,13 +1187,13 @@
         where id = :G_CURRENT_SESSION_ID
           and rooms_defined_flag = 'Y'
 
-  - # ====== Entry: No Tournament ================================
+  - # ====== Entry: Tournament ===================================
     id: 2317599750470165219
     label: 
-      label: No Tournament
+      label: Tournament
 
     icon: 
-      image/icon-css-classes: fa-number-1
+      image/icon-css-classes: fa-number-1 fam-sleep fam-is-disabled
 
     layout: 
       sequence: 15
@@ -1268,7 +1211,7 @@
 
     user-defined-attributes: 
       translatable: false
-      1.: No current tournament
+      7.: Try next week...
 
     server-side-condition: 
       type: Expression

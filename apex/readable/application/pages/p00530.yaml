@@ -1171,7 +1171,7 @@ regions:
         values: 
           p532_id: '#ID#'
 
-      link-text: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+      link-text: '&EDIT_BUTTON.'
 
     sorting: 
       sortable: false
@@ -1717,6 +1717,39 @@ buttons:
     static-id: edit_master_btn
 
 dynamic-actions: 
+- # ====== Dynamic Action: Dialog Close ========================
+  id: 8209889619109906
+  identification: 
+    name: Dialog Close
+
+  execution: 
+    sequence: 160
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: POP_WMG_TOURNAMENT_SESSIONS # 56149522994445424861
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 8209978294109907
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: ' Sessions' # 56149511741270424767
+
+    execution: 
+      sequence: 10
+      event: Dialog Close # 8209889619109906
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Dialog Closed =======================
   id: 56149511867539424767
   identification: 
@@ -1726,7 +1759,7 @@ dynamic-actions:
     sequence: 40
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Region
     region: ' Sessions' # 56149511741270424767
 

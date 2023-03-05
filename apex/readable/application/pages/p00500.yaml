@@ -112,14 +112,14 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
-    render-components: Above Content
+    render-components: Below Content
 
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -269,7 +269,513 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Current  Session ============================
+  id: 56169634488996600279
+  identification: 
+    title: Current  Session
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select tournament_session_id ID,
+             TOURNAMENT_ID,
+             ROUND_NUM,
+             SESSION_DATE,
+             WEEK,
+             EASY_COURSE_ID,
+             HARD_COURSE_ID,
+             OPEN_REGISTRATION_ON,
+             CLOSE_REGISTRATION_ON,
+             COMPLETED_IND,
+             COMPLETED_ON
+      --       CREATED_ON,
+      --       CREATED_BY,
+      --       UPDATED_ON,
+      --       UPDATED_BY
+        from wmg_tournament_sessions_v
+       where TOURNAMENT_ID in (
+           select ID
+             from WMG_TOURNAMENTS
+            where CURRENT_FLAG = 'Y'
+       )
+        and (completed_ind = 'N'
+          or completed_on > current_timestamp - 1
+       )
+       
+       order by ROUND_NUM
+
+  layout: 
+    sequence: 30
+    parent-region: Tournament # 56015643034338939710
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    css-classes: 
+    - js-detail-region
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 100
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - t-Report--stretch
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--inline
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 5000
+
+    messages: 
+      when-no-data-found: No data found.
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: true
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 11602091695363613
+    identification: 
+      column-name: ID
+      type: Link
+
+    heading: 
+      heading: <span class="u-VisuallyHidden">Edit</span>
+      alignment: center
+
+    layout: 
+      sequence: 2
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:532:&SESSION.::&DEBUG.:532:P532_ID:#ID#'
+        page: 532 # Wmg Tournament Sessions
+        clear-cache: 532
+        values: 
+          p532_id: '#ID#'
+
+      link-text: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_ID ===============================
+    id: 11602563357363614
+    identification: 
+      column-name: TOURNAMENT_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 3
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_NUM ===================================
+    id: 11602892606363615
+    identification: 
+      column-name: ROUND_NUM
+      type: Plain Text
+
+    heading: 
+      heading: 'Round #'
+      alignment: center
+
+    layout: 
+      sequence: 4
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 11603278642363615
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Session Date
+      alignment: start
+
+    layout: 
+      sequence: 5
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 11603716503363616
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 6
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_ID ==============================
+    id: 11604160609363616
+    identification: 
+      column-name: EASY_COURSE_ID
+      type: Plain Text (based on List of Values)
+
+    heading: 
+      heading: Easy Course
+      alignment: center
+
+    layout: 
+      sequence: 16
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46986710799770702952
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_ID ==============================
+    id: 11604502020363617
+    identification: 
+      column-name: HARD_COURSE_ID
+      type: Plain Text (based on List of Values)
+
+    heading: 
+      heading: Hard Course
+      alignment: center
+
+    layout: 
+      sequence: 26
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46986710799770702952
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: OPEN_REGISTRATION_ON ========================
+    id: 11604950061363617
+    identification: 
+      column-name: OPEN_REGISTRATION_ON
+      type: Plain Text
+
+    heading: 
+      heading: Open Registration On
+      alignment: start
+
+    layout: 
+      sequence: 36
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CLOSE_REGISTRATION_ON =======================
+    id: 11605313732363618
+    identification: 
+      column-name: CLOSE_REGISTRATION_ON
+      type: Plain Text
+
+    heading: 
+      heading: Close Registration On
+      alignment: start
+
+    layout: 
+      sequence: 46
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COMPLETED_IND ===============================
+    id: 11605705044363619
+    identification: 
+      column-name: COMPLETED_IND
+      type: Plain Text
+
+    heading: 
+      heading: Completed?
+      alignment: center
+
+    layout: 
+      sequence: 56
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="fa cfa-check2_#COMPLETED_IND# cfa-1_5x" title="#COMPLETED_IND#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COMPLETED_ON ================================
+    id: 11606142064363619
+    identification: 
+      column-name: COMPLETED_ON
+      type: Plain Text
+
+    heading: 
+      heading: Completed On
+      alignment: start
+
+    layout: 
+      sequence: 66
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 buttons: 
+- # ====== Button: POP_WMG_TOURNAMENT_SESSIONS =================
+  id: 11606542247363621
+  identification: 
+    button-name: POP_WMG_TOURNAMENT_SESSIONS
+    label: Add Wmg Tournament Sessions
+
+  layout: 
+    sequence: 10
+    region: Current  Session # 56169634488996600279
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-plus
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:532:&APP_SESSION.::&DEBUG.:RP,532:P532_TOURNAMENT_ID:&P500_ID.'
+      page: 532 # Wmg Tournament Sessions
+      clear-cache: RP,532
+      values: 
+        p532_tournament_id: '&P500_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: VIEW ========================================
   id: 50429446245637004846
   identification: 
@@ -336,6 +842,72 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
+- # ====== Dynamic Action: Refresh on Close ====================
+  id: 8209680928109904
+  identification: 
+    name: Refresh on Close
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    selection-type: Region
+    region: Current  Session # 56169634488996600279
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 8209788727109905
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Current  Session # 56169634488996600279
+
+    execution: 
+      sequence: 10
+      event: Refresh on Close # 8209680928109904
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Dialog Close =============
+  id: 8210092077109908
+  identification: 
+    name: Refresh on Dialog Close
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: POP_WMG_TOURNAMENT_SESSIONS # 11606542247363621
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 8210271374109909
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Current  Session # 56169634488996600279
+
+    execution: 
+      sequence: 10
+      event: Refresh on Dialog Close # 8210092077109908
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh Tournament ==================
   id: 56015644527458939725
   identification: 

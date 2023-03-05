@@ -1004,8 +1004,9 @@ processes:
         , easy_score
         , hard_score
         , total_score
+        , points
       )
-      select p.col002, p.col004, p.col005, p.col006, p.col007
+      select p.col002, p.col004, p.col005, p.col006, p.col007, p.col008
              -- add more columns (col011 to col300) here.
         from apex_application_temp_files f, 
              table( apex_data_parser.parse(

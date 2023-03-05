@@ -28,6 +28,8 @@ select t.id                              tournament_id
      , tp.id                             tournament_player_id
      , tp.time_slot                      time_slot
      , tp.room_no                        room_no
+     , tp.points                         points
+     , tp.discarded_points_flag          discarded_points_flag
      , tp.active_ind                     active_ind
      , tp.created_on                     tournament_player_created
      , tp.created_by                     tournament_player_created_by

@@ -72,7 +72,8 @@ regions:
 
   source: 
     html-code: |
-      The room names are <i>WMGT1</i>, <i>WMGT2</i>, etc... Find your room and join a few minutes before so you can start your round precisely on time.<br>
+      The private room names will be/are <i>WMGT1</i>, <i>WMGT2</i>, etc... Rooms will be available 30 min before the 1st group is due to play.<br>
+      Find your room and join a few minutes before so you can start your round precisely on time.<br>
       <br>
       🚨 <b>VERY IMPORTANT</b> 🚨 <br>
       <ol>
@@ -142,14 +143,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -159,7 +166,8 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
+      
 
   layout: 
     sequence: 29
@@ -318,14 +326,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -336,6 +350,7 @@ regions:
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
                else 0 end, p.tournament_player_created
+      
 
   layout: 
     sequence: 39
@@ -492,14 +507,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -510,6 +531,7 @@ regions:
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
                else 0 end, p.tournament_player_created
+      
 
   layout: 
     sequence: 49
@@ -666,14 +688,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -684,6 +712,7 @@ regions:
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
                else 0 end, p.tournament_player_created
+      
 
   layout: 
     sequence: 59
@@ -840,14 +869,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -858,6 +893,7 @@ regions:
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
                else 0 end, p.tournament_player_created
+      
 
   layout: 
     sequence: 69
@@ -1014,14 +1050,20 @@ regions:
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
            , case when p.tournament_player_id = :G_REGISTRATION_ID then
-              '<mark class="player"><a href="' ||
-              apex_page.get_url(
-                  p_page => 30
-                , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
-                , p_values => p.player_id || ',' || :APP_PAGE_ID
-              ) || '">' || apex_escape.html(p.account) || '</a></mark>'
-             else
-               apex_escape.html(p.account)
+              '<mark class="player">'
+             end
+          || case when s.rooms_defined_flag is null then
+              '<a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.account)
+          || case when rooms_defined_flag is null then '</a>' end
+          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+              '</mark>'
              end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -1032,6 +1074,7 @@ regions:
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
                else 0 end, p.tournament_player_created
+      
 
   layout: 
     sequence: 79
@@ -1962,7 +2005,7 @@ computations:
 
   computation: 
     type: Static Value
-    static-value: 250
+    static-value: 507
 
   server-side-condition: 
     type: Never
@@ -1981,7 +2024,7 @@ computations:
 
   computation: 
     type: Static Value
-    static-value: 211
+    static-value: 341
 
   server-side-condition: 
     type: Never
@@ -2002,6 +2045,7 @@ processes:
     pl/sql-code: |
       update wmg_tournament_sessions
          set rooms_open_flag = decode(rooms_open_flag, 'Y', null, 'Y')
+           , registration_closed_flag = decode(registration_closed_flag, 'Y', null, 'Y')
       where id = :G_CURRENT_SESSION_ID;
 
   execution: 

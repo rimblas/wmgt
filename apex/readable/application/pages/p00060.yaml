@@ -51,6 +51,16 @@ css:
       }
     }
     
+    .w {
+        display: inline-block;
+        float: right;
+    }
+    
+    .discardY {
+        text-decoration: line-through;
+        color: #BBB;
+    }
+    
     .points {
         color: white;
         font-weight: 700;
@@ -84,9 +94,25 @@ css:
     }
     .p2 {
         background-color: hsl(220deg 100% 91%);
+        color: #777;
     }
     .p1 {
-        background-color: hsl(220deg 100% 95%);
+        background-color: hsl(220deg 100% 97%);
+        color: #666;
+    }
+    
+    td[headers="SEASON_TOTAL"] {
+        font-weight: bold;
+    }
+    .&P60_WEEK. {
+        background-color: rgb(79, 79, 189);
+        color: white;
+        font-weight: bold;
+    }
+    
+    .&P60_WEEK..discardY {
+        color: #bfbfbf;
+        font-weight: normal;
     }
     
 
@@ -113,67 +139,98 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: Season &P60_TOURNAMENT. Race ================
+- # ====== Region: Season Race (&P60_TOURNAMENT.) ==============
   id: 4008199353738099
   identification: 
-    title: Season &P60_TOURNAMENT. Race
+    title: Season Race (&P60_TOURNAMENT.)
     type: Classic Report
 
   source: 
     location: Local Database
     type: SQL Query
     sql-query: |
-      with sessions_pivot as (
+      with curr_tournament as (
+        select id
+          from wmg_tournaments
+         where current_flag = 'Y'
+      )
+      , all_weeks as (
+        select ts.id tournament_session_id, ts.round_num, ts.week, ts.session_date
+         from wmg_tournament_sessions ts
+            , curr_tournament
+        where curr_tournament.id = ts.tournament_id
+      )
+      , all_tournament_players as (
+        select distinct p.player_id, w.tournament_session_id, w.round_num, w.week, w.session_date
+          from wmg_tournament_players p
+             , all_weeks w
+         where p.tournament_session_id in (
+            select aw.tournament_session_id
+             from all_weeks aw
+          )
+      )
+      , sessions_pivot as (
           select player_id
                , max(w1_points)        w1_points
-               , max(w1_session_date)  w1_session_date
+               , max(w1_week)          w1_week
+               , max(w1_discarded_points_flag)  w1_discard
                , max(w2_points)        w2_points
-               , max(w2_session_date)  w2_session_date
+               , max(w2_week)          w2_week
+               , max(w2_discarded_points_flag)  w2_discard
                , max(w3_points)        w3_points
-               , max(w3_session_date)  w3_session_date
+               , max(w3_week)          w3_week
+               , max(w3_discarded_points_flag)  w3_discard
                , max(w4_points)        w4_points
-               , max(w4_session_date)  w4_session_date
+               , max(w4_week)          w4_week
+               , max(w4_discarded_points_flag)  w4_discard
                , max(w5_points)        w5_points
-               , max(w5_session_date)  w5_session_date
+               , max(w5_week)          w5_week
+               , max(w5_discarded_points_flag)  w5_discard
                , max(w6_points)        w6_points
-               , max(w6_session_date)  w6_session_date
+               , max(w6_week)          w6_week
+               , max(w6_discarded_points_flag)  w6_discard
                , max(w7_points)        w7_points
-               , max(w7_session_date)  w7_session_date
+               , max(w7_week)          w7_week
+               , max(w7_discarded_points_flag)  w7_discard
                , max(w8_points)        w8_points
-               , max(w8_session_date)  w8_session_date
+               , max(w8_week)          w8_week
+               , max(w8_discarded_points_flag)  w8_discard
                , max(w9_points)        w9_points
-               , max(w9_session_date)  w9_session_date
+               , max(w9_week)          w9_week
+               , max(w9_discarded_points_flag)  w9_discard
                , max(w10_points)       w10_points
-               , max(w10_session_date) w10_session_date
+               , max(w10_week)         w10_week
+               , max(w10_discarded_points_flag) w10_discard
                , max(w11_points)       w11_points
-               , max(w11_session_date) w11_session_date
+               , max(w11_week)         w11_week
+               , max(w11_discarded_points_flag) w11_discard
                , max(w12_points)       w12_points
-               , max(w12_session_date) w12_session_date
+               , max(w12_week)         w12_week
+               , max(w12_discarded_points_flag) w12_discard
           from (
-          select p.player_id
-               , p.points
-               , p.discarded_points_flag
-               , ts.tournament_id
-               , ts.round_num
-               , ts.week
-               , ts.session_date
-      --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-          from wmg_tournament_sessions ts
-             , wmg_tournament_players p
-          where ts.id = p.tournament_session_id
-            and ts.tournament_id in (
-              select id
-              from wmg_tournaments
-             where current_flag = 'Y'
-          )
-          order by ts.session_date
+              select ap.player_id
+                   , coalesce(sp.points, p.points) points
+                   , p.discarded_points_flag
+                   , ap.round_num
+                   , coalesce(sp.week, ap.week) week
+                   , ap.session_date
+          --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+              from wmg_tournament_players p
+                 , all_tournament_players ap
+                 , wmg_tournament_session_points_v sp
+              where ap.player_id = p.player_id(+)
+                and ap.tournament_session_id = p.tournament_session_id (+)
+                and ap.week = sp.week (+)
+                and ap.player_id = sp.player_id (+)
+                and sp.week (+) = :P60_WEEK
+              order by ap.session_date
           )
           pivot (
-              any_value(tournament_id) tournament_id
-            , any_value(round_num)    round_num
-            , any_value(week)         week_num
+              any_value(round_num)    round_num
+            , any_value(week)         week
             , any_value(session_date) session_date
             , any_value(points)       points
+            , any_value(discarded_points_flag) discarded_points_flag
             for round_num in (
                 1 as W1
               , 2 as W2
@@ -208,26 +265,52 @@ regions:
            , r.w10_points
            , r.w11_points
            , r.w12_points
+           , r.w1_discard
+           , r.w2_discard
+           , r.w3_discard
+           , r.w4_discard
+           , r.w5_discard
+           , r.w6_discard
+           , r.w7_discard
+           , r.w8_discard
+           , r.w9_discard
+           , r.w10_discard
+           , r.w11_discard
+           , r.w12_discard
+           , r.w1_week
+           , r.w2_week
+           , r.w3_week
+           , r.w4_week
+           , r.w5_week
+           , r.w6_week
+           , r.w7_week
+           , r.w8_week
+           , r.w9_week
+           , r.w10_week
+           , r.w11_week
+           , r.w12_week
+           , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
         from (
-      	select p.name player_name, p.country_code
-      	   ,   nvl(sp.w1_points,0)
-      	     + nvl(sp.w2_points,0)
-      	     + nvl(sp.w3_points,0)
-      	     + nvl(sp.w4_points,0)
-      	     + nvl(sp.w5_points,0)
-      	     + nvl(sp.w6_points,0)
-      	     + nvl(sp.w7_points,0)
-      	     + nvl(sp.w8_points,0)
-      	     + nvl(sp.w9_points,0)
-      	     + nvl(sp.w10_points,0)
-      	     + nvl(sp.w11_points,0)
-      	     + nvl(sp.w12_points,0) season_total
-      	   , sp.*
-      	from sessions_pivot sp
-      	    , wmg_players p
-      	where p.id = sp.player_id
+        select p.name player_name, p.country_code
+           ,   decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
+             + decode(sp.w2_discard, 'Y', 0, nvl(sp.w2_points,0))
+             + decode(sp.w3_discard, 'Y', 0, nvl(sp.w3_points,0))
+             + decode(sp.w4_discard, 'Y', 0, nvl(sp.w4_points,0))
+             + decode(sp.w5_discard, 'Y', 0, nvl(sp.w5_points,0))
+             + decode(sp.w6_discard, 'Y', 0, nvl(sp.w6_points,0))
+             + decode(sp.w7_discard, 'Y', 0, nvl(sp.w7_points,0))
+             + decode(sp.w8_discard, 'Y', 0, nvl(sp.w8_points,0))
+             + decode(sp.w9_discard, 'Y', 0, nvl(sp.w9_points,0))
+             + decode(sp.w10_discard, 'Y', 0, nvl(sp.w10_points,0))
+             + decode(sp.w11_discard, 'Y', 0, nvl(sp.w11_points,0))
+             + decode(sp.w12_discard, 'Y', 0, nvl(sp.w12_points,0)) season_total
+           , sp.*
+        from sessions_pivot sp
+           , wmg_players p
+        where p.id = sp.player_id
       ) r
       order by 5 desc
+      
     page-items-to-submit: 
     - P60_WEEK
 
@@ -240,6 +323,11 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - col-xs-12
+    - col-sm-12
+    - col-md-12
+    - col-lg-7
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -258,6 +346,26 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players
+      where tournament_session_id in (
+          select id
+          from wmg_tournament_sessions
+          where week = :P60_WEEK
+      )
+      union
+        select 1
+          from wmg_tournaments
+         where current_flag = 'Y'
+           and id in (
+          select tournament_id
+            from wmg_tournament_sessions
+          where week = :P60_WEEK
+      )
 
   server-cache: 
     caching: Disabled
@@ -320,7 +428,7 @@ regions:
             )
         );
         
-          return 'Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
+          return  'Edit:Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
         end;
          
         
@@ -386,7 +494,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: center
 
     accessibility: 
@@ -427,6 +535,9 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: <span class="#W1_WEEK# discard#W1_DISCARD#">#W1_POINTS#</span>
+
     sorting: 
       sortable: false
 
@@ -458,6 +569,9 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W2_WEEK# discard#W2_DISCARD#">#W2_POINTS#</span>
 
     sorting: 
       sortable: false
@@ -491,6 +605,9 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: <span class="#W3_WEEK# discard#W3_DISCARD#">#W3_POINTS#</span>
+
     sorting: 
       sortable: false
 
@@ -522,6 +639,9 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W4_WEEK# discard#W4_DISCARD#">#W4_POINTS#</span>
 
     sorting: 
       sortable: false
@@ -567,6 +687,9 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: <span class="#W5_WEEK# discard#W5_DISCARD#">#W5_POINTS#</span>
+
     sorting: 
       sortable: false
 
@@ -605,11 +728,14 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 10
+      sequence: 20
       column-alignment: center
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
 
     sorting: 
       sortable: false
@@ -675,6 +801,9 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: <span class="#W6_WEEK# discard#W6_DISCARD#">#W6_POINTS#</span>
+
     sorting: 
       sortable: false
 
@@ -718,6 +847,9 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W7_WEEK# discard#W7_DISCARD#">#W7_POINTS#</span>
 
     sorting: 
       sortable: false
@@ -970,10 +1102,412 @@ regions:
     id: 7607463446066888
     identification: 
       column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:130:&SESSION.::&DEBUG.::P130_PLAYER_ID:#PLAYER_ID#'
+        page: 130 # Player Tournament Details
+        values: 
+          p130_player_id: '#PLAYER_ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Tournament Admin # 55893512303411682019
+      escape-special-characters: true
+
+  - # ====== Column: W1_DISCARD ==================================
+    id: 7607679641066891
+    identification: 
+      column-name: W1_DISCARD
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_DISCARD ==================================
+    id: 7607786709066892
+    identification: 
+      column-name: W2_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_DISCARD ==================================
+    id: 7607936227066893
+    identification: 
+      column-name: W3_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_DISCARD ==================================
+    id: 7608051293066894
+    identification: 
+      column-name: W4_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 220
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_DISCARD ==================================
+    id: 7608173142066895
+    identification: 
+      column-name: W5_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 230
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_DISCARD ==================================
+    id: 7608211105066896
+    identification: 
+      column-name: W6_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_DISCARD ==================================
+    id: 7608282258066897
+    identification: 
+      column-name: W7_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_DISCARD ==================================
+    id: 7608420840066898
+    identification: 
+      column-name: W8_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_DISCARD ==================================
+    id: 7608498871066899
+    identification: 
+      column-name: W9_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_DISCARD =================================
+    id: 7608621886066900
+    identification: 
+      column-name: W10_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 280
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_DISCARD =================================
+    id: 7608747890066901
+    identification: 
+      column-name: W11_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 290
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_DISCARD =================================
+    id: 7608802771066902
+    identification: 
+      column-name: W12_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 300
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_WEEK =====================================
+    id: 8207757126109884
+    identification: 
+      column-name: W1_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 310
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_WEEK =====================================
+    id: 8207863378109885
+    identification: 
+      column-name: W2_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 320
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_WEEK =====================================
+    id: 8207950151109886
+    identification: 
+      column-name: W3_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 330
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_WEEK =====================================
+    id: 8207992278109887
+    identification: 
+      column-name: W4_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 340
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_WEEK =====================================
+    id: 8208167467109888
+    identification: 
+      column-name: W5_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 350
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_WEEK =====================================
+    id: 8208247191109889
+    identification: 
+      column-name: W6_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 360
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_WEEK =====================================
+    id: 8208290928109890
+    identification: 
+      column-name: W7_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 370
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_WEEK =====================================
+    id: 8208459203109891
+    identification: 
+      column-name: W8_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 380
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_WEEK =====================================
+    id: 8208530835109892
+    identification: 
+      column-name: W9_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 390
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_WEEK ====================================
+    id: 8208659380109893
+    identification: 
+      column-name: W10_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 400
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_WEEK ====================================
+    id: 8208698147109894
+    identification: 
+      column-name: W11_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 410
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_WEEK ====================================
+    id: 8208782263109895
+    identification: 
+      column-name: W12_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 420
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SELECTED_PLAYER =============================
+    id: 8209202845109899
+    identification: 
+      column-name: SELECTED_PLAYER
+      type: Hidden Column
+
+    layout: 
+      sequence: 430
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1440,82 +1974,32 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Week &P60_WEEK. Results =====================
+- # ====== Region: Week Results (&P60_WEEK.) ===================
   id: 108296150341164485780
   identification: 
-    title: Week &P60_WEEK. Results
+    title: Week Results (&P60_WEEK.)
     type: Classic Report
 
   source: 
     location: Local Database
     type: SQL Query
     sql-query: |
-      with score_points as (
-          select 1 rank, 25 points, 'top' point_class from dual union all
-          select 2 rank, 21 points, 'top' point_class from dual union all
-          select 3 rank, 18 points, 'top' point_class from dual union all
-          select 4 rank, 16 points, 'top' point_class from dual union all
-          select 5 rank, 15 points, 'top' point_class from dual union all
-          select 6 rank, 14 points, 'top' point_class from dual union all
-          select 7 rank, 13 points, 'top' point_class from dual union all
-          select 8 rank, 12 points, 'top' point_class from dual union all
-          select 9 rank, 11 points, 'top' point_class from dual union all
-          select 10 rank, 10 points, 'p10' point_class from dual union all
-          select 11 rank,  9 points, 'p9' point_class from dual union all
-          select 12 rank,  9 points, 'p9' point_class from dual union all
-          select 13 rank,  9 points, 'p9' point_class from dual union all
-          select 14 rank,  9 points, 'p9' point_class from dual union all
-          select 15 rank,  9 points, 'p9' point_class from dual union all
-          select 16 rank,  9 points, 'p9' point_class from dual union all
-          select 17 rank,  9 points, 'p9' point_class from dual union all
-          select 18 rank,  9 points, 'p9' point_class from dual union all
-          select 19 rank,  9 points, 'p9' point_class from dual union all
-          select 20 rank,  8 points, 'p8' point_class from dual union all
-          select 21 rank,  8 points, 'p8' point_class from dual union all
-          select 22 rank,  8 points, 'p8' point_class from dual union all
-          select 23 rank,  8 points, 'p8' point_class from dual union all
-          select 24 rank,  8 points, 'p8' point_class from dual union all
-          select 25 rank,  8 points, 'p8' point_class from dual union all
-          select 26 rank,  8 points, 'p8' point_class from dual union all
-          select 27 rank,  8 points, 'p8' point_class from dual union all
-          select 28 rank,  8 points, 'p8' point_class from dual union all
-          select 29 rank,  7 points, 'p7' point_class from dual union all
-          select 30 rank,  7 points, 'p7' point_class from dual union all
-          select 31 rank,  7 points, 'p7' point_class from dual union all
-          select 32 rank,  7 points, 'p7' point_class from dual union all
-          select 33 rank,  7 points, 'p7' point_class from dual union all
-          select 34 rank,  7 points, 'p7' point_class from dual union all
-          select 35 rank,  7 points, 'p7' point_class from dual
-      )
-      select r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, r.pos
-           , p.points
-           , p.point_class
-           , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
-      from (
-          select r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, rank() over (order by r.total_score) pos
-          from (
-            select player_id, player_name, country_code, easy, hard, easy + hard total_score
-            from (
-              select r.player_id, r.player_name, r.country_code
-                   , r.under_par
-                   , c.course_mode
-                from wmg_rounds_v r, wmg_courses c
-              where r.course_id = c.id
-                 and r.week = :P60_WEEK
-              )
-             pivot (
-               sum(under_par) for course_mode in (
-                'E' EASY, 'H' HARD
-               )
-              )
-          ) r
-      ) r
-      , score_points p
-      where r.pos = p.rank (+)
-      order by r.pos, r.player_name
-      
+      select pos
+           , player_id
+           , country_code
+           , player_name
+           , easy
+           , hard
+           , total_score
+           , points
+           , case when pos <= 10 then 'top' else 'p' || to_char(points) end point_class
+           , decode(player_id, :G_PLAYER_ID, 'mark', '') selected_player
+           , case when pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+      from wmg_tournament_session_points_v
+      where week = :P60_WEEK
     page-items-to-submit: 
     - P60_WEEK
+    optimizer-hint: WITH_PLSQL
 
   layout: 
     sequence: 20
@@ -1527,8 +2011,10 @@ regions:
     new-column: true
     column-span: 4
     column-css-classes: 
+    - col-xs-12
     - col-sm-12
     - col-md-12
+    - col-lg-5
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -1647,6 +2133,21 @@ regions:
 
     security: 
       escape-special-characters: true
+
+  - # ====== Column: TROPHY ======================================
+    id: 8209299438109900
+    identification: 
+      column-name: TROPHY
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
 
   - # ====== Column: POINT_CLASS =================================
     id: 2316752978009093644
@@ -1820,7 +2321,7 @@ regions:
           p110_week: '&P60_WEEK.'
           p110_player_id: '#PLAYER_ID#'
 
-      link-text: '#PLAYER_NAME#'
+      link-text: '#PLAYER_NAME# <div class="w">#TROPHY#</div>'
 
     sorting: 
       sortable: false
@@ -1849,7 +2350,7 @@ regions:
 
     layout: 
       sequence: 10
-      column-alignment: end
+      column-alignment: center
 
     accessibility: 
       value-identifies-row: false
@@ -1992,6 +2493,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P60_TOURNAMENT_ID ========================
+  id: 8210419795109911
+  identification: 
+    name: P60_TOURNAMENT_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 100
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P60_WEEK =================================
   id: 58990481012454704231
   identification: 
@@ -2007,7 +2538,8 @@ page-items:
     initial-fetch: Automatic
     multiple-values: false
     manual-entry: false
-    search-as-you-type: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
 
   layout: 
     sequence: 10
@@ -2303,7 +2835,7 @@ buttons:
 
   layout: 
     sequence: 10
-    region: Week &P60_WEEK. Results # 108296150341164485780
+    region: Week Results (&P60_WEEK.) # 108296150341164485780
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2346,6 +2878,12 @@ buttons:
     column: Automatic
     new-column: true
     column-span: 3
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+    - col-lg-3
     alignment: Left center
 
   appearance: 
@@ -2388,6 +2926,12 @@ buttons:
     column: Automatic
     new-column: true
     column-span: 3
+    column-css-classes: 
+    - col-xss-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-6
+    - col-lg-3
     alignment: Left center
 
   appearance: 
@@ -2422,12 +2966,12 @@ dynamic-actions:
     name: Highlight Player
 
   execution: 
-    sequence: 30
+    sequence: 40
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
-    region: Week &P60_WEEK. Results # 108296150341164485780
+    region: Week Results (&P60_WEEK.) # 108296150341164485780
 
   execution: 
     event-scope: Static
@@ -2448,6 +2992,47 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: true
 
+- # ====== Dynamic Action: Hoist Week Classes to TD ============
+  id: 8208952530109896
+  identification: 
+    name: Hoist Week Classes to TD
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Season Race (&P60_TOURNAMENT.) # 4008199353738099
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 8208996280109897
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var c = $v("P60_WEEK");
+        
+        $("td ." + c).each(
+          function(){
+            var $el = $(this)
+        
+            $el.parent("td").addClass(c);
+          }
+        )
+
+    execution: 
+      sequence: 10
+      event: Hoist Week Classes to TD # 8208952530109896
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Hoist Classes to TD =================
   id: 2316753045247093645
   identification: 
@@ -2459,7 +3044,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
-    region: Week &P60_WEEK. Results # 108296150341164485780
+    region: Week Results (&P60_WEEK.) # 108296150341164485780
 
   execution: 
     event-scope: Static
@@ -2494,7 +3079,7 @@ dynamic-actions:
     name: Reload on Change
 
   execution: 
-    sequence: 20
+    sequence: 30
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -2558,8 +3143,10 @@ processes:
            where tournament_session_id = :G_CURRENT_SESSION_ID;
        end if;
       
-           select prefix_tournament
-            into :P60_TOURNAMENT
+           select tournament_id
+                , prefix_tournament
+            into :P60_TOURNAMENT_ID
+               , :P60_TOURNAMENT
             from wmg_tournament_sessions_v
            where tournament_session_id = :G_CURRENT_SESSION_ID;
       

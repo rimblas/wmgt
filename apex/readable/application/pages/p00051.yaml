@@ -44,14 +44,14 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: A little too soon ===========================
+- # ====== Region: Current Tournament is closed ================
   id: 3471782270873693
   identification: 
-    title: A little too soon
+    title: Current Tournament is closed
     type: Static Content
 
   source: 
-    html-code: You can't really enter your rounds until after the tournament starts.
+    html-code: The current tournament is closed or there isn't one scheduled just yet.
 
   layout: 
     sequence: 9
@@ -80,6 +80,62 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_CURRENT_SESSION_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: A little too soon ===========================
+  id: 6009346521197100
+  identification: 
+    title: A little too soon
+    type: Static Content
+
+  source: 
+    html-code: You can't really enter your rounds until after the tournament starts.
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 5
+    new-column: true
+    column-span: 5
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--warning
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_CURRENT_SESSION_ID
 
   server-cache: 
     caching: Disabled

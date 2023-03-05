@@ -23,6 +23,13 @@ css:
   inline: |
     .t-HeroRegion-icon {background-color: whitesmoke;}
     
+    @media (min-width: 640px) {
+       ul.t-Cards--4cols {
+         grid-template-columns: repeat(4,1fr);
+       }
+    }
+    
+    
     #optionsRegion .t-HeroRegion-title {display: none;}
     [headers="PLAYERS"] {vertical-align: baseline;}
     
@@ -31,9 +38,11 @@ css:
     height: 240px;
     }
     
-    .courseIcon:hover {
-      transform: scale(1.2);
-      transition: .25s transform;
+    @media (min-width: 767px) {
+        .courseIcon:hover {
+        transform: scale(1.2);
+        transition: .25s transform;
+        }
     }
     
     .nextCourses {text-align: center;}
@@ -105,76 +114,6 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: {Welcome} ===================================
-  id: 668719130503513
-  identification: 
-    title: '{Welcome}'
-    type: Static Content
-
-  source: 
-    html-code: |
-      <div class="row">
-          <div class="col">
-      <img src="https://cdn.discordapp.com/avatars/&G_DISCORD_ID./&G_DISCORD_AVATAR..png">
-          </div>
-      </div>
-      Welcome, &G_DISCORD.!
-      
-      <br><br>
-      
-
-  layout: 
-    sequence: 30
-    parent-region: No Parent
-    position: BODY
-    start-new-layout: false
-    start-new-row: false
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    column-css-classes: 
-    - u-tC
-
-  appearance: 
-    template: Blank with Attributes # 46986519704134702414
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-side-condition: 
-    type: Item is NOT NULL
-    item: G_DISCORD_ID
-
-  security: 
-    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  comments: 
-    comments: |
-      G_DISCORD_ID: &G_DISCORD_ID.<br>
-      G_DISCORD_DISCRIMINATOR: &G_DISCORD_DISCRIMINATOR.<br>
-      <br>
-      Username: &APP_USER.<br>
-      
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
 - # ====== Region: {col2} ======================================
   id: 3472525362873700
   identification: 
@@ -190,6 +129,8 @@ regions:
     column: 3
     new-column: true
     column-span: 7
+    column-css-classes: 
+    - col-sm-12
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
@@ -216,52 +157,34 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Match Player to Discord Account =============
-  id: 3472625281873701
+- # ====== Region: Page Navigation =============================
+  id: 6008421907197091
   identification: 
-    title: Match Player to Discord Account
-    type: Dynamic Content
+    title: Page Navigation
+    type: List
 
   source: 
-    language: PL/SQL
-    pl/sql-function-body-returning-a-clob: |
-      declare 
-        l_out  varchar2(32767);
-        l_result apex_application_global.vc_arr2;
-      begin
-        l_out := '<img src="' || wmg_discord.avatar(p_discord_id => :G_DISCORD_ID, p_avatar_uri => :G_DISCORD_AVATAR) || '">
-      Hi, ' || :G_DISCORD || '!<br>
-      <br>
-      Hey, we found existing players that may match your Discord name, is one of these you?<br><br>
-      <dl class="t-AVPList t-AVPList--leftAligned">';
-      
-      for i in 1 .. apex_application.g_f01.count
-      loop 
-        l_out := l_out || '<dt class="t-AVPList-label">' || apex_escape.html(apex_application.g_f02(i)) || '</dt>';
-        l_out := l_out || '<dd class="t-AVPList-value"><a href="javascript:void(0);" data-id="' || apex_application.g_f01(i) || '" class="matchDiscord">Yes, this one!</a></dd>';
-      end loop;
-      l_out := l_out || '</dl>';
-      return l_out;
-      end;
+    list: Page Navigation # 46986883504791703654
 
   layout: 
-    sequence: 10
-    parent-region: '{Next Tournament Info}' # 665559002503481
+    sequence: 39
+    parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 3
+    column-css-classes: 
+    - col-md-3
+    - hidden-sm-up
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
-    - t-Region--removeHeader js-removeLandmark
-    - t-Region--stacked
-    - t-Region--scrollBody
-    render-components: Above Content
+    - margin-bottom-md
+    render-components: Below Content
 
   accessibility: 
     use-landmark: true
@@ -271,34 +194,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-side-condition: 
-    type: Function Body
-    language: PL/SQL
-    pl/sql-function-body: |
-      declare
-       l_players_tbl  wmg_util.tab_keyval_type;
-      begin 
-          wmg_util.possible_player_match(
-              p_discord_account => :G_DISCORD
-            , p_discord_id      => :G_DISCORD_ID
-            , x_players_tbl     => l_players_tbl
-          );
-      
-          if l_players_tbl is null then 
-             return false;
-          else
-             for i in 1.. l_players_tbl.count
-             loop
-                apex_application.g_f01(i) := l_players_tbl(i).key;
-                apex_application.g_f02(i) := l_players_tbl(i).val;
-             end loop;
-             return l_players_tbl.count > 0;
-          end if;
-      end;
-
-  security: 
-    authorization-scheme: Beta Tester # 3554679108597518
-
   server-cache: 
     caching: Disabled
 
@@ -306,8 +201,16 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    performance: 
-      lazy-loading: false
+    appearance: 
+      list-template: Cards # 46986628863802702458
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+      - t-Cards--compact
+      - t-Cards--displayIcons
+      - t-Cards--stacked
+      - t-Cards--hideBody
+      - t-Cards--animColorFill
 
 - # ====== Region: Next Tournament =============================
   id: 24735740413470583646
@@ -321,12 +224,13 @@ regions:
     sql-query: |
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
-           , (select min(r.under_par) from  wmg_rounds_v r where r.course_id = s.easy_course_id) easy_record
+           , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.easy_course_id), 'TBD') easy_record
            , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.easy_course_id) easy_stats_url
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
-           , (select min(r.under_par) from  wmg_rounds_v r where r.course_id = s.hard_course_id) hard_record
+           , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
            , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
            , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
+           , case when ec.id is null then 'u-vh' else '' end tbd_class
       from wmg_tournament_sessions_v s
          , wmg_courses ec
          , wmg_courses hc
@@ -474,6 +378,21 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: TBD_CLASS ===================================
+    id: 6009378356197101
+    identification: 
+      column-name: TBD_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: SESSION_DATE ================================
     id: 24735740504360583647
     identification: 
@@ -504,15 +423,15 @@ regions:
         <div class="row nextCourses">
             <div class="col easy">
                 <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
-                <div class="score">Best Score #EASY_RECORD#</div>
-                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
-                <div class="info">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
+                <div class="score #TBD_CLASS#">Best Score #EASY_RECORD#</div>
+                <img class="courseIcon #TBD_CLASS#" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
+                <div class="info #TBD_CLASS#">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
             </div>
             <div class="col hard">
                 <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
-                <div class="score">Best Score #HARD_RECORD#</div>
-                <img class="courseIcon" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
-                <div class="info">How hard is #HARD_COURSE_CODE#? <a href="#HARD_STATS_URL#">See here</a></div>
+                <div class="score #TBD_CLASS#">Best Score #HARD_RECORD#</div>
+                <img class="courseIcon #TBD_CLASS#" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
+                <div class="info #TBD_CLASS#">How hard is #HARD_COURSE_CODE#? <a href="#HARD_STATS_URL#">See here</a></div>
             </div>
         </div>
 
@@ -683,6 +602,8 @@ regions:
     column: Automatic
     new-column: true
     column-span: 2
+    column-css-classes: 
+    - hidden-sm-down
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
@@ -779,36 +700,6 @@ regions:
       - t-Cards--animRaiseCard
 
 page-items: 
-- # ====== Page Item: P1_MATCH_PLAYER_ID =======================
-  id: 3473096791873706
-  identification: 
-    name: P1_MATCH_PLAYER_ID
-    type: Hidden
-
-  settings: 
-    value-protected: true
-
-  layout: 
-    sequence: 10
-    region: Match Player to Discord Account # 3472625281873701
-    position: BODY
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    type: Null
-    used: Only when current value in session state is null
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
 - # ====== Page Item: P1_DO_NOT_MATCH_FLAG =====================
   id: 6007460650197081
   identification: 
@@ -872,153 +763,6 @@ buttons:
 
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 3554679108597518
-
-dynamic-actions: 
-- # ====== Dynamic Action: Match Player to Discord ID ==========
-  id: 3472953411873704
-  identification: 
-    name: Match Player to Discord ID
-
-  execution: 
-    sequence: 10
-
-  when: 
-    event: EVENT.EVENT.BROWSER.CLICK
-    selection-type: jQuery Selector
-    jquery-selector: .matchDiscord
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
-
-  server-side-condition: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: apex_application.g_f01.count > 0
-
-  actions: 
-  - # ====== Action: get player id ===============================
-    id: 3473013369873705
-    identification: 
-      name: get player id
-      action: Set Value
-
-    settings: 
-      set-type: JavaScript Expression
-      javascript-expression: this.triggeringElement.dataset.id
-      suppress-change-event: false
-
-    affected-elements: 
-      selection-type: Item(s)
-      item(s): 
-      - P1_MATCH_PLAYER_ID
-
-    execution: 
-      sequence: 20
-      event: Match Player to Discord ID # 3472953411873704
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-      stop-execution-on-error: true
-      wait-for-result: true
-
-  - # ====== Action: Assign Discord info to player ===============
-    id: 3473315981873708
-    identification: 
-      name: Assign Discord info to player
-      action: Execute Server-side Code
-
-    settings: 
-      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
-      pl/sql-code: |
-        begin
-        
-        update wmg_players
-            set discord_id = :G_DISCORD_ID
-            , discord_avatar = :G_DISCORD_AVATAR
-            , discord_discriminator = :G_DISCORD_DISCRIMINATOR
-        where id = :P1_MATCH_PLAYER_ID
-          and discord_id is null;
-        
-        exception
-          when DUP_VAL_ON_INDEX then
-           -- Someone already has thay Discord ID
-            :P1_MATCH_PLAYER_ID := -1;
-           -- WKSP_WMGT.WMG_PLAYERS_U03
-        end;
-      items-to-submit: 
-      - P1_MATCH_PLAYER_ID
-      items-to-return: 
-      - P1_MATCH_PLAYER_ID
-      suppress-change-event: false
-
-    execution: 
-      sequence: 30
-      event: Match Player to Discord ID # 3472953411873704
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-      stop-execution-on-error: true
-      wait-for-result: true
-
-  - # ====== Action: Oops ========================================
-    id: 3473446683873709
-    identification: 
-      name: Oops
-      action: Alert
-
-    settings: 
-      title: Ooops
-      message: Looks like there's a different player assigned to your Discord user.
-      style: Danger
-      ok-label: Ok
-
-    execution: 
-      sequence: 40
-      event: Match Player to Discord ID # 3472953411873704
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-    client-side-condition: 
-      type: Item = Value
-      item: P1_MATCH_PLAYER_ID
-      value: '-1'
-
-  - # ====== Action: Success =====================================
-    id: 3473479827873710
-    identification: 
-      name: Success
-      action: Alert
-
-    settings: 
-      title: Success
-      message: Your Discord account has been mapped
-      style: Success
-      ok-label: Ok
-
-    execution: 
-      sequence: 50
-      event: Match Player to Discord ID # 3472953411873704
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-    client-side-condition: 
-      type: Item != Value
-      item: P1_MATCH_PLAYER_ID
-      value: '-1'
-
-  - # ====== Action: Hide ========================================
-    id: 3473586786873711
-    identification: 
-      action: Hide
-
-    affected-elements: 
-      selection-type: Region
-      region: Match Player to Discord Account # 3472625281873701
-
-    execution: 
-      sequence: 60
-      event: Match Player to Discord ID # 3472953411873704
-      fire-when-event-result-is: True
-      fire-on-initialization: false
 
 computations: 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================

@@ -22,6 +22,19 @@ navigation:
   cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
+javascript: 
+  file-urls: 
+  - //cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js
+  - null
+  function-and-global-variable-declaration: |
+    function confetti_time() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
+
 security: 
   authentication: Page Requires Authentication
   deep-linking: Application Default
@@ -40,6 +53,53 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Weekend Closed ==============================
+  id: 8209411652109901
+  identification: 
+    title: Weekend Closed
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item = Value
+    item: P532_ROOMS_DEFINED_FLAG
+    value: Y
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Rooms =======================================
   id: 40380891457618957232
   identification: 
@@ -181,6 +241,36 @@ regions:
       show-line-breaks: true
 
 page-items: 
+- # ====== Page Item: P532_CONFETTI_FLAG =======================
+  id: 611952729572896
+  identification: 
+    name: P532_CONFETTI_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 140
+    region: Weekend Closed # 8209411652109901
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P532_ROOMS_DEFINED_BY ====================
   id: 40380891529820957233
   identification: 
@@ -721,18 +811,18 @@ page-items:
   id: 56149527639003424865
   identification: 
     name: P532_OPEN_REGISTRATION_ON
-    type: Date Picker (JET) [Deprecated]
+    type: Date Picker
 
   label: 
     label: Open Registration On
     alignment: Left
 
   settings: 
-    show-time: true
+    show-time: false
     display-as: Popup
     minimum-date: None
     maximum-date: None
-    multiple-months: false
+    multiple-months: No
     use-defaults: true
 
   layout: 
@@ -782,18 +872,18 @@ page-items:
   id: 56149528420758424865
   identification: 
     name: P532_CLOSE_REGISTRATION_ON
-    type: Date Picker (JET) [Deprecated]
+    type: Date Picker
 
   label: 
     label: Close Registration On
     alignment: Left
 
   settings: 
-    show-time: true
+    show-time: false
     display-as: Popup
     minimum-date: None
     maximum-date: None
-    multiple-months: false
+    multiple-months: No
     use-defaults: true
 
   layout: 
@@ -850,11 +940,15 @@ page-items:
     alignment: Left
 
   settings: 
-    use-defaults: true
+    use-defaults: false
+    on-value: Y
+    on-label: Yes
+    off-value: N
+    off-label: No
 
   layout: 
     sequence: 110
-    region: Tournament Sessions # 56149524865750424863
+    region: Weekend Closed # 8209411652109901
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -865,7 +959,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46986650580145702469
+    template: Optional # 46986650382572702469
     template-options: 
     - '#DEFAULT#'
 
@@ -885,6 +979,14 @@ page-items:
   session-state: 
     storage: Per Request (Memory Only)
 
+  server-side-condition: 
+    type: Item = Value
+    item: P532_COMPLETED_IND
+    value: Y
+
+  read-only: 
+    type: Always
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -894,23 +996,21 @@ page-items:
   id: 56149529684294424866
   identification: 
     name: P532_COMPLETED_ON
-    type: Date Picker (JET) [Deprecated]
+    type: Display Only
 
   label: 
-    label: Completed On
+    label: On
     alignment: Left
 
   settings: 
-    show-time: false
-    display-as: Popup
-    minimum-date: None
-    maximum-date: None
-    multiple-months: false
-    use-defaults: true
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
 
   layout: 
     sequence: 120
-    region: Tournament Sessions # 56149524865750424863
+    region: Weekend Closed # 8209411652109901
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -921,14 +1021,10 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46986650580145702469
+    template: Optional # 46986650382572702469
     template-options: 
     - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: false
-    maximum-length: 255
+    format-mask: 'DD-MON-YYYY HH:MIPM'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -941,10 +1037,13 @@ page-items:
     primary-key: false
 
   session-state: 
+    data-type: VARCHAR2
     storage: Per Request (Memory Only)
 
-  quick-picks: 
-    show-quick-picks: false
+  server-side-condition: 
+    type: Item = Value
+    item: P532_COMPLETED_IND
+    value: Y
 
   security: 
     session-state-protection: Unrestricted
@@ -952,6 +1051,42 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: CLOSE_WEEKEND ===============================
+  id: 8209574386109902
+  identification: 
+    button-name: CLOSE_WEEKEND
+    label: Close Weekend Tournament
+
+  layout: 
+    sequence: 130
+    region: Weekend Closed # 8209411652109901
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--danger
+    - t-Button--iconRight
+    - t-Button--hoverIconPush
+    icon: fa-gavel
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+  server-side-condition: 
+    type: Item = Value
+    item: P532_COMPLETED_IND
+    value: N
+
 - # ====== Button: CANCEL ======================================
   id: 56149537478443424871
   identification: 
@@ -1014,8 +1149,11 @@ buttons:
     style: Danger
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: P532_ID
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players
+      where tournament_session_id = :P532_ID
 
 - # ====== Button: SAVE ========================================
   id: 56149539270179424871
@@ -1086,6 +1224,135 @@ buttons:
     item: P532_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Close Weekend =======================
+  id: 611582003572893
+  identification: 
+    name: Close Weekend
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CLOSE_WEEKEND # 8209574386109902
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Confirm =====================================
+    id: 611679237572894
+    identification: 
+      action: Confirm
+
+    settings: 
+      title: Close the weekend!?
+      message: You're about to close out the weekend tournament. It would be cumbersome to undo, are you sure?
+      style: Warning
+      confirm-label: Close the weekend!
+
+    execution: 
+      sequence: 10
+      event: Close Weekend # 611582003572893
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 612006719572897
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      value: Y
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P532_CONFETTI_FLAG
+
+    execution: 
+      sequence: 20
+      event: Close Weekend # 611582003572893
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: false
+      wait-for-result: false
+
+  - # ====== Action: Submit Page =================================
+    id: 612322088572900
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: CLOSE_WEEKEND
+      show-processing: true
+
+    execution: 
+      sequence: 40
+      event: Close Weekend # 611582003572893
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Celebrate! ==========================
+  id: 612166633572898
+  identification: 
+    name: Celebrate!
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  client-side-condition: 
+    type: Item = Value
+    item: P532_CONFETTI_FLAG
+    value: Y
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 612250670572899
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: confetti_time();
+
+    execution: 
+      sequence: 10
+      event: Celebrate! # 612166633572898
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 612416780572901
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P532_CONFETTI_FLAG
+
+    execution: 
+      sequence: 20
+      event: Celebrate! # 612166633572898
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: false
+      wait-for-result: false
+
 - # ====== Dynamic Action: Generate Week =======================
   id: 665356154503479
   identification: 
@@ -1201,24 +1468,6 @@ validations:
     display-location: Inline with Field and in Notification
     associated-item: P532_CLOSE_REGISTRATION_ON # 56149528420758424865
 
-- # ====== Validation: P532_COMPLETED_ON must be timestamp =====
-  id: 56149530152912424867
-  identification: 
-    name: P532_COMPLETED_ON must be timestamp
-
-  execution: 
-    sequence: 90
-
-  validation: 
-    type: Item is a valid timestamp
-    item: P532_COMPLETED_ON
-    always-execute: false
-
-  error: 
-    error-message: '#LABEL# must be a valid timestamp.'
-    display-location: Inline with Field and in Notification
-    associated-item: P532_COMPLETED_ON # 56149529684294424866
-
 computations: 
 - # ====== Computation: P532_EASY_COURSE_ID ====================
   id: 56015645387278939733
@@ -1255,6 +1504,36 @@ computations:
         and course_no = 2
 
 processes: 
+- # ====== Process: Close Weekend ==============================
+  id: 8209671574109903
+  identification: 
+    name: Close Weekend
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |2
+       wmg_util.close_tournament_session (
+          p_tournament_id        =>  :P532_TOURNAMENT_ID
+        , p_tournament_session_id => :P532_ID
+      );
+
+  execution: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Weekend successfully closed out and points recorded
+
+  error: 
+    error-message: There were issues closing out the weekend.
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: CLOSE_WEEKEND # 8209574386109902
+
 - # ====== Process: Save Courses ===============================
   id: 56015645283649939732
   identification: 
@@ -1306,6 +1585,10 @@ processes:
   error: 
     display-location: Inline in Notification
 
+  server-side-condition: 
+    type: Request != Value
+    value: CLOSE_WEEKEND
+
 - # ====== Process: Initialize form Wmg Tournament Sessions ====
   id: 56149540077194424872
   identification: 
@@ -1339,6 +1622,10 @@ processes:
   error: 
     display-location: Inline in Notification
 
+  server-side-condition: 
+    type: Request != Value
+    value: CLOSE_WEEKEND
+
 - # ====== Process: Close Dialog ===============================
   id: 56149540857010424872
   identification: 
@@ -1350,7 +1637,7 @@ processes:
     - REQUEST
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 

@@ -59,6 +59,61 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: Tester Information ==========================
+  id: 7608903224066903
+  identification: 
+    title: Tester Information
+    type: Static Content
+
+  source: 
+    html-code: As a tester, you need to be aware that this is not the official registration or submission of scores for the WMGT (Walkabout Mini Golf Tournament)
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: REGION_POSITION_07
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--noIcon
+    - t-Alert--warning
+    - t-Alert--accessibleHeading
+    - margin-top-none
+    css-classes: 
+    - u-tC
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    authorization-scheme: Beta Tester # 3554679108597518
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {AutoDetectTimeZone.js} =====================
   id: 47577408716670657321
   identification: 
@@ -157,11 +212,14 @@ regions:
     exclude-title-from-translation: false
 
   server-side-condition: 
-    type: Current Page is NOT in comma delimited list
-    pages: 
-    - 1
-    - 30
-    - 32
+    type: Rows returned
+    sql-query: |
+      select 1
+      from apex_application_pages
+      where application_id = :APP_ID
+      and page_id = :APP_PAGE_ID
+      and page_id not in (1,30,32)
+      and page_mode != 'Modal Dialog'
 
   server-cache: 
     caching: Disabled

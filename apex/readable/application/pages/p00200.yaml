@@ -28,7 +28,9 @@ javascript:
     }
 
 css: 
-  inline: '#P200_H_DISPLAY {width: 6rem;}'
+  inline: |
+    #P200_H_DISPLAY {width: 6rem;}
+    
 
 security: 
   authentication: Page Is Public
@@ -104,7 +106,7 @@ regions:
       stack: false
 
     layout: 
-      height: 400
+      height: 360
 
     data-cursor: 
       cursor: Yes
@@ -144,17 +146,19 @@ regions:
         type: SQL Query
         sql-query: |
           select course_id, course_code, h, difficulty
+               , case when h = :P200_H then '#437c94' else '#4c825c' end color
           from  wmg_course_stats_v
           where course_id = :P200_COURSE_ID
           
         page-items-to-submit: 
-        - P200_COURSE_ID
+        - P200_COURSE_ID.P200_H
 
       column-mapping: 
         label: H
         value: DIFFICULTY
 
       appearance: 
+        color: '&COLOR.'
         assigned-to-y2-axis: false
 
       link: 
@@ -183,17 +187,20 @@ regions:
         type: SQL Query
         sql-query: |
           select course_id, course_code, h, score_avg
+               , case when h = :P200_H then '#437c94' else '#4c825c' end color
           from  wmg_course_stats_v
           where course_id = :P200_COURSE_ID
           
         page-items-to-submit: 
         - P200_COURSE_ID
+        - P200_H
 
       column-mapping: 
         label: H
         value: SCORE_AVG
 
       appearance: 
+        color: '&COLOR.'
         assigned-to-y2-axis: false
 
       link: 
@@ -260,7 +267,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 50
+    sequence: 60
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -344,6 +351,7 @@ regions:
         sql-query: |
           select course_id, course_name, course_code label, difficulty value
           , course_name || '<br>Difficulty ' || difficulty tooltip
+          , case when course_id = :P200_COURSE_ID then 'gold' else '#437c94' end color
           from ( 
               select s.course_id, c.name course_name, s.course_code, sum(s.score_avg) difficulty
               from  wmg_course_stats_v s
@@ -352,6 +360,8 @@ regions:
               group by s.course_id, c.name, s.course_code
           )
           order by value
+        page-items-to-submit: 
+        - P200_COURSE_ID
 
       column-mapping: 
         label: LABEL
@@ -359,6 +369,7 @@ regions:
         custom-tooltip: TOOLTIP
 
       appearance: 
+        color: '&COLOR.'
         assigned-to-y2-axis: false
 
       link: 
@@ -424,7 +435,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 40
+    sequence: 50
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -467,7 +478,7 @@ regions:
       stack: false
 
     layout: 
-      height: 400
+      height: 360
 
     data-cursor: 
       cursor: Yes
@@ -627,7 +638,7 @@ regions:
     - P200_S
 
   layout: 
-    sequence: 60
+    sequence: 70
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -824,6 +835,200 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Top Scores ==================================
+  id: 7609049874066904
+  identification: 
+    title: Top Scores
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select max(week) week, player_name, under_par
+      from wmg_rounds_v
+      where course_id = :P200_COURSE_ID
+        and (player_name, under_par) in (
+          select player_name, min(under_par)
+          from wmg_rounds_v
+          where course_id = :P200_COURSE_ID
+          group by player_name
+          order by 2 asc
+          fetch first 10 rows only
+       )
+       group by player_name, under_par
+       order by under_par asc, week
+    page-items-to-submit: 
+    - P200_COURSE_ID
+
+  layout: 
+    sequence: 55
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: 10
+    new-column: true
+    column-span: 3
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - i-h480
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: topPlayersRegion
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_NAME =================================
+    id: 7609276820066907
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 8202702270109884
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UNDER_PAR ===================================
+    id: 8206620408109873
+    identification: 
+      column-name: UNDER_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Score
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Hole Preview ================================
   id: 20761221369842642927
   identification: 
@@ -850,7 +1055,7 @@ regions:
     - P200_H
 
   layout: 
-    sequence: 70
+    sequence: 80
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1363,7 +1568,7 @@ dynamic-actions:
       region: How Hard is this Course? # 207295142006407
 
     execution: 
-      sequence: 10
+      sequence: 30
       event: Refresh on Change # 464113265830681
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -1376,6 +1581,36 @@ dynamic-actions:
     affected-elements: 
       selection-type: Region
       region: How Hard is the Hole (Stroke Histogram)? # 464947577830689
+
+    execution: 
+      sequence: 40
+      event: Refresh on Change # 464113265830681
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 6008667850197093
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: All Courses by Difficulty # 464380989830684
+
+    execution: 
+      sequence: 50
+      event: Refresh on Change # 464113265830681
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 8207588367109883
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Scores # 7609049874066904
 
     execution: 
       sequence: 20
@@ -1508,6 +1743,21 @@ dynamic-actions:
 
     execution: 
       sequence: 10
+      event: Refresh Hole Stats # 466973325830709
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 6008516908197092
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: How Hard is this Course? # 207295142006407
+
+    execution: 
+      sequence: 20
       event: Refresh Hole Stats # 466973325830709
       fire-when-event-result-is: True
       fire-on-initialization: false

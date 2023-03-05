@@ -26,7 +26,19 @@ navigation:
   cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
+javascript: 
+  function-and-global-variable-declaration: |
+    function highlightRow(pEl) {
+        // highlighting just means making the tr active
+    
+        // un-highlight all the previous ones
+        $("#slotsRegion").find(".is-active").removeClass();
+        $(pEl).parents("tr").addClass("is-active");
+    }
+
 css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
   inline: |
     tr.is-active {
         outline-width: 2px;
@@ -799,6 +811,8 @@ page-items:
       select sessiontimezone tz from dual union all
       select 'UTC' tz from dual union all
       select 'Asia/Dubai' tz from dual union all
+      select 'Australia/Sydney' tz from dual union all
+      select 'Australia/West' tz from dual union all
       select 'Europe/London' tz from dual union all
       select 'Europe/Berlin' tz from dual union all
       select 'Europe/Madrid' tz from dual union all
@@ -975,6 +989,99 @@ buttons:
     item: G_REGISTRATION_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Hoist data-slot to row ==============
+  id: 6008713769197094
+  identification: 
+    name: Hoist data-slot to row
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Time Slots # 24735738905404583631
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 6008848891197095
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $(".slotOption").each(function (i){
+          let el = this;
+          let slot = this.dataset.slot;
+          let tr = $(el).parents("tr");
+          console.log({tr}, {el}, {slot});
+          $(tr).data("slot", slot).attr("data-slot", slot);
+        })
+
+    execution: 
+      sequence: 10
+      event: Hoist data-slot to row # 6008713769197094
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: Select the current option ===================
+    id: 8209087453109898
+    identification: 
+      name: Select the current option
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var el = $(".slotOption:checked");
+        if (el.length) {
+        highlightRow(el[0]);
+        }
+
+    execution: 
+      sequence: 20
+      event: Hoist data-slot to row # 6008713769197094
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+- # ====== Dynamic Action: Select Slots By Row =================
+  id: 6008923181197096
+  identification: 
+    name: Select Slots By Row
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: tr[data-slot]
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 6009047642197097
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        let el = $(this.triggeringElement).find(".slotOption");
+        el.prop("checked", true);
+        highlightRow(el);
+
+    execution: 
+      sequence: 10
+      event: Select Slots By Row # 6008923181197096
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh Slots =======================
   id: 2316749036944093605
   identification: 
@@ -1036,7 +1143,8 @@ dynamic-actions:
     settings: 
       code: |
         $("#slotsRegion").find(".is-active").removeClass();
-        $(this.triggeringElement).parents("tr").addClass("is-active");
+        // $(this.triggeringElement).parents("tr").addClass("is-active");
+        highlightRow(this.triggeringElement);
 
     execution: 
       sequence: 10
@@ -1091,10 +1199,6 @@ dynamic-actions:
     selection-type: jQuery Selector
     jquery-selector: .slotOption
 
-  client-side-condition: 
-    type: JavaScript expression
-    javascript-expression: '$(".slotOption:checked").length > 0'
-
   execution: 
     event-scope: Dynamic
     type: Immediate
@@ -1131,21 +1235,6 @@ dynamic-actions:
       event: Trigger Highlight Slot Selection # 57207807411513896014
       fire-when-event-result-is: True
       fire-on-initialization: false
-
-  - # ====== Action: Disable =====================================
-    id: 2316749702055093612
-    identification: 
-      action: Disable
-
-    affected-elements: 
-      selection-type: Button
-      button: SIGNUP # 52997261988465034410
-
-    execution: 
-      sequence: 10
-      event: Trigger Highlight Slot Selection # 57207807411513896014
-      fire-when-event-result-is: False
-      fire-on-initialization: true
 
 processes: 
 - # ====== Process: Remember Me ================================

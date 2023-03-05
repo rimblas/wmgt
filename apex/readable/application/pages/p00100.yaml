@@ -1092,12 +1092,15 @@ regions:
            group by u.week, u.player_id
       )
       , cactus as (
-          select u.h, u.score, listagg(u.player_id) players_id
+        select distinct players_id
+          from (
+          select u.h h, u.score, any_value( distinct u.player_id) players_id
             from  wmg_rounds_unpivot_mv u
            where u.week = :P100_WEEK
              and u.score = 1
           having count(*) = 1
            group by u.h, u.score
+         )
       )
       select r.*, rank() over (order by r.total_score) pos
            , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player

@@ -30,7 +30,16 @@ javascript:
   file-urls: 
   - '&G_APP_FILES.lib/knockout-3.5.0.js'
   - '&G_APP_FILES.lib/knockout-pre-rendered.min.js'
+  - //cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js
   - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js'
+  function-and-global-variable-declaration: |
+    function confetti_time() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
   execute-when-page-loads: |
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
@@ -231,21 +240,22 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Would you enter your scorecards? ============
+- # ====== Region: Would you enter your scorecards too? ========
   id: 610682290572884
   identification: 
-    title: Would you enter your scorecards?
+    title: Would you enter your scorecards too?
     type: Static Content
 
   source: 
     html-code: |
-      You have the obligation to submit your final scores. If you've done that, you're all done with this session of the tournament.<br>
       <br>
-      That said, you don't have to enter your full scorecard, but it would be greatly appreciated.<br>
+      You have fulfilled your obligation to submit your final scores. Thank you!<br>
+      <br>
+      You don't have to enter your full scorecard, but it would be greatly appreciated.<br>
       When you enter your scorecard, our tournament stats are better and almost in real-time.
 
   layout: 
-    sequence: 15
+    sequence: 2
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -276,7 +286,7 @@ regions:
   server-side-condition: 
     type: Expression
     language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is null and :P50_H_ID is null'
+    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
 
   server-cache: 
     caching: Disabled
@@ -296,7 +306,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 16
+    sequence: 3
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -324,7 +334,7 @@ regions:
   server-side-condition: 
     type: Expression
     language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is null and :P50_H_ID is null'
+    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
 
   server-cache: 
     caching: Disabled
@@ -920,6 +930,9 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - u-vh
+    - scoreCards
 
   appearance: 
     template: Buttons Container # 46986522566537702415
@@ -934,6 +947,11 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null'
 
   server-cache: 
     caching: Disabled
@@ -968,6 +986,9 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - u-vh&P50_ENTER_SCORECARD_FLAG.
+    - scoreCards
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -983,6 +1004,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: hardCourse
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -1023,6 +1045,9 @@ regions:
     column: Automatic
     new-column: true
     column-span: Automatic
+    column-css-classes: 
+    - u-vh&P50_ENTER_SCORECARD_FLAG.
+    - scoreCards
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -1037,6 +1062,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: easyCourse
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -1071,7 +1097,7 @@ regions:
     - P50_HARD_COURSE_ID
 
   layout: 
-    sequence: 60
+    sequence: 70
     parent-region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
     start-new-layout: false
@@ -1209,7 +1235,7 @@ page-items:
     height: 1
 
   validation: 
-    value-required: false
+    value-required: true
 
   list-of-values: 
     type: Shared Component
@@ -1277,7 +1303,7 @@ page-items:
     height: 1
 
   validation: 
-    value-required: false
+    value-required: true
 
   list-of-values: 
     type: Shared Component
@@ -1731,7 +1757,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 70
+    sequence: 80
     region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
     alignment: Left
@@ -1831,6 +1857,69 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H_ROOM_NAME ==========================
+  id: 6007676760197084
+  identification: 
+    name: P50_H_ROOM_NAME
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 60
+    region: '&P50_HARD_COURSE.' # 47577408860194657322
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_HARD_COURSE.' # 47577408860194657322
+    column: ROOM_NAME
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_ENTER_SCORECARD_FLAG =================
+  id: 6008045494197087
+  identification: 
+    name: P50_ENTER_SCORECARD_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 70
+    region: '{Player & Round Details}' # 40817362897326412003
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -3423,7 +3512,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 150
@@ -3484,7 +3573,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 160
@@ -3545,7 +3634,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 170
@@ -3606,7 +3695,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 180
@@ -3667,7 +3756,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 190
@@ -3728,7 +3817,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 200
@@ -3789,7 +3878,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 210
@@ -3850,7 +3939,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 220
@@ -3911,7 +4000,7 @@ page-items:
 
   settings: 
     number-alignment: Center
-    virtual-keyboard: Text
+    virtual-keyboard: Numeric
 
   layout: 
     sequence: 230
@@ -4158,6 +4247,7 @@ page-items:
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
+    additional-outputs: 'ROOM_NAME:P50_ROOM_NAME'
 
   layout: 
     sequence: 30
@@ -4185,7 +4275,7 @@ page-items:
 
   list-of-values: 
     type: Shared Component
-    list-of-values: PLAYERS.ACCOUNT # 46986755001384703560
+    list-of-values: TOURNAMENT_SESSION_PLAYERS # 11803281247952720
     display-extra-values: true
     display-null-value: true
 
@@ -4202,10 +4292,7 @@ page-items:
 
   default: 
     type: SQL Query
-    sql-query: |
-      select id
-      from wmg_players
-      where account_login = :APP_USER
+    sql-query: 'select id from wmg_players where discord_id = :G_DISCORD_ID'
 
   session-state: 
     storage: Per Request (Memory Only)
@@ -6810,6 +6897,10 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL UPDATE action
 
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P50_E_ID
+
 - # ====== Button: CANCEL ======================================
   id: 3816487283911576
   identification: 
@@ -6868,6 +6959,40 @@ buttons:
   behavior: 
     action: Defined by Dynamic Action
     execute-validations: true
+
+- # ====== Button: CREATE ======================================
+  id: 6007501964197082
+  identification: 
+    button-name: CREATE
+    label: Submit Round
+
+  layout: 
+    sequence: 30
+    region: Your Results # 610201051572879
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-check
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL INSERT action
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P50_E_ID
 
 - # ====== Button: ADD =========================================
   id: 15524502490498633230
@@ -6939,6 +7064,53 @@ buttons:
     static-id: BTN_SAVE
 
 dynamic-actions: 
+- # ====== Dynamic Action: Celebrate with Confetti =============
+  id: 611381152572891
+  identification: 
+    name: Celebrate with Confetti
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
+
+  comments: 
+    comments: |
+      New condition to celebrate the top 10:
+      select 1
+      from wmg_tournament_session_points_v
+      where week = :P50_WEEK
+        and player_id = :P50_PLAYERS_ID
+        and points <= 10
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 611477630572892
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: confetti_time()
+
+    execution: 
+      sequence: 10
+      event: Celebrate with Confetti # 611381152572891
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: '!apex.theme.mq("(prefers-reduced-motion)")'
+
 - # ====== Dynamic Action: Continue to full scorecard ==========
   id: 3816811598911579
   identification: 
@@ -6957,14 +7129,15 @@ dynamic-actions:
     type: Immediate
 
   actions: 
-  - # ====== Action: Hide ========================================
+  - # ====== Action: Hide Prompts ================================
     id: 3816882055911580
     identification: 
+      name: Hide Prompts
       action: Hide
 
     affected-elements: 
       selection-type: Region
-      region: Would you enter your scorecards? # 610682290572884
+      region: Would you enter your scorecards too? # 610682290572884
 
     execution: 
       sequence: 10
@@ -6972,9 +7145,10 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-  - # ====== Action: Hide ========================================
+  - # ====== Action: Hide Prompts ================================
     id: 3817021487911581
     identification: 
+      name: Hide Prompts
       action: Hide
 
     affected-elements: 
@@ -6998,10 +7172,52 @@ dynamic-actions:
       - P50_ES1
 
     execution: 
+      sequence: 50
+      event: Continue to full scorecard # 3816811598911579
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Show Scorecard Entry ========================
+    id: 6007854290197085
+    identification: 
+      name: Show Scorecard Entry
+      action: Remove Class
+
+    settings: 
+      class: u-vh
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .scoreCards
+
+    execution: 
+      sequence: 40
+      event: Continue to full scorecard # 3816811598911579
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 6007935933197086
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      value: Y
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P50_ENTER_SCORECARD_FLAG
+
+    execution: 
       sequence: 30
       event: Continue to full scorecard # 3816811598911579
       fire-when-event-result-is: True
       fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
 
 - # ====== Dynamic Action: Init Player LOV =====================
   id: 18806434163525512245
@@ -7116,7 +7332,7 @@ validations:
     always-execute: false
 
   error: 
-    error-message: Week format is SnWn. i.e. S1W1, S12W2
+    error-message: Week format is SnnWnn. i.e. S08W01, S08W02
     display-location: Inline with Field and in Notification
 
 processes: 
@@ -7212,43 +7428,66 @@ processes:
       fetch first 1 rows only;
       
       begin
+      apex_debug.message('P50_PLAYERS_ID >' || :P50_PLAYERS_ID);
           if :P50_PLAYERS_ID is null then
               select id
                 into :P50_PLAYERS_ID
                 from wmg_players
-               where account_login = :APP_USER;
+               where (
+                  account_login = :APP_USER
+               or discord_id = :G_DISCORD_ID)
+               fetch first 1 rows only;
+      apex_debug.message('Got P50_PLAYERS_ID >' || :P50_PLAYERS_ID);
           end if;
       
           if :P50_PLAYERS_ID is not null then
              -- check to see if there's rounds already
-             select id
-                  , override_score
-                  , override_reason
-               into :P50_E_ID
-                  , :P50_EASY_OVERRIDE_SCORE
-                  , :P50_EASY_OVERRIDE_REASON
-               from wmg_rounds
-              where week = :P50_WEEK
-                and course_id = :P50_EASY_COURSE_ID
-                and players_id = :P50_PLAYERS_ID;
+             begin
+                 select id
+                      , override_score
+                      , override_reason
+                      , decode(nvl(s1,0) + nvl(s2,0), 0, null, 'Y') enter_scorecard_flag
+                   into :P50_E_ID
+                      , :P50_EASY_OVERRIDE_SCORE
+                      , :P50_EASY_OVERRIDE_REASON
+                      , :P50_ENTER_SCORECARD_FLAG
+                   from wmg_rounds
+                  where week = :P50_WEEK
+                    and course_id = :P50_EASY_COURSE_ID
+                    and players_id = :P50_PLAYERS_ID;
+              exception
+               when NO_DATA_FOUND then
+                 null;
+             end;
       
              -- check to see if there's rounds already
-             select id
-                  , override_score
-                  , override_reason
-               into :P50_H_ID
-                  , :P50_HARD_OVERRIDE_SCORE
-                  , :P50_HARD_OVERRIDE_REASON
-               from wmg_rounds
-              where week = :P50_WEEK
-                and course_id = :P50_HARD_COURSE_ID
-                and players_id = :P50_PLAYERS_ID;
+             begin
+                 select id
+                      , override_score
+                      , override_reason
+                      , coalesce(:P50_ENTER_SCORECARD_FLAG, decode(nvl(s1,0) + nvl(s2,0), 0, null, 'Y')) enter_scorecard_flag
+                   into :P50_H_ID
+                      , :P50_HARD_OVERRIDE_SCORE
+                      , :P50_HARD_OVERRIDE_REASON
+                      , :P50_ENTER_SCORECARD_FLAG
+                   from wmg_rounds
+                  where week = :P50_WEEK
+                    and course_id = :P50_HARD_COURSE_ID
+                    and players_id = :P50_PLAYERS_ID;
+                      exception
+               when NO_DATA_FOUND then
+                 null;
+             end;
+      
       
           end if;
       
       exception
         when no_data_found then
+        apex_debug.message('NO_DATA_FOUND');
+      
           :P50_E_ID := null;
+          :P50_H_ID := null;
       end;
       
       
@@ -7275,9 +7514,6 @@ processes:
     sequence: 20
     point: Processing
     run-process: Once Per Page Visit (default)
-
-  success-message: 
-    success-message: Easy Round saved.
 
   error: 
     display-location: Inline in Notification
@@ -7336,6 +7572,7 @@ processes:
       -- The Hard Round has it's own week annd player_id columns so we need to copy the user selection to those rows.
       :P50_H_WEEK := :P50_WEEK;
       :P50_H_PLAYER_ID := :P50_PLAYERS_ID;
+      :P50_H_ROOM_NAME := :P50_ROOM_NAME;
 
   execution: 
     sequence: 10
@@ -7364,7 +7601,7 @@ branches:
     name: Not Ready To Enter
 
   execution: 
-    sequence: 10
+    sequence: 20
     point: Before Header
 
   behavior: 
@@ -7379,16 +7616,16 @@ branches:
     sql-query: |
       select 1
       from  wmg_tournament_sessions
-      where id = :G_TOURNAMENT_SESSION_ID
+      where id = :G_CURRENT_SESSION_ID
         and rooms_defined_flag = 'Y'
 
   security: 
-    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 3554679108597518
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46986682652284702496
 
-- # ====== Branch: View Results ================================
+- # ====== Branch: Ask For Scorecards ==========================
   id: 4007288626738090
   identification: 
-    name: View Results
+    name: Ask For Scorecards
 
   execution: 
     sequence: 10
@@ -7397,7 +7634,54 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
-      page: 60 # View Results
+      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:50:P50_ENTER_SCORECARD_FLAG:&P50_ENTER_SCORECARD_FLAG.&success_msg=#SUCCESS_MSG#'
+      page: 50 # Enter Rounds
+      request: ASK_SCORE
+      clear-cache: 50
+      values: 
+        p50_enter_scorecard_flag: '&P50_ENTER_SCORECARD_FLAG.'
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P50_ES18
+
+- # ====== Branch: View Results ================================
+  id: 6007631545197083
+  identification: 
+    name: View Results
+
+  execution: 
+    sequence: 20
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
+      page: 50 # Enter Rounds
+      request: ASK_SCORE
       clear-cache: 60
+
+- # ====== Branch: Closed Tournament ===========================
+  id: 6009247269197099
+  identification: 
+    name: Closed Tournament
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:51:&SESSION.::&DEBUG.:51::&success_msg=#SUCCESS_MSG#'
+      page: 51 # Enter Rounds - Not Ready
+      clear-cache: 51
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_CURRENT_SESSION_ID
+
+  security: 
+    authorization-scheme: Beta Tester # 3554679108597518
 
