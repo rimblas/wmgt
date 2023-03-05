@@ -28,6 +28,11 @@ javascript:
   - '&G_APP_FILES.lib/knockout-3.5.0.js'
   - '&G_APP_FILES.lib/knockout-pre-rendered.min.js'
   - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js'
+  function-and-global-variable-declaration: |
+    function qhide(pID) {
+      $("[data-id=" + pID + "]").parents("tr").slideUp();
+    }
+    
   execute-when-page-loads: |
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
@@ -126,7 +131,7 @@ css:
       flex-flow: row-reverse;
     }
     
-    
+    .removeQueue {cursor: pointer;}
 
 security: 
   authorization-scheme: Contribution Rights # 46986682878463702496
@@ -688,6 +693,366 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: Ongoing Scorecards ==========================
+  id: 8210672075109913
+  identification: 
+    title: Ongoing Scorecards
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select q.id
+           , q.id pID
+           , q.week
+           , coalesce(q.easy_player_id, q.hard_player_id) player_id
+           , p.name player
+           , decode(q.easy_player_id, null, 'N', 'Y') easy
+           , decode(q.hard_player_id, null, 'N', 'Y') hard
+           , q.created_by
+           , apex_util.get_since(q.created_on) created_since
+        from wmg_verification_queue q
+           , wmg_players p
+       where p.id = coalesce(q.easy_player_id, q.hard_player_id)
+         and q.week = :P9_WEEK
+      order by q.id
+      
+    page-items-to-submit: 
+    - P9_WEEK
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 4
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_verification_queue q
+       where q.week = :P9_WEEK
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      show-null-values-as: '- missing -'
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 8210686992109914
+    identification: 
+      column-name: ID
+      type: Plain Text
+
+    heading: 
+      heading: Remove
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <div class="removeQueue" data-id="#ID#"><span aria-hidden="true" class="fa fa-trash-o"></span></div>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 8210827778109915
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_BY ==================================
+    id: 8211134758109918
+    identification: 
+      column-name: CREATED_BY
+      type: Plain Text
+
+    heading: 
+      heading: Entered By
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '#CREATED_BY# (#CREATED_SINCE#)'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER ======================================
+    id: 13605755428876077
+    identification: 
+      column-name: PLAYER
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 'javascript:$s("P9_PLAYERS_ID", #PLAYER_ID#);$("#P9_S1").focus();qhide(#PID#);'
+      link-text: '#PLAYER#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 13605804056876078
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="fa cfa-check_#EASY# cfa-1_5x" title="#EASY#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 13605958941876079
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="fa cfa-check_#HARD# cfa-1_5x" title="#HARD#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_SINCE ===============================
+    id: 13605984930876080
+    identification: 
+      column-name: CREATED_SINCE
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 13606123488876081
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PID =========================================
+    id: 13606841650876088
+    identification: 
+      column-name: PID
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Round =======================================
   id: 46986753890975703559
   identification: 
@@ -1193,6 +1558,36 @@ page-items:
   layout: 
     sequence: 30
     region: Score Override # 3816124145911572
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_Q_ID ==================================
+  id: 13606188655876082
+  identification: 
+    name: P9_Q_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: Ongoing Scorecards # 8210672075109913
     position: BODY
 
   advanced: 
@@ -4328,6 +4723,101 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Remove from Queue ===================
+  id: 13606294233876083
+  identification: 
+    name: Remove from Queue
+
+  execution: 
+    sequence: 100
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .removeQueue
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Confirm =====================================
+    id: 13606455578876084
+    identification: 
+      action: Confirm
+
+    settings: 
+      title: Remove?
+      message: Are you sure? This means there's no scorecard for this player.
+      style: Default
+
+    execution: 
+      sequence: 10
+      event: Remove from Queue # 13606294233876083
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 13606572942876085
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P9_Q_ID
+
+    execution: 
+      sequence: 20
+      event: Remove from Queue # 13606294233876083
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 13606578098876086
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        delete from wmg_verification_queue
+         where week = :P9_WEEK
+           and id = :P9_Q_ID;
+      items-to-submit: 
+      - P9_WEEK
+      - P9_Q_ID
+
+    execution: 
+      sequence: 30
+      event: Remove from Queue # 13606294233876083
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 13606764210876087
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Ongoing Scorecards # 8210672075109913
+
+    execution: 
+      sequence: 40
+      event: Remove from Queue # 13606294233876083
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Preview Hole ========================
   id: 24442381769108124333
   identification: 
@@ -4795,6 +5285,94 @@ processes:
   server-side-condition: 
     when-button-pressed: APPLY_CHANGES_OVERRIDE # 4005930571738076
 
+- # ====== Process: Save Match Verification Pairs ==============
+  id: 13605187204876072
+  identification: 
+    name: Save Match Verification Pairs
+    type: Invoke API
+
+  settings: 
+    type: PL/SQL Package
+    owner: PARSING SCHEMA
+    package: WMG_UTIL
+    procedure-or-function: SCORE_ENTRY_VERIFICATION
+
+  execution: 
+    sequence: 50
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  parameters: 
+  - # ====== Parameter: p_week ===================================
+    id: 13605279447876073
+    identification: 
+      name: p_week
+
+    parameter: 
+      direction: In
+      data-type: VARCHAR2
+      has-default: false
+
+    value: 
+      type: Item
+      item: P9_WEEK
+
+    advanced: 
+      display-sequence: 10
+
+  - # ====== Parameter: p_player_id ==============================
+    id: 13605461976876074
+    identification: 
+      name: p_player_id
+
+    parameter: 
+      direction: In
+      data-type: NUMBER
+      has-default: false
+
+    value: 
+      type: Item
+      item: P9_PLAYERS_ID
+
+    advanced: 
+      display-sequence: 20
+
+  - # ====== Parameter: p_course_id ==============================
+    id: 13605508000876075
+    identification: 
+      name: p_course_id
+
+    parameter: 
+      direction: In
+      data-type: NUMBER
+      has-default: true
+
+    value: 
+      type: Item
+      item: P9_COURSE_ID
+
+    advanced: 
+      display-sequence: 30
+
+  - # ====== Parameter: p_remove =================================
+    id: 13605594696876076
+    identification: 
+      name: p_remove
+
+    parameter: 
+      direction: In
+      data-type: BOOLEAN
+      has-default: true
+
+    value: 
+      type: API Default
+
+    advanced: 
+      display-sequence: 40
+
 - # ====== Process: Initialize form Round ======================
   id: 46986773930289703570
   identification: 
@@ -4842,7 +5420,7 @@ processes:
     type: Close Dialog
 
   execution: 
-    sequence: 50
+    sequence: 60
     point: Processing
     run-process: Once Per Page Visit (default)
 

@@ -727,5 +727,96 @@ end score_points;
 
 
 
+/**
+ * Given a player keep track if their easy or hard score card is missing
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 20, 2023
+ * @param p_player_id
+ * @param p_course_id
+ * @param p_remove
+ * @return
+ */
+procedure score_entry_verification(
+   p_week      in wmg_rounds.week%type
+ , p_player_id in wmg_players.id%type
+ , p_course_id in number default null
+ , p_remove    in boolean default false
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'score_entry_verification';
+
+  l_course_rec  wmg_courses%rowtype;
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  if p_course_id is not null then
+    select *
+      into l_course_rec
+      from wmg_courses
+     where id = p_course_id;
+  end if;
+
+
+  if p_remove then
+    delete 
+      from wmg_verification_queue 
+     where week = p_week and (easy_player_id = p_player_id or hard_player_id = p_player_id);
+  else
+
+    merge into wmg_verification_queue q
+    using (
+      select r.week
+           , r.players_id
+           , r.course_id
+           , l_course_rec.course_mode course_mode
+        from wmg_rounds r
+       where r.week = p_week
+         and r.players_id = p_player_id
+         and r.course_id = l_course_rec.id
+    ) r
+    on (
+          q.week = r.week
+      and (q.easy_player_id = r.players_id or q.hard_player_id = r.players_id)
+    )
+    when matched then
+      update
+         set q.easy_player_id = decode(r.course_mode, 'E', r.players_id, q.easy_player_id)
+           , q.hard_player_id = decode(r.course_mode, 'H', r.players_id, q.hard_player_id)
+    when not matched then
+      insert (
+          week
+        , easy_player_id
+        , hard_player_id
+      )
+      values (
+          r.week
+        , decode(r.course_mode, 'E', r.players_id, null)
+        , decode(r.course_mode, 'H', r.players_id, null)
+      );
+  end if;  
+
+  -- delete the finished entries
+  delete from wmg_verification_queue
+   where week = p_week
+     and easy_player_id = p_player_id
+    and hard_player_id = p_player_id;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end score_entry_verification;
+
+
 end wmg_util;
 /

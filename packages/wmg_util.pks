@@ -47,5 +47,13 @@ function score_points(
 )
 return number;
 
+--------------------------------------------------------------------------------
+procedure score_entry_verification(
+   p_week      in wmg_rounds.week%type
+ , p_player_id in wmg_players.id%type
+ , p_course_id in number default null
+ , p_remove    in boolean default false
+);
+
 end wmg_util;
 /
