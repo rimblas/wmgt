@@ -530,6 +530,54 @@ begin
   -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   log('BEGIN', l_scope);
 
+  log('.. restore previously discarded session', l_scope);
+  update wmg_tournament_players
+     set discarded_points_flag = null
+   where id in (
+      with curr_tournament as (
+        select id
+          from wmg_tournaments
+         where id = p_tournament_id
+           and current_flag = 'Y'
+      )
+      , discard as (
+        select round( count(*)/3 ) drop_count
+             , count(*) total_sessions
+          from wmg_tournament_sessions ts
+             , curr_tournament
+         where ts.tournament_id = curr_tournament.id
+         and ts.registration_closed_flag = 'Y'
+      )
+      select tournament_player_id
+      from (
+          select p.id tournament_player_id
+               , p.player_id
+               , p.points
+               , p.discarded_points_flag
+               , ts.tournament_id
+               , ts.round_num
+               , ts.week
+               , ts.session_date
+      --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+               , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
+               , count(*) over (partition by p.player_id) sessions_played
+          from wmg_tournament_sessions ts
+             , wmg_tournament_players p
+             , curr_tournament
+          where ts.id = p.tournament_session_id
+            and ts.tournament_id = curr_tournament.id
+          -- and p.player_id in ( 22, 24, 26)
+          order by p.player_id, ts.session_date
+      )
+       , discard
+       -- (total_sessions - sessions_played) is needed in case they did not participate in all sessions
+       where (total_sessions >= sessions_played and discard_order > (discard.drop_count - (total_sessions - sessions_played)))
+    )
+   and discarded_points_flag = 'Y';
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+  log('.. Discarding session', l_scope);
+
   update wmg_tournament_players
      set discarded_points_flag = 'Y' 
    where id in (
@@ -540,7 +588,7 @@ begin
            and current_flag = 'Y'
       )
       , discard as (
-        select floor(count(*)/3) drop_count
+        select round( count(*)/3 ) drop_count
              , count(*) total_sessions
           from wmg_tournament_sessions ts
              , curr_tournament
@@ -724,6 +772,8 @@ exception
     log('Unhandled Exception', l_scope);
     raise;
 end score_points;
+
+
 
 
 
