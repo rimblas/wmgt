@@ -212,6 +212,15 @@ is
 begin
   log('BEGIN', l_scope);
 
+  log('.. Stamp room assignments', l_scope);
+  update wmg_tournament_sessions
+     set rooms_defined_flag = 'Y' -- this will block new registrations
+       , rooms_defined_by   = coalesce(sys_context('APEX$SESSION','APP_USER'),user) 
+       , rooms_defined_on   = current_timestamp
+    where id = p_tournament_session_id;
+
+  commit; -- make sure no new registrations are accepted.
+
   -- Seed the random number generator
   l_seed := to_char(systimestamp,'YYYYDDMMHH24MISSFFFF');
   dbms_random.seed (val => l_seed);
@@ -285,11 +294,9 @@ begin
 
   end loop; 
 
-  log('.. Stamp room assignments', l_scope);
+  log('.. Stamp room assignments date', l_scope);
   update wmg_tournament_sessions
-     set rooms_defined_flag = 'Y'
-       , rooms_defined_by   = coalesce(sys_context('APEX$SESSION','APP_USER'),user) 
-       , rooms_defined_on   = current_timestamp
+     set rooms_defined_on   = current_timestamp
     where id = p_tournament_session_id;
 
   log('END', l_scope);
