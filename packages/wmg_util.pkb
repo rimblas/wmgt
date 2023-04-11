@@ -143,7 +143,7 @@ end rooms_set;
  *
  * @author Jorge Rimblas
  * @created January 15, 2023
- * @param x_result_status
+ * @param p_tournament_session_id
  * @return
  */
 procedure assign_rooms(
@@ -308,6 +308,57 @@ begin
 end assign_rooms;
 
 
+
+
+
+/**
+ * Given a tournament session reset the room assignments and re-open registrations
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created April 8, 2023
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure reset_room_assignments(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'assign_rooms';
+  -- l_params logger.tab_param;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  log('.. removing room assignments', l_scope);
+  update wmg_tournament_players
+     set room_no = null
+   where tournament_session_id = p_tournament_session_id;
+
+
+  log('.. Undo room set flags and reset', l_scope);
+  update wmg_tournament_sessions
+  set rooms_open_flag = null
+    , rooms_defined_flag = null
+    , rooms_defined_by = null
+    , rooms_defined_on = null
+    , registration_closed_flag = null
+    , completed_ind = 'N'
+  where id = p_tournament_session_id;
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end reset_room_assignments;
 
 
 
