@@ -3,7 +3,7 @@ as
 select 
     p.id                                         player_id,
     p.account                                    account,
-    p.name                                       player_name,
+    p.account                                    player_name,
     p.country_code,
     c.id                                         course_id,
     c.code                                       course_code,

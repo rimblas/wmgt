@@ -21,7 +21,7 @@ from (
   from (
     select r.week
          , r.player_id
-         , r.player_name
+         , r.account player_name
          , r.under_par
          , c.course_mode
          , r.round_id
