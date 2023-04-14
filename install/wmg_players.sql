@@ -10,6 +10,7 @@ create table wmg_players (
     account_login                  varchar2(100),
     prefered_tz                    varchar2(20),
     country_code                   varchar2(5),
+    rank_code                      varchar2(10) default on null 'NEW' not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
     updated_on                     timestamp with local time zone,
@@ -20,6 +21,10 @@ create table wmg_players (
 create unique index wmg_players_u01 on wmg_players (lower(account));
 create unique index wmg_players_u02 on wmg_players (lower(name));
 create unique index wmg_players_u03 on wmg_players (discord_id);
+
+alter table wmg_players add constraint wmg_players_rank_fk foreign key (rank_code)
+                                         references wmg_ranks(code); 
+
 
 -- comments
 comment on column wmg_players.account is 'discord name';

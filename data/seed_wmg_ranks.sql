@@ -1,0 +1,91 @@
+set define off;
+
+PROMPT wmg_ranks data
+
+declare
+  l_json clob;
+begin
+
+  -- Load data in JSON object
+  l_json := q'!
+[
+  {
+    "code": "NEW",
+    "name": "Amateur",
+    "profile_class": "-wm-rank-new-profile rank",
+    "list_class": "-wm-rank-new fa",
+    "seq": 10
+  },
+  {
+    "code": "SEMI",
+    "name": "Semi-Pro",
+    "profile_class": "-wm-rank-semi-profile rank",
+    "list_class": "-wm-rank-semi fa",
+    "seq": 20
+  },
+  {
+    "code": "PRO",
+    "name": "Pro",
+    "profile_class": "-wm-rank-pro-profile rank",
+    "list_class": "-wm-rank-pro fa",
+    "seq": 30
+  }
+]
+!';
+
+
+  for data in (
+    select *
+    from json_table(l_json, '$[*]' columns
+      code varchar2(4000) path '$.code',
+      name varchar2(4000) path '$.name',
+      profile_class varchar2(4000) path '$.profile_class',
+      list_class varchar2(4000) path '$.list_class',
+      seq number path '$.seq'
+    )
+  ) loop
+    
+    -- Note: looping over each entry to make it easier to debug in case one entry is invalid
+    -- If performance is an issue can move the loop's select statement into the merge statement
+    merge into wmg_ranks dest
+      using (
+        select
+          data.code code
+        from dual
+      ) src
+      on (1=1
+        and dest.code = src.code
+      )
+    when matched then
+      update
+        set
+          -- Don't update the value as it's probably a key/secure value
+          -- Deletions are handled above
+          dest.name = data.name,
+          dest.profile_class = data.profile_class,
+          dest.list_class = data.list_class,
+          dest.display_seq = data.seq
+    when not matched then
+      insert (
+        code,
+        name,
+        profile_class,
+        list_class,
+        display_seq,
+        active_ind,
+        created_on,
+        created_by)
+      values(
+        data.code,
+        data.name,
+        data.profile_class,
+        data.list_class,
+        data.seq,
+        'Y',
+        sysdate,
+        'SYSTEM')
+    ;
+  end loop;
+
+end;
+/
