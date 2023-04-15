@@ -406,10 +406,10 @@ begin
 
     if l_found = 0 then
 
-      select id, account
+      select id, player_name
        bulk collect into l_players_tbl
       from (
-          select p.id, p.account, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
+          select p.id, nvl(p.name, p.account) player_name, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
             from wmg_players p
            where discord_id is null
       )
