@@ -140,10 +140,10 @@ begin
   select p.player_name
        , case when discord_id is not null then
           '<a href="discord://discordapp.com/users/' || p.discord_id || '/">'
-          || '<img class="avatar" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
+          || '<img class="avatar ' || case when  p_mode = 'MINI' then 'md' end || '" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
           || '</a>' 
          else '' end discord_profile
-       , '<i class="flag em-svg em-flag-' || p.country_code || '" aria-role="presentation" aria-label="' || p.COUNTRY_CODE || ' Flag"></i>' flag
+       , '<i class="' || case when  p_mode = 'MINI' then 'margin-top-sm' end || ' flag em-svg em-flag-' || p.country_code || '" aria-role="presentation" aria-label="' || p.COUNTRY_CODE || ' Flag"></i>' flag
        , p.rank_name
        , p.rank_profile_class
        , p.country
@@ -152,7 +152,13 @@ begin
    where p.id = p_player_id
   )
   loop
-    return '<div class="row">'
+    if p_mode = 'MINI' then
+      return '<div class="row col-6 u-justify-content-space-around">' || p.discord_profile 
+          || ' &nbsp; <span class="' || p.rank_profile_class || '">' || p.rank_name || '</span>'
+          || p.flag
+      || '</div>';
+    else
+      return '<div class="row">'
          || '<div class="' || l_cols || ' u-tC">'
          ||   p.discord_profile
          || '<h3>' || p.player_name || '</h3>'
@@ -162,6 +168,7 @@ begin
          || '<div class="' || l_cols || ' u-tC">'
          || p.flag || '<br>' || p.country || '<br><hr>' || p.prefered_tz
          || '</div></div>';
+     end if;
   end loop;
 
   log('END', l_scope);
@@ -172,7 +179,13 @@ exception
 
     when OTHERS then
       log('Unhandled Exception', l_scope);
-      raise;
+      return 
+      '<div class="row">'
+         || '<div class="' || l_cols || ' u-tC">'
+         || '<img class="avatar" src="' || v('APP_IMAGES') || '/img/discord_mask.png' || '">'
+         || ' Something went wrong retriving your profile. Plese let a Tournament Director know.'
+         || '</div>'
+     || '</div>';
 end render_profile;
 
 
