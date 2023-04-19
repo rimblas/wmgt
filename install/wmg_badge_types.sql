@@ -1,5 +1,5 @@
 -- drop objects
--- drop table wmg_badge_types cascade constraints;
+drop table wmg_badge_types cascade constraints;
 
 -- create tables
 create table wmg_badge_types (
@@ -14,6 +14,8 @@ create table wmg_badge_types (
     icon_class                     varchar2(100 char),
     system_calculated_ind          varchar2(1 char) default 'N' constraint wmg_badge_types_sys_ind_ck
                                    check (system_calculated_ind in ('Y','N')) not null,
+    selectable_ind                 varchar2(1 char) default 'N' constraint wmg_badge_types_select_ind_ck
+                                   check (selectable_ind        in ('Y','N')) not null,
     active_ind                     varchar2(1 char) default 'Y' constraint wmg_badge_types_active_ind_ck
                                    check (active_ind in ('Y','N')) not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,

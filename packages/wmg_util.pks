@@ -38,6 +38,11 @@ procedure possible_player_match (
   , x_players_tbl     in out nocopy tab_keyval_type
 );
 
+procedure snapshot_badges (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+);
+
 procedure close_tournament_session (
     p_tournament_id         in wmg_tournaments.id%type
   , p_tournament_session_id in wmg_tournament_sessions.id%type

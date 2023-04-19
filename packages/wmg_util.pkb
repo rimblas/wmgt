@@ -559,6 +559,115 @@ end snapshot_points;
 
 
 
+/**
+ * PRIVATE
+ * Given a tournament ID and Tournament Session ID 
+ * Snapshot the System calculated badges for each player
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created April 16, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure snapshot_badges (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'snapshot_badges';
+
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  log('.. Top 10 player badges');
+  insert into wmg_player_badges (
+      tournament_session_id
+    , player_id
+    , badge_type_code
+    , badge_count
+  )
+  select p.tournament_session_id
+       , p.player_id
+       , case 
+           when p.pos = 1 then 'FIRST'
+           when p.pos = 2 then 'SECOND'
+           when p.pos = 3 then 'THIRD'
+           when p.pos >= 4 and  p.pos <= 10 then 'TOP10'
+         end
+       , 1
+    from wmg_tournament_session_points_v p
+   where p.tournament_session_id = p_tournament_session_id
+     and p.pos <=10;
+
+
+  insert into wmg_player_badges (
+      tournament_session_id
+    , player_id
+    , badge_type_code
+    , badge_count
+  )
+  with coconut as (
+    select u.week
+         , u.player_id, sum(case when par <= 0 then 1 else 0 end) under_par
+         , sum(case when score = 1 then 1 else 0 end) hn1_count
+      from wmg_rounds_unpivot_mv u
+         , wmg_tournament_sessions ts
+     where ts.week = u.week
+       and ts.id = p_tournament_session_id
+     having sum(case when par <= 0 and score is not null then 1 else 0 end) = 36
+     group by u.week, u.player_id
+  )
+  , cactus as (
+     select player_id, count(*) n
+      from (
+      select u.course_id || ':' || u.h h, u.score, any_value(u.player_id) player_id
+        from wmg_rounds_unpivot_mv u
+           , wmg_tournament_sessions ts
+       where ts.week = u.week
+         and ts.id = p_tournament_session_id
+         and u.score = 1
+      having count(*) = 1
+       group by u.course_id || ':' || u.h, u.score
+     )
+     group by player_id
+  )
+  select p.tournament_session_id
+       , p.player_id
+       , 'COCONUT' badge
+       , 1 badge_count
+    from wmg_tournament_session_points_v p
+       , coconut
+   where p.tournament_session_id = p_tournament_session_id
+     and p.player_id = coconut.player_id
+  union all
+  select p.tournament_session_id
+       , p.player_id
+       , 'CACTUS' badge
+       , cactus.n badge_count
+    from wmg_tournament_session_points_v p
+       , cactus
+   where p.tournament_session_id = p_tournament_session_id
+     and p.player_id = cactus.player_id;
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+  log('END', l_scope);
+
+end snapshot_badges;
+
+
+
+
+
+
 
 /**
  * PRIVATE

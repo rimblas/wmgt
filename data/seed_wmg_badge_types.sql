@@ -11,11 +11,48 @@ begin
   l_json := q'!
 [
   {
+    "code": "FIRST",
+    "name": "1st Place",
+    "description": "1st Place",
+    "icon_class": "em em-first_place_medal",
+    "system": "Y",
+    "selectable": "N",
+    "seq": 1
+  },
+  {
+    "code": "SECOND",
+    "name": "2nd Place",
+    "description": "2nd Place",
+    "icon_class": "em em-second_place_medal",
+    "system": "Y",
+    "selectable": "N",
+    "seq": 2
+  },
+  {
+    "code": "THIRD",
+    "name": "3rd Place",
+    "description": "3rd Place",
+    "icon_class": "em em-third_place_medal",
+    "system": "Y",
+    "selectable": "N",
+    "seq": 3
+  },
+  {
+    "code": "TOP10",
+    "name": "Top 10 Finish",
+    "description": "Top 10 Finish",
+    "icon_class": "em em-sports_medal",
+    "system": "Y",
+    "selectable": "N",
+    "seq": 4
+  },
+  {
     "code": "COCONUT",
     "name": "Coconut",
     "description": "Par or under for all 36 holes",
     "icon_class": "em em-coconut",
     "system": "Y",
+    "selectable": "Y",
     "seq": 10
   },
   {
@@ -24,6 +61,7 @@ begin
     "description": "Most Aces thru 36 holes",
     "icon_class": "em em-large_blue_diamond",
     "system": "N",
+    "selectable": "Y",
     "seq": 20
   },
   {
@@ -32,6 +70,7 @@ begin
     "description": "Solo Ace (Only player to ace a hole)",
     "icon_class": "em em-cactus",
     "system": "Y",
+    "selectable": "Y",
     "seq": 30
   },
   {
@@ -40,6 +79,7 @@ begin
     "description": "Dual Ace (One of only 2 players to ace a hole)",
     "icon_class": "em em-duck",
     "system": "N",
+    "selectable": "Y",
     "seq": 40
   },
   {
@@ -48,6 +88,7 @@ begin
     "description": "Rare (1-3 players) non-ace best scores",
     "icon_class": "em em-beetle",
     "system": "N",
+    "selectable": "Y",
     "seq": 50
   }
 ]
@@ -61,6 +102,7 @@ begin
       name varchar2(4000) path '$.name',
       description varchar2(4000) path '$.description',
       icon_class varchar2(4000) path '$.icon_class',
+      selectable varchar2(4000) path '$.selectable',
       system varchar2(4000) path '$.system',
       seq number path '$.seq'
     )
@@ -85,6 +127,7 @@ begin
           dest.name = data.name,
           dest.description = data.description,
           dest.icon_class = data.icon_class,
+          dest.selectable_ind = data.selectable,
           dest.system_calculated_ind = data.system,
           dest.display_seq = data.seq
     when not matched then
@@ -94,6 +137,7 @@ begin
         description,
         icon_class,
         display_seq,
+        selectable_ind,
         system_calculated_ind,
         active_ind,
         created_on,
@@ -104,6 +148,7 @@ begin
         data.description,
         data.icon_class,
         data.seq,
+        data.selectable,
         data.system,
         'Y',
         sysdate,
