@@ -130,6 +130,12 @@ begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
 
+  if p_player_id is null then
+    -- we don't have a player yet
+    return '<img class="avatar md" src="' || wmg_discord.avatar(nv('G_DISCORD_ID')) || '"</> Player not setup.';
+  end if;
+
+
   if p_spacing = 'FULL' then 
     l_cols := 'col-12';
   else
@@ -140,7 +146,7 @@ begin
   select p.player_name
        , case when discord_id is not null then
           '<a href="discord://discordapp.com/users/' || p.discord_id || '/">'
-          || '<img class="avatar ' || case when  p_mode = 'MINI' then 'md' end || '" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
+          || '<img class="avatar ' || case when  p_mode = 'MINI' then 'md' else 'lg' end || '" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
           || '</a>' 
          else '' end discord_profile
        , '<i class="' || case when  p_mode = 'MINI' then 'margin-top-sm' end || ' flag em-svg em-flag-' || p.country_code || '" aria-role="presentation" aria-label="' || p.COUNTRY_CODE || ' Flag"></i>' flag
