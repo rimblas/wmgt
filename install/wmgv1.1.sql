@@ -238,6 +238,9 @@ tournaments
         player_id /fk players(id)
         time_slot vc5 /nn /check 00:00,04:00,08:00,12:00,16:00,20:00
         room_no n
+        points  n
+        discarded_points_flag vc1
+
 
 players
   account

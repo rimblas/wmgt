@@ -6,7 +6,7 @@ create table wmg_tournament_sessions (
                                    references wmg_tournaments,
     round_num                      integer not null,
     session_date                   date,
-    week                           varchar2(10 char),
+    week                           varchar2(10 char) constraint wmg_tournament_sessions_uk1 unique not null,
     open_registration_on           timestamp with time zone,
     close_registration_on          timestamp with time zone,
     registration_closed_flag       varchar2(1),
@@ -26,7 +26,7 @@ create table wmg_tournament_sessions (
 
 -- table index
 create index wmg_tournament_ses_i1 on wmg_tournament_sessions (tournament_id);
-
+alter table wmg_tournament_sessions modify week unique;
 -- comments
 comment on column wmg_tournament_sessions.week is 'If prefixes are specified this value gets derived';
 comment on column wmg_tournament_sessions.rooms_open_flag is 'Allows the room definitions to be visible to all players';

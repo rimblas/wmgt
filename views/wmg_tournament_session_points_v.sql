@@ -1,9 +1,11 @@
 create or replace view wmg_tournament_session_points_v
 as
-select r.week, r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score
+select ts.id tournament_session_id
+     , r.week, r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score
      , r.pos
      , r.percent_rank
      , wmg_util.score_points(r.pos, r.percent_rank, r.player_count) points
+     , ts.completed_ind
 from (
 select r.week, r.player_id, r.player_name, r.country_code, r.easy, r.hard, r.total_score, r.pos
  , percent_rank() over (partition by case when r.pos <= 10 then 1 else 2 end order by r.total_score ) percent_rank
@@ -31,5 +33,7 @@ from (
     ) r
   ) r
 ) r
+, wmg_tournament_sessions ts
+where ts.week = r.week
 order by r.week, r.pos, r.player_name
 /
