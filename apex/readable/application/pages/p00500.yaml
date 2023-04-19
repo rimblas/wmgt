@@ -38,6 +38,167 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Signups =====================================
+  id: 24231430448737285
+  identification: 
+    title: Signups
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select sum(decode(active_ind, 'Y', 1, 0)) registered
+           , sum(decode(active_ind, 'Y', 0, 1)) unregistered
+      from wmg_tournament_player_v
+       where TOURNAMENT_ID in (
+           select ID
+             from WMG_TOURNAMENTS
+            where CURRENT_FLAG = 'Y'
+       )
+        and (completed_ind = 'N'
+          or completed_on > current_timestamp - 1
+       )
+      
+
+  layout: 
+    sequence: 10
+    parent-region: Current  Session # 56169634488996600279
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 4
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-6
+    - col-xss-12
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    - margin-top-md
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Contextual Info # 46986613809310702452
+      template-options: 
+      - '#DEFAULT#'
+      - t-ContextualInfo-label--stacked
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: REGISTERED ==================================
+    id: 24231528018737286
+    identification: 
+      column-name: REGISTERED
+      type: Plain Text
+
+    heading: 
+      heading: Registered
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UNREGISTERED ================================
+    id: 24231638551737287
+    identification: 
+      column-name: UNREGISTERED
+      type: Plain Text
+
+    heading: 
+      heading: Unregistered
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: About & Rules ===============================
   id: 50429446115799004845
   identification: 
@@ -320,7 +481,6 @@ regions:
     template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
-    - t-Region--noPadding
     - t-Region--scrollBody
     css-classes: 
     - js-detail-region
@@ -349,11 +509,11 @@ regions:
       template-type: Theme
       template: Standard # 46986618016296702453
       template-options: 
-      - t-Report--stretch
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--altRowsDefault
       - t-Report--rowHighlight
-      - t-Report--inline
+      - t-Report--hideNoPagination
 
     pagination: 
       type: Row Ranges X to Y (with next and previous links)
@@ -365,7 +525,7 @@ regions:
       maximum-rows-to-process: 5000
 
     messages: 
-      when-no-data-found: No data found.
+      when-no-data-found: '- No current session defined -'
 
     break-formatting: 
       break-columns: No Break
@@ -740,6 +900,37 @@ regions:
     security: 
       escape-special-characters: true
 
+page-items: 
+- # ====== Page Item: P500_TOURNAMENT_ID =======================
+  id: 13606933070876089
+  identification: 
+    name: P500_TOURNAMENT_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: Tournament # 56015643034338939710
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: POP_WMG_TOURNAMENT_SESSIONS =================
   id: 11606542247363621
@@ -768,11 +959,77 @@ buttons:
   behavior: 
     action: Redirect to Page in this Application
     target: 
-      url: 'f?p=&APP_ID.:532:&APP_SESSION.::&DEBUG.:RP,532:P532_TOURNAMENT_ID:&P500_ID.'
+      url: 'f?p=&APP_ID.:532:&SESSION.::&DEBUG.:RP,532:P532_TOURNAMENT_ID:&P500_TOURNAMENT_ID.'
       page: 532 # Wmg Tournament Sessions
       clear-cache: RP,532
       values: 
-        p532_tournament_id: '&P500_ID.'
+        p532_tournament_id: '&P500_TOURNAMENT_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: REGISTRATIONS ===============================
+  id: 24231699278737288
+  identification: 
+    button-name: REGISTRATIONS
+    label: Registrations
+
+  layout: 
+    sequence: 10
+    region: Signups # 24231430448737285
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-table-user
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42::'
+      page: 42 # Change Rooms
+      clear-cache: 42
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: ROOMS =======================================
+  id: 24231777839737289
+  identification: 
+    button-name: ROOMS
+    label: Rooms
+
+  layout: 
+    sequence: 5
+    region: Signups # 24231430448737285
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    icon: fa-table
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:40::'
+      page: 40 # Room Selections & Assignments
+      clear-cache: 40
 
     warn-on-unsaved-changes: Do Not Check
 
@@ -973,4 +1230,22 @@ dynamic-actions:
       event: Refresh Tournament on Edit # 56015644761880939727
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+computations: 
+- # ====== Computation: P500_TOURNAMENT_ID =====================
+  id: 13607036120876090
+  identification: 
+    item-name: P500_TOURNAMENT_ID
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select ID
+        from WMG_TOURNAMENTS
+        where CURRENT_FLAG = 'Y'
+      
 

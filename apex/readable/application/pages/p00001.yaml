@@ -20,6 +20,8 @@ navigation:
   warn-on-unsaved-changes: false
 
 css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
   inline: |
     .t-HeroRegion-icon {background-color: whitesmoke;}
     
@@ -47,7 +49,15 @@ css:
     
     .nextCourses {text-align: center;}
     .nextCourses .name {font-weight: 700; font-size: 1.1em;}
+    .nextCourses .info.TBD {display: none;}
     
+    #nextTournamentBrief .nextCourses .when {text-align: start;}
+    #nextTournamentBrief .nextCourses .who {text-align: center;}
+    #nextTournamentBrief .nextCourses .what {text-align: end;}
+    @media (max-width: 1024px) {
+     #nextTournamentBrief .nextCourses .when {text-align: center;}
+     #nextTournamentBrief .nextCourses .what {text-align: center;}
+    }
     
 
 security: 
@@ -72,6 +82,17 @@ advanced:
 server-cache: 
   caching: Disabled
 
+help: 
+  help-text: |
+    In order to register for the next tournament, follow these 4 easy steps.:<br>
+    <br>
+    1. <b>Register</b>: Select the best time for you. There are six possible timeslots, but be careful the times are in <a href="https://en.wikipedia.org/wiki/Coordinated_Universal_Time" target="_blank">UTC</a>.<br>
+    2. <b>Rooms</b>: This where you cam see the private room you'll play and with whom<br>
+    3. <b>Enter Scores</b>: After you're done playing you have two obligations: 1) Come to this page and submit your final scores. 2) One person from your room must post screenshots with a timestamp showing.<br>
+    4. <b>View Results</b>: See how you did and follow other players.<br>
+    <br>
+    
+
 regions: 
 - # ====== Region: {Next Tournament Info} ======================
   id: 665559002503481
@@ -84,7 +105,7 @@ regions:
     parent-region: '{col2}' # 3472525362873700
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -93,6 +114,7 @@ regions:
     template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
+    - margin-top-none
     render-components: Above Content
 
   accessibility: 
@@ -130,7 +152,8 @@ regions:
     new-column: true
     column-span: 7
     column-css-classes: 
-    - col-sm-12
+    - col-sm-7
+    - col-md-8
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
@@ -157,14 +180,11 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: Page Navigation =============================
-  id: 6008421907197091
+- # ====== Region: {col3} ======================================
+  id: 4916516804479619
   identification: 
-    title: Page Navigation
-    type: List
-
-  source: 
-    list: Page Navigation # 46986883504791703654
+    title: '{col3}'
+    type: Static Content
 
   layout: 
     sequence: 39
@@ -174,23 +194,89 @@ regions:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: 3
+    column-span: Automatic
     column-css-classes: 
-    - col-md-3
-    - hidden-sm-up
+    - col-sm-5
+    - col-md-6
+    - col-xs-12
 
   appearance: 
     template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
-    - margin-bottom-md
-    render-components: Below Content
+    render-components: Above Content
 
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
 
   advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Next Tournament Brief} =====================
+  id: 4916606800479620
+  identification: 
+    title: '{Next Tournament Brief}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select s.session_date
+           , nvl(ec.name, 'TBD -') easy_course
+           , nvl(hc.name, 'TBD -') hard_course
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
+           , case when ec.id is null then 'u-vh' else '' end tbd_class
+      from wmg_tournament_sessions_v s
+         , wmg_courses ec
+         , wmg_courses hc
+      where s.easy_course_id = ec.id (+)
+        and s.hard_course_id = hc.id (+)
+        and s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and session_date+1.2 > trunc(sysdate)
+      order by session_date
+      fetch first 1 rows only
+
+  layout: 
+    sequence: 5
+    parent-region: '{col2}' # 3472525362873700
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-bottom-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: nextTournamentBrief
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -201,21 +287,654 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
     appearance: 
-      list-template: Cards # 46986628863802702458
+      template-type: Theme
+      template: Standard # 46986618016296702453
       template-options: 
       - '#DEFAULT#'
-      - u-colors
-      - t-Cards--compact
-      - t-Cards--displayIcons
-      - t-Cards--stacked
-      - t-Cards--hideBody
-      - t-Cards--animColorFill
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
 
-- # ====== Region: Next Tournament =============================
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: SESSION_DATE ================================
+    id: 4916745334479621
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Session Date
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmMonth fmDD, YYYY
+
+    column-formatting: 
+      html-expression: |
+        <div class="row nextCourses">
+            <div class="col-4 when">Tournament: <b>#SESSION_DATE#</b></div>
+            <div class="col-3 who">Registered Players: <b>#PLAYERS#</b></div>
+            <div class="col-5 what">Courses: <b>#EASY_COURSE#</b> &amp; <b>#HARD_COURSE#</b></div>
+        </div>
+        
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 24230107440737272
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 24230226766737273
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 24230306514737274
+    identification: 
+      column-name: PLAYERS
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TBD_CLASS ===================================
+    id: 24230412018737275
+    identification: 
+      column-name: TBD_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Season Courses ==============================
+  id: 24230504967737276
+  identification: 
+    title: Season Courses
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with tournament_courses as (
+          select s.round_num
+               , s.week
+               , s.easy_course_code
+               , s.hard_course_code
+               , s.easy_course_id
+               , s.hard_course_id
+               , case when s.completed_ind = 'Y' then 'white_check_mark' else 'checkered_flag' end status
+               , s.session_date
+          from wmg_tournament_sessions_v s
+          where s.tournament_id in (
+              select id
+                from wmg_tournaments
+               where current_flag = 'Y'
+          )
+      )
+      , missing_easy as (
+      select round_num
+           , easy_course
+           , '' hard_course
+           , status
+           , order_by
+      from (
+      select to_number(null) round_num
+           , e.code easy_course
+           , tce.easy_course_code
+           , 'o' status
+           , 2 order_by
+      from wmg_courses e
+         , tournament_courses tce
+      where e.course_mode = 'E'
+        and e.code = tce.easy_course_code (+)
+      )
+      where easy_course_code is null
+      )
+      , missing_hard as (
+        select round_num
+             , '' easy_course
+             , hard_course
+             , status
+             , order_by
+        from (
+          select to_number(null) round_num
+               , h.code hard_course
+               , tch.hard_course_code
+               , 'o' status
+               , 2 order_by
+          from wmg_courses h
+             , tournament_courses tch
+          where h.course_mode = 'H'
+            and h.code = tch.hard_course_code (+)
+        )
+        where hard_course_code is null
+      )
+      select e.round_num
+           , '' url
+           , e.easy_course
+           , h.hard_course
+           , 'white_medium_square' status
+           , coalesce(e.order_by, h.order_by) order_by
+           , coalesce(e.easy_course, h.hard_course) course_order     
+      from missing_easy e
+      full outer join missing_hard h
+      on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
+      union all
+      select c.round_num
+           , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
+           , c.easy_course_code
+           , c.hard_course_code
+           , c.status
+           , 1 order_by
+           , coalesce(c.easy_course_code, c.hard_course_code)
+        from tournament_courses c
+      order by order_by, round_num,7
+      
+
+  layout: 
+    sequence: 10
+    parent-region: '{col3}' # 4916516804479619
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Enabled
+    cache-timeout: 12 hours
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 40
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: COURSE_ORDER ================================
+    id: 13608297307876103
+    identification: 
+      column-name: COURSE_ORDER
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_NUM ===================================
+    id: 24230641701737277
+    identification: 
+      column-name: ROUND_NUM
+      type: Plain Text
+
+    heading: 
+      heading: Round
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if URL/}
+        <a class="t-Button t-Button--icon t-Button--tiny t-Button--iconLeft" href="#URL#">
+          <span class="t-Icon fa fa-search" aria-hidden="true"></span>
+          <span class="t-Button-label">Round #ROUND_NUM#</span>
+        </a>
+        {else/}
+        #ROUND_NUM#
+        {endif/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 24230905693737280
+    identification: 
+      column-name: EASY_COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 24231011939737281
+    identification: 
+      column-name: HARD_COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: STATUS ======================================
+    id: 24231124372737282
+    identification: 
+      column-name: STATUS
+      type: Plain Text
+
+    heading: 
+      heading: Status
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="em em-#STATUS#" aria-role="presentation" aria-label="#STATUS#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ORDER_BY ====================================
+    id: 24231207967737283
+    identification: 
+      column-name: ORDER_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: URL =========================================
+    id: 24231356951737284
+    identification: 
+      column-name: URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {col1} ======================================
+  id: 27805216175823190
+  identification: 
+    title: '{col1}'
+    type: Static Content
+
+  layout: 
+    sequence: 1
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-12
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Player Profile Buttons} ====================
+  id: 27805332151823191
+  identification: 
+    title: '{Player Profile Buttons}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{col1}' # 27805216175823190
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-12
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--noPadding
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Player Profile} ============================
+  id: 49332604234854233
+  identification: 
+    title: '{Player Profile}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return wmg_discord.render_profile(p_player_id => :G_PLAYER_ID, p_mode => 'CORE');
+      
+    page-items-to-submit: 
+    - G_PLAYER_ID
+
+  layout: 
+    sequence: 10
+    parent-region: '{col1}' # 27805216175823190
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-12
+    - hidden-xs-down
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: profileRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
+- # ====== Region: About the next courses ======================
   id: 24735740413470583646
   identification: 
-    title: Next Tournament
+    title: About the next courses
     type: Classic Report
 
   source: 
@@ -229,7 +948,6 @@ regions:
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
            , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
-           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
            , case when ec.id is null then 'u-vh' else '' end tbd_class
       from wmg_tournament_sessions_v s
          , wmg_courses ec
@@ -241,12 +959,12 @@ regions:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and session_date+1.2 > sysdate
+      and session_date+1.2 > trunc(sysdate)
       order by session_date
       fetch first 1 rows only
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
@@ -300,6 +1018,11 @@ regions:
 
     performance: 
       lazy-loading: false
+
+    messages: 
+      when-no-data-found: |
+        - The next tournament courses have not been selected yet -<br>
+        Try again tomorrow...
 
     break-formatting: 
       break-columns: No Break
@@ -415,17 +1138,12 @@ regions:
 
     column-formatting: 
       html-expression: |
-        The next tournament session is on #SESSION_DATE#.<br>
-        <span class="u-vh">Registered Players: <b>#PLAYERS#</b><br></span>
-        <br>
-        The courses are:<br>
-        
         <div class="row nextCourses">
             <div class="col easy">
                 <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
                 <div class="score #TBD_CLASS#">Best Score #EASY_RECORD#</div>
                 <img class="courseIcon #TBD_CLASS#" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
-                <div class="info #TBD_CLASS#">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
+                <div class="info #EASY_RECORD# #TBD_CLASS#">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
             </div>
             <div class="col hard">
                 <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
@@ -495,21 +1213,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: PLAYERS =====================================
-    id: 40380888303300957201
-    identification: 
-      column-name: PLAYERS
-      type: Hidden Column
-
-    layout: 
-      sequence: 30
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: HARD_COURSE =================================
     id: 57207806103846896001
     identification: 
@@ -525,119 +1228,6 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: WMG Tournament ==============================
-  id: 46986695303177702576
-  identification: 
-    title: WMG Tournament
-    type: Static Content
-
-  layout: 
-    sequence: 10
-    parent-region: No Parent
-    position: REGION_POSITION_01
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Hero # 46986552355884702427
-    template-options: 
-    - '#DEFAULT#'
-    - t-HeroRegion--noPadding
-    - t-HeroRegion--headingFontAlt
-    - margin-top-sm
-    - margin-bottom-sm
-    - margin-left-sm
-    css-classes: 
-    - hidden-sm-down
-    render-components: Above Content
-
-  image: 
-    file-url: '#APP_FILES#img/26f3.svg'
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-side-condition: 
-    type: Never
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  comments: 
-    comments: |
-      //emoji-css.afeld.me/emoji.css
-      <i class="em em-golfer" aria-role="presentation" aria-label="Mini Golf"></i>
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: Page Navigation =============================
-  id: 46986885428768703655
-  identification: 
-    title: Page Navigation
-    type: List
-
-  source: 
-    list: Page Navigation # 46986883504791703654
-
-  layout: 
-    sequence: 9
-    parent-region: No Parent
-    position: BODY
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: 2
-    column-css-classes: 
-    - hidden-sm-down
-
-  appearance: 
-    template: Blank with Attributes # 46986519704134702414
-    template-options: 
-    - '#DEFAULT#'
-    - margin-bottom-md
-    render-components: Below Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    appearance: 
-      list-template: Cards # 46986628863802702458
-      template-options: 
-      - '#DEFAULT#'
-      - u-colors
-      - t-Cards--compact
-      - t-Cards--displayIcons
-      - t-Cards--stacked
-      - t-Cards--hideBody
-      - t-Cards--animColorFill
-
 - # ====== Region: Tournament Options ==========================
   id: 50429446025262004844
   identification: 
@@ -648,7 +1238,7 @@ regions:
     list: Tournament Options # 55884590206608414057
 
   layout: 
-    sequence: 30
+    sequence: 20
     parent-region: '{Next Tournament Info}' # 665559002503481
     position: BODY
     start-new-layout: false
@@ -673,9 +1263,6 @@ regions:
     static-id: optionsRegion
     region-display-selector: false
     exclude-title-from-translation: false
-
-  security: 
-    authorization-scheme: Beta Tester # 3554679108597518
 
   server-cache: 
     caching: Disabled
@@ -731,38 +1318,160 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
-- # ====== Button: BETA_TESTER =================================
-  id: 3472123747873696
+- # ====== Button: EDIT ========================================
+  id: 24234310769737314
   identification: 
-    button-name: BETA_TESTER
-    label: I'm a Tester
+    button-name: EDIT
+    label: Edit Profile
 
   layout: 
-    sequence: 40
-    region: '{Next Tournament Info}' # 665559002503481
-    position: BODY
+    sequence: 10
+    region: '{Player Profile Buttons}' # 27805332151823191
+    position: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--tiny
     - t-Button--iconLeft
-    icon: fa-users
+    - t-Button--stretch
+    icon: fa-user-edit
 
   behavior: 
-    action: Submit Page
-    execute-validations: true
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:&G_PLAYER_ID.'
+      page: 7 # Player
+      clear-cache: 7
+      values: 
+        p7_id: '&G_PLAYER_ID.'
+
     warn-on-unsaved-changes: Do Not Check
 
-  security: 
-    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 3554679108597518
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_PLAYER_ID
+
+- # ====== Button: BADGES ======================================
+  id: 27805104230823189
+  identification: 
+    button-name: BADGES
+    label: My Badges
+
+  layout: 
+    sequence: 20
+    region: '{Player Profile Buttons}' # 27805332151823191
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+    - t-Button--stretch
+    icon: fa-certificate
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID:&G_PLAYER_ID.'
+      page: 120 # Player Profile
+      clear-cache: 120
+      values: 
+        p120_player_id: '&G_PLAYER_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_PLAYER_ID
+
+- # ====== Button: SETUP_NEW ===================================
+  id: 27807958782823217
+  identification: 
+    button-name: SETUP_NEW
+    label: Setup
+
+  layout: 
+    sequence: 20
+    region: '{Player Profile Buttons}' # 27805332151823191
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    - t-Button--iconRight
+    - t-Button--hoverIconPush
+    icon: fa-user-plus
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:18:&SESSION.::&DEBUG.:18::'
+      page: 18 # Discord New Player
+      clear-cache: 18
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_PLAYER_ID
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh after close =================
+  id: 24234378956737315
+  identification: 
+    name: Refresh after close
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: EDIT # 24234310769737314
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 24234507703737316
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Player Profile}' # 49332604234854233
+
+    execution: 
+      sequence: 10
+      event: Refresh after close # 24234378956737315
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
 computations: 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
@@ -810,28 +1519,6 @@ computations:
         and tp.active_ind = 'Y'
 
 processes: 
-- # ====== Process: I'm a Tester ===============================
-  id: 3472231763873697
-  identification: 
-    name: I'm a Tester
-    type: Execute Code
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: ":G_BETA_TESTER_FLAG := 'Y';"
-
-  execution: 
-    sequence: 10
-    point: Processing
-    run-process: Once Per Page Visit (default)
-
-  error: 
-    display-location: Inline in Notification
-
-  server-side-condition: 
-    when-button-pressed: BETA_TESTER # 3472123747873696
-
 - # ====== Process: Init Courses ===============================
   id: 15526039077281949501
   identification: 
@@ -868,6 +1555,9 @@ processes:
     point: After Header
     run-process: Once Per Page Visit (default)
 
+  server-side-condition: 
+    type: Never
+
 branches: 
 - # ====== Branch: Go Match existing player to Discord account =
   id: 6007319317197080
@@ -892,8 +1582,8 @@ branches:
        l_players_tbl  wmg_util.tab_keyval_type;
       begin 
       
-          if :P1_DO_NOT_MATCH_FLAG = 'Y' then
-             -- player doesn't want to be matched
+          if :P1_DO_NOT_MATCH_FLAG = 'Y' or :G_PLAYER_ID is not null then
+             -- player doesn't want to be matched or it's already a player
              return false;
           end if;
       
@@ -909,6 +1599,44 @@ branches:
           else
              return l_players_tbl.count > 0;
           end if;
+      end;
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+- # ====== Branch: Go Create New player from Discord account ===
+  id: 24233136358737302
+  identification: 
+    name: Go Create New player from Discord account
+
+  execution: 
+    sequence: 20
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:18:&SESSION.::&DEBUG.:18::&success_msg=#SUCCESS_MSG#'
+      page: 18 # Discord New Player
+      clear-cache: 18
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      begin 
+      
+          if :G_PLAYER_ID is not null then 
+             return false;
+          elsif :G_DISCORD_ID is null then
+             -- not existing discord  account
+             return false;
+          elsif :P1_DO_NOT_MATCH_FLAG = 'Y' then
+             return false;
+          end if;
+      
+          -- This is a new player that needs to be setup
+          return true;
       end;
 
   security: 

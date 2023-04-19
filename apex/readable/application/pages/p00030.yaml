@@ -152,12 +152,26 @@ regions:
           order by s.session_date
           fetch first 1 rows only
       )
+      select selection
+           , slot
+           , t
+           , utc
+           , to_char(local_tz, 'fmDay, fmMonth fmDD') 
+            || ' at ' 
+            || case when tz like 'US/%' or tz like 'America%' then
+                 ltrim(to_char(local_tz, 'HH:MI PM'), '0')
+               else 
+                 to_char(local_tz, 'HH24:MI')
+               end local_tz
+      from (
       select APEX_ITEM.RADIOGROUP(
             p_idx              => 1
           , p_value            => slots.d
           , p_attributes       => 'class="slotOption" data-slot="' || slots.d || '"'
           , p_selected_value   => decode(slots.d, s.time_slot, slots.d, '')) selection
           , slots.d slot
+          , slots.t
+          , tz.tz
           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') at time zone tz.tz local_tz
       from ts s
@@ -165,7 +179,9 @@ regions:
          , slots
          , (select time_slot from wmg_tournament_players tp where tp.tournament_session_id = :G_CURRENT_SESSION_ID and tp.player_id = :P30_PLAYER_ID and tp.active_ind = 'Y') s
       where slots.d = s.time_slot (+)
-      order by slots.t
+      )
+      order by t
+      
     page-items-to-submit: 
     - P30_TZ
     - P30_PLAYER_ID
@@ -241,6 +257,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: T ===========================================
+    id: 4915460254479608
+    identification: 
+      column-name: T
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: UTC =========================================
     id: 57207806631705896006
     identification: 
@@ -272,12 +303,6 @@ regions:
 
     accessibility: 
       value-identifies-row: false
-
-    appearance: 
-      format-mask: fmDay, fmMonth fmDD HH24
-
-    column-formatting: 
-      html-expression: '#LOCAL_TZ#:00'
 
     sorting: 
       sortable: false
@@ -534,6 +559,36 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P30_DIFF_PLAYER_FLAG =====================
+  id: 4914161142479595
+  identification: 
+    name: P30_DIFF_PLAYER_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 65
+    region: Registration # 24735738743925583629
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P30_ACTIVE_IND ===========================
   id: 2316748762990093602
   identification: 
@@ -590,8 +645,11 @@ page-items:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: 2
+    column-span: 3
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
+    - col-xs-3
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -618,7 +676,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   help: 
-    help-text: Rember your Discord account with your current login.
+    help-text: Rember your Discord account and region time zone with your current login.
 
 - # ====== Page Item: P30_PAGE_ID_PREV =========================
   id: 24442383302420124349
@@ -679,6 +737,10 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-9
+    - col-xs-9
+    - col-md-7
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -859,7 +921,7 @@ buttons:
   layout: 
     sequence: 10
     region: '{Buttons}' # 52997261434694034405
-    position: NEXT
+    position: CHANGE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -906,6 +968,7 @@ buttons:
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--mobileHideLabel
     - t-Button--iconLeft
     icon: fa-chevron-left
 
@@ -939,7 +1002,8 @@ buttons:
     hot: true
     template-options: 
     - '#DEFAULT#'
-    - t-Button--iconLeft
+    - t-Button--mobileHideLabel
+    - t-Button--iconRight
     icon: fa-check
 
   behavior: 
@@ -989,6 +1053,105 @@ buttons:
     item: G_REGISTRATION_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Different Player ====================
+  id: 4914176853479596
+  identification: 
+    name: Different Player
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P30_PLAYER_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 4914294425479597
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select case when p.account_login = :APP_USER or p.discord_id = :G_DISCORD_ID then 'N' else 'Y' end diff_player_flag
+        from wmg_players p
+        where p.id = :P30_PLAYER_ID
+      items-to-submit: 
+      - P30_PLAYER_ID
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P30_DIFF_PLAYER_FLAG
+
+    execution: 
+      sequence: 10
+      event: Different Player # 4914176853479596
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+    security: 
+      authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  - # ====== Action: Set Value ===================================
+    id: 4914474533479598
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P30_REMEMBER_ME_IND
+
+    execution: 
+      sequence: 20
+      event: Different Player # 4914176853479596
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+    client-side-condition: 
+      type: Item = Value
+      item: P30_DIFF_PLAYER_FLAG
+      value: Y
+
+  - # ====== Action: Hide ========================================
+    id: 4914568677479599
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P30_REMEMBER_ME_IND
+
+    execution: 
+      sequence: 30
+      event: Different Player # 4914176853479596
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P30_DIFF_PLAYER_FLAG
+      value: Y
+
 - # ====== Dynamic Action: Hoist data-slot to row ==============
   id: 6008713769197094
   identification: 
@@ -1236,6 +1399,31 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+validations: 
+- # ====== Validation: Registrations are closed ================
+  id: 4915263754479606
+  identification: 
+    name: Registrations are closed
+
+  execution: 
+    sequence: 10
+
+  validation: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions
+      where id = :G_CURRENT_SESSION_ID
+        and rooms_defined_flag = 'Y'
+    always-execute: false
+
+  error: 
+    error-message: Sorry, registrations are now closed.
+    display-location: Inline with Field and in Notification
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55893512303411682019
+
 processes: 
 - # ====== Process: Remember Me ================================
   id: 2316749906108093614
@@ -1319,7 +1507,7 @@ processes:
                , :P30_REMEMBER_ME_IND
                , :P30_TZ
           from wmg_players p
-         where (p.account_login = :APP_USER
+         where (lower(p.account_login) = lower(:APP_USER)
              or p.discord_id = :G_DISCORD_ID
           )
           fetch first 1 rows only;
@@ -1399,6 +1587,25 @@ processes:
     display-location: Inline in Notification
 
 branches: 
+- # ====== Branch: Player Not Setup ============================
+  id: 27807825637823216
+  identification: 
+    name: Player Not Setup
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:31:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 31 # No Player Warning
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_PLAYER_ID
+
 - # ====== Branch: Go To Page 1 ================================
   id: 52997262146098034412
   identification: 

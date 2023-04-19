@@ -1,0 +1,601 @@
+---
+# ====== Page: Discord New Player ============================
+id: 18
+identification: 
+  name: Discord New Player
+  alias: DISCORD-NEW-PLAYER
+  title: Discord New Player
+
+appearance: 
+  page-mode: Normal
+  page-template: Login # 46986494461795702403
+  template-options: 
+  - '#DEFAULT#'
+  - t-LoginPage--split
+  - t-LoginPage--bg2
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+  inline: |
+    :root {
+    --ut-avp-label-width: 60%;
+    }
+    .t-PageBody--login {background-image: none!important;}
+    .t-Login-bg {
+        background-color: blue;
+    }
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: {Info} ======================================
+  id: 39378170688158954
+  identification: 
+    title: '{Info}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46986522566537702415
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--stickToBottom
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Welcome &G_DISCORD.! ========================
+  id: 51361921669677730
+  identification: 
+    title: Welcome &G_DISCORD.!
+    type: Static Content
+
+  source: 
+    html-code: Hey, let's finish setting up your account!
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Hero # 46986552355884702427
+    template-options: 
+    - '#DEFAULT#'
+    - t-HeroRegion--iconsCircle
+    - t-HeroRegion--headingFontAlt
+    render-components: Below Content
+
+  image: 
+    file-url: '&P18_AVATAR.'
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P18_MATCH_PLAYER_ID ======================
+  id: 24828238487823016
+  identification: 
+    name: P18_MATCH_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: Welcome &G_DISCORD.! # 51361921669677730
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P18_AVATAR ===============================
+  id: 24828652154823017
+  identification: 
+    name: P18_AVATAR
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: Welcome &G_DISCORD.! # 51361921669677730
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P18_COUNTRY_CODE =========================
+  id: 24835494910938272
+  identification: 
+    name: P18_COUNTRY_CODE
+    type: Popup LOV
+
+  label: 
+    label: Your Country
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: Welcome &G_DISCORD.! # 51361921669677730
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 5
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select d, r
+      from (
+      select 'England' d, 'england' r from dual union all
+      select 'Scotland' d, 'scotland' r from dual union all
+      select 'Wales' d, 'wales' r from dual union all
+      select formatted_name d, lower(iso) r
+      from country
+      )
+      order by 1
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: true
+    label-1: USA
+    value-1: us
+    label-2: Canada
+    value-2: ca
+    label-3: United Kingdom
+    value-3: gb
+    label-4: Spain
+    value-4: es
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~R.">' +
+              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
+                 '<span class="country-name">~D.</span>' +
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
+
+- # ====== Page Item: P18_TZ ===================================
+  id: 24840059264033802
+  identification: 
+    name: P18_TZ
+    type: Select List
+
+  label: 
+    label: Your Region
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 20
+    region: Welcome &G_DISCORD.! # 51361921669677730
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      with tz_regions as (
+      select sessiontimezone tz from dual union all
+      select 'UTC' tz from dual union all
+      select 'Asia/Dubai' tz from dual union all
+      select 'Australia/Sydney' tz from dual union all
+      select 'Australia/West' tz from dual union all
+      select 'Europe/London' tz from dual union all
+      select 'Europe/Berlin' tz from dual union all
+      select 'Europe/Madrid' tz from dual union all
+      select 'US/Central' tz from dual union all
+      select 'US/Michigan' tz from dual union all
+      select 'US/Eastern' tz from dual union all
+      select 'US/Arizona' tz from dual union all
+      select 'US/Pacific' tz from dual
+      )
+      select tz d, tz r
+      from tz_regions
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: SQL Query
+    sql-query: 'select sessiontimezone tz from dual '
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: SETUP =======================================
+  id: 24233274901737303
+  identification: 
+    button-name: SETUP
+    label: Set me up!
+
+  layout: 
+    sequence: 30
+    region: '{Info}' # 39378170688158954
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: SKIP ========================================
+  id: 24826624089822990
+  identification: 
+    button-name: SKIP
+    label: Skip for now
+
+  layout: 
+    sequence: 20
+    region: '{Info}' # 39378170688158954
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::P1_DO_NOT_MATCH_FLAG:Y'
+      page: 1 # Home
+      values: 
+        p1_do_not_match_flag: Y
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Match Player to Discord ID ==========
+  id: 24829418666823047
+  identification: 
+    name: Match Player to Discord ID
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P18_MATCH_PLAYER_ID
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Oops ========================================
+    id: 24829955786823050
+    identification: 
+      name: Oops
+      action: Alert
+
+    settings: 
+      title: Ooops
+      message: Looks like there's a different player assigned to your Discord user.
+      style: Danger
+      ok-label: Ok
+
+    execution: 
+      sequence: 40
+      event: Match Player to Discord ID # 24829418666823047
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P18_MATCH_PLAYER_ID
+      value: '-1'
+
+  - # ====== Action: Submit Page =================================
+    id: 24831909346823057
+    identification: 
+      action: Submit Page
+
+    settings: 
+      show-processing: true
+
+    execution: 
+      sequence: 60
+      event: Match Player to Discord ID # 24829418666823047
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+computations: 
+- # ====== Computation: P18_AVATAR =============================
+  id: 24829078326823044
+  identification: 
+    item-name: P18_AVATAR
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: 'return  wmg_discord.avatar(p_discord_id => :G_DISCORD_ID, p_avatar_uri => :G_DISCORD_AVATAR);'
+
+processes: 
+- # ====== Process: Setup New Player ===========================
+  id: 24233337629737304
+  identification: 
+    name: Setup New Player
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+      
+      if :P18_MATCH_PLAYER_ID is not null then
+         -- Update preferences
+         update wmg_players
+            set country_code =  :P18_COUNTRY_CODE
+              , prefered_tz  =  :P18_TZ
+          where id = :P18_MATCH_PLAYER_ID;
+      
+         :G_PLAYER_ID := :P18_MATCH_PLAYER_ID; 
+      
+      else
+      
+      insert into wmg_players (
+          discord_id
+        , discord_avatar
+        , discord_discriminator
+        , account_login
+        , account
+        , country_code
+        , prefered_tz
+      )
+      values (
+         :G_DISCORD_ID
+       , :G_DISCORD_AVATAR
+       , :G_DISCORD_DISCRIMINATOR
+       , :G_DISCORD || '  (discord)'
+       , :G_DISCORD
+       , :P18_COUNTRY_CODE
+       , :P18_TZ
+      )
+      returning id into :G_PLAYER_ID;
+      :P18_MATCH_PLAYER_ID := :G_PLAYER_ID;
+      
+      end if;
+      
+      
+      exception
+        when DUP_VAL_ON_INDEX then
+         -- Someone already has thay Discord ID
+      
+          :P18_MATCH_PLAYER_ID := -1;
+         -- WKSP_WMGT.WMG_PLAYERS_U03
+      end;
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: New player setup!
+
+  error: 
+    display-location: Inline in Notification
+
+branches: 
+- # ====== Branch: Go To Page 1 ================================
+  id: 24832464082823060
+  identification: 
+    name: Go To Page 1
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 1 # Home
+

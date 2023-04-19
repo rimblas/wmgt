@@ -40,6 +40,9 @@ css:
     }
     .t-Report-colHead {display: none;}
     
+    #timeLegend {outline: 1px solid red;}
+    #timeLegend table { width: 100%;}
+    .tzClass {padding-left: .4rem;}
 
 security: 
   authentication: Page Is Public
@@ -62,6 +65,30 @@ advanced:
 
 server-cache: 
   caching: Disabled
+
+help: 
+  help-text: |
+    The private room names will be/are <i>WMGT1</i>, <i>WMGT2</i>, etc... Rooms will be available 30 min before the 1st group is due to play.<br>
+    Find your room and join a few minutes before so you can start your round precisely on time.<br>
+    <br>
+    🚨 <b>VERY IMPORTANT</b> 🚨 <br>
+    <ol>
+        <li>Play the Easy Course round first</li>
+        <li>Take picture</li>
+        <li>Play the Hard Course round last</li>
+        <li>Submit your scores <i>(Posting of pictures is NOT submission of scores)</i></li>
+        <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
+    </ol>
+    <br>
+    Don't forget to go to <a href="https://discord.com/channels/752022800562389015/763542150877020190" target="_blank">#tournament-info</a> and find the link to submit your scores after you finish your rounds!<br>
+    <br>
+    <b>Make sure the timestamp is visible in your pictures</b>
+    (by clicking the 3 dots in the bottom right hand corner)<br>
+    <br>
+    AND<br>
+    <br>
+    If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> until you have <b>asked</b> if someone has taken a picture after the rounds.
+    
 
 regions: 
 - # ====== Region: About the rooms =============================
@@ -95,7 +122,7 @@ regions:
       
 
   layout: 
-    sequence: 89
+    sequence: 99
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -117,7 +144,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -130,6 +157,112 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: {slots.js} ==================================
+  id: 4913632877479590
+  identification: 
+    title: '{slots.js}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      declare 
+        t varchar2(4000);
+        tz varchar2(100);
+      begin
+      
+      with tz as (
+      select :P40_TZ tz from dual 
+      )
+      , slots_n as (
+          select level n
+           from dual
+           connect by level <= 6
+          )
+      , slots as (
+          select slot || ':00' d, slot t
+          from (
+              select lpad( (n-1)*4,2,0) slot
+              from slots_n
+          )
+      )
+      , ts as (
+          select s.session_date
+          from wmg_tournament_sessions s
+          where s.tournament_id in (
+              select id
+                from wmg_tournaments
+               where current_flag = 'Y'
+          )
+            and s.completed_ind = 'N'
+          order by s.session_date
+          fetch first 1 rows only
+      )
+      select json_arrayagg(
+             to_char(local_tz, 'fmDy, fmMonth fmDD') 
+            || ' ' 
+            || case when tz like 'US/%' or tz like 'America%' then
+                 ltrim(to_char(local_tz, 'HH:MI PM'), '0')
+               else 
+                 to_char(local_tz, 'HH24:MI')
+               end
+              )
+              , tz
+         into t, tz
+        from (
+          select s.session_date
+               , slots.d
+               , tz.tz
+               , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d) at time zone tz.tz local_tz
+          from ts s
+             , tz
+             , slots
+         );
+      
+      return '<script>var s = ' || nvl(t, '["","","","","",""]') || ', tz = "' || tz || '";</script>';
+      exception
+      when others then
+      return '<script>var s = ["","","","","",""], tz = "UTC";</script>';
+      end;
+      
+
+  layout: 
+    sequence: 119
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  comments: 
+    comments: generate a JS variable with the converted times so they can be added to each time slot.
+
+  attributes: 
+    performance: 
+      lazy-loading: false
 
 - # ====== Region: 00:00 =======================================
   id: 7048711940745770706
@@ -1223,15 +1356,17 @@ regions:
   id: 24442383184650124347
   identification: 
     title: '{legend}'
-    type: Static Content
+    type: Classic Report
 
   source: 
-    html-code: Remember all times are in UTC
+    location: Local Database
+    type: SQL Query
+    sql-query: "select 'The 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 times are in UTC. The times above the time slots are in ' || :P40_TZ legend from dual "
 
   layout: 
-    sequence: 89
+    sequence: 6
     parent-region: No Parent
-    position: REGION_POSITION_05
+    position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1242,6 +1377,9 @@ regions:
     template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
+    - margin-bottom-md
+    - margin-left-none
+    - margin-right-none
     render-components: Above Content
 
   accessibility: 
@@ -1249,6 +1387,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: timeLegend
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -1259,9 +1398,66 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Predefined
+      template: HTML (standard)
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: LEGEND ======================================
+    id: 4914069945479594
+    identification: 
+      column-name: LEGEND
+      type: Plain Text
+
+    heading: 
+      heading: Legend
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 - # ====== Region: {Regions} ===================================
   id: 40380889409532957212
@@ -1323,7 +1519,7 @@ regions:
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
-           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id) players
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
       from wmg_tournament_sessions_v s
          , wmg_courses ec
          , wmg_courses hc
@@ -1357,7 +1553,7 @@ regions:
     - '#DEFAULT#'
     - t-Alert--colorBG
     - t-Alert--horizontal
-    - t-Alert--defaultIcons
+    - t-Alert--noIcon
     - t-Alert--info
     render-components: Above Content
 
@@ -1510,8 +1706,7 @@ regions:
 
     column-formatting: 
       html-expression: |
-        The next tournament session is on #SESSION_DATE#.<br>
-        Registered Players: <b>#PLAYERS#</b><br>
+        The next tournament is on #SESSION_DATE#. Registered Players: <b>#PLAYERS#</b><br>
         <br>
         The courses are:<br>
         • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
@@ -1565,6 +1760,36 @@ page-items:
 
   comments: 
     comments: Set when a TD is viewing
+
+- # ====== Page Item: P40_TZ ===================================
+  id: 13608040568876100
+  identification: 
+    name: P40_TZ
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 20
+    region: '00:00' # 7048711940745770706
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
 buttons: 
 - # ====== Button: OPEN_ROOMS ==================================
@@ -1863,10 +2088,10 @@ buttons:
     authorization-scheme: Tournament Admin # 55893512303411682019
 
 dynamic-actions: 
-- # ====== Dynamic Action: Highlight Player ====================
+- # ====== Dynamic Action: Init Actions ========================
   id: 4007924469738096
   identification: 
-    name: Highlight Player
+    name: Init Actions
 
   execution: 
     sequence: 20
@@ -1878,17 +2103,52 @@ dynamic-actions:
     event-scope: Static
 
   actions: 
-  - # ====== Action: Execute JavaScript Code =====================
+  - # ====== Action: Highlight Player ============================
     id: 4008038280738097
     identification: 
+      name: Highlight Player
       action: Execute JavaScript Code
 
     settings: 
       code: $(".player").parents("tr").addClass("mark")
 
     execution: 
+      sequence: 20
+      event: Init Actions # 4007924469738096
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Add TZ Legend ===============================
+    id: 4913928598479593
+    identification: 
+      name: Add TZ Legend
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var out = apex.util.htmlBuilder();
+        
+        out.markup( "<span" )
+            .attr( "class", "tzClass hidden-xs-up" )
+            .markup( ">" )
+            .content( tz )
+            .markup( "</span>" );
+        
+        
+        $(".room").each(
+          function(i){
+            // console.log(i, s[i]);
+            $(this).prepend('<div class="u-tC">' + s[i] + out.toString() + '</div>');
+            var $t = $(this).find('.t-Region-title');
+            var t = $t.text();
+            //    console.log({t});
+            $t.text(t + " UTC");
+          }
+        );
+
+    execution: 
       sequence: 10
-      event: Highlight Player # 4007924469738096
+      event: Init Actions # 4007924469738096
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -1993,6 +2253,44 @@ computations:
       else
         return '';
       end if;
+
+- # ====== Computation: P40_TZ =================================
+  id: 13608175007876101
+  identification: 
+    item-name: P40_TZ
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: 'select nvl(prefered_tz, sessiontimezone) from wmg_players where discord_id = :G_DISCORD_ID'
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  comments: 
+    comments: The the prefered timezone for the user
+
+- # ====== Computation: P40_TZ =================================
+  id: 13608237373876102
+  identification: 
+    item-name: P40_TZ
+
+  execution: 
+    sequence: 20
+    point: Before Regions
+
+  computation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: sessiontimezone
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_DISCORD_ID
 
 - # ====== Computation: G_REGISTRATION_ID ======================
   id: 24442383444393124350

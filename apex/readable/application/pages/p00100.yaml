@@ -13,7 +13,14 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: false
+  override-user-interface-level: true
+  list: Tournament Options # 55884590206608414057
+  list-position: Top
+  list-template: Top Navigation Tabs # 46986647224831702467
+  template-options: 
+  - '#DEFAULT#'
+  - t-NavTabs--inlineLabels-lg
+  - t-NavTabs--displayLabels-sm
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -168,6 +175,7 @@ css:
     }
     
     
+    
 
 security: 
   authentication: Page Is Public
@@ -203,6 +211,286 @@ help:
     
 
 regions: 
+- # ====== Region: Badge Key ===================================
+  id: 13609175885876111
+  identification: 
+    title: Badge Key
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_BADGE_TYPES
+    include-rowid-column: false
+    where-clause: selectable_ind = 'Y'
+
+  order-by: 
+    type: Static Value
+    order-by-clause: DISPLAY_SEQ
+
+  layout: 
+    sequence: 10
+    parent-region: Top Players # 49305650009120776601
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noBorder
+    - js-headingLevel-3
+    - t-Region--scrollBody
+    - t-Form--slimPadding
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: badgeKey
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: '"BADGES_BY_STEVEN"'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 13609178839876112
+    identification: 
+      column-name: ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CODE ========================================
+    id: 13609332528876113
+    identification: 
+      column-name: CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 13609452294876114
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Badge
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="#ICON_CLASS#" title="#NAME#"></i> <b>#NAME#</b>: #DESCRIPTION#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISPLAY_SEQ =================================
+    id: 13609549713876115
+    identification: 
+      column-name: DISPLAY_SEQ
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 13609626127876116
+    identification: 
+      column-name: DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON_CLASS ==================================
+    id: 13609723896876117
+    identification: 
+      column-name: ICON_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACTIVE_IND ==================================
+    id: 13609805593876118
+    identification: 
+      column-name: ACTIVE_IND
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_ON ==================================
+    id: 13609958222876119
+    identification: 
+      column-name: CREATED_ON
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_BY ==================================
+    id: 13610025842876120
+    identification: 
+      column-name: CREATED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPDATED_ON ==================================
+    id: 13610103813876121
+    identification: 
+      column-name: UPDATED_ON
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPDATED_BY ==================================
+    id: 27803441313823172
+    identification: 
+      column-name: UPDATED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Hole Preview ================================
   id: 20752039964291361526
   identification: 
@@ -558,7 +846,16 @@ regions:
     exclude-title-from-translation: false
 
   server-cache: 
-    caching: Disabled
+    caching: Enabled
+    cache-timeout: 2 days
+    depends-on-item(s): 
+    - P100_WEEK
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.completed_ind = 'Y'
+      and s.week = :P100_WEEK
 
   customization: 
     customizable: Not Customizable By End Users
@@ -731,6 +1028,9 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Never
 
   security: 
     escape-special-characters: false
@@ -1087,25 +1387,44 @@ regions:
                , u.player_id, sum(case when par <= 0 then 1 else 0 end) under_par
                , sum(case when score = 1 then 1 else 0 end) hn1_count
             from wmg_rounds_unpivot_mv u
-           where u.week = :P100_WEEK
-           having sum(case when par <= 0 then 1 else 0 end) = 36
+               , wmg_tournament_sessions ts
+           where ts.week = u.week
+               and u.week = :P100_WEEK
+               and ts.completed_ind = 'N'
+           having sum(case when par <= 0 and score is not null then 1 else 0 end) = 36
            group by u.week, u.player_id
       )
       , cactus as (
-        select distinct players_id
-          from (
-          select u.h h, u.score, any_value( distinct u.player_id) players_id
-            from  wmg_rounds_unpivot_mv u
-           where u.week = :P100_WEEK
-             and u.score = 1
-          having count(*) = 1
-           group by u.h, u.score
-         )
+           select player_id, count(*) n
+            from (
+            select u.course_id || ':' || u.h h, u.score, any_value(u.player_id) player_id
+              from wmg_rounds_unpivot_mv u
+                 , wmg_tournament_sessions ts
+             where ts.week = u.week
+               and u.week = :P100_WEEK
+               and ts.completed_ind = 'N'
+               and u.score = 1
+            having count(*) = 1
+             group by u.course_id || ':' || u.h, u.score
+           )
+           group by player_id
+      )
+      , badges as (
+       select p.tournament_session_id, p.player_id
+              -- need to expand by the badge_count, because people can habe multiple-badges
+            , listagg( (select listagg(replace(b.icon_class, 'em em', 'em'), ' ') from dual connect by level <= p.badge_count) , ' ')  within group ( order by b.display_seq) other_badges
+        from wmg_player_badges p
+           , wmg_badge_types b
+        where p.badge_type_code = b.code
+          and p.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+          and b.selectable_ind = 'Y'
+        group by p.tournament_session_id, p.player_id
       )
       select r.*, rank() over (order by r.total_score) pos
            , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
-           , decode(coconut.under_par, 36, 'coconut', '') 
-          || decode(cactus.players_id, null, null, ' cactus') badges
+           , decode(coconut.under_par, 36, 'em-coconut' || decode(cactus.player_id, null, '', ' '), '')
+          || decode(cactus.player_id, null, null,  (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) )
+          || badges.other_badges badges
       from (
         select player_id, player_name, country_code, easy, hard
              , easy + hard total_score
@@ -1125,8 +1444,10 @@ regions:
       ) r
       , coconut
       , cactus
+      , badges
       where r.player_id = coconut.player_id (+)
-        and r.player_id = cactus.players_id (+)
+        and r.player_id = cactus.player_id (+)
+        and r.player_id = badges.player_id (+)
       order by pos, r.player_name
       fetch first 15 rows only
       
@@ -1232,7 +1553,7 @@ regions:
     column-formatting: 
       html-expression: |
         {loop " " BADGES/}
-        <i class="em em-&APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM."></i>
+        <i class="em &APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM."></i>
         {endloop/}
 
     sorting: 
@@ -1556,7 +1877,7 @@ regions:
       where rn = 1
       group by  result, total
       union all
-      select 'Zero Aces on Hard' result, '- Undisclosed -' who, count(*) total
+      select 'Players w/zero Aces on Hard' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
@@ -1568,7 +1889,7 @@ regions:
          where course_mode = 'H'
       )
       union all
-      select 'Zero Aces on Easy' result, '- Undisclosed -' who, count(*) total
+      select 'Players w/zero Aces on Easy' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
@@ -1618,7 +1939,16 @@ regions:
     exclude-title-from-translation: false
 
   server-cache: 
-    caching: Disabled
+    caching: Enabled
+    cache-timeout: 2 days
+    depends-on-item(s): 
+    - P100_WEEK
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.completed_ind = 'Y'
+      and s.week = :P100_WEEK
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2207,7 +2537,10 @@ regions:
 
   header-and-footer: 
     footer-text: |
-      <div class="legend"><span class="fa fa-comment-o" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole</div>
+      <div class="legend">
+      <span class="fa fa-image" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole
+      <span class="margin-left-lg"> Click on numbers to see players</span>
+      </div>
       
       <style>
       .hard.courseStats .t-Region-headerIcon {
@@ -3429,7 +3762,10 @@ regions:
 
   header-and-footer: 
     footer-text: |
-      <div class="legend"><span class="fa fa-comment-o" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole</div>
+      <div class="legend">
+      <span class="fa fa-image" aria-hidden="true" title="Preview Hole"></span> = Click to preview the hole
+      <span class="margin-left-lg"> Click on numbers to see players</span>
+      </div>
       
       <style>
       .easy.courseStats .t-Region-headerIcon {
@@ -4276,6 +4612,9 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  server-side-condition: 
+    type: Never
+
   security: 
     escape-special-characters: false
 
@@ -4606,6 +4945,11 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">* Scores calculated as strokes under par<br>
+      Note that values are inverted so the chart goes upward. ie a -5 is presented as a 5</div>
 
   security: 
     escape-special-characters: false
@@ -5002,6 +5346,9 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Never
 
   security: 
     escape-special-characters: false
@@ -5530,10 +5877,10 @@ regions:
       tick-label: 
         show: true
 
-- # ====== Region: Positions over time =========================
+- # ====== Region: Positions over time (scores relative to par) 
   id: 94935960575573333859
   identification: 
-    title: Positions over time
+    title: Positions over time (scores relative to par)
     type: Chart
 
   layout: 
@@ -5562,6 +5909,11 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">Scores calculated as strokes under par<br>
+      Note that values are inverted so the chart goes upward. ie a -5 is presented as a 5</div>
 
   security: 
     escape-special-characters: false
@@ -5973,6 +6325,36 @@ regions:
         show: true
 
 page-items: 
+- # ====== Page Item: P100_TOURNAMENT_SESSION_ID ===============
+  id: 27808206687823220
+  identification: 
+    name: P100_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: '{items}' # 47633176682467701309
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P100_PLAYER_ID ===========================
   id: 5007620760770972548
   identification: 
@@ -6053,7 +6435,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 100
+    sequence: 90
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6083,7 +6465,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 130
+    sequence: 120
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6143,7 +6525,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 120
+    sequence: 110
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6422,7 +6804,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 110
+    sequence: 100
     region: '{items}' # 47633176682467701309
     position: BODY
 
@@ -6469,7 +6851,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Positions over time # 94935960575573333859
+    region: Positions over time (scores relative to par) # 94935960575573333859
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -6527,7 +6909,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: Positions over time # 94935960575573333859
+    region: Positions over time (scores relative to par) # 94935960575573333859
     position: BODY
 
   advanced: 
@@ -6657,7 +7039,7 @@ buttons:
 
   layout: 
     sequence: 20
-    region: Positions over time # 94935960575573333859
+    region: Positions over time (scores relative to par) # 94935960575573333859
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -6790,7 +7172,7 @@ dynamic-actions:
 
     affected-elements: 
       selection-type: Region
-      region: Positions over time # 94935960575573333859
+      region: Positions over time (scores relative to par) # 94935960575573333859
 
     execution: 
       sequence: 20
@@ -7147,7 +7529,7 @@ dynamic-actions:
 
     affected-elements: 
       selection-type: Region
-      region: Positions over time # 94935960575573333859
+      region: Positions over time (scores relative to par) # 94935960575573333859
 
     execution: 
       sequence: 10
@@ -7245,7 +7627,7 @@ dynamic-actions:
 
     affected-elements: 
       selection-type: Region
-      region: Positions over time # 94935960575573333859
+      region: Positions over time (scores relative to par) # 94935960575573333859
 
     execution: 
       sequence: 20
@@ -7518,9 +7900,11 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
-      select s.easy_course_id
+      select s.tournament_session_id
+           , s.easy_course_id
            , s.hard_course_id 
-       into :P100_EASY_ID
+       into :P100_TOURNAMENT_SESSION_ID
+          , :P100_EASY_ID
           , :P100_HARD_ID
       from wmg_tournament_sessions_v s
       where s.week = :P100_WEEK;

@@ -50,6 +50,8 @@ javascript:
     
 
 css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
   inline: |
     @media (min-width: 640px) {
     #statsRegion  .container {
@@ -201,6 +203,57 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: {player profile} ============================
+  id: 13608951250876109
+  identification: 
+    title: '{player profile}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return wmg_discord.render_profile(
+          p_player_id => :P110_PLAYER_ID
+        , p_mode => 'MINI'
+       );
+    page-items-to-submit: 
+    - P110_PLAYER_ID
+
+  layout: 
+    sequence: 30
+    parent-region: '{Player Details}' # 4912721602479581
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: 9
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-md
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
 
 - # ====== Region: Hole Preview ================================
   id: 42125082501335925577
@@ -3690,7 +3743,7 @@ page-items:
     page-action-on-selection: None
 
   layout: 
-    sequence: 30
+    sequence: 40
     region: '{Player Details}' # 4912721602479581
     position: BODY
     alignment: Left
@@ -4276,6 +4329,21 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
+    id: 13609035697876110
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{player profile}' # 13608951250876109
+
+    execution: 
+      sequence: 20
+      event: Refresh on Change # 49305651562201776616
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
     id: 49305651629244776617
     identification: 
       action: Refresh
@@ -4300,7 +4368,7 @@ dynamic-actions:
       region: Easy Stats # 145264662457556461223
 
     execution: 
-      sequence: 20
+      sequence: 30
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -4315,7 +4383,7 @@ dynamic-actions:
       region: Hard Stats # 50429442663637004810
 
     execution: 
-      sequence: 30
+      sequence: 40
       event: Refresh on Change # 49305651562201776616
       fire-when-event-result-is: True
       fire-on-initialization: false

@@ -181,6 +181,65 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P525_RESET_RANKS_IND =====================
+  id: 27806207510823200
+  identification: 
+    name: P525_RESET_RANKS_IND
+    type: Switch
+
+  label: 
+    label: Reset Ranks ?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 90
+    region: Tournament Details # 56143590532243235911
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P525_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: Return all players to Amateur status
+
 - # ====== Page Item: P525_ID ==================================
   id: 56143590881303235912
   identification: 
@@ -585,7 +644,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 90
+    sequence: 100
     region: Tournament Details # 56143590532243235911
     position: BODY
     alignment: Left
@@ -622,6 +681,9 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  server-side-condition: 
+    type: Never
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -644,7 +706,7 @@ page-items:
     trim-spaces: Leading and Trailing
 
   layout: 
-    sequence: 100
+    sequence: 110
     region: Tournament Details # 56143590532243235911
     position: BODY
     alignment: Left
@@ -1048,6 +1110,37 @@ dynamic-actions:
       fire-on-initialization: false
 
 processes: 
+- # ====== Process: Reset All Players ==========================
+  id: 27806289427823201
+  identification: 
+    name: Reset All Players
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_players
+        set rank_code = 'NEW'
+      where rank_code != 'NEW';
+
+  execution: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: All platers reset
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: CREATE # 56143603925666235920
+    type: Item = Value
+    item: P525_RESET_RANKS_IND
+    value: Y
+
 - # ====== Process: Clear All Previous Current Flag ============
   id: 56015644998709939729
   identification: 
@@ -1117,7 +1210,7 @@ processes:
     type: Close Dialog
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 

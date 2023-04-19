@@ -148,37 +148,6 @@ regions:
         alias: 201322
 
   columns: 
-  - # ====== Column: TOURNAMENT_ID ===============================
-    id: 8210293006109910
-    identification: 
-      column-name: TOURNAMENT_ID
-      type: Hidden
-
-    settings: 
-      value-protected: true
-
-    layout: 
-      sequence: 30
-
-    accessibility: 
-      value-identifies-row: false
-
-    source: 
-      type: Database Column
-      database-column: TOURNAMENT_ID
-      data-type: NUMBER
-      query-only: true
-      primary-key: false
-
-    session-state: 
-      data-type: VARCHAR2
-
-    export-/-printing: 
-      include-in-export-/-print: false
-
-    enable-users-to: 
-      sort: false
-
   - # ====== Column: APEX$ROW_SELECTOR ===========================
     id: 11611651153472762
     identification: 
@@ -217,7 +186,7 @@ regions:
       based-on: Item Value
 
     layout: 
-      sequence: 50
+      sequence: 60
       column-alignment: start
       stretch: Use Report Setting
 
@@ -264,7 +233,7 @@ regions:
       based-on: Item Value
 
     layout: 
-      sequence: 60
+      sequence: 80
       column-alignment: start
       stretch: Use Report Setting
 
@@ -301,23 +270,35 @@ regions:
     id: 11629016554472828
     identification: 
       column-name: WEEK
-      type: Display Only
+      type: Popup LOV
 
     heading: 
       heading: Week
       alignment: start
 
     settings: 
-      format: Plain Text
-      based-on: Item Value
+      display-as: Inline Popup
+      initial-fetch: Automatic
+      multiple-values: false
+      manual-entry: false
+      search-as-you-type: false
 
     layout: 
-      sequence: 70
+      sequence: 90
       column-alignment: start
       stretch: Use Report Setting
 
     accessibility: 
       value-identifies-row: false
+
+    validation: 
+      value-required: true
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: WEEKS # 41195241672950310216
+      display-extra-values: true
+      display-null-value: true
 
     source: 
       type: Database Column
@@ -329,9 +310,6 @@ regions:
     default: 
       duplicate-copies-existing-value: true
 
-    session-state: 
-      data-type: VARCHAR2
-
     column-filter: 
       enabled: true
       performance-impacting-operators: 
@@ -340,7 +318,7 @@ regions:
       - Case Insensitive
       - Regular Expression
       text-case: Mixed
-      lov-type: Distinct Column
+      lov-type: Use List of Values
       exact-match: true
 
     export-/-printing: 
@@ -350,6 +328,12 @@ regions:
       sort: true
       control-break/aggregate: true
       hide: true
+
+    read-only: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':TOURNAMENT_PLAYER_ID is not null'
+      execute: Once
 
   - # ====== Column: TOURNAMENT_PLAYER_ID ========================
     id: 11638074431472847
@@ -397,7 +381,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: start
       stretch: Use Report Setting
 
@@ -405,7 +389,7 @@ regions:
       value-identifies-row: false
 
     validation: 
-      value-required: false
+      value-required: true
 
     list-of-values: 
       type: Shared Component
@@ -457,7 +441,7 @@ regions:
       virtual-keyboard: Numeric
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
       stretch: Use Report Setting
 
@@ -504,7 +488,7 @@ regions:
       virtual-keyboard: Numeric
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
       stretch: Use Report Setting
 
@@ -552,7 +536,7 @@ regions:
       on-label: Yes
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: start
       stretch: Use Report Setting
 
@@ -601,7 +585,7 @@ regions:
       value-protected: true
 
     layout: 
-      sequence: 80
+      sequence: 100
 
     accessibility: 
       value-identifies-row: false
@@ -629,16 +613,36 @@ regions:
     id: 11648043272472862
     identification: 
       column-name: PLAYER_ID
-      type: Hidden
+      type: Popup LOV
+
+    heading: 
+      heading: Player
+      alignment: start
 
     settings: 
-      value-protected: true
+      display-as: Inline Popup
+      initial-fetch: Automatic
+      multiple-values: false
+      manual-entry: false
+      search-as-you-type: true
+      minimum-characters: No minimum (0)
 
     layout: 
-      sequence: 90
+      sequence: 50
+      column-alignment: start
+      stretch: Use Report Setting
 
     accessibility: 
       value-identifies-row: false
+
+    validation: 
+      value-required: true
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: PLAYERS.ACCOUNT # 46986755001384703560
+      display-extra-values: true
+      display-null-value: true
 
     source: 
       type: Database Column
@@ -649,109 +653,6 @@ regions:
 
     default: 
       duplicate-copies-existing-value: true
-
-    session-state: 
-      data-type: VARCHAR2
-
-    export-/-printing: 
-      include-in-export-/-print: false
-
-    enable-users-to: 
-      sort: false
-
-  - # ====== Column: ACCOUNT =====================================
-    id: 11649004120472863
-    identification: 
-      column-name: ACCOUNT
-      type: Display Only
-
-    heading: 
-      heading: Player
-      alignment: start
-
-    settings: 
-      format: Plain Text
-      based-on: Item Value
-
-    layout: 
-      sequence: 110
-      column-alignment: start
-      stretch: Use Report Setting
-
-    accessibility: 
-      value-identifies-row: false
-
-    source: 
-      type: Database Column
-      database-column: ACCOUNT
-      data-type: VARCHAR2
-      query-only: false
-      primary-key: false
-
-    default: 
-      duplicate-copies-existing-value: true
-
-    session-state: 
-      data-type: VARCHAR2
-
-    column-filter: 
-      enabled: true
-      performance-impacting-operators: 
-      - Contains
-      - Starts With
-      - Case Insensitive
-      - Regular Expression
-      text-case: Mixed
-      lov-type: Distinct Column
-      exact-match: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    enable-users-to: 
-      sort: true
-      control-break/aggregate: true
-      hide: true
-
-  - # ====== Column: COUNTRY_CODE ================================
-    id: 11650073335472865
-    identification: 
-      column-name: COUNTRY_CODE
-      type: Display Only
-
-    heading: 
-      heading: Country
-      alignment: start
-
-    settings: 
-      format: Plain Text
-      based-on: Item Value
-
-    layout: 
-      sequence: 100
-      column-alignment: start
-      stretch: Use Report Setting
-
-    accessibility: 
-      value-identifies-row: false
-
-    list-of-values: 
-      type: Shared Component
-      list-of-values: COUNTRY # 2799727923811973
-      display-extra-values: true
-
-    source: 
-      type: Database Column
-      database-column: COUNTRY_CODE
-      data-type: VARCHAR2
-      query-only: false
-      primary-key: false
-
-    default: 
-      duplicate-copies-existing-value: true
-
-    session-state: 
-      data-type: VARCHAR2
 
     column-filter: 
       enabled: true
@@ -765,12 +666,18 @@ regions:
       exact-match: true
 
     export-/-printing: 
-      include-in-export-/-print: true
+      include-in-export-/-print: false
 
     enable-users-to: 
       sort: true
       control-break/aggregate: true
       hide: true
+
+    read-only: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':TOURNAMENT_PLAYER_ID is not null'
+      execute: For Each Row
 
   printing: 
     page: 
@@ -855,6 +762,26 @@ processes:
     pl/sql-code-to-insert/update/delete: |
       begin
           case :APEX$ROW_STATUS
+          when 'C' then
+            insert into wmg_tournament_players(
+                tournament_session_id
+                , player_id
+                , time_slot
+                , room_no
+                , points
+                , discarded_points_flag
+                , active_ind
+              )
+            select ts.id
+                 , :PLAYER_ID
+                 , :TIME_SLOT
+                 , :ROOM_NO
+                 , :POINTS
+                 , case when :DISCARDED_POINTS_FLAG = 'Y' then 'Y' else '' end
+                 , 'Y'
+              from wmg_tournament_sessions ts
+             where ts.week = :WEEK;
+      
           when 'U' then
             update wmg_tournament_players
               set points = :POINTS

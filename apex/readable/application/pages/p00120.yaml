@@ -1,16 +1,17 @@
 ---
-# ====== Page: Player Highlights =============================
+# ====== Page: Player Profile ================================
 id: 120
 identification: 
-  name: Player Highlights
-  alias: PLAYER-HIGHLIGHTS
-  title: Player Highlights
+  name: Player Profile
+  alias: PLAYER-PROFILE
+  title: Player Profile
 
 appearance: 
   page-mode: Modal Dialog
   dialog-template: Theme Default
   template-options: 
   - '#DEFAULT#'
+  - ui-dialog--stretch
 
 dialog: 
   chained: true
@@ -21,6 +22,28 @@ navigation-menu:
 navigation: 
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
+
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+  inline: |
+    .flag { font-size: 3em;}
+    .question {
+     cursor: help;
+     position: relative;
+    }
+    .question .fa {
+         opacity: .4;
+        top: -3px;
+        font-size: 1em;
+    }
+    
+    .t-ContextualInfo-label {
+        display: none;
+    }
+    .t-ContextualInfo-item:nth-child(odd) {
+        border-bottom: 1px solid;
+    }
 
 security: 
   authentication: Page Is Public
@@ -45,32 +68,36 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: WIP =========================================
-  id: 7607572105066889
+- # ====== Region: {Profile} ===================================
+  id: 13608743053876107
   identification: 
-    title: WIP
-    type: Static Content
+    title: '{Profile}'
+    type: Dynamic Content
 
   source: 
-    html-code: This page is Work In Progresss
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return wmg_discord.render_profile(p_player_id => :P120_PLAYER_ID, p_spacing => 'FULL');
+      
+    page-items-to-submit: 
+    - P120_PLAYER_ID
 
   layout: 
-    sequence: 20
-    parent-region: No Parent
+    sequence: 30
+    parent-region: '{Player Details}' # 21086038243222322
     position: BODY
     start-new-layout: false
     start-new-row: true
-    column: 4
+    column: Automatic
     new-column: true
-    column-span: 7
+    column-span: 3
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Standard # 46986580184360702438
     template-options: 
     - '#DEFAULT#'
-    - t-Alert--horizontal
-    - t-Alert--defaultIcons
-    - t-Alert--info
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
     render-components: Above Content
 
   accessibility: 
@@ -78,7 +105,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -88,9 +115,8 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
+    performance: 
+      lazy-loading: false
 
 - # ====== Region: {Player Details} ============================
   id: 21086038243222322
@@ -133,58 +159,460 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-page-items: 
-- # ====== Page Item: P120_WEEK ================================
-  id: 7652986567930848
+- # ====== Region: Badges & Achivements ========================
+  id: 27805436440823192
   identification: 
-    name: P120_WEEK
-    type: Display Only
-
-  label: 
-    label: Week
-    alignment: Left
-
-  settings: 
-    format: Plain Text
-    based-on: Item Value
-    show-line-breaks: true
-    send-on-page-submit: true
-
-  layout: 
-    sequence: 10
-    region: '{Player Details}' # 21086038243222322
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: 2
-    label-column-span: Page Template Default
-    column-css-classes: 
-    - col-xs-4
-
-  appearance: 
-    template: Optional - Floating # 46986650580145702469
-    template-options: 
-    - '#DEFAULT#'
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
+    title: Badges & Achivements
+    type: Classic Report
 
   source: 
-    type: Null
-    used: Only when current value in session state is null
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with player as (
+       select b.code, listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
+        from wmg_player_badges p
+           , wmg_badge_types b
+        where b.code = p.badge_type_code 
+          and (:P120_TOURNAMENT_ID is null 
+            or p.tournament_session_id in (
+                  select id
+                  from wmg_tournament_sessions
+                  where tournament_id = :P120_TOURNAMENT_ID
+            )
+          )
+          and p.player_id (+) = :P120_PLAYER_ID
+        group by b.code
+      )
+      select b.name
+           , b.icon_class
+           , b.description
+           , player.all_badges
+        from wmg_badge_types b
+           , player
+       where b.active_ind = 'Y'
+         and b.code = player.code (+)
+      order by b.display_seq
+      
+    page-items-to-submit: 
+    - P120_PLAYER_ID
+    - P120_TOURNAMENT_ID
 
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
+  layout: 
+    sequence: 40
+    parent-region: '{Player Details}' # 21086038243222322
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
 
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--noBorder
+    - js-headingLevel-3
+    - t-Region--scrollBody
+    - t-Form--slimPadding
+    render-components: Above Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: '"BADGES_BY_STEVEN"'
+
+  server-side-condition: 
+    type: Never
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Contextual Info # 46986613809310702452
+      template-options: 
+      - '#DEFAULT#'
+      - t-ContextualInfo-item--stacked
+      show-null-values-as: ' - '
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No stats or no badges -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: NAME ========================================
+    id: 27805516560823193
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Badge
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span class="question" title="#DESCRIPTION#">
+          <i class="#ICON_CLASS#" title="#NAME#"></i> <b>#NAME#</b>:<span>
+          <span aria-hidden="true" class="fa fa-question-circle-o">
+        </span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 27805592091823194
+    identification: 
+      column-name: DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON_CLASS ==================================
+    id: 27805681547823195
+    identification: 
+      column-name: ICON_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALL_BADGES ==================================
+    id: 27805841066823196
+    identification: 
+      column-name: ALL_BADGES
+      type: Plain Text
+
+    heading: 
+      heading: All Badges
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {loop " " ALL_BADGES/}
+        <i class="em &APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM."></i>
+        {endloop/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Badges & Achivements ========================
+  id: 87078720345978472
+  identification: 
+    title: Badges & Achivements
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with player as (
+       select b.code, listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
+        from wmg_player_badges p
+           , wmg_badge_types b
+        where b.code = p.badge_type_code 
+          and (:P120_TOURNAMENT_ID is null 
+            or p.tournament_session_id in (
+                  select id
+                  from wmg_tournament_sessions
+                  where tournament_id = :P120_TOURNAMENT_ID
+            )
+          )
+          and p.player_id (+) = :P120_PLAYER_ID
+        group by b.code
+      )
+      select b.name
+           , b.icon_class
+           , b.description
+           , player.all_badges
+        from wmg_badge_types b
+           , player
+       where b.active_ind = 'Y'
+         and b.code = player.code (+)
+      order by b.display_seq
+      
+    page-items-to-submit: 
+    - P120_PLAYER_ID
+    - P120_TOURNAMENT_ID
+
+  layout: 
+    sequence: 30
+    parent-region: '{Player Details}' # 21086038243222322
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--noBorder
+    - js-headingLevel-3
+    - t-Region--scrollBody
+    - t-Form--slimPadding
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: playerBadges
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: '"BADGES_BY_STEVEN"'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No stats or no badges -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ALL_BADGES ==================================
+    id: 27804663565823184
+    identification: 
+      column-name: ALL_BADGES
+      type: Plain Text
+
+    heading: 
+      heading: All Badges
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {loop " " ALL_BADGES/}
+        <i class="em &APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM."></i>
+        {endloop/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 28611437048567436
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Badge
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span class="question" title="#DESCRIPTION#">
+          <i class="#ICON_CLASS#" title="#NAME#"></i> <b>#NAME#</b>:<span>
+          <span aria-hidden="true" class="fa fa-question-circle-o">
+        </span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 28612206029567437
+    identification: 
+      column-name: DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON_CLASS ==================================
+    id: 28612610949567438
+    identification: 
+      column-name: ICON_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
 - # ====== Page Item: P120_PLAYER_ID ===========================
   id: 7653397017930850
   identification: 
@@ -250,6 +678,71 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P120_TOURNAMENT_ID =======================
+  id: 27804786346823186
+  identification: 
+    name: P120_TOURNAMENT_ID
+    type: Select List
+
+  label: 
+    label: Tournament Season
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 10
+    region: Badges & Achivements # 87078720345978472
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select name, id
+      from wmg_tournaments
+      where active_ind = 'Y'
+      order by prefix_tournament desc
+      
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- All Seasons -'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh on Change ===================
   id: 7691023929930952
@@ -268,4 +761,69 @@ dynamic-actions:
   execution: 
     event-scope: Static
     type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 13608838507876108
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Profile}' # 13608743053876107
+
+    execution: 
+      sequence: 10
+      event: Refresh on Change # 7691023929930952
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 27804681738823185
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Badges & Achivements # 87078720345978472
+
+    execution: 
+      sequence: 20
+      event: Refresh on Change # 7691023929930952
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: On Tournament Change ================
+  id: 27804877650823187
+  identification: 
+    name: On Tournament Change
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P120_TOURNAMENT_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 27805024101823188
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Badges & Achivements # 87078720345978472
+
+    execution: 
+      sequence: 10
+      event: On Tournament Change # 27804877650823187
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 

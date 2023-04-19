@@ -41,6 +41,20 @@ javascript:
 css: 
   inline: |
     .override {outline: 2px solid red;}
+    
+    .incorrectScoreCheck,
+    .correctScoreCheck {
+        bottom: 0px;
+        position: absolute;
+        right: 0;
+    }
+    .correctScoreCheck {
+        color: green;
+    }
+    .incorrectScoreCheck {
+        color: orange;
+    }
+    
     #P9_SCORE_CONTAINER span.a-Form-error {
         position: absolute;
         top: -14px;
@@ -77,15 +91,15 @@ css:
         display: flex;
     }
     
-    .roundScores .t-Form-labelContainer {
-    text-align:center;
-    }
+    .roundScores .t-Form-labelContainer {text-align:center;}
     .number_field,
-    #P9_SCORE_DISPLAY {
+    #P9_SCORE_DISPLAY,
+    #P9_FINAL_SCORE_DISPLAY {
         font-family: Menlo,Consolas,monospace;
         padding: 4px;
     }
-    #P9_SCORE_DISPLAY {
+    #P9_SCORE_DISPLAY,
+    #P9_FINAL_SCORE_DISPLAY {
         min-width: 40px;
         display: block;
         text-align: center;
@@ -120,7 +134,8 @@ css:
           font-family: Menlo,Consolas,monospace;
           padding: 3px;
         }
-        #P9_SCORE_DISPLAY {
+        #P9_SCORE_DISPLAY,
+        #P9_FINAL_SCORE_DISPLAY {
           min-width: 30px;
         }
     
@@ -128,7 +143,6 @@ css:
     
     .subButtonsRegion {
       display: flex;
-      flex-flow: row-reverse;
     }
     
     .removeQueue {cursor: pointer;}
@@ -818,7 +832,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <div class="removeQueue" data-id="#ID#"><span aria-hidden="true" class="fa fa-trash-o"></span></div>
+      html-expression: <div class="removeQueue" data-id="#ID#" title="Remove Scorecard"><span aria-hidden="true" class="fa fa-trash-o"></span></div>
 
     sorting: 
       sortable: false
@@ -1393,7 +1407,7 @@ page-items:
     type: Hidden
 
   settings: 
-    value-protected: true
+    value-protected: false
 
   layout: 
     sequence: 120
@@ -1606,6 +1620,66 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P9_FINAL_SCORE ===========================
+  id: 24232262142737293
+  identification: 
+    name: P9_FINAL_SCORE
+    type: Display Only
+
+  label: 
+    label: Submission
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 30
+    region: '{Buttons}' # 3474654454873721
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 1
+
+  appearance: 
+    template: Optional # 46986650382572702469
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - score"
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46986753890975703559
+    column: FINAL_SCORE
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P9_H =====================================
   id: 24442381683789124332
   identification: 
@@ -1804,9 +1878,16 @@ page-items:
 
   list-of-values: 
     type: Shared Component
-    list-of-values: PLAYERS.ACCOUNT # 46986755001384703560
+    list-of-values: PLAYERS_WITH_QUEUE # 20405369195140563
     display-extra-values: true
     display-null-value: true
+
+  cascading-list-of-values: 
+    parent-item(s): 
+    - P9_WEEK
+    items-to-submit: 
+    - P9_WEEK
+    parent-required: false
 
   advanced: 
     post-text-: <span class="fa fa-warning fa-2x dupEntry" aria-hidden="true"></span>
@@ -3087,7 +3168,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 240
+    sequence: 250
     region: '{back9scores}' # 4007173026738088
     position: BODY
     alignment: Left
@@ -3110,7 +3191,10 @@ page-items:
     - 'css:'
     - "{'override':"
     - overrideOn()}"
-    post-text-: '<span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOn()">Override in place</span>'
+    post-text-: |
+      <span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOn()">Override in place</span>
+      <span class="correctScoreCheck" data-bind="visible: submissionMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
+      <span class="incorrectScoreCheck" data-bind="visible: scoreError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -4391,12 +4475,13 @@ buttons:
   layout: 
     sequence: 10
     region: '{Buttons}' # 3474654454873721
-    position: NEXT
+    position: BODY
     start-new-layout: false
     start-new-row: true
-    column: Automatic
+    column: 9
     new-column: true
     column-span: Automatic
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
@@ -4737,7 +4822,7 @@ dynamic-actions:
     jquery-selector: .removeQueue
 
   execution: 
-    event-scope: Static
+    event-scope: Dynamic
     type: Immediate
 
   actions: 
@@ -4999,19 +5084,25 @@ dynamic-actions:
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
         declare
-         r number;
+         r wmg_rounds.id%type;
+         s1 wmg_rounds.s1%type;
         begin
           if  :P9_PLAYERS_ID is null or :P9_WEEK is null then
             :P9_DUP_IND := 'N';
           else
-            select 1
-              into r
+            select id, s1
+              into r, s1
               from wmg_rounds
              where week = :P9_WEEK
                and course_id = :P9_COURSE_ID
                and players_id = :P9_PLAYERS_ID;
         
+            if s1 is not null then
               :P9_DUP_IND := 'Y';
+            else
+              :P9_DUP_IND := 'R';
+              :P9_PREV_ID := r;
+            end if;
           end if;
         exception
         when NO_DATA_FOUND then
@@ -5025,6 +5116,7 @@ dynamic-actions:
       - P9_COURSE_ID
       items-to-return: 
       - P9_DUP_IND
+      - P9_PREV_ID
       suppress-change-event: false
 
     execution: 
@@ -5063,6 +5155,30 @@ dynamic-actions:
     item: P9_ID
 
   actions: 
+  - # ====== Action: Reload Previous =============================
+    id: 24231912994737290
+    identification: 
+      name: Reload Previous
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: RELOAD
+      show-processing: true
+
+    execution: 
+      sequence: 10
+      event: Show Dup Alert # 50429445574151004839
+      fire-when-event-result-is: False
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P9_DUP_IND
+      value: R
+
+    comments: 
+      comments: Score submission happened, reload page
+
   - # ====== Action: Hide ========================================
     id: 50429445645363004840
     identification: 
@@ -5102,10 +5218,15 @@ dynamic-actions:
       jquery-selector: .dupEntry
 
     execution: 
-      sequence: 10
+      sequence: 20
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: False
       fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P9_DUP_IND
+      value: Y
 
   - # ====== Action: Execute JavaScript Code =====================
     id: 50429445943471004843
@@ -5125,10 +5246,15 @@ dynamic-actions:
         ]);
 
     execution: 
-      sequence: 20
+      sequence: 30
       event: Show Dup Alert # 50429445574151004839
       fire-when-event-result-is: False
       fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P9_DUP_IND
+      value: Y
 
 - # ====== Dynamic Action: Week Changes ========================
   id: 56015646112744939741
@@ -5513,6 +5639,28 @@ processes:
     value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_OVERRIDE
 
 branches: 
+- # ====== Branch: Reload Previous Entry =======================
+  id: 24232000005737291
+  identification: 
+    name: Reload Previous Entry
+
+  execution: 
+    sequence: 10
+    point: After Submit
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_ID:&P9_PREV_ID.&success_msg=#SUCCESS_MSG#'
+      page: 9 # Round
+      clear-cache: 9
+      values: 
+        p9_id: '&P9_PREV_ID.'
+
+  server-side-condition: 
+    type: Request = Value
+    value: RELOAD
+
 - # ====== Branch: Add Again ===================================
   id: 47620377244975971450
   identification: 

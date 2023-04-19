@@ -1,4 +1,30 @@
 ---
+- # ====== List: Badge Menu Popup ==============================
+  id: 27824744768109354
+  identification: 
+    name: Badge Menu Popup
+    type: SQL Query
+
+  source: 
+    sql-query: |
+      select 1 lvl
+           , name label
+           , 'javascript:badgeMenuAction(''' || code || ''', this)' target
+           , 'YES' is_current
+           , icon_class image
+           , '' image_attrib
+           , name image_alt
+           , code a01
+           , 'false' a02
+           , 'false' a03
+           , name a04
+           , code a05
+           , '' a06
+      from wmg_badge_types
+      where system_calculated_ind = 'N'
+      order by display_seq
+      
+
 - # ====== List: Navigation Menu ===============================
   id: 46986483541938702397
   identification: 
@@ -16,7 +42,7 @@
 
     layout: 
       sequence: 30
-      parent-entry: Courses # 46986695981453702577
+      parent-entry: Session Analysis # 47467919900503140559
 
     is-current: 
       type: Pages
@@ -44,7 +70,7 @@
 
     layout: 
       sequence: 130
-      parent-entry: Verify Results # 3476501624882960
+      parent-entry: Tournament Admin # 55988036878080205005
 
     is-current: 
       type: Pages
@@ -75,6 +101,7 @@
 
     layout: 
       sequence: 140
+      parent-entry: Tournament Admin # 55988036878080205005
 
     is-current: 
       type: Pages
@@ -83,7 +110,7 @@
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:75:&APP_SESSION.::&DEBUG.:::'
+        url: 'f?p=&APP_ID.:75:&SESSION.::&DEBUG.::::'
         page: 75 # Verify Results
 
     click-counting: 
@@ -95,16 +122,165 @@
     security: 
       authorization-scheme: Contribution Rights # 46986682878463702496
 
-  - # ====== Entry: Home =========================================
+  - # ====== Entry: Registration =================================
+    id: 25404441732719564
+    label: 
+      label: Registration
+
+    icon: 
+      image/icon-css-classes: fa-number-1
+
+    layout: 
+      sequence: 10
+      parent-entry: Tournament # 46986694444635702575
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.::::'
+        page: 30 # Registration
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ":G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is null) and wmg_util.rooms_set(:G_CURRENT_SESSION_ID) = 'N'"
+
+  - # ====== Entry: Rooms ========================================
+    id: 25405562098730178
+    label: 
+      label: Rooms
+
+    icon: 
+      image/icon-css-classes: fa-number-2
+
+    layout: 
+      sequence: 13
+      parent-entry: Tournament # 46986694444635702575
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.::::'
+        page: 40 # Room Selections & Assignments
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Enter Scores =================================
+    id: 25406535462753507
+    label: 
+      label: Enter Scores
+
+    icon: 
+      image/icon-css-classes: fa-number-3
+
+    layout: 
+      sequence: 14
+      parent-entry: Tournament # 46986694444635702575
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:::'
+        page: 50 # Enter Rounds
+        clear-cache: 50
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+  - # ====== Entry: Registrations Closed =========================
+    id: 25407178149767964
+    label: 
+      label: Registrations Closed
+
+    icon: 
+      image/icon-css-classes: fa-number-1
+
+    layout: 
+      sequence: 11
+      parent-entry: Tournament # 46986694444635702575
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:32:&SESSION.::&DEBUG.::::'
+        page: 32 # Registrations Closed
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions 
+        where id = :G_CURRENT_SESSION_ID
+          and rooms_defined_flag = 'Y'
+
+  - # ====== Entry: No Registrations =============================
+    id: 25451062940098172
+    label: 
+      label: No Registrations
+
+    icon: 
+      image/icon-css-classes: fa-number-1 fam-sleep fam-is-disabled
+
+    layout: 
+      sequence: 12
+      parent-entry: Tournament # 46986694444635702575
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::::'
+        page: 1 # Home
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: ':G_CURRENT_SESSION_ID is null'
+
+  - # ====== Entry: Tournament ===================================
     id: 46986694444635702575
     label: 
-      label: Home
+      label: Tournament
 
     icon: 
       image/icon-css-classes: fa-home
 
     layout: 
-      sequence: 10
+      sequence: 1
 
     is-current: 
       type: Target Page
@@ -180,7 +356,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 50
+      sequence: 40
 
     is-current: 
       type: Target Page
@@ -205,7 +381,7 @@
       image/icon-css-classes: fa-table
 
     layout: 
-      sequence: 40
+      sequence: 50
 
     is-current: 
       type: Target Page
@@ -258,7 +434,7 @@
       image/icon-css-classes: fa-dashboard
 
     layout: 
-      sequence: 15
+      sequence: 16
 
     is-current: 
       type: Pages
@@ -344,10 +520,11 @@
       label: View Results
 
     icon: 
-      image/icon-css-classes: fa-line-chart
+      image/icon-css-classes: fa-number-3
 
     layout: 
-      sequence: 12
+      sequence: 16
+      parent-entry: Tournament # 46986694444635702575
 
     is-current: 
       type: Pages
@@ -372,29 +549,38 @@
     type: Static Values
 
   entries: 
-  - # ====== Entry: Install App ==================================
-    id: 46987057724511704323
+  - # ====== Entry: Preferences ==================================
+    id: 24846340259244161
     label: 
-      label: Install App
+      label: Preferences
 
     icon: 
-      image/icon-css-classes: fa-cloud-download
+      image/icon-css-classes: fa-gear
 
     layout: 
-      sequence: 10
+      sequence: 85
+      parent-entry: '&APP_USER.' # 46987060007706704324
 
     is-current: 
-      type: Never
+      type: Target Page
 
     link: 
-      target: '#action$a-pwa-install'
+      target: 
+        url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:&G_PLAYER_ID.:'
+        page: 7 # Player
+        clear-cache: 7
+        values: 
+          p7_id: '&G_PLAYER_ID.'
 
     click-counting: 
       count-clicks: false
 
     user-defined-attributes: 
       translatable: false
-      2.: a-pwaInstall
+
+    server-side-condition: 
+      type: Item is NOT NULL
+      item: G_PLAYER_ID
 
   - # ====== Entry: Feedback =====================================
     id: 46987058184619704323
@@ -426,9 +612,7 @@
       2.: icon-only
 
     server-side-condition: 
-      type: Expression
-      language: PL/SQL
-      pl/sql-expression: apex_util.feedback_enabled
+      type: User is Authenticated (not public)
 
     configuration: 
       build-option: 'Feature: Feedback' # 46986680133641702495
@@ -1227,7 +1411,7 @@
       image/icon-css-classes: fa-dashboard
 
     layout: 
-      sequence: 60
+      sequence: 55
 
     is-current: 
       type: Target Page
@@ -1398,15 +1582,16 @@
       image/icon-css-classes: fa-list
 
     layout: 
-      sequence: 55
+      sequence: 60
 
     is-current: 
       type: Target Page
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::::'
+        url: 'f?p=&APP_ID.:20:&SESSION.::&DEBUG.:20:::'
         page: 20 # About/Rules
+        clear-cache: 20
 
     click-counting: 
       count-clicks: false

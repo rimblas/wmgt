@@ -25,15 +25,17 @@ navigation:
 css: 
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
-  inline: 'li .em { margin-right: 5px; }'
+  inline: |
+    li .em { margin-right: 5px; }
+    .avatar {
+        background-size: cover;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+    }
 
 security: 
-  authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
+  authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -50,6 +52,102 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Discord =====================================
+  id: 4914771394479601
+  identification: 
+    title: Discord
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Player # 46986741552156703258
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: <img class="avatar" src="&P7_AVATAR_URL.">
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P7_ID
+
+  security: 
+    authorization-scheme: Contribution Rights # 46986682878463702496
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {select country} ============================
+  id: 24232634485737297
+  identification: 
+    title: '{select country}'
+    type: Static Content
+
+  source: 
+    html-code: <span class="t-Icon fa fa-arrow-down-alt fa-anim-vertical-shake" aria-hidden="true"></span><span class="t-Button-label">Select your country</span>
+
+  layout: 
+    sequence: 60
+    parent-region: Player # 46986741552156703258
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Player ======================================
   id: 46986741552156703258
   identification: 
@@ -162,7 +260,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 50
+    sequence: 90
     region: Player # 46986741552156703258
     position: BODY
     alignment: Left
@@ -224,7 +322,7 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 40
+    sequence: 70
     region: Player # 46986741552156703258
     position: BODY
     alignment: Left
@@ -304,6 +402,371 @@ page-items:
           return options;
       }
 
+- # ====== Page Item: P7_DISCORD_ID ============================
+  id: 4914672023479600
+  identification: 
+    name: P7_DISCORD_ID
+    type: Text Field
+
+  label: 
+    label: Discord ID
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 60
+    region: Discord # 4914771394479601
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 4
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: DISCORD_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_DISCRIMINATOR =========================
+  id: 4914868528479602
+  identification: 
+    name: P7_DISCRIMINATOR
+    type: Text Field
+
+  label: 
+    label: Discriminator
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 70
+    region: Discord # 4914771394479601
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 10
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: DISCORD_DISCRIMINATOR
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_AVATAR ================================
+  id: 4914962646479603
+  identification: 
+    name: P7_AVATAR
+    type: Text Field
+
+  label: 
+    label: Avatar
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 80
+    region: Discord # 4914771394479601
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 62
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: DISCORD_AVATAR
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_AVATAR_URL ============================
+  id: 4915071409479604
+  identification: 
+    name: P7_AVATAR_URL
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 90
+    region: Discord # 4914771394479601
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_RANK_CODE =============================
+  id: 24233732413737308
+  identification: 
+    name: P7_RANK_CODE
+    type: Radio Group
+
+  label: 
+    label: Rank
+    alignment: Left
+
+  settings: 
+    number-of-columns: 3
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 30
+    region: Player # 46986741552156703258
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: 8
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--radioButtonGroup
+    - t-Form-fieldContainer--boldDisplay
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select name, code
+      from wmg_ranks
+      order by display_seq
+    display-extra-values: true
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: RANK_CODE
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: Static
+    static-value: NEW
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  security: 
+    authorization-scheme: Contribution Rights # 46986682878463702496
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P7_PREFERED_TZ ===========================
+  id: 25004934361812590
+  identification: 
+    name: P7_PREFERED_TZ
+    type: Select List
+
+  label: 
+    label: Time Zone Preference
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 80
+    region: Player # 46986741552156703258
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      with tz_regions as (
+      select sessiontimezone tz from dual union all
+      select 'UTC' tz from dual union all
+      select 'Asia/Dubai' tz from dual union all
+      select 'Australia/Sydney' tz from dual union all
+      select 'Australia/West' tz from dual union all
+      select 'Europe/London' tz from dual union all
+      select 'Europe/Berlin' tz from dual union all
+      select 'Europe/Madrid' tz from dual union all
+      select 'US/Central' tz from dual union all
+      select 'US/Michigan' tz from dual union all
+      select 'US/Eastern' tz from dual union all
+      select 'US/Arizona' tz from dual union all
+      select 'US/Pacific' tz from dual
+      )
+      select tz d, tz r
+      from tz_regions
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46986741552156703258
+    column: PREFERED_TZ
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: SQL Query
+    sql-query: 'select sessiontimezone tz from dual '
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P7_ID ====================================
   id: 46986741830980703259
   identification: 
@@ -367,13 +830,13 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46986650580145702469
+    template: Required - Floating # 46986651846996702470
     template-options: 
     - '#DEFAULT#'
     width: 32
 
   validation: 
-    value-required: false
+    value-required: true
     maximum-length: 128
 
   advanced: 
@@ -392,6 +855,11 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  read-only: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P7_ID is not null and not apex_authorization.is_authorized (p_authorization_name => 'Tournament Admin' )"
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -404,7 +872,7 @@ page-items:
     type: Text Field
 
   label: 
-    label: Name
+    label: Discord Nickname
     alignment: Left
 
   settings: 
@@ -415,7 +883,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 30
+    sequence: 40
     region: Player # 46986741552156703258
     position: BODY
     alignment: Left
@@ -452,10 +920,21 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: |
+      apex_authorization.is_authorized (p_authorization_name => 'Tournament Admin' )
+      or apex_authorization.is_authorized('Administration Rights')
+      or :G_DISCORD_ID = :P7_DISCORD_ID
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: Only set if you use a nickname for the WMG Discord server.
 
 - # ====== Page Item: P7_REGISTRATION_FLAG =====================
   id: 56015645930685939739
@@ -467,7 +946,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 60
+    sequence: 100
     region: Player # 46986741552156703258
     position: BODY
 
@@ -572,10 +1051,12 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text with Icon # 46986653123744702471
     hot: true
     template-options: 
     - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-check
 
   behavior: 
     action: Submit Page
@@ -622,6 +1103,113 @@ buttons:
     item: P7_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Init New Player =====================
+  id: 24232310021737294
+  identification: 
+    name: Init New Player
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+        i number;
+      begin
+          if :P7_ID is null and :G_DISCORD_ID is not null then
+            select 1
+              into i
+              from wmg_players
+             where discord_id = :G_DISCORD_ID;
+        
+            return false;
+      
+          else
+            return false;
+          end if;
+      
+      exception
+      when NO_DATA_FOUND then
+        return true;
+      end;
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 24232463673737295
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      value: '&G_DISCORD.'
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P7_ACCOUNT
+
+    execution: 
+      sequence: 10
+      event: Init New Player # 24232310021737294
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Show ========================================
+    id: 24232731074737298
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: '{select country}' # 24232634485737297
+
+    execution: 
+      sequence: 20
+      event: Init New Player # 24232310021737294
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: New =================================
+  id: 24232906041737300
+  identification: 
+    name: New
+
+  execution: 
+    sequence: 5
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Hide ========================================
+    id: 24232776733737299
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: '{select country}' # 24232634485737297
+
+    execution: 
+      sequence: 10
+      event: New # 24232906041737300
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 46986744427290703260
   identification: 
@@ -651,51 +1239,20 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Match Name ==========================
-  id: 47348558705439808515
+computations: 
+- # ====== Computation: P7_AVATAR_URL ==========================
+  id: 4915174560479605
   identification: 
-    name: Match Name
+    item-name: P7_AVATAR_URL
 
   execution: 
-    sequence: 20
+    sequence: 10
+    point: Before Regions
 
-  when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
-    selection-type: Item(s)
-    item(s): 
-    - P7_ACCOUNT
-
-  execution: 
-    event-scope: Static
-    type: Immediate
-
-  actions: 
-  - # ====== Action: Set Value ===================================
-    id: 47348558875961808516
-    identification: 
-      action: Set Value
-
-    settings: 
-      set-type: JavaScript Expression
-      javascript-expression: $v("P7_ACCOUNT")
-      suppress-change-event: false
-
-    affected-elements: 
-      selection-type: Item(s)
-      item(s): 
-      - P7_NAME
-
-    execution: 
-      sequence: 10
-      event: Match Name # 47348558705439808515
-      fire-when-event-result-is: True
-      fire-on-initialization: true
-      stop-execution-on-error: true
-      wait-for-result: true
-
-    client-side-condition: 
-      type: Item is null
-      item: P7_NAME
+  computation: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: 'return wmg_discord.avatar(p_discord_id => :P7_DISCORD_ID, p_avatar_uri => :P7_AVATAR);'
 
 processes: 
 - # ====== Process: Initialize form Player =====================

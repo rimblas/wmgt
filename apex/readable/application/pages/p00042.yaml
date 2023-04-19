@@ -142,12 +142,49 @@ regions:
     detail-view: 
       show: false
 
+    advanced: 
+      initialization-javascript-function: |
+        function(config) {
+            var $ = apex.jQuery,
+                toolbarData = $.apex.interactiveGrid.copyDefaultToolbar(),
+                lastToolbarGroup = toolbarData[toolbarData.length - 1],
+                createButton = {
+                    type: "BUTTON",
+                    hot: true,
+                    action: "add-registration"
+                };
+            lastToolbarGroup.controls.push( createButton );
+            config.toolbarData = toolbarData;
+            
+            // this is how actions are added
+            config.initActions = function(actions) {
+                actions.add({
+                    name: "add-registration",
+                    // you could define the label directly as English text
+                    // label: "Create"
+                    // But better to use a message so it can be translated. In shared
+                    // components, text messages create MY_CREATE_BUTTON = Create and 
+                    // set Used in JavaScript: Yes
+                    label: "Add New Registration",
+                    // this sets the action to be what the hidden button does when you click it
+                    action: $("#ADD_REGISTRATION").prop("onclick")            
+                });
+            }
+            return config;
+        }
+
     saved-reports: 
     - # ====== Saved Report: Primary Report ========================
       id: 40402767893315158333
       identification: 
         name: Primary Report
         alias: 404027679
+
+    - # ====== Saved Report: Registration Log ======================
+      id: 40435898985526996172
+      identification: 
+        name: Registration Log
+        alias: 331311
 
   columns: 
   - # ====== Column: TOURNAMENT_SESSION_ID =======================
@@ -262,11 +299,11 @@ regions:
 
     heading: 
       heading: Time Slot
-      alignment: start
+      alignment: center
 
     layout: 
       sequence: 180
-      column-alignment: start
+      column-alignment: center
       stretch: Use Report Setting
 
     accessibility: 
@@ -326,7 +363,7 @@ regions:
 
     layout: 
       sequence: 190
-      column-alignment: start
+      column-alignment: center
       stretch: Use Report Setting
 
     accessibility: 
@@ -365,7 +402,7 @@ regions:
 
     heading: 
       heading: Active?
-      alignment: start
+      alignment: center
 
     settings: 
       use-defaults: true
@@ -484,7 +521,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: center
       stretch: Use Report Setting
 
@@ -532,7 +569,7 @@ regions:
       text-case: NO CHANGE
 
     layout: 
-      sequence: 220
+      sequence: 210
       column-alignment: start
       stretch: Use Report Setting
 
@@ -591,7 +628,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: center
       stretch: Use Report Setting
 
@@ -639,7 +676,7 @@ regions:
       text-case: NO CHANGE
 
     layout: 
-      sequence: 240
+      sequence: 230
       column-alignment: start
       stretch: Use Report Setting
 
@@ -775,6 +812,7 @@ page-items:
       
     display-extra-values: true
     display-null-value: true
+    null-display-value: '- All -'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -793,6 +831,47 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: ADD_NEW =====================================
+  id: 4915279202479607
+  identification: 
+    button-name: ADD_NEW
+    label: Add New Registration
+
+  layout: 
+    sequence: 20
+    region: Change Rooms # 40402766921915158332
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:30::'
+      page: 30 # Registration
+      clear-cache: 30
+
+    warn-on-unsaved-changes: Do Not Check
+
+  advanced: 
+    static-id: ADD_REGISTRATION
+    custom-attributes: 
+    - 'style="display:none;"'
+
+  comments: 
+    comments: Visually Hidden and called by IG Create button
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Report ======================

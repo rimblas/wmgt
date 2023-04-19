@@ -1,5 +1,8 @@
 function roundTotal() {
   var self = this;
+
+  self.score = ko.observable(0);
+
   self.s1 = ko.observable(0);
   self.s2 = ko.observable(0);
   self.s3 = ko.observable(0);
@@ -55,7 +58,29 @@ function roundTotal() {
            wmgt.convert.to_number(self.s18())
            ) - wmgt.convert.to_number(self.par());
   }, self);
+
+  // without an P9_ID we do not have a row
+  self.submissionMatches = ko.computed(function() {
+    if (!!self.scoreOverride() || self.s18().length == 0 || self.score().length == 0 || $v("P9_ID").length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.score()) === wmgt.convert.to_number(self.total());
+    }
+  }, self);
+
+  // without an P9_ID we do not have a row
+  self.scoreError = ko.computed(function() {
+    if (!!self.scoreOverride() || self.s18().length == 0 || self.score().length == 0 || $v("P9_ID").length == 0) {
+        return false;
+    }
+    else {
+        return wmgt.convert.to_number(self.score()) != wmgt.convert.to_number(self.total());
+    }
+  }, self);
+
 }
+
 
 // view hole preview
 function viewH(el) {

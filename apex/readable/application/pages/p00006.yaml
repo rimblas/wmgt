@@ -24,15 +24,15 @@ css:
   - //emoji-css.afeld.me/emoji.css
   inline: |
     li .em { margin-right: 5px; }
+    [headers~="DISCORD_PROFILE"],
     [headers~="COUNTRY_CODE"] {width: 90px;}
+    
+    td[headers~="RANK"] {
+        transform: scale(.8);
+    }
 
 security: 
-  authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
+  authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -69,10 +69,33 @@ regions:
 
   source: 
     location: Local Database
-    type: Table / View
-    table-owner: Parsing Schema
-    table-name: WMG_PLAYERS
-    include-rowid-column: false
+    type: SQL Query
+    sql-query: |
+      select ID,
+             player_name,
+             ACCOUNT,
+             NAME,
+             rank_code,
+             rank_name,
+             rank_list_class,
+             rank_profile_class,
+             ACCOUNT_LOGIN,
+             PREFERED_TZ,
+             COUNTRY_CODE,
+             country,
+             CREATED_ON,
+             CREATED_BY,
+             UPDATED_ON,
+             UPDATED_BY,
+             DISCORD_ID,
+             DISCORD_AVATAR,
+             DISCORD_DISCRIMINATOR
+           , case when discord_id is not null then
+              '<a href="discord://discordapp.com/users/' || p.discord_id || '/">'
+              || '<img class="avatar md" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
+              || '</a>' 
+             else '' end discord_profile
+        from WMG_PLAYERS_V p
 
   layout: 
     sequence: 10
@@ -188,7 +211,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 13
+        sequence: 60
         column-alignment: start
 
       accessibility: 
@@ -220,14 +243,14 @@ regions:
         type: Plain Text
 
       heading: 
-        heading: Prefered Tz
+        heading: Prefered TZ
         alignment: center
 
       single-row-view: 
         use-column-heading: true
 
       layout: 
-        sequence: 23
+        sequence: 70
         column-alignment: start
 
       accessibility: 
@@ -266,14 +289,14 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 33
+        sequence: 80
         column-alignment: center
 
       accessibility: 
         value-identifies-row: false
 
       column-formatting: 
-        html-expression: <i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="#COUNTRY_CODE# Flag"></i>
+        html-expression: <i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="#COUNTRY_CODE# Flag" title="#COUNTRY#"></i>
 
       column-filter: 
         type: Default Based on Column Type
@@ -310,7 +333,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 73
+        sequence: 120
         column-alignment: center
 
       accessibility: 
@@ -350,7 +373,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 83
+        sequence: 130
         column-alignment: start
 
       accessibility: 
@@ -389,7 +412,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 93
+        sequence: 140
         column-alignment: center
 
       accessibility: 
@@ -429,7 +452,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 103
+        sequence: 150
         column-alignment: start
 
       accessibility: 
@@ -468,8 +491,8 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 43
-        column-alignment: end
+        sequence: 90
+        column-alignment: start
 
       accessibility: 
         value-identifies-row: false
@@ -507,7 +530,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 63
+        sequence: 110
         column-alignment: start
 
       accessibility: 
@@ -532,6 +555,330 @@ regions:
         authorization-scheme: Administration Rights # 46986682652284702496
         escape-special-characters: true
 
+    - # ====== Column: DISCORD_AVATAR ==============================
+      id: 13608564954876105
+      identification: 
+        column-name: DISCORD_AVATAR
+        type: Plain Text
+
+      heading: 
+        heading: Discord Avatar
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 100
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        authorization-scheme: Administration Rights # 46986682652284702496
+        escape-special-characters: true
+
+    - # ====== Column: DISCORD_PROFILE =============================
+      id: 13608651458876106
+      identification: 
+        column-name: DISCORD_PROFILE
+        type: Plain Text
+
+      heading: 
+        heading: Avatar
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 10
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      advanced: 
+        static-id: DISCORD_PROFILE
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: false
+
+    - # ====== Column: PLAYER_NAME =================================
+      id: 24233872100737309
+      identification: 
+        column-name: PLAYER_NAME
+        type: Link
+
+      heading: 
+        heading: Player
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 20
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      link: 
+        target: 
+          url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID:#ID#'
+          page: 120 # Player Profile
+          clear-cache: 120
+          values: 
+            p120_player_id: '#ID#'
+
+        link-text: '#PLAYER_NAME#'
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RANK_CODE ===================================
+      id: 24233952613737310
+      identification: 
+        column-name: RANK_CODE
+        type: Plain Text
+
+      heading: 
+        heading: Rank Code
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 160
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RANK_NAME ===================================
+      id: 24233992397737311
+      identification: 
+        column-name: RANK_NAME
+        type: Plain Text
+
+      heading: 
+        heading: Rank
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 170
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-formatting: 
+        html-expression: '<div class="#RANK_PROFILE_CLASS# #RANK_LIST_CLASS#">#RANK_NAME#</div>'
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      advanced: 
+        static-id: RANK
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RANK_LIST_CLASS =============================
+      id: 24234148381737312
+      identification: 
+        column-name: RANK_LIST_CLASS
+        type: Plain Text
+
+      heading: 
+        heading: Rank List Class
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 180
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: COUNTRY =====================================
+      id: 24234194637737313
+      identification: 
+        column-name: COUNTRY
+        type: Plain Text
+
+      heading: 
+        heading: Country
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 200
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RANK_PROFILE_CLASS ==========================
+      id: 24234642967737317
+      identification: 
+        column-name: RANK_PROFILE_CLASS
+        type: Plain Text
+
+      heading: 
+        heading: Rank Profile Class
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 190
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
     - # ====== Column: ID ==========================================
       id: 46986748831482703264
       identification: 
@@ -551,7 +898,7 @@ regions:
       id: 46986749216274703264
       identification: 
         column-name: ACCOUNT
-        type: Link
+        type: Plain Text
 
       heading: 
         heading: Account
@@ -561,21 +908,11 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 2
+        sequence: 30
         column-alignment: start
 
       accessibility: 
         value-identifies-row: false
-
-      link: 
-        target: 
-          url: 'f?p=&APP_ID.:8:&SESSION.::&DEBUG.:RR,8:P8_PID:#ID#'
-          page: 8 # Rounds
-          clear-cache: RR,8
-          values: 
-            p8_pid: '#ID#'
-
-        link-text: '#ACCOUNT#'
 
       column-filter: 
         type: Default Based on Column Type
@@ -602,14 +939,14 @@ regions:
         type: Plain Text
 
       heading: 
-        heading: Name
+        heading: Discord Nickname
         alignment: start
 
       single-row-view: 
         use-column-heading: true
 
       layout: 
-        sequence: 3
+        sequence: 50
         column-alignment: start
 
       accessibility: 
@@ -631,6 +968,7 @@ regions:
         pivot: true
 
       security: 
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     printing: 

@@ -1097,7 +1097,7 @@ regions:
     - P50_HARD_COURSE_ID
 
   layout: 
-    sequence: 70
+    sequence: 80
     parent-region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
     start-new-layout: false
@@ -1757,7 +1757,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 80
+    sequence: 90
     region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
     alignment: Left
@@ -1819,7 +1819,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 90
+    sequence: 100
     region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
     alignment: Left
@@ -1873,7 +1873,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 60
+    sequence: 70
     region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
 
@@ -1907,6 +1907,36 @@ page-items:
 
   layout: 
     sequence: 70
+    region: '{Player & Round Details}' # 40817362897326412003
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_UPDATE_SCORES_FLAG ===================
+  id: 13607379354876094
+  identification: 
+    name: P50_UPDATE_SCORES_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 80
     region: '{Player & Round Details}' # 40817362897326412003
     position: BODY
 
@@ -6747,8 +6777,8 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 20
-    region: '{Hard Course Strokes}' # 157280432707918967157
+    sequence: 60
+    region: '&P50_HARD_COURSE.' # 47577408860194657322
     position: BODY
 
   advanced: 
@@ -7219,6 +7249,107 @@ dynamic-actions:
       stop-execution-on-error: true
       wait-for-result: true
 
+- # ====== Dynamic Action: Updating Records ====================
+  id: 13607149883876091
+  identification: 
+    name: Updating Records
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P50_PLAYERS_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 13607211310876092
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: RELOAD
+      show-processing: true
+
+    execution: 
+      sequence: 30
+      event: Updating Records # 13607149883876091
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P50_UPDATE_SCORES_FLAG
+      value: Y
+
+  - # ====== Action: Set Value ===================================
+    id: 13607375773876093
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select 'Y'
+        from wmg_rounds
+        where week = :P50_WEEK
+          and players_id = :P50_PLAYERS_ID
+        fetch first 1 rows only
+      items-to-submit: 
+      - P50_WEEK
+      - P50_PLAYERS_ID
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P50_UPDATE_SCORES_FLAG
+
+    execution: 
+      sequence: 10
+      event: Updating Records # 13607149883876091
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Set Mandatory items =========================
+    id: 13607651445876096
+    identification: 
+      name: Set Mandatory items
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      value: 0
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P50_EASY_COURSE_FINAL_SCORE
+      - P50_HARD_COURSE_FINAL_SCORE
+
+    execution: 
+      sequence: 20
+      event: Updating Records # 13607149883876091
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+    client-side-condition: 
+      type: Item = Value
+      item: P50_UPDATE_SCORES_FLAG
+      value: Y
+
 - # ====== Dynamic Action: Init Player LOV =====================
   id: 18806434163525512245
   identification: 
@@ -7559,6 +7690,18 @@ processes:
     type: Request is contained in Value
     value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
 
+  comments: 
+    comments: |
+      if :P50_H_ID is null then
+         if :REQUEST in ('SAVE','DELETE','APPLY_CHANGES_RESULT') then
+           return false;  -- no hard row, do nothing
+         end if;
+      elsif :REQUEST in ('CREATE','CREATE_AGAIN') then
+         return true;
+      end if;
+      -- fail safe
+      return false;
+
 - # ====== Process: Sync Week and Player for Hard Course =======
   id: 42089618695700907108
   identification: 
@@ -7628,7 +7771,7 @@ branches:
     name: Ask For Scorecards
 
   execution: 
-    sequence: 10
+    sequence: 20
     point: After Processing
 
   behavior: 
@@ -7651,7 +7794,7 @@ branches:
     name: View Results
 
   execution: 
-    sequence: 20
+    sequence: 30
     point: After Processing
 
   behavior: 
@@ -7682,6 +7825,27 @@ branches:
     type: Item is NULL
     item: G_CURRENT_SESSION_ID
 
-  security: 
-    authorization-scheme: Beta Tester # 3554679108597518
+- # ====== Branch: Edit Scores =================================
+  id: 13607476995876095
+  identification: 
+    name: Edit Scores
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:P50_PLAYERS_ID,P50_H_PLAYER_ID,P50_ENTER_SCORECARD_FLAG:&P50_PLAYERS_ID.,&P50_PLAYERS_ID.,Y'
+      page: 50 # Enter Rounds
+      clear-cache: 50
+      values: 
+        p50_players_id: '&P50_PLAYERS_ID.'
+        p50_h_player_id: '&P50_PLAYERS_ID.'
+        p50_enter_scorecard_flag: Y
+
+  server-side-condition: 
+    type: Request = Value
+    value: RELOAD
 

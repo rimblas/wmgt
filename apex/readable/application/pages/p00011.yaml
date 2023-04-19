@@ -1,0 +1,175 @@
+---
+# ====== Page: OCR ===========================================
+id: 11
+identification: 
+  name: OCR
+  alias: OCR
+  title: OCR
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+javascript: 
+  file-urls: 
+  - 'https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js'
+  function-and-global-variable-declaration: |
+    const worker = await Tesseract.createWorker();
+    
+    async function ocr() {
+      await worker.loadLanguage('eng+equ');
+      await worker.initialize('eng+equ');
+      await worker.setParameters({
+        tessedit_pageseg_mode: Tesseract.PSM.PSM_SPARSE_TEXT,
+      });
+    /*
+      await worker.setParameters({
+        tessedit_char_whitelist: '0123456789',
+      });
+    */
+    
+    
+      const { data: { text } } = await worker.recognize('https://dqvo64m7q9ujvqa-wmgt.adb.us-ashburn-1.oraclecloudapps.com/ords/r/wmgt/200/files/static/v95/LAB_scorecard2.jpg'
+                                                       );
+      console.log(text);
+      await worker.terminate();
+    };
+    
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Image =======================================
+  id: 6009483280197102
+  identification: 
+    title: Image
+    type: Static Content
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Image # 46986555500659702428
+    template-options: 
+    - '#DEFAULT#'
+    - t-ImageRegion--auto
+    - t-ImageRegion--cover
+    - t-ImageRegion--square
+    - t-ImageRegion--noFilter
+    render-components: Above Content
+
+  image: 
+    file-url: '#APP_FILES#LAB_scorecard2.jpg'
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+buttons: 
+- # ====== Button: GO ==========================================
+  id: 6009621216197103
+  identification: 
+    button-name: GO
+    label: Go
+
+  layout: 
+    sequence: 19
+    region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+dynamic-actions: 
+- # ====== Dynamic Action: Tesseract ===========================
+  id: 6009765275197104
+  identification: 
+    name: Tesseract
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: GO # 6009621216197103
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 6009869184197105
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: ocr();
+
+    execution: 
+      sequence: 10
+      event: Tesseract # 6009765275197104
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
