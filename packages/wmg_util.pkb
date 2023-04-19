@@ -409,8 +409,8 @@ begin
       select id, player_name
        bulk collect into l_players_tbl
       from (
-          select p.id, nvl(p.name, p.account) player_name, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.account)) similarity
-            from wmg_players p
+          select p.id, p.player_name, utl_match.jaro_winkler_similarity(upper(p_discord_account), upper(p.player_name)) similarity
+            from wmg_players_v p
            where discord_id is null
       )
       where similarity >= 74
@@ -532,13 +532,11 @@ begin
 
   merge into wmg_tournament_players tp
   using (
-    select s.id tournament_session_id
+    select p.tournament_session_id
          , p.player_id
          , p.points
       from wmg_tournament_session_points_v p
-         , wmg_tournament_sessions s
-     where p.week = s.week
-       and s.id = p_tournament_session_id
+     where p.tournament_session_id = p_tournament_session_id
   ) p
   on (
         p.tournament_session_id = tp.tournament_session_id
