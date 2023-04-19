@@ -28,3 +28,10 @@ select week, course_id, player_id
  )
 /
 create unique index wmg_rounds_unpivot_mv_u on wmg_rounds_unpivot_mv(week, player_id, course_id, h);
+
+
+comment on materialized view wmg_rounds_unpivot_mv is 'Transforms wmg_rounds where hole 1,2,3,4...18 are columns to each hole being a row.';
+
+comment on column wmg_rounds_unpivot_mv.h is 'Hole being playes 1-18';
+comment on column wmg_rounds_unpivot_mv.score is 'Strokes taken by the player';
+comment on column wmg_rounds_unpivot_mv.par is 'The under par value for a hole.';

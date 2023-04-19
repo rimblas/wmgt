@@ -1,7 +1,7 @@
-# wmgt
+# WMGT - Walkabout Mini Golf Tournament app
 
-Analysis Application for the [Walkabout Mini Golf](https://www.mightycoconut.com/minigolf) VR game weekly tournaments. 
-(_However, it would work fairly well for any individual play golf round analysis_).
+Application for running and analysising the weekly [Walkabout Mini Golf](https://www.mightycoconut.com/minigolf) VR game tournaments. 
+
 
 [Live site on OCI](https://rimblas.com/wmgt)
 
@@ -34,7 +34,6 @@ Helper core views:
 `PAR[1-18]`: Player under par score per hole<br>
 
 
-
 ### WMG_ROUND & WMG_ROUND_V
 
 The `WMG_ROUND_V` view contains just about everything you might need about a player's round.
@@ -49,3 +48,20 @@ The `WMG_ROUND_V` view contains just about everything you might need about a pla
 | `FINAL_SCORE`         | Under par score entered by player. It may not match `UNDER_PAR` |
 | `SCORE_OVERRIDE_FLAG` | Y is an override score is in place                              |
 
+### WMG_ROUNDS_UNPIVOT_MV
+
+This Materialize View is a little gem that transforms wmg_rounds (where one row is a complete round with holes 1,2,3,4...18 are columns) to hole 1,2,3,5...18 into rows
+
+If I describe it it looks like this:
+
+```
+
+NAME         DATA TYPE           NULL  DEFAULT    COMMENTS
+------------ ------------------- ----- ---------- --------------------------------
+ WEEK        VARCHAR2(10 BYTE)   Yes
+ COURSE_ID   NUMBER              Yes
+ PLAYER_ID   NUMBER              Yes
+ H           NUMBER              Yes              Hole being playes 1-18
+ SCORE       NUMBER              Yes              Strokes taken by the player
+ PAR         NUMBER              Yes              The under par value for a hole.
+ ```
