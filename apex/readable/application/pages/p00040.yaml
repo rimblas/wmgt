@@ -28,6 +28,9 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
+javascript: 
+  execute-when-page-loads: $(".showAvatar").tooltip();
+
 css: 
   inline: |
     .room h2 {font-weight: bold;}
@@ -43,6 +46,10 @@ css:
     #timeLegend {outline: 1px solid red;}
     #timeLegend table { width: 100%;}
     .tzClass {padding-left: .4rem;}
+    
+    .-wm-discord-link {
+        margin-right: 1em;
+    }
 
 security: 
   authentication: Page Is Public
@@ -76,7 +83,7 @@ help:
         <li>Play the Easy Course round first</li>
         <li>Take picture</li>
         <li>Play the Hard Course round last</li>
-        <li>Submit your scores <i>(Posting of pictures is NOT submission of scores)</i></li>
+        <li>Submit your scores back here <a href="#0" onclick="apex.util.getTopApex().jQuery('#ENTER_ROUNDS').click()">3. Enter Scores</a> <i>(Posting of pictures is NOT submission of scores)</i></li>
         <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
     </ol>
     <br>
@@ -87,7 +94,7 @@ help:
     <br>
     AND<br>
     <br>
-    If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> until you have <b>asked</b> if someone has taken a picture after the rounds.
+    If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> <b>until</b> you have <b>asked</b> if someone has taken a picture after the rounds.
     
 
 regions: 
@@ -107,7 +114,7 @@ regions:
           <li>Play the Easy Course round first</li>
           <li>Take picture</li>
           <li>Play the Hard Course round last</li>
-          <li>Submit your scores <i>(Posting of pictures is NOT submission of scores)</i></li>
+          <li>Submit your scores back here <a href="#0" onclick="$('#ENTER_ROUNDS').click()">3. Enter Scores</a> <i>(Posting of pictures is NOT submission of scores)</i></li>
           <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
       </ol>
       <br>
@@ -118,7 +125,7 @@ regions:
       <br>
       AND<br>
       <br>
-      If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> until you have <b>asked</b> if someone has taken a picture after the rounds.
+      If you're the first person in the room <b>DO NOT CLICK MAIN MENU</b> <b>until</b> you have <b>asked</b> if someone has taken a picture after the rounds.
       
 
   layout: 
@@ -275,20 +282,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -458,20 +466,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -482,7 +491,7 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
       
 
   layout: 
@@ -639,20 +648,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -663,7 +673,7 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
       
 
   layout: 
@@ -820,20 +830,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -844,7 +855,7 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
       
 
   layout: 
@@ -1001,20 +1012,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -1025,7 +1037,7 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
       
 
   layout: 
@@ -1182,20 +1194,21 @@ regions:
     type: SQL Query
     sql-query: |
       select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-           , case when p.tournament_player_id = :G_REGISTRATION_ID then
+           , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_defined_flag is null then
-              '<a href="' ||
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
+              ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
                   , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
                   , p_values => p.player_id || ',' || :APP_PAGE_ID
                 ) || '">' 
              end
-          || apex_escape.html(p.account)
-          || case when rooms_defined_flag is null then '</a>' end
-          || case when p.tournament_player_id = :G_REGISTRATION_ID then
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end players
       from wmg_tournament_player_v p
@@ -1206,7 +1219,7 @@ regions:
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
       order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
                  p.room_no 
-               else 0 end, p.tournament_player_created
+               else 0 end, p.tournament_player_id
       
 
   layout: 
@@ -1791,6 +1804,59 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P40_SHOW_AVATARS_IND =====================
+  id: 29406978749118110
+  identification: 
+    name: P40_SHOW_AVATARS_IND
+    type: Switch
+
+  label: 
+    label: <span aria-hidden="true" class="fa fa-user-man showAvatar" title="Show Avatars?"></span>
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 10
+    region: Breadcrumb # 58998669373500537434
+    position: NEXT
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Ignore
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    authorization-scheme: Administration Rights # 46986682652284702496
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: OPEN_ROOMS ==================================
   id: 3819029434911601
@@ -1799,7 +1865,7 @@ buttons:
     label: Open Rooms
 
   layout: 
-    sequence: 20
+    sequence: 30
     region: Breadcrumb # 58998669373500537434
     position: NEXT
     start-new-layout: false
@@ -1830,6 +1896,45 @@ buttons:
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
 
+- # ====== Button: ENTER_ROUNDS ================================
+  id: 24234755650737318
+  identification: 
+    button-name: ENTER_ROUNDS
+    label: 3.Enter Rounds
+
+  layout: 
+    sequence: 10
+    region: About the rooms # 3820738454911618
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - u-vh
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-number-3
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50::'
+      page: 50 # Enter Rounds
+      clear-cache: 50
+
+    warn-on-unsaved-changes: Do Not Check
+
+  advanced: 
+    static-id: ENTER_ROUNDS
+
 - # ====== Button: ASSIGN_ROOM =================================
   id: 24442383289129124348
   identification: 
@@ -1837,7 +1942,7 @@ buttons:
     label: Assign Rooms...
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: Breadcrumb # 58998669373500537434
     position: NEXT
     start-new-layout: false
@@ -2152,6 +2257,39 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Submit on Change ====================
+  id: 29407138909118111
+  identification: 
+    name: Submit on Change
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P40_SHOW_AVATARS_IND
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 29407276037118112
+    identification: 
+      action: Submit Page
+
+    settings: 
+      show-processing: true
+
+    execution: 
+      sequence: 10
+      event: Submit on Change # 29407138909118111
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Submit Room Assignments =============
   id: 40380891077778957228
   identification: 
@@ -2322,7 +2460,7 @@ computations:
 
   computation: 
     type: Static Value
-    static-value: 341
+    static-value: 442
 
   server-side-condition: 
     type: Never

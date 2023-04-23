@@ -1,0 +1,37 @@
+---
+- # ====== Application Process: Sync Discord Info ==============
+  id: 30062903324918973
+  identification: 
+    name: Sync Discord Info
+    type: NATIVE_PLSQL
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      -- sync username if it changed
+      update  wmg_players
+         set account = :G_DISCORD
+           , account_login = :G_DISCORD || '  (discord)'
+           , discord_avatar = :G_DISCORD_AVATAR
+           , discord_discriminator =:G_DISCORD_DISCRIMINATOR
+        where discord_id = :G_DISCORD_ID
+          and nvl(account, '~NA~') != nvl(:G_DISCORD, '~NA~');
+      
+      -- Sync avatar if a new is is provided
+      update  wmg_players
+         set discord_avatar = :G_DISCORD_AVATAR
+        where discord_id = :G_DISCORD_ID
+          and nvl(discord_avatar, '~NA~') != nvl(:G_DISCORD_AVATAR, '~NA~');
+
+  execution: 
+    sequence: 1
+    point: After Authentication
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+

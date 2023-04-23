@@ -16,6 +16,7 @@ select p.id
      , r.display_seq   rank_display_seq
      , r.profile_class rank_profile_class
      , r.list_class    rank_list_class
+     , wmg_discord.avatar(p.discord_id, p.discord_avatar) avatar_image
      , p.created_on
      , p.created_by
      , p.updated_on

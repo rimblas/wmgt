@@ -669,6 +669,11 @@ page-items:
   session-state: 
     storage: Per Session (Persistent)
 
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':G_PLAYER_ID is null and :G_DISCORD_ID is not null'
+
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
     session-state-protection: Unrestricted
@@ -827,6 +832,7 @@ page-items:
     item: G_REGISTRATION_ID
 
   security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
@@ -1052,6 +1058,9 @@ buttons:
     type: Item is NULL
     item: G_REGISTRATION_ID
 
+  security: 
+    authorization-scheme: Tournament Admin # 55893512303411682019
+
 dynamic-actions: 
 - # ====== Dynamic Action: Different Player ====================
   id: 4914176853479596
@@ -1181,7 +1190,7 @@ dynamic-actions:
           let el = this;
           let slot = this.dataset.slot;
           let tr = $(el).parents("tr");
-          console.log({tr}, {el}, {slot});
+          // console.log({tr}, {el}, {slot});
           $(tr).data("slot", slot).attr("data-slot", slot);
         })
 
@@ -1605,6 +1614,9 @@ branches:
   server-side-condition: 
     type: Item is NULL
     item: G_PLAYER_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55893512303411682019
 
 - # ====== Branch: Go To Page 1 ================================
   id: 52997262146098034412

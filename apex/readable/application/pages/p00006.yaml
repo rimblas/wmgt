@@ -91,9 +91,7 @@ regions:
              DISCORD_AVATAR,
              DISCORD_DISCRIMINATOR
            , case when discord_id is not null then
-              '<a href="discord://discordapp.com/users/' || p.discord_id || '/">'
-              || '<img class="avatar md" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
-              || '</a>' 
+              wmg_discord.avatar_link(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar)
              else '' end discord_profile
         from WMG_PLAYERS_V p
 
@@ -356,7 +354,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Contribution Rights # 46986682878463702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: CREATED_BY ==================================
@@ -395,7 +393,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Contribution Rights # 46986682878463702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: UPDATED_ON ==================================
@@ -435,7 +433,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Contribution Rights # 46986682878463702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: UPDATED_BY ==================================
@@ -474,7 +472,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Contribution Rights # 46986682878463702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: DISCORD_ID ==================================
@@ -513,7 +511,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Administration Rights # 46986682652284702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: DISCORD_DISCRIMINATOR =======================
@@ -552,7 +550,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Administration Rights # 46986682652284702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: DISCORD_AVATAR ==============================
@@ -591,7 +589,7 @@ regions:
         pivot: true
 
       security: 
-        authorization-scheme: Administration Rights # 46986682652284702496
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: DISCORD_PROFILE =============================
@@ -901,7 +899,7 @@ regions:
         type: Plain Text
 
       heading: 
-        heading: Account
+        heading: Discord Account
         alignment: start
 
       single-row-view: 
@@ -930,6 +928,7 @@ regions:
         pivot: true
 
       security: 
+        authorization-scheme: Tournament Admin # 55893512303411682019
         escape-special-characters: true
 
     - # ====== Column: NAME ========================================

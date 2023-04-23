@@ -102,6 +102,51 @@ end avatar;
 
 
 /**
+ * Return the URL to a discord avatar
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created January 15, 2023
+ * @param p_discord_id
+ * @param p_avatar_uri
+ * @return
+ */
+function avatar_link(
+    p_discord_id in wmg_players.discord_id%type
+  , p_avatar_uri in wmg_players.discord_avatar%type default null
+  , p_size_class in varchar2 default 'md')
+return varchar2
+is
+  l_scope  scope_t := gc_scope_prefix || 'avatar_link';
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('START', l_scope);
+
+   if p_discord_id is null then
+     return '<img class="avatar ' || p_size_class || '" src="' || V('APP_IMAGES') || '/img/discord_mask.png' || '">';
+   else
+     -- return '<a class="-wm-discord-link" href="discord://discordapp.com/users/' || p_discord_id || '/">'
+     return '<a class="-wm-discord-link" href="https://discordapp.com/users/' || p_discord_id || '/" target="discord">'
+          || '<img class="avatar ' || p_size_class || '" src="' || avatar(p_discord_id => p_discord_id, p_avatar_uri => p_avatar_uri) || '">'
+          || '</a>';
+   end if;
+
+exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end avatar_link;
+
+
+
+
+
+/**
  * Return the HTML to render a player profile
  *
  *
@@ -195,6 +240,65 @@ exception
 end render_profile;
 
 
+
+procedure merge_players(
+    p_from_player_id  in wmg_players.id%type
+  , p_into_player_id  in wmg_players.id%type
+  , p_remove_from_player in boolean default true
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'merge_players';
+
+  l_player_rec wmg_players%rowtype;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  select *
+    into l_player_rec
+    from wmg_players
+   where id = p_from_player_id;
+
+
+  log('.. clear previous values from source player', l_scope);
+  -- need to clear because some of these values are unique
+  update wmg_players
+     set account = 'Merged into ' || p_into_player_id
+       , name = null
+       , account_login = null
+       , prefered_tz = null
+       , discord_id = null
+       , discord_avatar = null
+       , discord_discriminator = null
+   where id = p_from_player_id;
+
+  log('.. Link to correct player', l_scope);
+  update  wmg_players
+     set account = l_player_rec.account
+       , name = l_player_rec.name
+       , account_login = l_player_rec.account_login
+       , prefered_tz = l_player_rec.prefered_tz
+       , country_code = l_player_rec.country_code
+       , discord_id = l_player_rec.discord_id
+       , discord_avatar = l_player_rec.discord_avatar
+       , discord_discriminator = l_player_rec.discord_discriminator
+    where id = p_into_player_id;
+
+  log('.. Move tournament registration', l_scope);
+  update wmg_tournament_players
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+  if p_remove_from_player then
+    delete
+      from wmg_players
+     where id = p_from_player_id;
+  end if;
+
+
+  log('END', l_scope);
+end merge_players;
 
 
 end wmg_discord;

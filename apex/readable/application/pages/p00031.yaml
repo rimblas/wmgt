@@ -75,6 +75,65 @@ server-cache:
 
 regions: 
 - # ====== Region: You're not setup as a player yet ============
+  id: 29406872058118108
+  identification: 
+    title: You're not setup as a player yet
+    type: Static Content
+
+  source: 
+    html-code: |
+      <br>
+      <div class="u-textCenter">Hey, it looks like you didn't finish registering as a player. Log in with Discord to finish.</div>
+      
+      
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Alert # 46986514536301702411
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--warning
+    - margin-top-lg
+    icon: fa-file-signature
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':G_PLAYER_ID is null and :G_DISCORD_ID is null'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: You're not setup as a player yet ============
   id: 56053372910227840663
   identification: 
     title: You're not setup as a player yet
@@ -114,6 +173,10 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
 
   server-cache: 
     caching: Disabled
@@ -158,6 +221,39 @@ buttons:
       url: 'f?p=&APP_ID.:18:&SESSION.::&DEBUG.:18::'
       page: 18 # Discord New Player
       clear-cache: 18
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: LOGIN =======================================
+  id: 29406955467118109
+  identification: 
+    button-name: LOGIN
+    label: Login
+
+  layout: 
+    sequence: 10
+    region: You're not setup as a player yet # 29406872058118108
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-check
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:9999:&SESSION.::&DEBUG.:9999::'
+      page: 9999 # Login Page
+      clear-cache: 9999
 
     warn-on-unsaved-changes: Do Not Check
 

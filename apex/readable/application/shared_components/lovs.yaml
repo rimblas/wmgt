@@ -130,7 +130,7 @@
     type: SQL Query
     sql-query: |
       select player_id
-            , account
+            , player_name
             , country_code
             , room_no
             , 'WMGT' || room_no room_name
@@ -140,8 +140,8 @@
 
   column-mapping: 
     return: PLAYER_ID
-    display: ACCOUNT
-    default-sort: ACCOUNT
+    display: PLAYER_NAME
+    default-sort: PLAYER_NAME
     sort-direction: Ascending (Nulls Last)
 
   comments: 
@@ -234,6 +234,24 @@
 
     advanced: 
       searchable: false
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 30069182462405979
+    identification: 
+      column-name: PLAYER_NAME
+      show: true
+
+    heading: 
+      heading: Player Name
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
 
 - # ====== List of Values: PLAYERS_WITH_QUEUE ==================
   id: 20405369195140563
@@ -464,14 +482,13 @@
 
   source: 
     location: Local Database
-    type: Table / View
-    table-owner: Parsing Schema
-    table-name: WMG_PLAYERS
+    type: SQL Query
+    sql-query: select player_name, id from WMG_PLAYERS_V
 
   column-mapping: 
     return: ID
-    display: ACCOUNT
-    default-sort: ACCOUNT
+    display: PLAYER_NAME
+    default-sort: PLAYER_NAME
     sort-direction: Ascending (Nulls Last)
 
 - # ====== List of Values: DESKTOP THEME STYLES ================
@@ -688,6 +705,13 @@
       sequence: 12
       display: Point Scale
       return: POINTS
+
+  - # ====== Entry: Player Ranks =================================
+    id: 29821488633296061
+    entry: 
+      sequence: 20
+      display: Player Ranks
+      return: RANKS
 
   - # ====== Entry: About ========================================
     id: 56015206934223641551

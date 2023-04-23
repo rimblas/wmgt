@@ -743,6 +743,49 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+buttons: 
+- # ====== Button: EDIT_PLAYER =================================
+  id: 30216930970317182
+  identification: 
+    button-name: EDIT_PLAYER
+    label: Edit Profile
+
+  layout: 
+    sequence: 10
+    region: '{Profile}' # 13608743053876107
+    position: CHANGE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--mobileHideLabel
+    - t-Button--small
+    - t-Button--iconLeft
+    icon: fa-user-edit
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:&P120_PLAYER_ID.'
+      page: 7 # Player
+      clear-cache: 7
+      values: 
+        p7_id: '&P120_PLAYER_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":G_PLAYER_ID = :P120_PLAYER_ID or apex_authorization.is_authorized (p_authorization_name => 'Contribution Rights' )"
+
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh on Change ===================
   id: 7691023929930952
@@ -826,4 +869,69 @@ dynamic-actions:
       event: On Tournament Change # 27804877650823187
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh =============================
+  id: 30217016758317183
+  identification: 
+    name: Refresh
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: EDIT_PLAYER # 30216930970317182
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 30217132240317184
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Profile}' # 13608743053876107
+
+    execution: 
+      sequence: 10
+      event: Refresh # 30217016758317183
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Tooltips ============================
+  id: 30217212576317185
+  identification: 
+    name: Tooltips
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Badges & Achivements # 87078720345978472
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 30217343289317186
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(".question").tooltip()
+
+    execution: 
+      sequence: 10
+      event: Tooltips # 30217212576317185
+      fire-when-event-result-is: True
+      fire-on-initialization: true
 

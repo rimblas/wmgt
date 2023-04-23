@@ -19,7 +19,7 @@ navigation-menu:
   override-user-interface-level: false
 
 navigation: 
-  cursor-focus: First item on page
+  cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
 css: 
@@ -83,9 +83,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  header-and-footer: 
-    header-text: <img class="avatar" src="&P7_AVATAR_URL.">
-
   server-side-condition: 
     type: Item is NOT NULL
     item: P7_ID
@@ -147,6 +144,59 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: {Avatar} ====================================
+  id: 30216142887317174
+  identification: 
+    title: '{Avatar}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: "return wmg_discord.avatar_link(p_discord_id => :P7_DISCORD_ID, p_avatar_uri => :P7_AVATAR, p_size_class => '');"
+
+  layout: 
+    sequence: 15
+    parent-region: Player # 46986741552156703258
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 1
+    column-css-classes: 
+    - col-sm-1
+    - col-xs-1
+    - col-xxs-2
+
+  appearance: 
+    template: Blank with Attributes # 46986519704134702414
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P7_ID is not null and :P7_DISCORD_ID is not null'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
 
 - # ====== Region: Player ======================================
   id: 46986741552156703258
@@ -425,7 +475,7 @@ page-items:
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: 4
@@ -580,36 +630,6 @@ page-items:
 
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P7_AVATAR_URL ============================
-  id: 4915071409479604
-  identification: 
-    name: P7_AVATAR_URL
-    type: Hidden
-
-  settings: 
-    value-protected: true
-
-  layout: 
-    sequence: 90
-    region: Discord # 4914771394479601
-    position: BODY
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    type: Null
-    used: Only when current value in session state is null
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
-
-  security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
@@ -823,11 +843,13 @@ page-items:
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-10
 
   appearance: 
     template: Required - Floating # 46986651846996702470
@@ -934,7 +956,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   help: 
-    inline-help-text: Only set if you use a nickname for the WMG Discord server.
+    inline-help-text: Set ONLY if you use a nickname for the WMG Discord server.
 
 - # ====== Page Item: P7_REGISTRATION_FLAG =====================
   id: 56015645930685939739
@@ -1239,20 +1261,43 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-computations: 
-- # ====== Computation: P7_AVATAR_URL ==========================
-  id: 4915174560479605
+validations: 
+- # ====== Validation: Nickname Same a Name ====================
+  id: 30216336125317176
   identification: 
-    item-name: P7_AVATAR_URL
+    name: Nickname Same a Name
 
   execution: 
     sequence: 10
-    point: Before Regions
+
+  validation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: "upper(:P7_ACCOUNT) != nvl(upper(:P7_NAME), '~NA~')"
+    always-execute: false
+
+  error: 
+    error-message: Only use a nickname when you have one set on Discord
+    display-location: Inline with Field and in Notification
+    associated-item: P7_NAME # 46986742608272703259
+
+computations: 
+- # ====== Computation: P7_NAME ================================
+  id: 30216422785317177
+  identification: 
+    item-name: P7_NAME
+
+  execution: 
+    sequence: 10
+    point: After Submit
 
   computation: 
-    type: Function Body
+    type: Static Value
+
+  server-side-condition: 
+    type: Expression
     language: PL/SQL
-    pl/sql-function-body: 'return wmg_discord.avatar(p_discord_id => :P7_DISCORD_ID, p_avatar_uri => :P7_AVATAR);'
+    pl/sql-expression: "upper(:P7_ACCOUNT) = nvl(upper(:P7_NAME), '~NA~')"
 
 processes: 
 - # ====== Process: Initialize form Player =====================

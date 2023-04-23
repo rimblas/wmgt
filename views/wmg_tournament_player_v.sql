@@ -36,12 +36,15 @@ select t.id                              tournament_id
      , tp.updated_on                     tournament_player_updated
      , tp.updated_by                     tournament_player_updated_by
      , p.id                              player_id
+     , nvl(p.player_name, '-error-')     player_name
      , p.account                         account
      , p.country_code                    country_code
+     , p.discord_id
+     , p.discord_avatar
   from wmg_tournaments t
      , wmg_tournament_sessions ts
      , wmg_tournament_players tp
-     , wmg_players p
+     , wmg_players_v p
  where ts.tournament_id(+) = t.id
    and tp.tournament_session_id(+) = ts.id 
    and tp.player_id = p.id(+)

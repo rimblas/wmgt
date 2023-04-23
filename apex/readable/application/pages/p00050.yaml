@@ -4224,9 +4224,6 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-  help: 
-    inline-help-text: SnWn
-
 - # ====== Page Item: P50_EASY_COURSE_ID =======================
   id: 15524503658785633232
   identification: 
@@ -4320,10 +4317,6 @@ page-items:
     query-only: false
     primary-key: false
 
-  default: 
-    type: SQL Query
-    sql-query: 'select id from wmg_players where discord_id = :G_DISCORD_ID'
-
   session-state: 
     storage: Per Request (Memory Only)
 
@@ -4331,13 +4324,19 @@ page-items:
     show-quick-picks: false
 
   read-only: 
-    type: Item is NOT NULL
-    item: P50_E_ID
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P50_E_ID is not null or not apex_authorization.is_authorized (p_authorization_name => 'Contribution Rights' )"
 
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+  comments: 
+    comments: |
+      No default needed: select id from wmg_players where discord_id = :G_DISCORD_ID
+      
 
 - # ====== Page Item: P50_ROOM_NAME ============================
   id: 15524504433196633233
@@ -7559,19 +7558,24 @@ processes:
       fetch first 1 rows only;
       
       begin
-      apex_debug.message('P50_PLAYERS_ID >' || :P50_PLAYERS_ID);
           if :P50_PLAYERS_ID is null then
-              select id
-                into :P50_PLAYERS_ID
-                from wmg_players
-               where (
-                  account_login = :APP_USER
-               or discord_id = :G_DISCORD_ID)
-               fetch first 1 rows only;
-      apex_debug.message('Got P50_PLAYERS_ID >' || :P50_PLAYERS_ID);
+              :P50_PLAYERS_ID := :G_PLAYER_ID;
           end if;
       
           if :P50_PLAYERS_ID is not null then
+      
+             begin
+               -- get the room assingment
+               select 'WMGT' || room_no
+                 into :P50_ROOM_NAME
+                 from wmg_tournament_players
+                where tournament_session_id = :G_CURRENT_SESSION_ID
+                  and player_id = :P50_PLAYERS_ID;
+              exception
+               when NO_DATA_FOUND then
+                 null;
+             end;
+      
              -- check to see if there's rounds already
              begin
                  select id
@@ -7764,6 +7768,12 @@ branches:
 
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46986682652284702496
+
+  comments: 
+    comments: |
+      For testing:
+      union
+      select 1 from dual where :G_PLAYER_ID = 24
 
 - # ====== Branch: Ask For Scorecards ==========================
   id: 4007288626738090
