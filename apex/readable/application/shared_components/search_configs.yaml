@@ -1,0 +1,72 @@
+---
+- # ====== Search Configuration: Players =======================
+  id: 30273533000321390
+  identification: 
+    name: Players
+
+  source: 
+    search-type: Simple (APEX Data Source)
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_PLAYERS_V
+    searchable-columns: 'ACCOUNT:NAME:PLAYER_NAME:PREFERED_TZ:COUNTRY_CODE:COUNTRY:RANK_CODE'
+
+  column-mapping: 
+    primary-key-1-column-name: ID
+    title-column-name: PLAYER_NAME
+    subtitle-column-name: RANK_NAME
+    custom-column-name-1: PREFERED_TZ
+
+  link: 
+    type: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:120:&APP_SESSION.::&DEBUG.:120:P120_PLAYER_ID:&ID.'
+      page: 120 # Player Profile
+      clear-cache: 120
+      values: 
+        p120_player_id: '&ID.'
+
+  icon-and-badge: 
+    icon-source: Image URL
+    image-url: '&AVATAR_IMAGE.'
+
+  advanced: 
+    static-id: players
+
+  security: 
+    authorization-scheme: Contribution Rights # 46986682878463702496
+
+- # ====== Search Configuration: Courses =======================
+  id: 30279384309521240
+  identification: 
+    name: Courses
+
+  source: 
+    search-type: Simple (APEX Data Source)
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_COURSES_V
+    searchable-columns: 'CODE:NAME:PREPARED_NAME:COURSE_MODE'
+
+  column-mapping: 
+    primary-key-1-column-name: COURSE_ID
+    title-column-name: PREPARED_NAME
+    description-column-name: COURSE_MODE
+
+  link: 
+    type: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:200:&APP_SESSION.::&DEBUG.::P200_COURSE_ID:&COURSE_ID.'
+      page: 200 # Course Analysis
+      values: 
+        p200_course_id: '&COURSE_ID.'
+
+  icon-and-badge: 
+    icon-source: Image URL
+    image-url: 'https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/&CODE._FULL.JPG'
+
+  advanced: 
+    static-id: courses
+

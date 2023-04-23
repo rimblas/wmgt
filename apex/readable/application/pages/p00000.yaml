@@ -115,6 +115,89 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: {Search} ====================================
+  id: 30216573128317178
+  identification: 
+    title: '{Search}'
+    type: Search
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Search Results Container # 21387542130307109873
+    template-options: 
+    - '#DEFAULT#'
+    - t-ResultsRegion--boxed
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from apex_application_pages
+      where application_id = :APP_ID
+      and page_id = :APP_PAGE_ID
+      and page_id not in (30,32,40,50,60,100,200)
+      and page_id <= 500
+      and page_mode != 'Modal Dialog'
+
+  security: 
+    authorization-scheme: Contribution Rights # 46986682878463702496
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      search-page-item: P0_SEARCH
+      search-as-you-type: true
+      minimum-characters: No minimum (0)
+      lazy-loading: true
+      use-pagination: true
+      results-per-page: 15
+      show-result-count: No
+      custom-layout: false
+
+  search-sources: 
+  - # ====== Search Source: Players Source =======================
+    id: 30216587748317179
+    identification: 
+      name: Players Source
+      search-configuration: Players # 30273533000321390
+      use-as-initial-result: false
+
+    layout: 
+      sequence: 10
+
+  - # ====== Search Source: Courses ==============================
+    id: 30216827245317181
+    identification: 
+      name: Courses
+      search-configuration: Courses # 30279384309521240
+      use-as-initial-result: false
+
+    layout: 
+      sequence: 20
+
 - # ====== Region: {AutoDetectTimeZone.js} =====================
   id: 47577408716670657321
   identification: 
@@ -233,4 +316,62 @@ regions:
       breadcrumb-template: Breadcrumb # 46986654645437702471
       template-options: 
       - '#DEFAULT#'
+
+page-items: 
+- # ====== Page Item: P0_SEARCH ================================
+  id: 30216686367317180
+  identification: 
+    name: P0_SEARCH
+    type: Text Field
+
+  label: 
+    label: Search
+    alignment: Left
+
+  settings: 
+    subtype: Search
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 10
+    region: '{Search}' # 30216573128317178
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-search
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
