@@ -48,6 +48,9 @@ advanced:
 server-cache: 
   caching: Disabled
 
+help: 
+  help-text: The message seems self evident
+
 regions: 
 - # ====== Region: Current Tournament is closed ================
   id: 3471782270873693
@@ -101,14 +104,44 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: A little too soon ===========================
+- # ====== Region: {A little too soon} =========================
   id: 6009346521197100
   identification: 
-    title: A little too soon
-    type: Static Content
+    title: '{A little too soon}'
+    type: Classic Report
 
   source: 
-    html-code: You can't really enter your rounds until after the tournament starts.
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with tz as (
+       select nvl(max(prefered_tz), sessiontimezone) tz from wmg_players where id = :G_PLAYER_ID
+      )
+      , ts as (
+        select s.session_date
+             , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') at time zone tz.tz local_tz
+             , tz
+          from wmg_tournament_sessions s
+             , tz
+         where s.id = :G_CURRENT_SESSION_ID
+      )
+      select 'warning' alert_type
+           , 'A little too soon' alert_title
+           , '<br>You can''t really enter your rounds until after the tournament starts on ' || to_char(ts.session_date, 'fmDay, fmMonth DD, YYYY') || ' UTC<br>'
+           || ' or, what is the same, <br>'
+           || '<u>' 
+           || to_char(local_tz, 'fmDy, fmMonth fmDD') 
+           || ' '
+           ||  case when tz like 'US/%' or tz like 'America%' then
+                 ltrim(to_char(ts.local_tz, 'HH:MI PM'), '0')
+               else 
+                 to_char(ts.local_tz, 'HH24:MI')
+               end
+            || ' '  || tz 
+            || '</u>' alert_desc
+           , '' alert_action
+      from ts
+      
 
   layout: 
     sequence: 19
@@ -116,18 +149,14 @@ regions:
     position: BODY
     start-new-layout: false
     start-new-row: true
-    column: 5
+    column: 4
     new-column: true
-    column-span: 5
+    column-span: 6
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Blank with Attributes # 46986519704134702414
     template-options: 
     - '#DEFAULT#'
-    - t-Alert--colorBG
-    - t-Alert--horizontal
-    - t-Alert--defaultIcons
-    - t-Alert--warning
     render-components: Above Content
 
   accessibility: 
@@ -149,7 +178,165 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Alerts # 46986599891713702446
+      template-options: 
+      - '#DEFAULT#'
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ALERT_DESC ==================================
+    id: 24234961326737320
+    identification: 
+      column-name: ALERT_DESC
+      type: Plain Text
+
+    heading: 
+      heading: Alert Desc
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ALERT_TITLE =================================
+    id: 24235037697737321
+    identification: 
+      column-name: ALERT_TITLE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Title
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_ACTION ================================
+    id: 30215922427317172
+    identification: 
+      column-name: ALERT_ACTION
+      type: Plain Text
+
+    heading: 
+      heading: Alert Action
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_TYPE ==================================
+    id: 30216014638317173
+    identification: 
+      column-name: ALERT_TYPE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Type
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 

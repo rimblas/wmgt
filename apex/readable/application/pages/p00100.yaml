@@ -262,7 +262,8 @@ regions:
     footer-text: '"BADGES_BY_STEVEN"'
 
   server-cache: 
-    caching: Disabled
+    caching: Enabled
+    cache-timeout: 2 weeks
 
   customization: 
     customizable: Not Customizable By End Users
@@ -941,7 +942,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Highlight
+      heading: Course Highlight
       alignment: center
 
     layout: 
@@ -2031,7 +2032,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Highlight
+      heading: Player Highlight
       alignment: center
 
     layout: 
@@ -2145,9 +2146,9 @@ regions:
         select id course_id, course_mode, :P100_WEEK week
           from wmg_courses
          where id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P100_WEEK 
+            select course_id
+              from wmg_tournament_courses
+             where tournament_session_id = :P100_TOURNAMENT_SESSION_ID
           )
          and course_mode = 'H'
       )
@@ -2503,6 +2504,7 @@ regions:
       
     page-items-to-submit: 
     - P100_WEEK
+    - P100_TOURNAMENT_SESSION_ID
 
   layout: 
     sequence: 15
@@ -2588,9 +2590,7 @@ regions:
       type: Custom Headings
 
     download: 
-      csv-export-enabled: true
-      link-text: Download
-      filename: easy_course_stats
+      csv-export-enabled: false
 
     printing: 
       enabled: false
@@ -3370,9 +3370,9 @@ regions:
         select id course_id, course_mode, :P100_WEEK week
           from wmg_courses
          where id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P100_WEEK 
+            select course_id
+              from wmg_tournament_courses
+             where tournament_session_id = :P100_TOURNAMENT_SESSION_ID
           )
          and course_mode = 'E'
       )
@@ -3728,6 +3728,7 @@ regions:
       
     page-items-to-submit: 
     - P100_WEEK
+    - P100_TOURNAMENT_SESSION_ID
 
   layout: 
     sequence: 5
@@ -3813,9 +3814,7 @@ regions:
       type: Custom Headings
 
     download: 
-      csv-export-enabled: true
-      link-text: Download
-      filename: easy_course_stats
+      csv-export-enabled: false
 
     printing: 
       enabled: false
@@ -4581,10 +4580,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: &P100_EASY. =================================
+- # ====== Region: Participating Countries =====================
   id: 94935952475262333856
   identification: 
-    title: '&P100_EASY.'
+    title: Participating Countries
     type: Chart
 
   layout: 
@@ -4595,7 +4594,7 @@ regions:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 6
 
   appearance: 
     template: Standard # 46986580184360702438
@@ -4612,9 +4611,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-side-condition: 
-    type: Never
-
   security: 
     escape-special-characters: false
 
@@ -4627,24 +4623,24 @@ regions:
   attributes: 
     id: 47468032550263193299
     chart: 
-      type: Bar
+      type: Pie
 
-    appearance: 
-      orientation: Vertical
-      stack: false
+    layout: 
+      height: 400
 
     data-cursor: 
       cursor: Automatic
       behavior: Automatic
       dim-on-hover: true
 
-    multi-series-chart-data: 
-      fill-gaps-in-chart-data: true
-      sort-order: Label - Ascending
-      render-gap-as-zero: true
-
     settings: 
-      zoom-and-scroll: No
+      pie-selection-effect: Highlight And Explode
+
+    value: 
+      pie-chart-other-threshold: 0
+      format: Decimal
+      decimal-places: 0
+      format-scaling: None
 
     animation: 
       on-display: Automatic
@@ -4653,17 +4649,16 @@ regions:
     tooltip: 
       show: true
       show-series-name: true
-      show-group-name: true
       show-value: true
 
     legend: 
       show: false
 
     series: 
-    - # ====== Series: Series 1 ====================================
+    - # ====== Series: Countries ===================================
       id: 47468034296984193299
       identification: 
-        name: Series 1
+        name: Countries
 
       execution: 
         sequence: 10
@@ -4672,251 +4667,40 @@ regions:
         location: Local Database
         type: SQL Query
         sql-query: |
-          with week_courses as (
-            select id course_id, course_mode, :P100_WEEK week
-              from wmg_courses
-             where id in (
-                select distinct course_id
-                  from wmg_rounds 
-                 where week = :P100_WEEK 
-              )
-             and course_mode = 'E'
+          select nvl(country, 'Unspecified') country
+               , '<i class="em em-flag-' || country_code || '" aria-role="presentation" aria-label="Flag ' || country_code || '"></i><br>'
+               || nvl(country, 'Unspecified') || ' - ' || n || ' players' tooltip
+               , n
+            from (
+              select decode(p.country, 'England', 'United Kingdom', p.country) country
+                   , p.country_code
+                   , count(*) n
+              from wmg_players_v p
+                 , wmg_tournament_players tp
+              where tp.player_id = p.id
+                and tp.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+              group by decode(p.country, 'England', 'United Kingdom', p.country)
+                     , p.country_code
           )
-          select 'Double Bogeys' label
-               , sum(decode(s1  - 2, h1, 1, 0)
-                   + decode(s2  - 2, h2, 1, 0)
-                   + decode(s3  - 2, h3, 1, 0)
-                   + decode(s4  - 2, h4, 1, 0)
-                   + decode(s5  - 2, h5, 1, 0)
-                   + decode(s6  - 2, h6, 1, 0)
-                   + decode(s7  - 2, h7, 1, 0)
-                   + decode(s8  - 2, h8, 1, 0)
-                   + decode(s9  - 2, h9, 1, 0)
-                   + decode(s10 - 2, h10, 1, 0)
-                   + decode(s11 - 2, h11, 1, 0)
-                   + decode(s12 - 2, h12, 1, 0)
-                   + decode(s13 - 2, h13, 1, 0)
-                   + decode(s14 - 2, h14, 1, 0)
-                   + decode(s15 - 2, h15, 1, 0)
-                   + decode(s16 - 2, h16, 1, 0)
-                   + decode(s17 - 2, h17, 1, 0)
-                   + decode(s18 - 2, h18, 1, 0)
-                 ) value
-            from wmg_rounds_v r, week_courses w
-           where r.week = w.week
-             and r.course_id = w.course_id
-            group by w.course_mode
-          union all
-          select 'Bogeys' label
-               , sum(decode(s1  - 1, h1, 1, 0)
-                   + decode(s2  - 1, h2, 1, 0)
-                   + decode(s3  - 1, h3, 1, 0)
-                   + decode(s4  - 1, h4, 1, 0)
-                   + decode(s5  - 1, h5, 1, 0)
-                   + decode(s6  - 1, h6, 1, 0)
-                   + decode(s7  - 1, h7, 1, 0)
-                   + decode(s8  - 1, h8, 1, 0)
-                   + decode(s9  - 1, h9, 1, 0)
-                   + decode(s10 - 1, h10, 1, 0)
-                   + decode(s11 - 1, h11, 1, 0)
-                   + decode(s12 - 1, h12, 1, 0)
-                   + decode(s13 - 1, h13, 1, 0)
-                   + decode(s14 - 1, h14, 1, 0)
-                   + decode(s15 - 1, h15, 1, 0)
-                   + decode(s16 - 1, h16, 1, 0)
-                   + decode(s17 - 1, h17, 1, 0)
-                   + decode(s18 - 1, h18, 1, 0)
-                 ) value
-            from wmg_rounds_v r, week_courses w
-           where r.week = w.week
-             and r.course_id = w.course_id
-            group by w.course_mode
-          union all
-          select 'Pars' label
-               , sum(decode(s1, h1, 1, 0)
-                   + decode(s2, h2, 1, 0)
-                   + decode(s3, h3, 1, 0)
-                   + decode(s4, h4, 1, 0)
-                   + decode(s5, h5, 1, 0)
-                   + decode(s6, h6, 1, 0)
-                   + decode(s7, h7, 1, 0)
-                   + decode(s8, h8, 1, 0)
-                   + decode(s9, h9, 1, 0)
-                   + decode(s10, h10, 1, 0)
-                   + decode(s11, h11, 1, 0)
-                   + decode(s12, h12, 1, 0)
-                   + decode(s13, h13, 1, 0)
-                   + decode(s14, h14, 1, 0)
-                   + decode(s15, h15, 1, 0)
-                   + decode(s16, h16, 1, 0)
-                   + decode(s17, h17, 1, 0)
-                   + decode(s18, h18, 1, 0)
-               ) value
-            from wmg_rounds_v r, week_courses w
-           where r.week = w.week
-             and r.course_id = w.course_id
-            group by w.course_mode
-          union all
-          select 'Aces' label
-               , sum(decode(s1, 1, 1, 0)
-                   + decode(s2, 1, 1, 0)
-                   + decode(s3, 1, 1, 0)
-                   + decode(s4, 1, 1, 0)
-                   + decode(s5, 1, 1, 0)
-                   + decode(s6, 1, 1, 0)
-                   + decode(s7, 1, 1, 0)
-                   + decode(s8, 1, 1, 0)
-                   + decode(s9, 1, 1, 0)
-                   + decode(s10, 1, 1, 0)
-                   + decode(s11, 1, 1, 0)
-                   + decode(s12, 1, 1, 0)
-                   + decode(s13, 1, 1, 0)
-                   + decode(s14, 1, 1, 0)
-                   + decode(s15, 1, 1, 0)
-                   + decode(s16, 1, 1, 0)
-                   + decode(s17, 1, 1, 0)
-                   + decode(s18, 1, 1, 0)
-               ) value
-            from wmg_rounds_v r, week_courses w
-           where r.week = w.week
-             and r.course_id = w.course_id
-            group by w.course_mode
-          union all
-          select 'Birdies' label
-               , sum(case when s1>1 and s1  + 1 = h1 then 1 else 0 end
-                   + case when s2>1 and s2  + 1 = h2 then 1 else 0 end
-                   + case when s3>1 and s3  + 1 = h3 then 1 else 0 end
-                   + case when s4>1 and s4  + 1 = h4 then 1 else 0 end
-                   + case when s5>1 and s5  + 1 = h5 then 1 else 0 end
-                   + case when s6>1 and s6  + 1 = h6 then 1 else 0 end
-                   + case when s7>1 and s7  + 1 = h7 then 1 else 0 end
-                   + case when s8>1 and s8  + 1 = h8 then 1 else 0 end
-                   + case when s9>1 and s9  + 1 = h9 then 1 else 0 end
-                   + case when s10>1 and s10 + 1 = h10 then 1 else 0 end
-                   + case when s11>1 and s11 + 1 = h11 then 1 else 0 end
-                   + case when s12>1 and s12 + 1 = h12 then 1 else 0 end
-                   + case when s13>1 and s13 + 1 = h13 then 1 else 0 end
-                   + case when s14>1 and s14 + 1 = h14 then 1 else 0 end
-                   + case when s15>1 and s15 + 1 = h15 then 1 else 0 end
-                   + case when s16>1 and s16 + 1 = h16 then 1 else 0 end
-                   + case when s17>1 and s17 + 1 = h17 then 1 else 0 end
-                   + case when s18>1 and s18 + 1 = h18 then 1 else 0 end
-               ) value
-            from wmg_rounds_v r, week_courses w
-           where r.week = w.week
-             and r.course_id = w.course_id
-            group by w.course_mode
-          union all
-          select 'Eagles' label
-            , sum(case when s1>1 and s1  + 2 = h1 then 1 else 0 end
-                + case when s2>1 and s2  + 2 = h2 then 1 else 0 end
-                + case when s3>1 and s3  + 2 = h3 then 1 else 0 end
-                + case when s4>1 and s4  + 2 = h4 then 1 else 0 end
-                + case when s5>1 and s5  + 2 = h5 then 1 else 0 end
-                + case when s6>1 and s6  + 2 = h6 then 1 else 0 end
-                + case when s7>1 and s7  + 2 = h7 then 1 else 0 end
-                + case when s8>1 and s8  + 2 = h8 then 1 else 0 end
-                + case when s9>1 and s9  + 2 = h9 then 1 else 0 end
-                + case when s10>1 and s10 + 2 = h10 then 1 else 0 end
-                + case when s11>1 and s11 + 2 = h11 then 1 else 0 end
-                + case when s12>1 and s12 + 2 = h12 then 1 else 0 end
-                + case when s13>1 and s13 + 2 = h13 then 1 else 0 end
-                + case when s14>1 and s14 + 2 = h14 then 1 else 0 end
-                + case when s15>1 and s15 + 2 = h15 then 1 else 0 end
-                + case when s16>1 and s16 + 2 = h16 then 1 else 0 end
-                + case when s17>1 and s17 + 2 = h17 then 1 else 0 end
-                + case when s18>1 and s18 + 2 = h18 then 1 else 0 end
-             ) value
-           from wmg_rounds_v r, week_courses w
-          where r.week = w.week
-          and r.course_id = w.course_id
-          union all
-          select 'Albatrosses' label
-            , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end
-                + case when s2>1 and s2  + 3 = h2 then 1 else 0 end
-                + case when s3>1 and s3  + 3 = h3 then 1 else 0 end
-                + case when s4>1 and s4  + 3 = h4 then 1 else 0 end
-                + case when s5>1 and s5  + 3 = h5 then 1 else 0 end
-                + case when s6>1 and s6  + 3 = h6 then 1 else 0 end
-                + case when s7>1 and s7  + 3 = h7 then 1 else 0 end
-                + case when s8>1 and s8  + 3 = h8 then 1 else 0 end
-                + case when s9>1 and s9  + 3 = h9 then 1 else 0 end
-                + case when s10>1 and s10 + 3 = h10 then 1 else 0 end
-                + case when s11>1 and s11 + 3 = h11 then 1 else 0 end
-                + case when s12>1 and s12 + 3 = h12 then 1 else 0 end
-                + case when s13>1 and s13 + 3 = h13 then 1 else 0 end
-                + case when s14>1 and s14 + 3 = h14 then 1 else 0 end
-                + case when s15>1 and s15 + 3 = h15 then 1 else 0 end
-                + case when s16>1 and s16 + 3 = h16 then 1 else 0 end
-                + case when s17>1 and s17 + 3 = h17 then 1 else 0 end
-                + case when s18>1 and s18 + 3 = h18 then 1 else 0 end
-             ) value
-          from wmg_rounds_v r, week_courses w
-          where r.week = w.week
-          and r.course_id = w.course_id
-          
+          order by 1
 
       column-mapping: 
-        label: LABEL
-        value: VALUE
-
-      appearance: 
-        assigned-to-y2-axis: false
+        label: COUNTRY
+        value: N
+        custom-tooltip: TOOLTIP
 
       label: 
-        show: false
+        show: true
+        position: Automatic
+        display-as: Label
 
       performance: 
-        maximum-rows-to-process: 20
+        maximum-rows-to-process: 50
 
-    axes: 
-    - # ====== Axis: x =============================================
-      id: 47468033055330193299
-      identification: 
-        name: x
-        show-axis: true
-
-      value: 
-        format-scaling: Automatic
-        baseline-scaling: Zero
-        scale: Linear
-
-      major-ticks: 
-        show: Automatic
-
-      minor-ticks: 
-
-      tick-label: 
-        show: true
-        rotation: true
-        position: Outside
-
-    - # ====== Axis: y =============================================
-      id: 47468033606611193299
-      identification: 
-        name: y
-        show-axis: true
-
-      value: 
-        format-scaling: Automatic
-        baseline-scaling: Zero
-        scale: Linear
-
-      appearance: 
-        position: Automatic
-
-      major-ticks: 
-        show: Automatic
-
-      minor-ticks: 
-
-      tick-label: 
-        show: true
-
-- # ====== Region: Cumulative Performance ======================
+- # ====== Region: Cumulative Score ============================
   id: 94935955149037333857
   identification: 
-    title: Cumulative Performance
+    title: Cumulative Score
     type: Chart
 
   layout: 
@@ -4948,7 +4732,7 @@ regions:
 
   header-and-footer: 
     footer-text: |
-      <div class="legend">* Scores calculated as strokes under par<br>
+      <div class="legend">* Scores calculated as strokes under par showing the score hole by hole<br>
       Note that values are inverted so the chart goes upward. ie a -5 is presented as a 5</div>
 
   security: 
@@ -4964,9 +4748,6 @@ regions:
     id: 47468035113474193300
     chart: 
       type: Line
-
-    title: 
-      title: Cumulative
 
     appearance: 
       orientation: Vertical
@@ -5912,7 +5693,7 @@ regions:
 
   header-and-footer: 
     footer-text: |
-      <div class="legend">Scores calculated as strokes under par<br>
+      <div class="legend">* Scores calculated as strokes under par showing the score hole by hole<br>
       Note that values are inverted so the chart goes upward. ie a -5 is presented as a 5</div>
 
   security: 
@@ -6375,7 +6156,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Cumulative Performance # 94935955149037333857
+    region: Cumulative Score # 94935955149037333857
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -6968,6 +6749,10 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P100_EASY_ID
+
 - # ====== Button: HARD_COURSE_STATS_BTN =======================
   id: 665123120503477
   identification: 
@@ -7002,6 +6787,10 @@ buttons:
         p200_course_id: '&P100_HARD_ID.'
 
     warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P100_HARD_ID
 
 - # ====== Button: OK ==========================================
   id: 40380891939017957237
@@ -7157,7 +6946,7 @@ dynamic-actions:
 
     affected-elements: 
       selection-type: Region
-      region: Cumulative Performance # 94935955149037333857
+      region: Cumulative Score # 94935955149037333857
 
     execution: 
       sequence: 10
@@ -7909,20 +7698,29 @@ processes:
       from wmg_tournament_sessions_v s
       where s.week = :P100_WEEK;
       
-      select name
-           , code
-        into :P100_EASY
-           , :P100_EASY_CODE
-          from wmg_courses_v
-         where course_id = :P100_EASY_ID;
+      if :P100_EASY_ID is null then
+        :P100_EASY := '';
+        :P100_EASY_CODE := 'TBD';
+      else
+          select name
+               , code
+            into :P100_EASY
+               , :P100_EASY_CODE
+              from wmg_courses_v
+             where course_id = :P100_EASY_ID;
+      end if;
       
-      select name
-           , code
-        into :P100_HARD
-           , :P100_HARD_CODE
+      if :P100_HARD_ID is null then
+        :P100_HARD:= '';
+        :P100_HARD_CODE := 'TBD';
+      else
+        select name
+             , code
+          into :P100_HARD
+             , :P100_HARD_CODE
           from wmg_courses_v
          where course_id = :P100_HARD_ID;
-         
+      end if;
 
   execution: 
     sequence: 20

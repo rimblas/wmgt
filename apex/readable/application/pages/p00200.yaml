@@ -222,6 +222,7 @@ regions:
       identification: 
         name: x
         show-axis: true
+        title: 'Hole #'
 
       value: 
         format-scaling: Automatic
@@ -243,6 +244,7 @@ regions:
       identification: 
         name: y
         show-axis: true
+        title: Dificulty
 
       value: 
         format-scaling: Automatic
@@ -350,16 +352,16 @@ regions:
         type: SQL Query
         sql-query: |
           select course_id, course_name, course_code label, difficulty value
-          , course_name || '<br>Difficulty ' || difficulty tooltip
+          , course_name || '<br>Difficulty ' || round(difficulty) tooltip
           , case when course_id = :P200_COURSE_ID then 'gold' else '#437c94' end color
           from ( 
-              select s.course_id, c.name course_name, s.course_code, sum(s.score_avg) difficulty
+              select c.id course_id, c.name course_name, c.code course_code, sum(s.score_avg) difficulty
               from  wmg_course_stats_v s
                   , wmg_courses c
-              where s.course_id = c.id
-              group by s.course_id, c.name, s.course_code
+              where c.id = s.course_id (+)
+              group by c.id, c.name, c.code
           )
-          order by value
+          order by value nulls first, course_code
         page-items-to-submit: 
         - P200_COURSE_ID
 
@@ -386,6 +388,7 @@ regions:
       identification: 
         name: x
         show-axis: true
+        title: Courses
 
       value: 
         format-scaling: Automatic
@@ -408,6 +411,7 @@ regions:
       identification: 
         name: y
         show-axis: true
+        title: Difficulty
 
       value: 
         format: Decimal
@@ -502,9 +506,7 @@ regions:
       show-value: true
 
     legend: 
-      show: true
-      position: Automatic
-      hide-and-show-behavior: Rescale
+      show: false
 
     messages: 
       when-no-data-found: ← Select a hole from the course
@@ -575,6 +577,7 @@ regions:
       identification: 
         name: x
         show-axis: true
+        title: Strokes
 
       value: 
         format-scaling: Automatic
@@ -596,9 +599,10 @@ regions:
       identification: 
         name: y
         show-axis: true
+        title: '%'
 
       value: 
-        format-scaling: Automatic
+        format-scaling: None
         baseline-scaling: Zero
         scale: Linear
 

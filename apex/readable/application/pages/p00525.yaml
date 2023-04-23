@@ -1219,5 +1219,25 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,SAVE,DELETE
+    value: SAVE,DELETE
+
+branches: 
+- # ====== Branch: Reload Calling Page with New Tournament =====
+  id: 29404005835118080
+  identification: 
+    name: Reload Calling Page with New Tournament
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:500:&SESSION.::&DEBUG.:500::&success_msg=#SUCCESS_MSG#'
+      page: 500 # Tournament Admin
+      clear-cache: 500
+
+  server-side-condition: 
+    when-button-pressed: CREATE # 56143603925666235920
 

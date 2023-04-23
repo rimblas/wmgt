@@ -146,6 +146,8 @@ css:
     
         }
     }
+    .hide_nav_next .t-Form-itemText--post {display: none;}
+    .hide_nav_pre .t-Form-itemText--pre {display: none;}
     
     #weekResults {
         --ut-report-cell-padding-y: .35rem;
@@ -231,6 +233,19 @@ css:
         --ut-report-cell-background-color: #ff0;
         color: #000;
     }
+    #raceRegion .t-Report-wrap {float: none;}
+    #raceRegion .t-Report-report, 
+    #raceRegion .t-Report-wrap {
+        min-width: 50%;
+    }
+    #itemsRegion {
+      flex-direction: row;
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -279,7 +294,7 @@ regions:
       with all_weeks as (
         select ts.id tournament_session_id, ts.round_num, ts.week, ts.session_date
          from wmg_tournament_sessions ts
-        where ts.tournament_id = (select tournament_id from wmg_tournament_sessions where week = :P60_WEEK)
+        where ts.tournament_id = :P60_TOURNAMENT_ID
       )
       , all_tournament_players as (
         select distinct p.player_id, w.tournament_session_id, w.round_num, w.week, w.session_date
@@ -451,6 +466,7 @@ regions:
       order by 5 desc
       
     page-items-to-submit: 
+    - P60_TOURNAMENT_ID
     - P60_WEEK
     - P60_ONLY_ME_IND
 
@@ -570,11 +586,7 @@ regions:
                  , ts.week
                  , ts.session_date
             from wmg_tournament_sessions ts
-            where ts.tournament_id in (
-                select id
-                from wmg_tournaments
-               where current_flag = 'Y'
-            )
+            where ts.tournament_id = :P60_TOURNAMENT_ID
         );
         
           return  'Edit:Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
@@ -734,6 +746,14 @@ regions:
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P60_TOURNAMENT_ID
+        and ts.round_num = 2
+
     security: 
       escape-special-characters: true
 
@@ -768,6 +788,14 @@ regions:
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P60_TOURNAMENT_ID
+        and ts.round_num = 3
 
     security: 
       escape-special-characters: true
@@ -809,11 +837,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 4
 
     security: 
@@ -856,11 +880,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 5
 
     security: 
@@ -970,11 +990,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 6
 
     security: 
@@ -1017,11 +1033,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 7
 
     security: 
@@ -1064,11 +1076,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 8
 
     security: 
@@ -1111,11 +1119,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 9
 
     security: 
@@ -1158,11 +1162,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 10
 
     security: 
@@ -1205,11 +1205,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 11
 
     security: 
@@ -1252,11 +1248,7 @@ regions:
       sql-query: |
         select 1
         from wmg_tournament_sessions ts
-        where ts.tournament_id in (
-            select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-        )
+        where ts.tournament_id = :P60_TOURNAMENT_ID
         and ts.round_num = 12
 
     security: 
@@ -1806,7 +1798,8 @@ regions:
     footer-text: '"BADGES_BY_STEVEN"'
 
   server-cache: 
-    caching: Disabled
+    caching: Enabled
+    cache-timeout: 2 weeks
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2056,7 +2049,7 @@ regions:
       where r.player_id = p.id
       and c.course_id = r.course_id
       and r.score = 1
-       and r.week like 'S08%'
+       and r.week like ( select prefix_tournament from wmg_tournaments where current_flag = 'Y')
       group by substr(r.week,1,3)
              , p.player_name
       order by 3 desc
@@ -3322,6 +3315,9 @@ page-items:
     new-column: true
     column-span: Automatic
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-md-3
+    - col-lg-4
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
@@ -3409,6 +3405,100 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P60_NAV_DIRECTION ========================
+  id: 29403648433118076
+  identification: 
+    name: P60_NAV_DIRECTION
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 130
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_NAV_PREV =============================
+  id: 29403765276118077
+  identification: 
+    name: P60_NAV_PREV
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 140
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: show
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P60_NAV_NEXT =============================
+  id: 29403801603118078
+  identification: 
+    name: P60_NAV_NEXT
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 150
+    region: '{items}' # 106623657478402405520
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P60_WEEK =================================
   id: 58990481012454704231
   identification: 
@@ -3436,19 +3526,22 @@ page-items:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 2
+    column-span: 3
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xss-6
-    - col-xs-6
-    - col-sm-6
+    - col-xss-9
+    - col-xs-8
+    - col-sm-8
     - col-md-6
-    - col-lg-3
+    - col-lg-4
 
   appearance: 
     template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - '&P60_NAV_PREV.'
+    - '&P60_NAV_NEXT.'
     width: 30
 
   validation: 
@@ -3461,6 +3554,16 @@ page-items:
     display-null-value: true
 
   advanced: 
+    pre-text: |
+      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn" aria-expanded="false" aria-controls="weekNav" type="button" title="Prev Week" aria-label="Prev Week" data-nav="prev">
+      <span class="t-Icon fa fa-chevron-left" aria-hidden="true"></span>
+      </button>
+      
+    post-text-: |
+      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn" aria-expanded="false" aria-controls="weekNav" type="button" title="Prev Week" aria-label="Prev Week" data-nav="next">
+      <span class="t-Icon fa fa-chevron-right" aria-hidden="true"></span>
+      </button>
+      
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3529,10 +3632,10 @@ page-items:
     column-span: 2
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xss-6
-    - col-xs-6
-    - col-sm-6
-    - col-md-6
+    - col-xss-3
+    - col-xs-4
+    - col-sm-4
+    - col-md-2
     - col-lg-3
 
   appearance: 
@@ -3548,9 +3651,9 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select count(distinct players_id)
-              from wmg_rounds 
-             where week = :P60_WEEK
+      select count(*)
+        from wmg_tournament_players 
+       where tournament_session_id = :P60_TOURNAMENT_SESSION_ID
     used: Always, replacing any existing value in session state
 
   session-state: 
@@ -4071,6 +4174,117 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Next & Prev Week Navigation =========
+  id: 29403290355118073
+  identification: 
+    name: Next & Prev Week Navigation
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .week_nav_btn
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 29403473797118074
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select decode(:P60_NAV_DIRECTION, 'next', next_week, prev_week)
+        from (
+        select lag(week) over (partition by tournament_id order by round_num) prev_week
+             , id, round_num, week
+             , lead(week) over (partition by tournament_id order by round_num) next_week
+        from wmg_tournament_sessions
+        )
+        where week = :P60_WEEK
+      items-to-submit: 
+      - P60_WEEK
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P60_WEEK
+
+    execution: 
+      sequence: 20
+      event: Next & Prev Week Navigation # 29403290355118073
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Set Value ===================================
+    id: 29403508701118075
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.nav
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P60_NAV_DIRECTION
+
+    execution: 
+      sequence: 10
+      event: Next & Prev Week Navigation # 29403290355118073
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+- # ====== Dynamic Action: Sticky Items ========================
+  id: 30282673125641069
+  identification: 
+    name: Sticky Items
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 30282980250641085
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var vRegion$ = $(this.affectedElements[0]);
+        vRegion$.stickyWidget();
+        // .find('.js-stickyTableHeader')
+
+    affected-elements: 
+      selection-type: Region
+      region: '{items}' # 106623657478402405520
+
+    execution: 
+      sequence: 10
+      event: Sticky Items # 30282673125641069
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Hoist Classes to TD =================
   id: 2316753045247093645
   identification: 
@@ -4190,6 +4404,18 @@ processes:
                , :P60_TOURNAMENT
             from wmg_tournament_sessions_v
            where week = :P60_WEEK;
+      
+           select decode(prev_week, null, 'hide_nav_pre') NAV_PREV
+                , decode(next_week, null, 'hide_nav_next') NAV_NEXT
+             into :P60_NAV_PREV
+                , :P60_NAV_NEXT
+              from (
+              select lag(week) over (partition by tournament_id order by round_num) prev_week
+                   , id, round_num, week
+                   , lead(week) over (partition by tournament_id order by round_num) next_week
+              from wmg_tournament_sessions
+              )
+              where week = :P60_WEEK;
       
       exception
       when NO_DATA_FOUND then

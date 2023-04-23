@@ -454,6 +454,7 @@ page-items:
       order by 1
     display-extra-values: true
     display-null-value: true
+    null-display-value: '- TBD -'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -518,6 +519,7 @@ page-items:
       order by 1
     display-extra-values: true
     display-null-value: true
+    null-display-value: '- TBD -'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1154,6 +1156,10 @@ buttons:
       select 1
       from wmg_tournament_players
       where tournament_session_id = :P532_ID
+      union all
+      select 1
+      from dual
+      where :P532_ID is null
 
 - # ====== Button: SAVE ========================================
   id: 56149539270179424871
@@ -1576,6 +1582,10 @@ processes:
         insert (tournament_session_id, course_no, course_id)
         values (c2.tournament_session_id, c2.course_no, c2.course_id);
       
+      -- make the changes visible right away
+      apex_region.purge_cache (
+          p_page_id    => 1
+      );
 
   execution: 
     sequence: 20
