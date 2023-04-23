@@ -78,12 +78,14 @@ regions:
     type: SQL Query
     sql-query: |
       select course_ID id,
+             release_order,
              CODE,
              NAME,
              COURSE_MODE
            , course_par
            , 'https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/' || code || '_FULL.JPG' icon
         from WMG_COURSES_V
+      
 
   layout: 
     sequence: 10
@@ -185,6 +187,44 @@ regions:
         alias: 469867890
 
     columns: 
+    - # ====== Column: RELEASE_ORDER ===============================
+      id: 29404117729118081
+      identification: 
+        column-name: RELEASE_ORDER
+        type: Plain Text
+
+      heading: 
+        heading: '#'
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 10
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
     - # ====== Column: COURSE_PAR ==================================
       id: 15134613378571923813
       identification: 
@@ -199,7 +239,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 42
+        sequence: 60
         column-alignment: end
 
       accessibility: 
@@ -237,7 +277,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 12
+        sequence: 30
         column-alignment: center
 
       accessibility: 
@@ -296,7 +336,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 2
+        sequence: 20
         column-alignment: start
 
       accessibility: 
@@ -334,7 +374,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 22
+        sequence: 40
         column-alignment: start
 
       accessibility: 
@@ -382,7 +422,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 32
+        sequence: 50
         column-alignment: center
 
       accessibility: 

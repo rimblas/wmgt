@@ -445,7 +445,9 @@ regions:
                , s.easy_course_code
                , s.hard_course_code
                , s.easy_course_id
+               , s.easy_release_order
                , s.hard_course_id
+               , s.hard_release_order
                , case when s.completed_ind = 'Y' then 'white_check_mark' else 'checkered_flag' end status
                , s.session_date
           from wmg_tournament_sessions_v s
@@ -461,12 +463,14 @@ regions:
            , '' hard_course
            , status
            , order_by
+           , release_order
       from (
       select to_number(null) round_num
            , e.code easy_course
            , tce.easy_course_code
            , 'o' status
            , 2 order_by
+           , release_order
       from wmg_courses e
          , tournament_courses tce
       where e.course_mode = 'E'
@@ -480,12 +484,14 @@ regions:
              , hard_course
              , status
              , order_by
+             , release_order
         from (
           select to_number(null) round_num
                , h.code hard_course
                , tch.hard_course_code
                , 'o' status
                , 2 order_by
+               , h.release_order
           from wmg_courses h
              , tournament_courses tch
           where h.course_mode = 'H'
@@ -499,18 +505,18 @@ regions:
            , h.hard_course
            , 'white_medium_square' status
            , coalesce(e.order_by, h.order_by) order_by
-           , coalesce(e.easy_course, h.hard_course) course_order     
+           , coalesce(e.release_order, h.release_order) course_order     
       from missing_easy e
       full outer join missing_hard h
       on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
       union all
       select c.round_num
            , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
-           , c.easy_course_code
-           , c.hard_course_code
+           , nvl(c.easy_course_code, '-?-')
+           , nvl(c.hard_course_code, '-?-')
            , c.status
            , 1 order_by
-           , coalesce(c.easy_course_code, c.hard_course_code)
+           , coalesce(c.easy_release_order, c.hard_release_order)
         from tournament_courses c
       order by order_by, round_num,7
       
@@ -791,7 +797,7 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - col-md-4
+    - col-md-3
     - col-sm-6
     - col-xs-12
 
@@ -860,6 +866,9 @@ regions:
     type: Item is NOT NULL
     item: G_DISCORD_ID
 
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
   server-cache: 
     caching: Disabled
 
@@ -895,7 +904,6 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - col-md-4
     - col-sm-6
     - col-xs-12
     - hidden-xs-down
@@ -920,6 +928,9 @@ regions:
   server-side-condition: 
     type: Item is NOT NULL
     item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
   server-cache: 
     caching: Disabled

@@ -2,6 +2,7 @@ create or replace view wmg_courses_v
 as
 select 
     c.id                                         course_id,
+    c.release_order,
     c.code                                       code,
     c.name                                       name,
     c.code || ' - ' || c.name prepared_name,

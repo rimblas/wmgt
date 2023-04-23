@@ -20,7 +20,7 @@ navigation-menu:
   override-user-interface-level: false
 
 navigation: 
-  cursor-focus: Do not focus cursor
+  cursor-focus: First item on page
   warn-on-unsaved-changes: true
 
 css: 
@@ -362,6 +362,63 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P3_RELEASE_ORDER =========================
+  id: 29404325974118083
+  identification: 
+    name: P3_RELEASE_ORDER
+    type: Number Field
+
+  label: 
+    label: 'Course #'
+    alignment: Left
+
+  settings: 
+    number-alignment: Start
+    virtual-keyboard: Decimal
+
+  layout: 
+    sequence: 20
+    region: Course # 46986696689601702653
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 1
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46986651846996702470
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--indicatorAsterisk
+    width: 60
+
+  validation: 
+    value-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course # 46986696689601702653
+    column: RELEASE_ORDER
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P3_ID ====================================
   id: 46986696926311702654
   identification: 
@@ -413,12 +470,12 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 20
+    sequence: 30
     region: Course # 46986696689601702653
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: 2
@@ -474,7 +531,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 30
+    sequence: 40
     region: Course # 46986696689601702653
     position: BODY
     alignment: Left
@@ -532,7 +589,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 40
+    sequence: 60
     region: Course # 46986696689601702653
     position: BODY
     alignment: Left
