@@ -1,3 +1,4 @@
+set define off
 create or replace package body wmg_discord
 is
 

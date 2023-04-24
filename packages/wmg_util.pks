@@ -24,6 +24,18 @@ function rooms_set(p_tournament_session_id in wmg_tournament_sessions.id%type )
    return varchar2;
 
 --------------------------------------------------------------------------------
+function get_param(
+  p_name_key  in wmg_parameters.name_key%TYPE
+)
+return varchar2;
+
+--------------------------------------------------------------------------------
+procedure set_param(
+    p_name_key  in wmg_parameters.name_key%TYPE
+  , p_value     in wmg_parameters.value%TYPE
+);
+
+--------------------------------------------------------------------------------
 procedure assign_rooms(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );

@@ -114,6 +114,82 @@ end rooms_set;
 
 ------------------------------------------------------------------------------
 /**
+ * Get parameter values
+ *
+ *
+ * @example
+ * wmg_util.get_param('EMAIL_OVERRIDE')
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created November 8, 2016
+ * @param
+ * @return
+ */
+function get_param(
+  p_name_key  in wmg_parameters.name_key%TYPE
+)
+return varchar2
+is
+  l_value wmg_parameters.value%TYPE;
+begin
+
+  select value
+    into l_value
+    from wmg_parameters
+   where name_key = p_name_key;
+
+  return l_value;
+
+exception
+  when NO_DATA_FOUND then
+    return null;
+
+end get_param;
+
+
+
+
+
+/**
+ * Set a parameter value
+ *
+ *
+ * @example
+ * wmg_util.set_param('EMAIL_OVERRIDE', 'developers_list@insum.ca')
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created November 8, 2016
+ * @param
+ * @return
+ */
+procedure set_param(
+    p_name_key      in wmg_parameters.name_key%TYPE
+  , p_value         in wmg_parameters.value%TYPE
+)
+is
+begin
+
+  update wmg_parameters
+     set value = p_value
+   where name_key = p_name_key;
+
+  if sql%rowcount = 0 then
+    raise_application_error(
+        -20001
+      , 'Parameter ' || p_name_key || ' does not exist.'
+    );
+  end if;
+
+end set_param;
+
+
+
+------------------------------------------------------------------------------
+/**
  * Given a tournament session create random room assignments
  * We ideally want rooms of 4, never have a room of 1 and avoid rooms of 2
  * Scenarios:
