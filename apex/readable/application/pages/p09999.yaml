@@ -21,6 +21,7 @@ navigation:
 
 css: 
   inline: |
+    .t-Login-region:first-of-type .t-Login-header {padding-bottom: 0}
     .t-Login-logo {
         background-color: whitesmoke;
     }
@@ -92,7 +93,7 @@ regions:
 
   layout: 
     sequence: 10
-    parent-region: Player Login # 47577408628042657320
+    parent-region: Player's # 47577408628042657320
     position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
@@ -115,9 +116,7 @@ regions:
     exclude-title-from-translation: false
 
   header-and-footer: 
-    header-text: |
-      <div class="legend">As a player, use Discord to sign-in.<br>
-      It's safe and secure.</div>
+    header-text: <div class="legend">As a player, use Discord to sign-in.<br></div>
 
   server-cache: 
     caching: Disabled
@@ -156,7 +155,7 @@ regions:
       
 
   layout: 
-    sequence: 30
+    sequence: 40
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -213,6 +212,8 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - t-Login-region--headerTitle js-removeLandmark
+    - js-headingLevel-5
+    - margin-top-lg
     render-components: Above Content
 
   accessibility: 
@@ -220,6 +221,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: adminLogin
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -234,11 +236,18 @@ regions:
       output-as: Text (escape special characters)
       show-line-breaks: true
 
-- # ====== Region: Player Login ================================
+- # ====== Region: Player's ====================================
   id: 47577408628042657320
   identification: 
-    title: Player Login
+    title: Player's
     type: Static Content
+
+  source: 
+    html-code: |
+      <div class="margin-bottom-sm u-tC">
+      <h4>Sign In with Discord</h4>
+      <span aria-hidden="true" class="fa fa-arrow-down-alt fa-anim-vertical-shake fa-lg"></span>
+      </div>
 
   layout: 
     sequence: 10
@@ -516,7 +525,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
@@ -527,6 +536,35 @@ buttons:
     - t-Button--link
     - t-Button--iconLeft
     - t-Button--stretch
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: SHOW_ADMIN ==================================
+  id: 31038251257157885
+  identification: 
+    button-name: SHOW_ADMIN
+    label: I'm an Admin
+
+  layout: 
+    sequence: 100
+    region: Admin's Login # 46986690493641702572
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    - t-Button--stretch
+    icon: fa-lock
 
   behavior: 
     action: Defined by Dynamic Action
@@ -602,7 +640,7 @@ buttons:
 
   layout: 
     sequence: 5
-    region: Player Login # 47577408628042657320
+    region: Player's # 47577408628042657320
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -668,6 +706,152 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: About About # 3474347635873718
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Show on Focus =======================
+  id: 31037684575157880
+  identification: 
+    name: Show on Focus
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: SHOW_ADMIN # 31038251257157885
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Show ========================================
+    id: 31037873815157881
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Button
+      button: LOGIN_GOOGLE # 47577408275874657316
+
+    execution: 
+      sequence: 10
+      event: Show on Focus # 31037684575157880
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Show ========================================
+    id: 31038527730157888
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Button
+      button: LOGIN # 46986692592679702574
+
+    execution: 
+      sequence: 20
+      event: Show on Focus # 31037684575157880
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Show ========================================
+    id: 31038593884157889
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P9999_USERNAME
+      - P9999_PASSWORD
+      - P9999_REMEMBER
+      - P9999_PERSISTENT_AUTH
+
+    execution: 
+      sequence: 30
+      event: Show on Focus # 31037684575157880
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Hide ========================================
+    id: 31038727851157890
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Button
+      button: SHOW_ADMIN # 31038251257157885
+
+    execution: 
+      sequence: 40
+      event: Show on Focus # 31037684575157880
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Hide Admin buttons ==================
+  id: 31038039347157883
+  identification: 
+    name: Hide Admin buttons
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Hide ========================================
+    id: 31038166565157884
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Button
+      button: LOGIN_GOOGLE # 47577408275874657316
+
+    execution: 
+      sequence: 10
+      event: Hide Admin buttons # 31038039347157883
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Hide ========================================
+    id: 31038361597157886
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P9999_USERNAME
+      - P9999_PASSWORD
+      - P9999_REMEMBER
+      - P9999_PERSISTENT_AUTH
+
+    execution: 
+      sequence: 30
+      event: Hide Admin buttons # 31038039347157883
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Hide ========================================
+    id: 31038415654157887
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Button
+      button: LOGIN # 46986692592679702574
+
+    execution: 
+      sequence: 20
+      event: Hide Admin buttons # 31038039347157883
       fire-when-event-result-is: True
       fire-on-initialization: false
 
