@@ -630,6 +630,11 @@ regions:
         group-by: true
         pivot: true
 
+      server-side-condition: 
+        type: Expression
+        language: PL/SQL
+        pl/sql-expression: "nvl(:REQUEST,'OK') not in ('CSV','HTMLD')"
+
       security: 
         escape-special-characters: false
 

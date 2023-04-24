@@ -4,10 +4,10 @@ create table wmg_parameters (
   , name_key      varchar2(200) not null
   , value         varchar2(4000)
   , description   varchar2(4000)
-    created_on                     timestamp with local time zone default on null current_timestamp not null,
-    created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
-    updated_on                     timestamp with local time zone,
-    updated_by                     varchar2(60 char)
+  , created_on                     timestamp with local time zone default on null current_timestamp not null
+  , created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null
+  , updated_on                     timestamp with local time zone
+  , updated_by                     varchar2(60 char)
   , constraint wmg_parameters_u unique (name_key)
 )
 enable primary key using index

@@ -7,6 +7,27 @@
   settings: 
     type: Oracle APEX Accounts
 
+  source: 
+    pl/sql-code: |
+      procedure set_test_user
+      is
+      begin
+        
+       select id
+             , account
+             , discord_id
+             , discord_avatar
+             , discord_discriminator
+        into :G_PLAYER_ID
+           , :G_DISCORD
+           , :G_DISCORD_ID
+           , :G_DISCORD_AVATAR
+           , :G_DISCORD_DISCRIMINATOR
+          from wmg_players
+         where id = 24;
+      
+      end set_test_user;
+
   session-not-valid: 
     redirect-to: Login Page
 

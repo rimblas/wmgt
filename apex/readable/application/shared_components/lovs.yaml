@@ -137,15 +137,13 @@
       from WMG_TOURNAMENT_PLAYER_V 
       where tournament_session_id = :G_CURRENT_SESSION_ID
         and active_ind = 'Y'
+        
 
   column-mapping: 
     return: PLAYER_ID
     display: PLAYER_NAME
     default-sort: PLAYER_NAME
     sort-direction: Ascending (Nulls Last)
-
-  comments: 
-    comments: Active players registered for the tournament
 
   columns: 
   - # ====== Column: PLAYER_ID ===================================
@@ -162,24 +160,6 @@
 
     advanced: 
       searchable: false
-
-  - # ====== Column: ACCOUNT =====================================
-    id: 11805993577977364
-    identification: 
-      column-name: ACCOUNT
-      show: true
-
-    heading: 
-      heading: Account
-
-    layout: 
-      sequence: 30
-
-    source: 
-      data-type: VARCHAR2
-
-    advanced: 
-      searchable: true
 
   - # ====== Column: ROOM_NO =====================================
     id: 11806443059977364

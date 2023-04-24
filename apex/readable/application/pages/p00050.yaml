@@ -7011,7 +7011,7 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconRight
-    icon: fa-check
+    icon: fa-plus
 
   behavior: 
     action: Submit Page
@@ -7787,12 +7787,14 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:50:P50_ENTER_SCORECARD_FLAG:&P50_ENTER_SCORECARD_FLAG.&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:50:P50_ENTER_SCORECARD_FLAG,P50_H_ID,P50_E_ID:&P50_ENTER_SCORECARD_FLAG.,&P50_H_ID.,&P50_E_ID.&success_msg=#SUCCESS_MSG#'
       page: 50 # Enter Rounds
       request: ASK_SCORE
       clear-cache: 50
       values: 
         p50_enter_scorecard_flag: '&P50_ENTER_SCORECARD_FLAG.'
+        p50_h_id: '&P50_H_ID.'
+        p50_e_id: '&P50_E_ID.'
 
   server-side-condition: 
     type: Item is NULL
@@ -7810,9 +7812,8 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
-      page: 50 # Enter Rounds
-      request: ASK_SCORE
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
+      page: 60 # View Results
       clear-cache: 60
 
 - # ====== Branch: Closed Tournament ===========================

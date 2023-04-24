@@ -29,6 +29,40 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
+  function-and-global-variable-declaration: |
+    function roomsReady() {
+      
+      var $popUp = $("#pendingWarning")
+        , popUpStatus = $popUp.parents(".ui-dialog--popup").css("display");
+    
+    
+      if (popUpStatus == "none") {
+        // the pending Rooms warning is not open
+        return;
+      } 
+      else {
+        // Checking pending Rooms status
+        apex.server.process('ROOMS_READY',
+        {
+           x01: &G_CURRENT_SESSION_ID.
+        }
+        , {
+          success: function(pData) {
+            if (pData.ready) {
+              apex.submit(); // simply reload
+            }
+            else {
+              // check all over again
+              setTimeout(roomsReady, 5500);
+            }
+          }
+    
+        }
+        );
+      }
+    }
+    
+    
   execute-when-page-loads: $(".showAvatar").tooltip();
 
 css: 
@@ -270,6 +304,63 @@ regions:
   attributes: 
     performance: 
       lazy-loading: false
+
+- # ====== Region: Randomizing rooms... ========================
+  id: 30614123131578072
+  identification: 
+    title: Randomizing rooms...
+    type: Static Content
+
+  source: 
+    html-code: |
+      <h3>Randomizing and shuffling rooms...</h3>
+      
+      The page will re-load when ready or return in a few minutes. <br>
+      
+      Just a few moments...<br>
+      
+      <br>
+      <div class="u-tC">
+      <span aria-hidden="true" class="fa fa-spinner fa-4x fa-anim-spin-step"></span>
+      </div>
+
+  layout: 
+    sequence: 129
+    parent-region: No Parent
+    position: REGION_POSITION_04
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46986570183476702434
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-autoheight
+    - js-dialog-size480x320
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: pendingWarning
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: 00:00 =======================================
   id: 7048711940745770706
@@ -1913,7 +2004,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46986653123744702471
@@ -2290,6 +2381,49 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Randomizing Rooms ===================
+  id: 30614212986578073
+  identification: 
+    name: Randomizing Rooms
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.rooms_defined_flag = 'Y'  -- rooms defined
+        and s.rooms_open_flag is null   -- but not open
+        and s.id = :G_CURRENT_SESSION_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55893512303411682019
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 30614349975578074
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        apex.theme.openRegion("pendingWarning");
+        roomsReady();
+
+    execution: 
+      sequence: 10
+      event: Randomizing Rooms # 30614212986578073
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Submit Room Assignments =============
   id: 40380891077778957228
   identification: 
@@ -2500,6 +2634,39 @@ processes:
 
   security: 
     authorization-scheme: Tournament Admin # 55893512303411682019
+
+- # ====== Process: ROOMS_READY ================================
+  id: 30614499303578076
+  identification: 
+    name: ROOMS_READY
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      declare
+        l_room_open_flag wmg_tournament_sessions.rooms_open_flag%type;
+      begin
+        select rooms_open_flag
+          into l_room_open_flag
+          from wmg_tournament_sessions
+         where id = apex_application.g_x01;
+      
+        apex_json.open_object; -- {'
+        if l_room_open_flag = 'Y' then
+           apex_json.write('ready', true);
+        else
+           apex_json.write('ready', false);
+        end if;
+        apex_json.close_object; -- }
+      
+      end;
+
+  execution: 
+    sequence: 10
+    point: Ajax Callback
+    run-process: Once Per Page Visit (default)
 
 - # ====== Process: Run Room Assignments =======================
   id: 40817362645960412001

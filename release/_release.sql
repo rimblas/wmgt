@@ -20,3 +20,9 @@ PRO .. wmg_util.pks
 PRO .. wmg_util.pkb
 @../packages/wmg_util.pkb
 
+PRO DML
+PRO ----------------------------------------
+PRO .. cleanup old tables
+drop table wmg_course_previews2 purge;
+drop table wmg_course_previews_err$ purge;
+
