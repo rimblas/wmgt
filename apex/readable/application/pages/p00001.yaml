@@ -1770,6 +1770,38 @@ buttons:
     type: Item is NULL
     item: G_PLAYER_ID
 
+- # ====== Button: VIEW_ALL ====================================
+  id: 31039652692157899
+  identification: 
+    button-name: VIEW_ALL
+    label: View All
+
+  layout: 
+    sequence: 10
+    region: Most recent registrations # 31038802168157891
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46986652388380702470
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:40::'
+      page: 40 # Room Selections & Assignments
+      clear-cache: 40
+
+    warn-on-unsaved-changes: Do Not Check
+
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh after close =================
   id: 24234378956737315
