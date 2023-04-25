@@ -235,6 +235,11 @@ regions:
   customization: 
     customizable: Not Customizable By End Users
 
+  comments: 
+    comments: |
+      Debugging knockout:
+      <pre data-bind="text: ko.toJSON($root, null, 2)"></pre>
+
   attributes: 
     settings: 
       output-as: HTML
@@ -931,7 +936,7 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - u-vh
+    - u-vh&P50_ENTER_SCORECARD_FLAG.
     - scoreCards
 
   appearance: 
@@ -951,7 +956,7 @@ regions:
   server-side-condition: 
     type: Expression
     language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null'
+    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null'
 
   server-cache: 
     caching: Disabled
@@ -7447,6 +7452,27 @@ dynamic-actions:
       fire-on-initialization: false
 
 validations: 
+- # ====== Validation: Easy Score Submission and Scorecard must 
+  id: 31039512909157898
+  identification: 
+    name: Easy Score Submission and Scorecard must match
+
+  execution: 
+    sequence: 20
+
+  validation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P50_ESCORE_DISPLAY != :P50_EASY_COURSE_FINAL_SCORE'
+    always-execute: false
+
+  error: 
+    error-message: The socrecard and your submission do not match!
+    display-location: Inline with Field and in Notification
+
+  server-side-condition: 
+    type: Never
+
 - # ====== Validation: Week format =============================
   id: 15525201979647654900
   identification: 

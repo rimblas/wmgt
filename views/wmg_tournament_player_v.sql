@@ -39,6 +39,7 @@ select t.id                              tournament_id
      , nvl(p.player_name, '-error-')     player_name
      , p.account                         account
      , p.country_code                    country_code
+     , p.country                         country
      , p.discord_id
      , p.discord_avatar
   from wmg_tournaments t
