@@ -448,7 +448,7 @@ regions:
            , r.w12_week
            , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
         from (
-        select nvl(p.name, p.account) player_name
+        select p.player_name
              , p.country_code
              , p.rank_name
              , p.rank_list_class
