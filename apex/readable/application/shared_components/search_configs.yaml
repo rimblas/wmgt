@@ -7,15 +7,24 @@
   source: 
     search-type: Simple (APEX Data Source)
     location: Local Database
-    type: Table / View
-    table-owner: Parsing Schema
-    table-name: WMG_PLAYERS_V
-    searchable-columns: 'ACCOUNT:NAME:PLAYER_NAME:PREFERED_TZ:COUNTRY_CODE:COUNTRY:RANK_CODE'
+    type: SQL Query
+    sql-query: |
+      select p.*
+           , case when tp.active_ind = 'Y' then
+              'Signup for ' || tp.week || ' at ' || tp.time_slot
+             else '' end signup
+      from wmg_players_v p
+         , wmg_tournament_player_v tp
+      where p.id = tp.player_id (+)
+        and tp.tournament_session_id (+) = :G_CURRENT_SESSION_ID
+      
+    searchable-columns: 'ACCOUNT:NAME:PLAYER_NAME:PREFERED_TZ:COUNTRY_CODE:COUNTRY:RANK_CODE:SIGNUP'
 
   column-mapping: 
     primary-key-1-column-name: ID
     title-column-name: PLAYER_NAME
     subtitle-column-name: RANK_NAME
+    description-column-name: SIGNUP
     custom-column-name-1: PREFERED_TZ
 
   link: 
