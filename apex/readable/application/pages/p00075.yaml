@@ -19,9 +19,20 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
+javascript: 
+  file-urls: 
+  - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+
 css: 
   file-urls: 
   - '#APP_FILES#css/week-lov#MIN#.css'
+  inline: |
+    .verification {cursor:pointer;}
+    .vYES {color: green;}
+    .vYES:before {content: "\f14a";}
+    .vNO:before {content: "\f096";}
+    
+    
 
 security: 
   authorization-scheme: Contribution Rights # 46986682878463702496
@@ -52,34 +63,38 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with verification as (
-        select id
-             , rank
-             , username player_name
-             , easy_score
-             , hard_score
-             , total_score
-          from wmg_wmgt_scores_tmp
+      with scorecards as (
+        select p.week
+             , r.pos
+             , p.player_id
+             , p.tournament_player_id
+             , p.player_name
+             , p.discord_id
+             , r.easy_par
+             , r.hard_par
+             , r.total_score
+             , r.easy_round_id
+             , r.hard_round_id
+             , r.easy_scorecard
+             , r.hard_scorecard
+             , r.total_scorecard
+             , p.verified_score_flag
+             , p.verified_by
+             , p.verified_on
+          from wmg_tournament_results_v r
+             , wmg_tournament_player_v p
+         where p.week = r.week (+)
+           and p.player_id = r.player_id (+)
+           and p.week = :P75_WEEK
       )
-      , scorecards as (
-        select week
-             , pos
-             , player_id
-             , player_name
-             , easy_par
-             , hard_par
-             , total_score
-             , easy_round_id
-             , hard_round_id
-          from wmg_tournament_results_v
-         where week = :P75_WEEK
-      )
-      select rank
+      select pos
            , player_id
+           , tournament_player_id
+           , wmg_discord.avatar_link(p_discord_id => discord_id) avatar
            , player_name
-           , uploaded_easy_score
-           , uploaded_hard_score
-           , uploaded_total_score
+           , easy_scorecard
+           , hard_scorecard
+           , total_scorecard
            , easy_round_id
            , hard_round_id
            , easy_par
@@ -88,48 +103,62 @@ regions:
            , easy_diff
            , hard_diff
            , verification_class
+           , verified
+           , verified_score_flag
+           , verified_by
+           , verified_on
       from  (
-          select v.rank
+          select s.pos
                , s.player_id
-               , nvl(v.player_name, s.player_name) player_name
-               , v.easy_score  uploaded_easy_score
-               , v.hard_score  uploaded_hard_score
-               , v.total_score uploaded_total_score
+               , s.discord_id
+               , s.tournament_player_id
+               , s.player_name
+               , s.easy_scorecard
+               , s.hard_scorecard
+               , s.total_scorecard
                , s.easy_round_id
                , s.hard_round_id
                , s.easy_par
                , s.hard_par
                , s.total_score
-               , case when (nvl(v.easy_score, -999) != nvl(s.easy_par, -999)) then 'mark' else '' end easy_diff
-               , case when (nvl(v.hard_score, -999) != nvl(s.hard_par, -999)) then 'mark' else '' end hard_diff
+               , case when (nvl(s.easy_scorecard, -999) != nvl(s.easy_par, -999)) then 'mark' else '' end easy_diff
+               , case when (nvl(s.hard_scorecard, -999) != nvl(s.hard_par, -999)) then 'mark' else '' end hard_diff
                , case 
-                   when  v.easy_score = s.easy_par
-                     and v.hard_score = s.hard_par
-                     and v.total_score = s.total_score
+                   when  s.easy_scorecard = s.easy_par
+                     and s.hard_scorecard = s.hard_par
+                     and s.total_scorecard = s.total_score
                   then 
                      'Y'
                    else 
                      'N'
                    end verification_class
                 , case 
-         when (s.player_name is null or v.player_name is null )
-          or (v.total_score != s.total_score)
-         then 1
-         else 2 end display_seq
-            from verification v
-            full outer join scorecards s on s.player_name = v.player_name
+                     when (s.total_scorecard != s.total_score)
+                     then 1
+                     when pos is null then 3
+                     else 2 
+                  end display_seq
+                , decode(s.verified_score_flag, null, 'NO', 'YES') verified
+                , s.verified_score_flag
+                , s.verified_by
+                , s.verified_on
+            from scorecards s
       )
       where (:P75_DIFF_ONLY_FLAG = 'N'
             or verification_class = 'N')
+        and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
+        and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or :P75_SHOW_VERYFIED_FLAG = 'Y')
       order by display_seq
-         , to_number(rank)
+         , pos
       
     page-items-to-submit: 
     - P75_WEEK
     - P75_DIFF_ONLY_FLAG
+    - P75_SHOW_MISSING_FLAG
+    - P75_SHOW_VERYFIED_FLAG
 
   layout: 
-    sequence: 39
+    sequence: 69
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -152,6 +181,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: verifyRegion
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -217,7 +247,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 42
+      sequence: 60
       column-alignment: start
 
     accessibility: 
@@ -225,13 +255,14 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:P50_PLAYERS_ID,P50_E_ID,P50_H_ID:#PLAYER_ID#,#EASY_ROUND_ID#,#HARD_ROUND_ID##TOURNAMENT_SESSION_ID#'
+        url: 'f?p=&APP_ID.:50:&SESSION.::&DEBUG.:50:P50_PLAYERS_ID,P50_E_ID,P50_H_ID,P50_PREV_PAGE_ID:#PLAYER_ID#,#EASY_ROUND_ID#,#HARD_ROUND_ID#,&APP_PAGE_ID.#TOURNAMENT_SESSION_ID#'
         page: 50 # Enter Rounds
         clear-cache: 50
         values: 
           p50_players_id: '#PLAYER_ID#'
           p50_e_id: '#EASY_ROUND_ID#'
-          p50_h_id: '#HARD_ROUND_ID##TOURNAMENT_SESSION_ID#'
+          p50_h_id: '#HARD_ROUND_ID#'
+          p50_prev_page_id: '&APP_PAGE_ID.#TOURNAMENT_SESSION_ID#'
 
       link-text: '#PLAYER_NAME#'
 
@@ -250,91 +281,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: UPLOADED_EASY_SCORE =========================
-    id: 3469970673873674
-    identification: 
-      column-name: UPLOADED_EASY_SCORE
-      type: Plain Text
-
-    heading: 
-      heading: Submitted<br>Easy Score
-      alignment: center
-
-    layout: 
-      sequence: 52
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: <span class="#EASY_DIFF#">#UPLOADED_EASY_SCORE#</span>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: UPLOADED_HARD_SCORE =========================
-    id: 3470013354873675
-    identification: 
-      column-name: UPLOADED_HARD_SCORE
-      type: Plain Text
-
-    heading: 
-      heading: Submitted <br>Hard Score
-      alignment: center
-
-    layout: 
-      sequence: 62
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: <span class="#HARD_DIFF#">#UPLOADED_HARD_SCORE#</span>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: UPLOADED_TOTAL_SCORE ========================
-    id: 3470150572873676
-    identification: 
-      column-name: UPLOADED_TOTAL_SCORE
-      type: Hidden Column
-
-    layout: 
-      sequence: 72
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: EASY_PAR ====================================
     id: 3470210530873677
     identification: 
@@ -342,11 +288,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Scoresheets<br>Easy Score
+      heading: Submitted<br>Easy Score
       alignment: center
 
     layout: 
-      sequence: 82
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -377,11 +323,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Scoresheets<br>Hard Score
+      heading: Submitted<br>Hard Score
       alignment: center
 
     layout: 
-      sequence: 92
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -416,7 +362,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 12
+      sequence: 20
       column-alignment: center
 
     accessibility: 
@@ -447,7 +393,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 112
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -462,7 +408,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 122
+      sequence: 140
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -477,7 +423,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 32
+      sequence: 30
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -492,7 +438,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 132
+      sequence: 150
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -507,22 +453,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 142
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: RANK ========================================
-    id: 3477887317883446
-    identification: 
-      column-name: RANK
-      type: Hidden Column
-
-    layout: 
-      sequence: 2
+      sequence: 160
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -537,13 +468,264 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 102
+      sequence: 120
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
     security: 
       escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 31041577838157919
+    identification: 
+      column-name: POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_SCORECARD ==============================
+    id: 31041761882157920
+    identification: 
+      column-name: EASY_SCORECARD
+      type: Plain Text
+
+    heading: 
+      heading: Easy Scorecard
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#EASY_DIFF#">#EASY_SCORECARD#</span>
+      css-classes: 
+      - scorecard
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_SCORECARD ==============================
+    id: 31041851274157921
+    identification: 
+      column-name: HARD_SCORECARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard Scorecard
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#HARD_DIFF#">#HARD_SCORECARD#</span>
+      css-classes: 
+      - scorecard
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORECARD =============================
+    id: 32614375914964072
+    identification: 
+      column-name: TOTAL_SCORECARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_SCORE_FLAG =========================
+    id: 32614696254964076
+    identification: 
+      column-name: VERIFIED_SCORE_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 170
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_BY =================================
+    id: 32614825557964077
+    identification: 
+      column-name: VERIFIED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_ON =================================
+    id: 32614935963964078
+    identification: 
+      column-name: VERIFIED_ON
+      type: Plain Text
+
+    heading: 
+      heading: When
+      alignment: center
+
+    layout: 
+      sequence: 190
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED ====================================
+    id: 32615064809964079
+    identification: 
+      column-name: VERIFIED
+      type: Plain Text
+
+    heading: 
+      heading: Verified
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="verification fa v#VERIFIED#" title="Verified: #VERIFIED# #VERIFIED_BY# #VERIFIED_ON#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_PLAYER_ID ========================
+    id: 32615135940964080
+    identification: 
+      column-name: TOURNAMENT_PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 32616529274964094
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
 
 page-items: 
 - # ====== Page Item: P75_DIFF_ONLY_FLAG =======================
@@ -568,7 +750,7 @@ page-items:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 2
     label-column-span: Page Template Default
 
   appearance: 
@@ -599,7 +781,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   help: 
-    help-text: Only players with discrepancies will be displayed.
+    help-text: Only players with discrepancies or a missing course will be displayed.
 
 - # ====== Page Item: P75_WEEK =================================
   id: 3486872111986294
@@ -692,39 +874,203 @@ page-items:
           return options;
       }
 
-buttons: 
-- # ====== Button: LOAD_POINTS =================================
-  id: 6010068693197107
+- # ====== Page Item: P75_SHOW_MISSING_FLAG ====================
+  id: 32614400871964073
   identification: 
-    button-name: LOAD_POINTS
-    label: Load Points
+    name: P75_SHOW_MISSING_FLAG
+    type: Switch
+
+  label: 
+    label: Show Missing Submissions?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
 
   layout: 
     sequence: 29
     region: No Parent
     position: BODY
+    alignment: Left
     start-new-layout: false
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
-    alignment: Right
+    column-span: 2
+    label-column-span: Page Template Default
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
-    hot: false
+    template: Optional - Floating # 46986650580145702469
     template-options: 
     - '#DEFAULT#'
-    - t-Button--iconLeft
-    icon: fa-upload
 
-  behavior: 
-    action: Submit Page
-    execute-validations: true
-    warn-on-unsaved-changes: Do Not Check
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
 
   security: 
-    authorization-scheme: Administration Rights # 46986682652284702496
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Show players that have not submitted scores or entered their scoresheets
+
+- # ====== Page Item: P75_ID ===================================
+  id: 32615461135964083
+  identification: 
+    name: P75_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 49
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_SEARCH ===============================
+  id: 32615970990964088
+  identification: 
+    name: P75_SEARCH
+    type: Text Field
+
+  label: 
+    label: Search
+    alignment: Left
+
+  settings: 
+    subtype: Search
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: true
+    disabled: false
+
+  layout: 
+    sequence: 59
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    icon: fa-search
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_SHOW_VERYFIED_FLAG ===================
+  id: 32616214464964091
+  identification: 
+    name: P75_SHOW_VERYFIED_FLAG
+    type: Switch
+
+  label: 
+    label: Show Verified?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 39
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46986650580145702469
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Show the verified scoresheets. Verified means someone look at the scorecard and confirmed it matches the score submission.
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Data ========================
@@ -741,6 +1087,8 @@ dynamic-actions:
     item(s): 
     - P75_WEEK
     - P75_DIFF_ONLY_FLAG
+    - P75_SHOW_MISSING_FLAG
+    - P75_SHOW_VERYFIED_FLAG
 
   execution: 
     event-scope: Static
@@ -762,11 +1110,213 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Toggle Verification =================
+  id: 32615259260964081
+  identification: 
+    name: Toggle Verification
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .verification
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Get player ID ===============================
+    id: 32615352808964082
+    identification: 
+      name: Get player ID
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P75_ID
+
+    execution: 
+      sequence: 20
+      event: Toggle Verification # 32615259260964081
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 32615516003964084
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        -- toggle the verification
+        update wmg_tournament_players
+           set verified_score_flag = decode(verified_score_flag, null, 'Y', null)
+             , verified_by = decode(verified_score_flag, null, sys_context('APEX$SESSION','APP_USER'), null)
+             , verified_on = decode(verified_score_flag, null, current_timestamp, null)
+        where id = :P75_ID;
+      items-to-submit: 
+      - P75_ID
+
+    execution: 
+      sequence: 50
+      event: Toggle Verification # 32615259260964081
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 32615618462964085
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Verify Results # 3477141442882967
+
+    execution: 
+      sequence: 60
+      event: Toggle Verification # 32615259260964081
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Remove Class ================================
+    id: 32615725675964086
+    identification: 
+      action: Remove Class
+
+    settings: 
+      class: vNO vYES verification
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 10
+      event: Toggle Verification # 32615259260964081
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Add Class ===================================
+    id: 32615789851964087
+    identification: 
+      action: Add Class
+
+    settings: 
+      class: fa-square-selected-o fa-anim-spin
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 40
+      event: Toggle Verification # 32615259260964081
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Search as you type ==================
+  id: 32616035411964089
+  identification: 
+    name: Search as you type
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.KEYUP
+    selection-type: Item(s)
+    item(s): 
+    - P75_SEARCH
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 32616145390964090
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
+        // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
+        var $ctx=$("#report_table_verifyRegion .t-Report-cell[headers='PLAYER_NAME']")
+          , term=$v("P75_SEARCH");
+        
+        
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+        
+        if (term) {
+          // mark the search term and hide everything that didn't get marked
+          $ctx.mark(term, {
+            separateWordSearch: false,
+            diacritics: true,
+            done: function() {
+              $ctx.not(":has(mark)").parents("tr").hide();
+            }
+          });
+        }
+        
+        
+
+    execution: 
+      sequence: 10
+      event: Search as you type # 32616035411964089
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Tooltips ============================
+  id: 32616336627964092
+  identification: 
+    name: Tooltips
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Verify Results # 3477141442882967
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 32616417503964093
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(".verification").tooltip()
+
+    execution: 
+      sequence: 10
+      event: Tooltips # 32616336627964092
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 computations: 
-- # ====== Computation: G_CURRENT_SESSION_ID ===================
+- # ====== Computation: P75_WEEK ===============================
   id: 3471328891873688
   identification: 
-    item-name: G_CURRENT_SESSION_ID
+    item-name: P75_WEEK
 
   execution: 
     sequence: 10
@@ -775,9 +1325,13 @@ computations:
   computation: 
     type: SQL Query (return single value)
     sql-query: |
-      select id
+      select week
       from  wmg_tournament_sessions
-         where week = :P75_WEEK
+         where id = :G_CURRENT_SESSION_ID
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P75_WEEK
 
 processes: 
 - # ====== Process: Load History ===============================
@@ -821,8 +1375,11 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    when-button-pressed: LOAD_POINTS # 6010068693197107
+    type: Never
 
   security: 
     authorization-scheme: Administration Rights # 46986682652284702496
+
+  comments: 
+    comments: This was used to load the points history for previous seasons
 

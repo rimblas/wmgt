@@ -30,6 +30,9 @@ select t.id                              tournament_id
      , tp.room_no                        room_no
      , tp.points                         points
      , tp.discarded_points_flag          discarded_points_flag
+     , tp.verified_score_flag
+     , tp.verified_by
+     , tp.verified_on
      , tp.active_ind                     active_ind
      , tp.created_on                     tournament_player_created
      , tp.created_by                     tournament_player_created_by
@@ -42,6 +45,7 @@ select t.id                              tournament_id
      , p.country                         country
      , p.discord_id
      , p.discord_avatar
+     , p.avatar_image
   from wmg_tournaments t
      , wmg_tournament_sessions ts
      , wmg_tournament_players tp

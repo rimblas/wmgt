@@ -249,14 +249,50 @@
       )
       select p.* 
         from q
-           , wmg_players p
+           , wmg_players_v p
        where p.id = q.player_id (+)
        order by decode(q.player_id, null, 1, 0) asc, lower(p.account)
 
   column-mapping: 
     return: ID
-    display: NAME
+    display: PLAYER_NAME
     default-sort: Use Order By from Query
+
+- # ====== List of Values: WMG_BADGE_TYPES.CODE ================
+  id: 33230222763360793
+  identification: 
+    name: WMG_BADGE_TYPES.CODE
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_BADGE_TYPES
+    where-clause: selectable_ind = 'Y'
+
+  column-mapping: 
+    return: CODE
+    display: NAME
+    default-sort: DISPLAY_SEQ
+    sort-direction: Ascending (Nulls Last)
+    icon: ICON_CLASS
+
+- # ====== List of Values: WMG_TOURNAMENT_SESSIONS.WEEK ========
+  id: 33231364218360803
+  identification: 
+    name: WMG_TOURNAMENT_SESSIONS.WEEK
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_TOURNAMENT_SESSIONS
+
+  column-mapping: 
+    return: ID
+    display: WEEK
+    default-sort: WEEK
+    sort-direction: Ascending (Nulls Last)
 
 - # ====== List of Values: WMG_COURSES.CODE ====================
   id: 20721954775534046605

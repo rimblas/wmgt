@@ -69,7 +69,24 @@ select
     , nvl(r.s16 - cs.h16, 0) par16
     , nvl(r.s17 - cs.h17, 0) par17
     , nvl(r.s18 - cs.h18, 0) par18
-
+  , nvl(r.s1 - cs.h1, 0) +
+      nvl(r.s2 - cs.h2, cs.h2 + 4) +
+      nvl(r.s3 - cs.h3, cs.h3 + 4) +
+      nvl(r.s4 - cs.h4, cs.h4 + 4) +
+      nvl(r.s5 - cs.h5, cs.h5 + 4) +
+      nvl(r.s6 - cs.h6, cs.h6 + 4) +
+      nvl(r.s7 - cs.h7, cs.h7 + 4) +
+      nvl(r.s8 - cs.h8, cs.h8 + 4) +
+      nvl(r.s9 - cs.h9, cs.h9 + 4) +
+      nvl(r.s10 - cs.h10, cs.h10 + 4) +
+      nvl(r.s11 - cs.h11, cs.h11 + 4) +
+      nvl(r.s12 - cs.h12, cs.h12 + 4) +
+      nvl(r.s13 - cs.h13, cs.h13 + 4) +
+      nvl(r.s14 - cs.h14, cs.h14 + 4) +
+      nvl(r.s15 - cs.h15, cs.h15 + 4) +
+      nvl(r.s16 - cs.h16, cs.h16 + 4) +
+      nvl(r.s17 - cs.h17, cs.h17 + 4) +
+      nvl(r.s18 - cs.h18, cs.h18 + 4) scorecard_total
    , case 
      when r.override_score is null and r.final_score is null then
       nvl(r.s1 - cs.h1, 0) +

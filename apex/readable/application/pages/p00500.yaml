@@ -199,6 +199,163 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Scorecards ==================================
+  id: 31039870726157901
+  identification: 
+    title: Scorecards
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with curr_session as (
+          select id tournament_session_id, week
+              from wmg_tournament_sessions
+              where 
+               TOURNAMENT_ID in (
+                   select ID
+                     from WMG_TOURNAMENTS
+                    where CURRENT_FLAG = 'Y'
+               )
+                and (completed_ind = 'N'
+                  or completed_on > current_timestamp - 1
+               )
+      )
+      , tp as (
+        select *
+         from wmg_tournament_player_v tp
+           , curr_session s
+        where tp.tournament_session_id = s.tournament_session_id
+      )
+      select scorecards, (select count(*) total_players from tp) total_players
+      from (
+      select count(*) scorecards
+      from wmg_tournament_results_v r
+         , curr_session s
+        where r.week = s.week
+      )
+      
+
+  layout: 
+    sequence: 20
+    parent-region: Current  Session # 56169634488996600279
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46986580184360702438
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46986618016296702453
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--inline
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: true
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: SCORECARDS ==================================
+    id: 31039958154157902
+    identification: 
+      column-name: SCORECARDS
+      type: Plain Text
+
+    heading: 
+      heading: Scorecards
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '#SCORECARDS# out of #TOTAL_PLAYERS#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_PLAYERS ===============================
+    id: 31039999442157903
+    identification: 
+      column-name: TOTAL_PLAYERS
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: About & Rules ===============================
   id: 50429446115799004845
   identification: 
