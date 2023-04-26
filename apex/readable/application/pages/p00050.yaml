@@ -1961,6 +1961,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P50_PREV_PAGE_ID =========================
+  id: 32614661518964075
+  identification: 
+    name: P50_PREV_PAGE_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 90
+    region: '{Player & Round Details}' # 40817362897326412003
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P50_H_COURSE_STROKE_ID ===================
   id: 15524339300827912859
   identification: 
@@ -7028,6 +7058,42 @@ buttons:
     type: Item is NULL
     item: P50_E_ID
 
+- # ====== Button: BACK ========================================
+  id: 32614477057964074
+  identification: 
+    button-name: BACK
+    label: Back
+
+  layout: 
+    sequence: 10
+    region: '{Buttons}' # 42089618296274907104
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46986653123744702471
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:&P50_PREV_PAGE_ID.:&SESSION.::&DEBUG.:::'
+      page: '&P50_PREV_PAGE_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P50_PREV_PAGE_ID
+
 - # ====== Button: ADD =========================================
   id: 15524502490498633230
   identification: 
@@ -7826,10 +7892,10 @@ branches:
     type: Item is NULL
     item: P50_ES18
 
-- # ====== Branch: View Results ================================
+- # ====== Branch: Return to Previous Page =====================
   id: 6007631545197083
   identification: 
-    name: View Results
+    name: Return to Previous Page
 
   execution: 
     sequence: 30
@@ -7838,9 +7904,12 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
-      page: 60 # View Results
-      clear-cache: 60
+      url: 'f?p=&APP_ID.:&P50_PREV_PAGE_ID.:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: '&P50_PREV_PAGE_ID.'
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P50_PREV_PAGE_ID
 
 - # ====== Branch: Closed Tournament ===========================
   id: 6009247269197099
@@ -7885,4 +7954,20 @@ branches:
   server-side-condition: 
     type: Request = Value
     value: RELOAD
+
+- # ====== Branch: View Results ================================
+  id: 32617588625964105
+  identification: 
+    name: View Results
+
+  execution: 
+    sequence: 40
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
+      page: 60 # View Results
+      clear-cache: 60
 

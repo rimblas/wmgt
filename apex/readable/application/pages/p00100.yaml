@@ -7151,7 +7151,7 @@ dynamic-actions:
             )
            and course_mode = '#COURSE_MODE#'
         )
-        select r.account "Player"
+        select r.player_name "Player"
              , case :P100_H 
              when 'H1' then r.s1
              when 'H2' then r.s2
@@ -7615,7 +7615,7 @@ dynamic-actions:
 
     settings: 
       code: |
-        console.log("CALLBACK!", {isExpanding},this.data);
+        // console.log("CALLBACK!", {isExpanding},this.data);
         isExpanding = this.data.isExpanding;
 
     execution: 
