@@ -1109,5 +1109,62 @@ begin
 end score_entry_verification;
 
 
+
+
+procedure unavailable_application (p_message in varchar2 default null)
+is
+  c_default_message varchar2(200) := 'This application is curently being updated and will return shortly';
+begin
+  htp.p('<html>'
+    || '<head>'
+    || '<link rel="stylesheet" href="/i/app_ui/css/Core.min.css?v=22.2.1" type="text/css">'
+    || '<link rel="stylesheet" href="/i/app_ui/css/Theme-Standard.min.css?v=22.2.1" type="text/css">'
+    || '<link rel="stylesheet" href="/i/themes/theme_42/1.6/css/Core.min.css?v=22.2.1" type="text/css">'
+    -- || '<link rel="stylesheet" href="/i/themes/theme_42/1.6/css/css/Vita.min.css" type="text/css">'
+    -- || '<link rel="stylesheet" href="r/mastermind/557/files/theme/42/v70/17084618446454482.css" type="text/css">'
+    || '<style>
+    .t-Alert--colorBG.t-Alert--warning {
+      background-color: #fef7e0;
+      color: #000000;
+    }
+    .t-Alert--warning .t-Alert-icon .t-Icon {
+      color: #FBCE4A;
+    }
+    .t-Alert--warning.t-Alert--horizontal .t-Alert-icon {
+      background-color: rgba(251, 206, 74, 0.15);
+    }
+    </style>'
+    || '</head>'
+  );
+
+  htp.p(
+    '<div class="t-Body">'
+    );
+
+  htp.p(
+     '<div class="t-Alert t-Alert--colorBG t-Alert--horizontal t-Alert--defaultIcons t-Alert--warning"'
+  || ' style="width: 720px; margin: 40px auto;"' || ' id="unavailableRegion">'
+  || '  <div class="t-Alert-wrap">'
+  || '    <div class="t-Alert-icon">'
+  || '      <span class="t-Icon "></span>'
+  || '    </div>'
+  || '    <div class="t-Alert-content">'
+  || '      <div class="t-Alert-header">'
+  || '        <h2 class="t-Alert-title" id="unavailableRegion_heading">Unavailable</h2>'
+  || '      </div>'
+  || '      <div class="t-Alert-body">' || nvl(p_message, c_default_message) || '</div>'
+  || '    </div>'
+  || '    <div class="t-Alert-buttons"></div>'
+  || '  </div>'
+  || '</div>'
+  );
+
+  htp.p(
+    '</div>'
+  ||  '</html>'
+  );
+end unavailable_application;
+
+
 end wmg_util;
 /
