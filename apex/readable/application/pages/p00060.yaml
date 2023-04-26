@@ -130,6 +130,24 @@ javascript:
               return !!!$v("P60_BADGE_ID");
           }
         },
+        {
+          type: "action",
+          label: "Edit",
+          icon: "fa fa-pencil",
+          action: function(menu, btn) {
+            // open dialog page 3 for the specific department
+            // the dialog url including checksum is in the data-link attribute 
+            // on the button that opens the menu
+            var link,
+            button$ = $(btn);
+            // get the link and unescape unicode chars
+            link = button$.attr("data-link").replace(/\\u(\d\d\d\d)/g, function(m,d) {
+              return String.fromCharCode(parseInt(d, 16));
+            });
+            console.log({link});
+            apex.navigation.redirect(link);
+          }
+        }
       ]
     });
 
@@ -2566,6 +2584,8 @@ regions:
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) 
           || ' ' || other_badges badges
            , nvl(badges.badge_json, '{}') badge_json
+           , apex_page.get_url(p_page => '65', p_items => 'P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID', p_values=> p.tournament_session_id || ','||p.player_id) edit_badges_link
+      --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
       from wmg_tournament_session_points_v p
       , coconut
@@ -2743,7 +2763,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: center
 
     accessibility: 
@@ -2781,7 +2801,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: center
 
     accessibility: 
@@ -2789,8 +2809,8 @@ regions:
 
     column-formatting: 
       html-expression: |
-        <button type="button" class="t-Button t-Button--icon t-Button--noLabel t-Button--tiny t-Button--stretch js-menuButton" data-menu="badge_list_menu" aria-label="Badges" title="Badges" data-id="#PLAYER_ID#" data-link="" data-title="Badges" aria-haspopup="menu"
-        data-badges=#BADGE_JSON#>
+        <button type="button" class="t-Button t-Button--icon t-Button--noLabel t-Button--tiny t-Button--stretch js-menuButton" data-menu="badge_list_menu" aria-label="Badges" title="Badges" data-id="#PLAYER_ID#" data-title="Badges" aria-haspopup="menu" 
+        data-link="#EDIT_BADGES_LINK#" data-badges=#BADGE_JSON#>
         <span aria-hidden="true" class="fa fa-badges"></span>
         <span aria-hidden="true" class="fa fa-chevron-down"></span>
         </button>
@@ -2810,7 +2830,7 @@ regions:
 
     security: 
       authorization-scheme: Contribution Rights # 46986682878463702496
-      escape-special-characters: true
+      escape-special-characters: false
 
   - # ====== Column: BADGE_JSON ==================================
     id: 27804196861823180
@@ -2819,7 +2839,22 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 150
+      sequence: 160
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EDIT_BADGES_LINK ============================
+    id: 32616929547964098
+    identification: 
+      column-name: EDIT_BADGES_LINK
+      type: Hidden Column
+
+    layout: 
+      sequence: 170
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -3888,11 +3923,11 @@ buttons:
   behavior: 
     action: Redirect to Page in this Application
     target: 
-      url: 'f?p=&APP_ID.:70:&SESSION.::&DEBUG.:70:P70_WEEK:&P60_WEEK.'
-      page: 70 # Upload Verification Scores
-      clear-cache: 70
+      url: 'f?p=&APP_ID.:75:&SESSION.::&DEBUG.:75:P75_WEEK:&P60_WEEK.'
+      page: 75 # Verify Results
+      clear-cache: 75
       values: 
-        p70_week: '&P60_WEEK.'
+        p75_week: '&P60_WEEK.'
 
     warn-on-unsaved-changes: Do Not Check
 
@@ -4284,6 +4319,39 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Sticky Items # 30282673125641069
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Close ====================
+  id: 32617418165964103
+  identification: 
+    name: Refresh on Close
+
+  execution: 
+    sequence: 100
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    selection-type: Region
+    region: Week Results (&P60_WEEK.) # 108296150341164485780
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 32617495952964104
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Week Results (&P60_WEEK.) # 108296150341164485780
+
+    execution: 
+      sequence: 10
+      event: Refresh on Close # 32617418165964103
       fire-when-event-result-is: True
       fire-on-initialization: false
 
