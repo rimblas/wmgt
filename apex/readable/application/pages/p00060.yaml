@@ -171,6 +171,9 @@ css:
         --ut-report-cell-padding-y: .35rem;
         --ut-report-cell-alt-background-color: #dadada;
     }
+    #raceRegion {
+        --ut-report-cell-padding-y: .35rem;
+    }
     
     @media (max-width: 639px) {
       #POS, td[headers="POS"] {
@@ -527,7 +530,8 @@ regions:
       <div class="pro-legend row margin-sm u-justify-content-space-around">
       <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
       <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro player</div>
-      <div class="-wm-rank-new fa margin-right-sm" title="Amateur"> = Amateur player</div>
+      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur player</div>
+      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
       </div>
 
   server-side-condition: 
@@ -2069,7 +2073,7 @@ regions:
       where r.player_id = p.id
       and c.course_id = r.course_id
       and r.score = 1
-       and r.week like ( select prefix_tournament from wmg_tournaments where current_flag = 'Y')
+       and r.week like ( select prefix_tournament || '%' from wmg_tournaments where current_flag = 'Y')
       group by substr(r.week,1,3)
              , p.player_name
       order by 3 desc
@@ -2573,6 +2577,8 @@ regions:
            , case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end point_class
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+           , r.name rank_name
+           , r.list_class rank_list_class
            , case when p.completed_ind = 'N' then
                case p.pos 
                when 1 then 'em-first_place_medal '
@@ -2588,11 +2594,13 @@ regions:
       --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
       from wmg_tournament_session_points_v p
+      , wmg_ranks r
       , coconut
       , cactus
       , badges
       , me
       where p.week = :P60_WEEK
+        and p.rank_code = r.code
         and p.player_id = coconut.player_id (+)
         and p.player_id = cactus.player_id (+)
         and p.player_id = badges.player_id (+)
@@ -2862,6 +2870,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: RANK_NAME ===================================
+    id: 41139945029776048
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 41140040258776049
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: POINT_CLASS =================================
     id: 2325273901416905573
     identification: 
@@ -3034,7 +3072,7 @@ regions:
           p110_week: '&P60_WEEK.'
           p110_player_id: '#PLAYER_ID#'
 
-      link-text: '#PLAYER_NAME# <div class="w">#TROPHY#</div>'
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS#" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
 
     sorting: 
       sortable: false
@@ -3158,7 +3196,6 @@ regions:
     landmark-type: Template Default
 
   advanced: 
-    static-id: itemsRegion
     region-display-selector: true
     exclude-title-from-translation: false
 

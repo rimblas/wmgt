@@ -871,6 +871,53 @@ end discard_points;
 
 
 
+/**
+ * PRIVATE
+ * Given a tournament ID and Tournament Session ID 
+ * Discard the lowest points fom each player
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 23, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure promote_players (
+    p_tournament_id         in wmg_tournaments.id%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'promote_players';
+
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  log('.. Advance all players that played from NEW to Amateur', l_scope);
+  update wmg_players
+     set rank_code = 'AMA'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+       and p.rank_code = 'NEW'
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+  log('END', l_scope);
+
+end promote_players;
+
+
+
+
 
 /**
  * Given a tournament ID perform the necessary steps to close the week
@@ -914,9 +961,20 @@ begin
     , p_tournament_session_id => p_tournament_session_id
   );
 
-
   log('.. discarding points', l_scope);
   discard_points(
+      p_tournament_id         => p_tournament_id
+    , p_tournament_session_id => p_tournament_session_id
+  );
+
+  log('.. Add Badges', l_scope);
+  snapshot_badges(
+      p_tournament_id         => p_tournament_id
+    , p_tournament_session_id => p_tournament_session_id
+  );
+
+  log('.. promote players', l_scope);
+  promote_players(
       p_tournament_id         => p_tournament_id
     , p_tournament_session_id => p_tournament_session_id
   );

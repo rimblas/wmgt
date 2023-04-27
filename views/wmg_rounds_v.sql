@@ -4,6 +4,7 @@ select
     p.id                                         player_id,
     p.account                                    account,
     nvl(p.name, p.account)                       player_name,
+    p.rank_code,
     p.country_code,
     c.id                                         course_id,
     c.code                                       course_code,

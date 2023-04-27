@@ -11,9 +11,18 @@ begin
 [
   {
     "code": "NEW",
-    "name": "Amateur",
+    "name": "New Player!",
     "profile_class": "-wm-rank-new-profile rank",
     "list_class": "-wm-rank-new fa",
+    "active_ind": "N",
+    "seq": 0
+  },
+  {
+    "code": "AMA",
+    "name": "Amateur",
+    "profile_class": "-wm-rank-ama-profile rank",
+    "list_class": "-wm-rank-ama fa",
+    "active_ind": "Y",
     "seq": 10
   },
   {
@@ -21,6 +30,7 @@ begin
     "name": "Semi-Pro",
     "profile_class": "-wm-rank-semi-profile rank",
     "list_class": "-wm-rank-semi fa",
+    "active_ind": "Y",
     "seq": 20
   },
   {
@@ -28,6 +38,7 @@ begin
     "name": "Pro",
     "profile_class": "-wm-rank-pro-profile rank",
     "list_class": "-wm-rank-pro fa",
+    "active_ind": "Y",
     "seq": 30
   }
 ]
@@ -41,6 +52,7 @@ begin
       name varchar2(4000) path '$.name',
       profile_class varchar2(4000) path '$.profile_class',
       list_class varchar2(4000) path '$.list_class',
+      active_ind varchar2(1) path '$.active_ind',
       seq number path '$.seq'
     )
   ) loop
@@ -64,6 +76,7 @@ begin
           dest.name = data.name,
           dest.profile_class = data.profile_class,
           dest.list_class = data.list_class,
+          dest.active_ind = data.active_ind,
           dest.display_seq = data.seq
     when not matched then
       insert (
@@ -81,7 +94,7 @@ begin
         data.profile_class,
         data.list_class,
         data.seq,
-        'Y',
+        data.active_ind,
         sysdate,
         'SYSTEM')
     ;

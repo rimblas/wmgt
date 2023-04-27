@@ -74,23 +74,40 @@
     color: #000;
 }
 
+
 /* Profiles */
 .-wm-rank-pro:before {
-  content:"\f135";
-  color: black;
+  content:"\f005";
+  color: red;
 }
 .-wm-rank-semi:before {
-  content:"\ec28";
-  color: darkred;
+  content:"\f123";
+  color: blue;
 }
-.-wm-rank-new:before {
-  content:"\ec5a";
+.-wm-rank-ama:before {
+  content:"\f006";
   color: green;
+}
+
+/* New Player Indicator */
+.-wm-rank-new:before {
+ content: "\f069";
+ color: gold;
 }
 
 .rank {
     padding: 0.3em 1em;
 }
+.-wm-rank-pro-profile {
+    font-weight: 400;
+    font-size: 1.2em;
+    background-image: linear-gradient( 45deg, hsl(240deg 4% 69%) 0%, hsl(270deg 4% 65%) 11%, hsl(307deg 3% 62%) 22%, hsl(333deg 3% 59%) 33%, hsl(350deg 3% 56%) 44%, hsl(3deg 3% 52%) 56%, hsl(14deg 3% 49%) 67%, hsl(24deg 4% 45%) 78%, hsl(34deg 3% 42%) 89%, hsl(48deg 3% 39%) 100% );
+    border-radius: 7%;
+    color: whitesmoke;
+    display: inline-block;
+    box-shadow: 0 4px 10px 1px rgb(0 0 0 / 0.2);
+}
+
 .-wm-rank-semi-profile {
     font-size: 1.1em;
     color: navy;
@@ -100,29 +117,24 @@
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
-.-wm-rank-pro-profile {
-    font-weight: 400;
-    font-size: 1.2em;
-    background-image: linear-gradient( 45deg, hsl(240deg 4% 69%) 0%, hsl(270deg 4% 65%) 11%, hsl(307deg 3% 62%) 22%, hsl(333deg 3% 59%) 33%, hsl(350deg 3% 56%) 44%, hsl(3deg 3% 52%) 56%, hsl(14deg 3% 49%) 67%, hsl(24deg 4% 45%) 78%, hsl(34deg 3% 42%) 89%, hsl(48deg 3% 39%) 100% );
-    border-radius: 7%;
-    color: whitesmoke;
-    display: inline-block;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-}
-
-.-wm-rank-new-profile {
+.-wm-rank-ama-profile {
     color: green;
+}
+.-wm-rank-new-profile {
+    background-color: #ffe557;
+    border: 1px solid gold;
+    border-radius: 5%;
+    display: inline-block;
+}
+/* when combining profile and inline views */
+.-wm-rank-new-profile.rank.-wm-rank-new:before {
+    color: brown;
 }
 
 #badgeKey {
   --ut-report-cell-padding-y: .3rem;
 }
 
-/* New Player Indicator */
-.--wm-np:before {
- content: "\f005";
- color: gold;
-}
 
 /*
  Font Awesome Customizations - START

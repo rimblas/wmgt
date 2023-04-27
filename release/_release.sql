@@ -2,69 +2,54 @@
 set feedback off
 set verify off
 
-@../packages/wmg_util.pks
-@../packages/wmg_util.pkb
 
 PRO APEX DISABLE APP
-PRO ----------------------------------------
+PRO ________________________________________
 
 set define &
 @../apex/apex_disable 200
 set define off
 
 PRO TABLES
-PRO ----------------------------------------
+PRO ________________________________________
 
-alter table wmg_tournament_players add (
-    verified_score_flag            varchar2(1),
-    verified_by                    varchar2(60),
-    verified_on                    timestamp with local time zone
-);
-comment on column wmg_tournament_players.verified_score_flag is 'Indicates these scorecard submission has been verified';
 
 PRO VIEWS
-PRO ----------------------------------------
-PRO .. wmg_rounds_v
+PRO ________________________________________
+
+PRO .. wmg_rounds_v.sql
 @../views/wmg_rounds_v.sql
-
-PRO .. wmg_tournament_results_v
-@../views/wmg_tournament_results_v.sql
-
-PRO .. wmg_tournament_player_v
-@../views/wmg_tournament_player_v.sql
+PRO .. wmg_tournament_session_points_v.sql
+@../views/wmg_tournament_session_points_v.sql
 
 
 PRO PACKAGES
-PRO ----------------------------------------
+PRO ________________________________________
 
-@../packages/wmg_util.pks
+PRO .. wmg_util
 @../packages/wmg_util.pkb
-@../packages/wmg_discord.pkb
+
 
 PRO DML
-PRO ----------------------------------------
+PRO ________________________________________
 
-insert into wmg_parameters (
-    category
-  , name_key
-  , value
-  , description
-)
-values (
-      'Players' -- category
-    , 'LAST_REGISTERED_ID' -- name_key
-    , 1505 -- value
-    , 'Last player_id that registered after the last tournament' -- description
-);
+PRO .. New Rank updates
+@..data/seed_wmg_ranks.sql
 
+PRO .. Update all Amaterur players to the new rank
+update wmg_players
+    set rank_code = 'AMA'
+  where id < 1505
+    and rank_code = 'NEW';
 
-exec wmg_util.set_param('LAST_PLAYER_ID')
+delete from wmg_parameters;
+
 
 PRO DDL
-PRO ----------------------------------------
+PRO ________________________________________
 
-drop table wmg_wmgt_scores_tmp;
+
 
 PRO APEX 
-PRO ----------------------------------------
-@@../apex/_ins.sql
+PRO ________________________________________
+@../apex/_ins.sql

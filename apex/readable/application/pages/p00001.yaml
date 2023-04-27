@@ -20,7 +20,7 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
-  execute-when-page-loads: wmg.theme.init();
+  execute-when-page-loads: wmgt.theme.init();
 
 css: 
   file-urls: 
@@ -260,7 +260,7 @@ regions:
            where current_flag = 'Y'
       )
       and session_date+1.2 > trunc(sysdate)
-      order by session_date
+      order by session_date desc
       fetch first 1 rows only
 
   layout: 
@@ -972,19 +972,13 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with new_player as (
-          select to_number(value default 0 on conversion error) last_id
-             from wmg_parameters
-            where name_key = 'LAST_REGISTERED_ID'
-      )
       select country_code, country
-          , player_name
-          , case when tp.player_id > new_player.last_id then 'New player!' else tp.rank_name end rank_name
-          , case when tp.player_id > new_player.last_id then 'fa --wm-np' else tp.rank_list_class  end  rank_list_class
+          , tp.player_name
+          , tp.rank_name
+          , tp.rank_list_class
           , tournament_player_created
           , row_number() over (order by tournament_player_created) rn
       from wmg_tournament_player_v tp
-          , new_player
       where tp.tournament_session_id = :G_CURRENT_SESSION_ID
         and tp.active_ind = 'Y'
       order by tp.tournament_player_created desc
@@ -1342,7 +1336,7 @@ regions:
            where current_flag = 'Y'
       )
       and session_date+1.2 > trunc(sysdate)
-      order by session_date
+      order by session_date desc
       fetch first 1 rows only
 
   layout: 

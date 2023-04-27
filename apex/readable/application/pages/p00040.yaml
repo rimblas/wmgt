@@ -84,13 +84,13 @@ css:
     .-wm-discord-link {
         margin-right: 1em;
     }
-    td[headers^="PLAYERS"] .--wm-np:before  {
+    td[headers^="PLAYERS"] .-wm-rank-new:before  {
       position: relative;
       right: 0;
-      top: -6px;
+      top: -4px;
     }
-    td[headers^="PLAYERS"] a + .--wm-np:before  {
-      top: 6px;
+    td[headers^="PLAYERS"] a + .-wm-rank-new:before  {
+      top: 4px;
     }
     
 
@@ -399,7 +399,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -584,7 +584,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -767,7 +767,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -950,7 +950,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -1133,7 +1133,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -1316,7 +1316,7 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id

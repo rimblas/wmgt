@@ -1433,6 +1433,25 @@ validations:
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55902033226819493948
 
+- # ====== Validation: Select a Time Slot ======================
+  id: 41140119124776050
+  identification: 
+    name: Select a Time Slot
+
+  execution: 
+    sequence: 20
+
+  validation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_application.g_f01.count > 0
+    always-execute: false
+
+  error: 
+    error-message: You need to select a time slot
+    display-location: Inline with Field and in Notification
+    associated-item: P30_TZ # 57216327729555707937
+
 processes: 
 - # ====== Process: Remember Me ================================
   id: 2325270829515905543
