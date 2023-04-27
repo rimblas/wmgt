@@ -1117,9 +1117,9 @@ is
 begin
   htp.p('<html>'
     || '<head>'
-    || '<link rel="stylesheet" href="/i/app_ui/css/Core.min.css?v=22.2.1" type="text/css">'
-    || '<link rel="stylesheet" href="/i/app_ui/css/Theme-Standard.min.css?v=22.2.1" type="text/css">'
-    || '<link rel="stylesheet" href="/i/themes/theme_42/1.6/css/Core.min.css?v=22.2.1" type="text/css">'
+    || '<link rel="stylesheet" href="/i/22.2.0/app_ui/css/Core.min.css?v=22.2.4" type="text/css">'
+    || '<link rel="stylesheet" href="/i/22.2.0/app_ui/css/Theme-Standard.min.css?v=22.2.4" type="text/css">'
+    || '<link rel="stylesheet" href="/i/22.2.0/themes/theme_42/22.2/css/Redwood.min.css?v=22.2.4" type="text/css">'
     -- || '<link rel="stylesheet" href="/i/themes/theme_42/1.6/css/css/Vita.min.css" type="text/css">'
     -- || '<link rel="stylesheet" href="r/mastermind/557/files/theme/42/v70/17084618446454482.css" type="text/css">'
     || '<style>

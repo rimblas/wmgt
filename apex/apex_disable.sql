@@ -7,6 +7,8 @@
 -- 
 -- 
 prompt Disable APEX Application(s)
+set define &
+set feedback off
 declare
   c_app_ids constant varchar2(500) := '&1.';
   c_username constant varchar2(30) := user;
@@ -29,8 +31,8 @@ begin
 
     apex_util.set_application_status(
       p_application_id => l_apex_app_ids(i) ,
-      p_application_status => 'UNAVAILABLE',
-      p_unavailable_value => 'Scheduled update of application.');
+      p_application_status => 'UNAVAILABLE_PLSQL',
+      p_unavailable_value => 'wmg_util.unavailable_application;');
 
     -- See https://github.com/insum-labs/starter-project-template/issues/28 for full description
     apex_session.detach; 

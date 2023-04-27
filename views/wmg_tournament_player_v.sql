@@ -43,6 +43,9 @@ select t.id                              tournament_id
      , p.account                         account
      , p.country_code                    country_code
      , p.country                         country
+     , p.rank_code
+     , p.rank_name
+     , p.rank_list_class
      , p.discord_id
      , p.discord_avatar
      , p.avatar_image

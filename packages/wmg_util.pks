@@ -75,5 +75,7 @@ procedure score_entry_verification(
  , p_remove    in boolean default false
 );
 
+procedure unavailable_application (p_message in varchar2 default null);
+
 end wmg_util;
 /
