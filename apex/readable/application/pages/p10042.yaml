@@ -5,7 +5,7 @@ identification:
   name: Manage User Access
   alias: USER_ACCESS
   title: Manage User Access
-  page-group: Administration # 46986684228947702497
+  page-group: Administration # 46995205152355514426
 
 appearance: 
   page-mode: Modal Dialog
@@ -22,7 +22,7 @@ navigation:
   warn-on-unsaved-changes: true
 
 security: 
-  authorization-scheme: Administration Rights # 46986682652284702496
+  authorization-scheme: Administration Rights # 46995203575692514425
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -53,11 +53,11 @@ help:
     <p><em><strong>Note:</strong>   If using Oracle APEX accounts then users entered here must also be defined as end users by a Workspace Administrator, who can also set their password.</em></p>
 
 configuration: 
-  build-option: 'Feature: Access Control' # 46986679954839702495
+  build-option: 'Feature: Access Control' # 46995200878247514424
 
 regions: 
 - # ====== Region: Form on Manage User Access ==================
-  id: 46986997465922704108
+  id: 46995518389330516037
   identification: 
     title: Form on Manage User Access
     type: Form
@@ -80,7 +80,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     - t-Form--stretchInputs
@@ -110,7 +110,7 @@ regions:
       lost-update-type: Row Values
 
 - # ====== Region: Buttons =====================================
-  id: 46986997574044704108
+  id: 46995518497452516037
   identification: 
     title: Buttons
     type: Static Content
@@ -126,7 +126,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46986522566537702415
+    template: Buttons Container # 46995043489945514344
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -152,7 +152,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P10042_ID ================================
-  id: 46987001090329704110
+  id: 46995522013737516039
   identification: 
     name: P10042_ID
     type: Hidden
@@ -162,14 +162,14 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Form on Manage User Access # 46986997465922704108
+    region: Form on Manage User Access # 46995518389330516037
     position: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
     column: ID
     data-type: NUMBER
     query-only: false
@@ -185,7 +185,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P10042_APPLICATION_ID ====================
-  id: 46987001467293704110
+  id: 46995522390701516039
   identification: 
     name: P10042_APPLICATION_ID
     type: Hidden
@@ -195,14 +195,14 @@ page-items:
 
   layout: 
     sequence: 20
-    region: Form on Manage User Access # 46986997465922704108
+    region: Form on Manage User Access # 46995518389330516037
     position: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
     column: APPLICATION_ID
     data-type: NUMBER
     query-only: false
@@ -222,7 +222,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P10042_USER_NAME =========================
-  id: 46987001829649704111
+  id: 46995522753057516040
   identification: 
     name: P10042_USER_NAME
     type: Text Field
@@ -240,7 +240,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: Form on Manage User Access # 46986997465922704108
+    region: Form on Manage User Access # 46995518389330516037
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -251,7 +251,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46986651846996702470
+    template: Required - Floating # 46995172770404514399
     width: 60
 
   validation: 
@@ -262,7 +262,7 @@ page-items:
     warn-on-unsaved-changes: Page Default
 
   source: 
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
     column: USER_NAME
     data-type: VARCHAR2
     query-only: false
@@ -284,7 +284,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P10042_ROLE_IDS ==========================
-  id: 46987002248988704111
+  id: 46995523172396516040
   identification: 
     name: P10042_ROLE_IDS
     type: Checkbox Group
@@ -298,7 +298,7 @@ page-items:
 
   layout: 
     sequence: 40
-    region: Form on Manage User Access # 46986997465922704108
+    region: Form on Manage User Access # 46995518389330516037
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -309,21 +309,21 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46986651846996702470
+    template: Required - Floating # 46995172770404514399
 
   validation: 
     value-required: true
 
   list-of-values: 
     type: Shared Component
-    list-of-values: ACCESS_ROLES # 46987002312963704111
+    list-of-values: ACCESS_ROLES # 46995523236371516040
     display-extra-values: false
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
     column: ROLE_IDS
     data-type: VARCHAR2
     query-only: false
@@ -349,14 +349,14 @@ page-items:
 
 buttons: 
 - # ====== Button: CANCEL ======================================
-  id: 46986998535090704109
+  id: 46995519458498516038
   identification: 
     button-name: CANCEL
     label: Cancel
 
   layout: 
     sequence: 10
-    region: Buttons # 46986997574044704108
+    region: Buttons # 46995518497452516037
     position: PREVIOUS
     start-new-layout: false
     start-new-row: true
@@ -365,7 +365,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -375,14 +375,14 @@ buttons:
     execute-validations: false
 
 - # ====== Button: DELETE ======================================
-  id: 46986999927328704110
+  id: 46995520850736516039
   identification: 
     button-name: DELETE
     label: Delete
 
   layout: 
     sequence: 20
-    region: Buttons # 46986997574044704108
+    region: Buttons # 46995518497452516037
     position: PREVIOUS
     start-new-layout: false
     start-new-row: true
@@ -391,7 +391,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -413,14 +413,14 @@ buttons:
     item: P10042_ID
 
 - # ====== Button: SAVE ========================================
-  id: 46987000331171704110
+  id: 46995521254579516039
   identification: 
     button-name: SAVE
     label: Apply Changes
 
   layout: 
     sequence: 30
-    region: Buttons # 46986997574044704108
+    region: Buttons # 46995518497452516037
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -429,7 +429,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: true
 
   behavior: 
@@ -443,14 +443,14 @@ buttons:
     item: P10042_ID
 
 - # ====== Button: CREATE ======================================
-  id: 46987000720484704110
+  id: 46995521643892516039
   identification: 
     button-name: CREATE
     label: Add User
 
   layout: 
     sequence: 40
-    region: Buttons # 46986997574044704108
+    region: Buttons # 46995518497452516037
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -459,7 +459,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: true
 
   behavior: 
@@ -474,7 +474,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Cancel Dialog =======================
-  id: 46986998670474704109
+  id: 46995519593882516038
   identification: 
     name: Cancel Dialog
 
@@ -484,7 +484,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: CANCEL # 46986998535090704109
+    button: CANCEL # 46995519458498516038
 
   execution: 
     event-scope: Static
@@ -492,19 +492,19 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
-    id: 46986999373713704109
+    id: 46995520297121516038
     identification: 
       action: Cancel Dialog
 
     execution: 
       sequence: 10
-      event: Cancel Dialog # 46986998670474704109
+      event: Cancel Dialog # 46995519593882516038
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 validations: 
 - # ====== Validation: Cannot remove yourself from administrator
-  id: 46987003535384704117
+  id: 46995524458792516046
   identification: 
     name: Cannot remove yourself from administrator
 
@@ -539,11 +539,11 @@ validations:
 
 processes: 
 - # ====== Process: Initialize form Manage User Access =========
-  id: 46987003825317704117
+  id: 46995524748725516046
   identification: 
     name: Initialize form Manage User Access
     type: Form - Initialization
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
 
   execution: 
     sequence: 10
@@ -551,11 +551,11 @@ processes:
     run-process: Once Per Page Visit (default)
 
 - # ====== Process: Process form Manage User Access ============
-  id: 46987004237074704117
+  id: 46995525160482516046
   identification: 
     name: Process form Manage User Access
     type: Form - Automatic Row Processing (DML)
-    form-region: Form on Manage User Access # 46986997465922704108
+    form-region: Form on Manage User Access # 46995518389330516037
 
   settings: 
     target-type: Region Source
@@ -572,7 +572,7 @@ processes:
     display-location: Inline in Notification
 
 - # ====== Process: Close Dialog ===============================
-  id: 46987004632636704118
+  id: 46995525556044516047
   identification: 
     name: Close Dialog
     type: Close Dialog

@@ -5,7 +5,7 @@ identification:
   name: Feedback Submitted
   alias: FEEDBACK-SUBMITTED
   title: Feedback Submitted
-  page-group: Administration # 46986684228947702497
+  page-group: Administration # 46995205152355514426
 
 appearance: 
   page-mode: Modal Dialog
@@ -39,11 +39,11 @@ server-cache:
   caching: Disabled
 
 configuration: 
-  build-option: 'Feature: Feedback' # 46986680133641702495
+  build-option: 'Feature: Feedback' # 46995201057049514424
 
 regions: 
 - # ====== Region: Feedback Submitted ==========================
-  id: 46987023133639704293
+  id: 46995544057047516222
   identification: 
     title: Feedback Submitted
     type: Static Content
@@ -59,7 +59,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Alert # 46995035459709514340
     template-options: 
     - '#DEFAULT#'
     - t-Alert--wizard
@@ -89,14 +89,14 @@ regions:
 
 buttons: 
 - # ====== Button: CLOSE =======================================
-  id: 46987023046368704293
+  id: 46995543969776516222
   identification: 
     button-name: CLOSE
     label: Close
 
   layout: 
     sequence: 20
-    region: Feedback Submitted # 46987023133639704293
+    region: Feedback Submitted # 46995544057047516222
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -105,7 +105,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -118,7 +118,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Cancel Dialog =======================
-  id: 46987023273714704293
+  id: 46995544197122516222
   identification: 
     name: Cancel Dialog
 
@@ -128,7 +128,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: CLOSE # 46987023046368704293
+    button: CLOSE # 46995543969776516222
 
   execution: 
     event-scope: Static
@@ -136,13 +136,13 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
-    id: 46987033099138704299
+    id: 46995554022546516228
     identification: 
       action: Cancel Dialog
 
     execution: 
       sequence: 10
-      event: Cancel Dialog # 46987023273714704293
+      event: Cancel Dialog # 46995544197122516222
       fire-when-event-result-is: True
       fire-on-initialization: false
 

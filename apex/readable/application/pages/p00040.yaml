@@ -16,9 +16,9 @@ appearance:
 
 navigation-menu: 
   override-user-interface-level: true
-  list: Tournament Options # 55884590206608414057
+  list: Tournament Options # 55893111130016225986
   list-position: Top
-  list-template: Top Navigation Tabs # 46986647224831702467
+  list-template: Top Navigation Tabs # 46995168148239514396
   template-options: 
   - '#DEFAULT#'
   - t-NavTabs--inlineLabels-lg
@@ -63,7 +63,7 @@ javascript:
     }
     
     
-  execute-when-page-loads: $(".showAvatar").tooltip();
+  execute-when-page-loads: wmgt.theme.init();
 
 css: 
   inline: |
@@ -84,6 +84,15 @@ css:
     .-wm-discord-link {
         margin-right: 1em;
     }
+    td[headers^="PLAYERS"] .--wm-np:before  {
+      position: relative;
+      right: 0;
+      top: -6px;
+    }
+    td[headers^="PLAYERS"] a + .--wm-np:before  {
+      top: 6px;
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -133,7 +142,7 @@ help:
 
 regions: 
 - # ====== Region: About the rooms =============================
-  id: 3820738454911618
+  id: 12341661862723547
   identification: 
     title: About the rooms
     type: Static Content
@@ -173,7 +182,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Content Block # 46986548188719702425
+    template: Content Block # 46995069112127514354
     template-options: 
     - '#DEFAULT#'
     - t-ContentBlock--h2
@@ -200,7 +209,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: {slots.js} ==================================
-  id: 4913632877479590
+  id: 13434556285291519
   identification: 
     title: '{slots.js}'
     type: Dynamic Content
@@ -279,7 +288,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -306,7 +315,7 @@ regions:
       lazy-loading: false
 
 - # ====== Region: Randomizing rooms... ========================
-  id: 30614123131578072
+  id: 39135046539390001
   identification: 
     title: Randomizing rooms...
     type: Static Content
@@ -335,7 +344,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Inline Popup # 46986570183476702434
+    template: Inline Popup # 46995091106884514363
     template-options: 
     - '#DEFAULT#'
     - js-dialog-autoheight
@@ -363,7 +372,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: 00:00 =======================================
-  id: 7048711940745770706
+  id: 7057232864153582635
   identification: 
     title: '00:00'
     type: Classic Report
@@ -389,7 +398,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -418,7 +428,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent1
@@ -446,7 +456,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -483,7 +493,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048712069156770707
+    id: 7057232992564582636
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -515,7 +525,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380888859088957206
+    id: 40389409782496769135
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -547,7 +557,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: 04:00 =======================================
-  id: 7048712164052770708
+  id: 7057233087460582637
   identification: 
     title: '04:00'
     type: Classic Report
@@ -573,7 +583,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -602,7 +613,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent2
@@ -630,7 +641,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -665,7 +676,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048712218368770709
+    id: 7057233141776582638
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -697,7 +708,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380888962540957207
+    id: 40389409885948769136
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -729,7 +740,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: 08:00 =======================================
-  id: 7048712302867770710
+  id: 7057233226275582639
   identification: 
     title: '08:00'
     type: Classic Report
@@ -755,7 +766,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -784,7 +796,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent3
@@ -812,7 +824,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -847,7 +859,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048712466995770711
+    id: 7057233390403582640
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -879,7 +891,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380889042724957208
+    id: 40389409966132769137
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -911,7 +923,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: 12:00 =======================================
-  id: 7048712542392770712
+  id: 7057233465800582641
   identification: 
     title: '12:00'
     type: Classic Report
@@ -937,7 +949,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -966,7 +979,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent4
@@ -994,7 +1007,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1029,7 +1042,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048712626457770713
+    id: 7057233549865582642
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -1061,7 +1074,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380889154092957209
+    id: 40389410077500769138
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -1093,7 +1106,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: 16:00 =======================================
-  id: 7048712784431770714
+  id: 7057233707839582643
   identification: 
     title: '16:00'
     type: Classic Report
@@ -1119,7 +1132,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -1148,7 +1162,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent5
@@ -1176,7 +1190,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1211,7 +1225,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048712840826770715
+    id: 7057233764234582644
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -1243,7 +1257,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380889236197957210
+    id: 40389410159605769139
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -1275,7 +1289,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: 20:00 =======================================
-  id: 7048712900836770716
+  id: 7057233824244582645
   identification: 
     title: '20:00'
     type: Classic Report
@@ -1301,7 +1315,8 @@ regions:
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
-             end players
+             end
+          || case when p.player_id >= :P40_NEW_PLAYER_ID then '<span class="fa --wm-np tooltip" title="New Player!"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -1330,7 +1345,7 @@ regions:
     - col-md-4
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--accent6
@@ -1358,7 +1373,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1393,7 +1408,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 7048713050782770717
+    id: 7057233974190582646
     identification: 
       column-name: PLAYERS
       type: Plain Text
@@ -1425,7 +1440,7 @@ regions:
       escape-special-characters: false
 
   - # ====== Column: ROOM_NO =====================================
-    id: 40380889327231957211
+    id: 40389410250639769140
     identification: 
       column-name: ROOM_NO
       type: Plain Text
@@ -1457,7 +1472,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: {legend} ====================================
-  id: 24442383184650124347
+  id: 24450904108057936276
   identification: 
     title: '{legend}'
     type: Classic Report
@@ -1478,7 +1493,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-md
@@ -1532,7 +1547,7 @@ regions:
 
   columns: 
   - # ====== Column: LEGEND ======================================
-    id: 4914069945479594
+    id: 13434993353291523
     identification: 
       column-name: LEGEND
       type: Plain Text
@@ -1564,7 +1579,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: {Regions} ===================================
-  id: 40380889409532957212
+  id: 40389410332940769141
   identification: 
     title: '{Regions}'
     type: Region Display Selector
@@ -1582,7 +1597,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -1611,7 +1626,7 @@ regions:
       remember-last-selection: false
 
 - # ====== Region: Next Tournament =============================
-  id: 65122274469799667171
+  id: 65130795393207479100
   identification: 
     title: Next Tournament
     type: Classic Report
@@ -1652,7 +1667,7 @@ regions:
     column-span: 6
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Alert # 46995035459709514340
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -1682,7 +1697,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--staticRowColors
@@ -1714,7 +1729,7 @@ regions:
 
   columns: 
   - # ====== Column: PLAYERS =====================================
-    id: 40386535573272083537
+    id: 40395056496679895466
     identification: 
       column-name: PLAYERS
       type: Hidden Column
@@ -1729,7 +1744,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE_CODE ============================
-    id: 40386535800417083538
+    id: 40395056723824895467
     identification: 
       column-name: EASY_COURSE_CODE
       type: Hidden Column
@@ -1744,7 +1759,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE_CODE ============================
-    id: 40386536296051083538
+    id: 40395057219458895467
     identification: 
       column-name: HARD_COURSE_CODE
       type: Hidden Column
@@ -1759,7 +1774,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE =================================
-    id: 40386536668892083538
+    id: 40395057592299895467
     identification: 
       column-name: EASY_COURSE
       type: Hidden Column
@@ -1774,7 +1789,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE =================================
-    id: 40386537021954083539
+    id: 40395057945361895468
     identification: 
       column-name: HARD_COURSE
       type: Hidden Column
@@ -1789,7 +1804,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: SESSION_DATE ================================
-    id: 40386537488549083539
+    id: 40395058411956895468
     identification: 
       column-name: SESSION_DATE
       type: Plain Text
@@ -1833,7 +1848,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P40_TD_FLAG ==============================
-  id: 3820283865911614
+  id: 12341207273723543
   identification: 
     name: P40_TD_FLAG
     type: Hidden
@@ -1843,7 +1858,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: '00:00' # 7048711940745770706
+    region: '00:00' # 7057232864153582635
     position: BODY
 
   advanced: 
@@ -1866,7 +1881,7 @@ page-items:
     comments: Set when a TD is viewing
 
 - # ====== Page Item: P40_TZ ===================================
-  id: 13608040568876100
+  id: 22128963976688029
   identification: 
     name: P40_TZ
     type: Hidden
@@ -1876,7 +1891,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: '00:00' # 7048711940745770706
+    region: '00:00' # 7057232864153582635
     position: BODY
 
   advanced: 
@@ -1896,13 +1911,13 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P40_SHOW_AVATARS_IND =====================
-  id: 29406978749118110
+  id: 37927902156930039
   identification: 
     name: P40_SHOW_AVATARS_IND
     type: Switch
 
   label: 
-    label: <span aria-hidden="true" class="fa fa-user-man showAvatar" title="Show Avatars?"></span>
+    label: <span aria-hidden="true" class="fa fa-user-man tooltip" title="Show Avatars?"></span>
     alignment: Left
 
   settings: 
@@ -1910,7 +1925,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Breadcrumb # 58998669373500537434
+    region: Breadcrumb # 59007190296908349363
     position: NEXT
     alignment: Left
     start-new-layout: false
@@ -1921,7 +1936,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46986650580145702469
+    template: Optional - Floating # 46995171503553514398
     template-options: 
     - '#DEFAULT#'
 
@@ -1943,21 +1958,51 @@ page-items:
     storage: Per Session (Persistent)
 
   security: 
-    authorization-scheme: Administration Rights # 46986682652284702496
+    authorization-scheme: Administration Rights # 46995203575692514425
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P40_NEW_PLAYER_ID ========================
+  id: 39135795378390008
+  identification: 
+    name: P40_NEW_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: '00:00' # 7057232864153582635
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
 buttons: 
 - # ====== Button: OPEN_ROOMS ==================================
-  id: 3819029434911601
+  id: 12339952842723530
   identification: 
     button-name: OPEN_ROOMS
     label: Open Rooms
 
   layout: 
     sequence: 30
-    region: Breadcrumb # 58998669373500537434
+    region: Breadcrumb # 59007190296908349363
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -1966,7 +2011,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1985,17 +2030,17 @@ buttons:
     sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag is null"
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: ENTER_ROUNDS ================================
-  id: 24234755650737318
+  id: 32755679058549247
   identification: 
     button-name: ENTER_ROUNDS
     label: 3.Enter Rounds
 
   layout: 
     sequence: 10
-    region: About the rooms # 3820738454911618
+    region: About the rooms # 12341661862723547
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -2007,7 +2052,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2027,14 +2072,14 @@ buttons:
     static-id: ENTER_ROUNDS
 
 - # ====== Button: ASSIGN_ROOM =================================
-  id: 24442383289129124348
+  id: 24450904212536936277
   identification: 
     button-name: ASSIGN_ROOM
     label: Assign Rooms...
 
   layout: 
     sequence: 20
-    region: Breadcrumb # 58998669373500537434
+    region: Breadcrumb # 59007190296908349363
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -2043,7 +2088,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2059,17 +2104,17 @@ buttons:
     sql-query: 'select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_open_flag is null'
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_00 =====================================
-  id: 40380889514731957213
+  id: 40389410438139769142
   identification: 
     button-name: EDIT_00
     label: 'Edit 00:00'
 
   layout: 
     sequence: 10
-    region: '00:00' # 7048711940745770706
+    region: '00:00' # 7057232864153582635
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2078,7 +2123,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2096,17 +2141,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_04 =====================================
-  id: 40380890525334957223
+  id: 40389411448742769152
   identification: 
     button-name: EDIT_04
     label: 'Edit 04:00'
 
   layout: 
     sequence: 20
-    region: '04:00' # 7048712164052770708
+    region: '04:00' # 7057233087460582637
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2115,7 +2160,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2133,17 +2178,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_08 =====================================
-  id: 40380890629784957224
+  id: 40389411553192769153
   identification: 
     button-name: EDIT_08
     label: 'Edit 08:00'
 
   layout: 
     sequence: 10
-    region: '08:00' # 7048712302867770710
+    region: '08:00' # 7057233226275582639
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2152,7 +2197,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2170,17 +2215,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_12 =====================================
-  id: 40380890763465957225
+  id: 40389411686873769154
   identification: 
     button-name: EDIT_12
     label: 'Edit 12:00'
 
   layout: 
     sequence: 10
-    region: '12:00' # 7048712542392770712
+    region: '12:00' # 7057233465800582641
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2189,7 +2234,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2207,17 +2252,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_16 =====================================
-  id: 40380890847370957226
+  id: 40389411770778769155
   identification: 
     button-name: EDIT_16
     label: 'Edit 16:00'
 
   layout: 
     sequence: 10
-    region: '16:00' # 7048712784431770714
+    region: '16:00' # 7057233707839582643
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2226,7 +2271,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2244,17 +2289,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: EDIT_20 =====================================
-  id: 40380890926550957227
+  id: 40389411849958769156
   identification: 
     button-name: EDIT_20
     label: 'Edit 20:00'
 
   layout: 
     sequence: 10
-    region: '20:00' # 7048712900836770716
+    region: '20:00' # 7057233824244582645
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -2263,7 +2308,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2281,11 +2326,11 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 dynamic-actions: 
 - # ====== Dynamic Action: Init Actions ========================
-  id: 4007924469738096
+  id: 12528847877550025
   identification: 
     name: Init Actions
 
@@ -2300,7 +2345,7 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Highlight Player ============================
-    id: 4008038280738097
+    id: 12528961688550026
     identification: 
       name: Highlight Player
       action: Execute JavaScript Code
@@ -2310,12 +2355,12 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Init Actions # 4007924469738096
+      event: Init Actions # 12528847877550025
       fire-when-event-result-is: True
       fire-on-initialization: false
 
   - # ====== Action: Add TZ Legend ===============================
-    id: 4913928598479593
+    id: 13434852006291522
     identification: 
       name: Add TZ Legend
       action: Execute JavaScript Code
@@ -2344,12 +2389,12 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Init Actions # 4007924469738096
+      event: Init Actions # 12528847877550025
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Submit on Change ====================
-  id: 29407138909118111
+  id: 37928062316930040
   identification: 
     name: Submit on Change
 
@@ -2368,7 +2413,7 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Submit Page =================================
-    id: 29407276037118112
+    id: 37928199444930041
     identification: 
       action: Submit Page
 
@@ -2377,12 +2422,12 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Submit on Change # 29407138909118111
+      event: Submit on Change # 37928062316930040
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Randomizing Rooms ===================
-  id: 30614212986578073
+  id: 39135136394390002
   identification: 
     name: Randomizing Rooms
 
@@ -2405,11 +2450,11 @@ dynamic-actions:
         and s.id = :G_CURRENT_SESSION_ID
 
   security: 
-    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55893512303411682019
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55902033226819493948
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
-    id: 30614349975578074
+    id: 39135273383390003
     identification: 
       action: Execute JavaScript Code
 
@@ -2420,12 +2465,12 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Randomizing Rooms # 30614212986578073
+      event: Randomizing Rooms # 39135136394390002
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close =============
-  id: 32617756457964106
+  id: 41138679865776035
   identification: 
     name: Refresh on Dialog Close
 
@@ -2435,7 +2480,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_00 # 40380889514731957213
+    button: EDIT_00 # 40389410438139769142
 
   execution: 
     event-scope: Static
@@ -2443,22 +2488,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32617864841964107
+    id: 41138788249776036
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '00:00' # 7048711940745770706
+      region: '00:00' # 7057232864153582635
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close # 32617756457964106
+      event: Refresh on Dialog Close # 41138679865776035
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 04 ==========
-  id: 32617893353964108
+  id: 41138816761776037
   identification: 
     name: Refresh on Dialog Close 04
 
@@ -2468,7 +2513,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_04 # 40380890525334957223
+    button: EDIT_04 # 40389411448742769152
 
   execution: 
     event-scope: Static
@@ -2476,22 +2521,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32618057082964109
+    id: 41138980490776038
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '04:00' # 7048712164052770708
+      region: '04:00' # 7057233087460582637
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close 04 # 32617893353964108
+      event: Refresh on Dialog Close 04 # 41138816761776037
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 08 ==========
-  id: 32618108691964110
+  id: 41139032099776039
   identification: 
     name: Refresh on Dialog Close 08
 
@@ -2501,7 +2546,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_08 # 40380890629784957224
+    button: EDIT_08 # 40389411553192769153
 
   execution: 
     event-scope: Static
@@ -2509,22 +2554,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32618200583964111
+    id: 41139123991776040
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '08:00' # 7048712302867770710
+      region: '08:00' # 7057233226275582639
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close 08 # 32618108691964110
+      event: Refresh on Dialog Close 08 # 41139032099776039
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 12 ==========
-  id: 32618333365964112
+  id: 41139256773776041
   identification: 
     name: Refresh on Dialog Close 12
 
@@ -2534,7 +2579,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_12 # 40380890763465957225
+    button: EDIT_12 # 40389411686873769154
 
   execution: 
     event-scope: Static
@@ -2542,22 +2587,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32618415555964113
+    id: 41139338963776042
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '12:00' # 7048712542392770712
+      region: '12:00' # 7057233465800582641
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close 12 # 32618333365964112
+      event: Refresh on Dialog Close 12 # 41139256773776041
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 16 ==========
-  id: 32618533806964114
+  id: 41139457214776043
   identification: 
     name: Refresh on Dialog Close 16
 
@@ -2567,7 +2612,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_16 # 40380890847370957226
+    button: EDIT_16 # 40389411770778769155
 
   execution: 
     event-scope: Static
@@ -2575,22 +2620,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32618601343964115
+    id: 41139524751776044
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '16:00' # 7048712784431770714
+      region: '16:00' # 7057233707839582643
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close 16 # 32618533806964114
+      event: Refresh on Dialog Close 16 # 41139457214776043
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 20 ==========
-  id: 32618710856964116
+  id: 41139634264776045
   identification: 
     name: Refresh on Dialog Close 20
 
@@ -2600,7 +2645,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
-    button: EDIT_20 # 40380890926550957227
+    button: EDIT_20 # 40389411849958769156
 
   execution: 
     event-scope: Static
@@ -2608,22 +2653,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 32618870800964117
+    id: 41139794208776046
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '20:00' # 7048712900836770716
+      region: '20:00' # 7057233824244582645
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close 20 # 32618710856964116
+      event: Refresh on Dialog Close 20 # 41139634264776045
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Submit Room Assignments =============
-  id: 40380891077778957228
+  id: 40389412001186769157
   identification: 
     name: Submit Room Assignments
 
@@ -2633,7 +2678,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: ASSIGN_ROOM # 24442383289129124348
+    button: ASSIGN_ROOM # 24450904212536936277
 
   execution: 
     event-scope: Static
@@ -2641,7 +2686,7 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Confirm =====================================
-    id: 40380891114372957229
+    id: 40389412037780769158
     identification: 
       action: Confirm
 
@@ -2655,7 +2700,7 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Submit Room Assignments # 40380891077778957228
+      event: Submit Room Assignments # 40389412001186769157
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2664,7 +2709,7 @@ dynamic-actions:
       sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y'"
 
   - # ====== Action: Submit Page =================================
-    id: 40380891252669957230
+    id: 40389412176077769159
     identification: 
       action: Submit Page
 
@@ -2674,12 +2719,12 @@ dynamic-actions:
 
     execution: 
       sequence: 30
-      event: Submit Room Assignments # 40380891077778957228
+      event: Submit Room Assignments # 40389412001186769157
       fire-when-event-result-is: True
       fire-on-initialization: false
 
   - # ====== Action: Confirm =====================================
-    id: 40380891342828957231
+    id: 40389412266236769160
     identification: 
       action: Confirm
 
@@ -2695,7 +2740,7 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Submit Room Assignments # 40380891077778957228
+      event: Submit Room Assignments # 40389412001186769157
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2705,7 +2750,7 @@ dynamic-actions:
 
 computations: 
 - # ====== Computation: P40_TD_FLAG ============================
-  id: 3820380057911615
+  id: 12341303465723544
   identification: 
     item-name: P40_TD_FLAG
 
@@ -2725,7 +2770,7 @@ computations:
       end if;
 
 - # ====== Computation: P40_TZ =================================
-  id: 13608175007876101
+  id: 22129098415688030
   identification: 
     item-name: P40_TZ
 
@@ -2745,7 +2790,7 @@ computations:
     comments: The the prefered timezone for the user
 
 - # ====== Computation: P40_TZ =================================
-  id: 13608237373876102
+  id: 22129160781688031
   identification: 
     item-name: P40_TZ
 
@@ -2762,8 +2807,22 @@ computations:
     type: Item is NULL
     item: G_DISCORD_ID
 
+- # ====== Computation: P40_NEW_PLAYER_ID ======================
+  id: 39135828991390009
+  identification: 
+    item-name: P40_NEW_PLAYER_ID
+
+  execution: 
+    sequence: 30
+    point: Before Regions
+
+  computation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: nvl(wmg_util.get_param('LAST_REGISTERED_ID'), 1)
+
 - # ====== Computation: G_REGISTRATION_ID ======================
-  id: 24442383444393124350
+  id: 24450904367800936279
   identification: 
     item-name: G_REGISTRATION_ID
 
@@ -2782,7 +2841,7 @@ computations:
     comments: This is an override during development
 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
-  id: 40380888782351957205
+  id: 40389409705759769134
   identification: 
     item-name: G_CURRENT_SESSION_ID
 
@@ -2802,7 +2861,7 @@ computations:
 
 processes: 
 - # ====== Process: Open Rooms =================================
-  id: 3819087288911602
+  id: 12340010696723531
   identification: 
     name: Open Rooms
     type: Execute Code
@@ -2828,13 +2887,13 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    when-button-pressed: OPEN_ROOMS # 3819029434911601
+    when-button-pressed: OPEN_ROOMS # 12339952842723530
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Process: ROOMS_READY ================================
-  id: 30614499303578076
+  id: 39135422711390005
   identification: 
     name: ROOMS_READY
     type: Execute Code
@@ -2867,7 +2926,7 @@ processes:
     run-process: Once Per Page Visit (default)
 
 - # ====== Process: Run Room Assignments =======================
-  id: 40817362645960412001
+  id: 40825883569368223930
   identification: 
     name: Run Room Assignments
     type: Execute Code
@@ -2889,8 +2948,8 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    when-button-pressed: ASSIGN_ROOM # 24442383289129124348
+    when-button-pressed: ASSIGN_ROOM # 24450904212536936277
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 

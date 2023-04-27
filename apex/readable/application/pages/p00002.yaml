@@ -68,7 +68,7 @@ help:
 
 regions: 
 - # ====== Region: Courses =====================================
-  id: 46986704169556702659
+  id: 46995225092964514588
   identification: 
     title: Courses
     type: Interactive Report
@@ -110,7 +110,7 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    id: 46986704242708702659
+    id: 46995225166116514588
     link: 
       link-column: Link to Custom Target
       target: 
@@ -121,7 +121,7 @@ regions:
           p3_id: '#ID#'
 
       link-icon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
-      authorization-scheme: Contribution Rights # 46986682878463702496
+      authorization-scheme: Contribution Rights # 46995203801871514425
 
     pagination: 
       type: Row Ranges X to Y
@@ -181,14 +181,14 @@ regions:
 
     saved-reports: 
     - # ====== Saved Report: Primary Report ========================
-      id: 46986788924758703593
+      id: 46995309848166515522
       identification: 
         name: Primary Report
         alias: 469867890
 
     columns: 
     - # ====== Column: RELEASE_ORDER ===============================
-      id: 29404117729118081
+      id: 37925041136930010
       identification: 
         column-name: RELEASE_ORDER
         type: Plain Text
@@ -226,7 +226,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: COURSE_PAR ==================================
-      id: 15134613378571923813
+      id: 15143134301979735742
       identification: 
         column-name: COURSE_PAR
         type: Plain Text
@@ -264,7 +264,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: ICON ========================================
-      id: 42089618036012907102
+      id: 42098138959420719031
       identification: 
         column-name: ICON
         type: Plain Text
@@ -305,10 +305,10 @@ regions:
         escape-special-characters: true
 
       configuration: 
-        build-option: AWS_IMAGES # 42096263744747372319
+        build-option: AWS_IMAGES # 42104784668155184248
 
     - # ====== Column: ID ==========================================
-      id: 46986704612763702660
+      id: 46995225536171514589
       identification: 
         column-name: ID
         type: Hidden Column
@@ -323,7 +323,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: CODE ========================================
-      id: 46986705023684702660
+      id: 46995225947092514589
       identification: 
         column-name: CODE
         type: Plain Text
@@ -361,7 +361,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: NAME ========================================
-      id: 46986705431094702661
+      id: 46995226354502514590
       identification: 
         column-name: NAME
         type: Link
@@ -409,7 +409,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: COURSE_MODE =================================
-      id: 46986705831464702661
+      id: 46995226754872514590
       identification: 
         column-name: COURSE_MODE
         type: Plain Text
@@ -490,14 +490,14 @@ regions:
 
 buttons: 
 - # ====== Button: CREATE ======================================
-  id: 46986706353456702661
+  id: 46995227276864514590
   identification: 
     button-name: CREATE
     label: Add New Course
 
   layout: 
     sequence: 10
-    region: Courses # 46986704169556702659
+    region: Courses # 46995225092964514588
     position: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
@@ -506,7 +506,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -523,11 +523,11 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Contribution Rights # 46986682878463702496
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
 - # ====== Dynamic Action: Edit Report - Dialog Closed =========
-  id: 46986706638879702661
+  id: 46995227562287514590
   identification: 
     name: Edit Report - Dialog Closed
 
@@ -537,7 +537,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
-    region: Courses # 46986704169556702659
+    region: Courses # 46995225092964514588
 
   execution: 
     event-scope: Static
@@ -545,17 +545,17 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 46986707109820702661
+    id: 46995228033228514590
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: Courses # 46986704169556702659
+      region: Courses # 46995225092964514588
 
     execution: 
       sequence: 10
-      event: Edit Report - Dialog Closed # 46986706638879702661
+      event: Edit Report - Dialog Closed # 46995227562287514590
       fire-when-event-result-is: True
       fire-on-initialization: false
 

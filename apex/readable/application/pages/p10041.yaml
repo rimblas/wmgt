@@ -5,7 +5,7 @@ identification:
   name: Manage User Access
   alias: MANAGE-USER-ACCESS
   title: Manage User Access
-  page-group: Administration # 46986684228947702497
+  page-group: Administration # 46995205152355514426
 
 appearance: 
   page-mode: Modal Dialog
@@ -26,7 +26,7 @@ navigation:
   warn-on-unsaved-changes: false
 
 security: 
-  authorization-scheme: Administration Rights # 46986682652284702496
+  authorization-scheme: Administration Rights # 46995203575692514425
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -52,11 +52,11 @@ help:
     <p>Click <strong>Add User</strong>, at the top of the report, to add a new user and their access level.</p>
 
 configuration: 
-  build-option: 'Feature: Access Control' # 46986679954839702495
+  build-option: 'Feature: Access Control' # 46995200878247514424
 
 regions: 
 - # ====== Region: Manage User Access ==========================
-  id: 46986991089141704098
+  id: 46995512012549516027
   identification: 
     title: Manage User Access
     type: Interactive Report
@@ -82,7 +82,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46986575558905702436
+    template: Interactive Report # 46995096482313514365
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -103,7 +103,7 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    id: 46986991888804704098
+    id: 46995512812212516027
     link: 
       link-column: Link to Custom Target
       target: 
@@ -173,14 +173,14 @@ regions:
 
     saved-reports: 
     - # ====== Saved Report: Primary Report ========================
-      id: 46986994611392704106
+      id: 46995515534800516035
       identification: 
         name: Primary Report
         alias: 469869947
 
     columns: 
     - # ====== Column: ID ==========================================
-      id: 46986992249038704104
+      id: 46995513172446516033
       identification: 
         column-name: ID
         type: Hidden Column
@@ -195,7 +195,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: USERNAME ====================================
-      id: 46986992694024704104
+      id: 46995513617432516033
       identification: 
         column-name: USERNAME
         type: Plain Text
@@ -233,7 +233,7 @@ regions:
         escape-special-characters: true
 
     - # ====== Column: ACCESS_ROLE =================================
-      id: 46986993003547704105
+      id: 46995513926955516034
       identification: 
         column-name: ACCESS_ROLE
         type: Plain Text
@@ -314,14 +314,14 @@ regions:
 
 buttons: 
 - # ====== Button: RESET_REPORT ================================
-  id: 46986995525378704106
+  id: 46995516448786516035
   identification: 
     button-name: RESET_REPORT
     label: Reset
 
   layout: 
     sequence: 20
-    region: Manage User Access # 46986991089141704098
+    region: Manage User Access # 46995512012549516027
     position: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
@@ -330,7 +330,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -347,14 +347,14 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: ADD_MULTIPLE_USERS ==========================
-  id: 46986995957312704107
+  id: 46995516880720516036
   identification: 
     button-name: ADD_MULTIPLE_USERS
     label: Add Multiple Users
 
   layout: 
     sequence: 30
-    region: Manage User Access # 46986991089141704098
+    region: Manage User Access # 46995512012549516027
     position: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
@@ -363,7 +363,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -378,14 +378,14 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: ADD_USER ====================================
-  id: 46986996305815704107
+  id: 46995517229223516036
   identification: 
     button-name: ADD_USER
     label: Add User
 
   layout: 
     sequence: 40
-    region: Manage User Access # 46986991089141704098
+    region: Manage User Access # 46995512012549516027
     position: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
@@ -394,7 +394,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -410,7 +410,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Report ======================
-  id: 46986991155470704098
+  id: 46995512078878516027
   identification: 
     name: Refresh Report
 
@@ -420,7 +420,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
-    region: Manage User Access # 46986991089141704098
+    region: Manage User Access # 46995512012549516027
 
   execution: 
     event-scope: Static
@@ -428,17 +428,17 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 46986996987956704107
+    id: 46995517911364516036
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: Manage User Access # 46986991089141704098
+      region: Manage User Access # 46995512012549516027
 
     execution: 
       sequence: 10
-      event: Refresh Report # 46986991155470704098
+      event: Refresh Report # 46995512078878516027
       fire-when-event-result-is: True
       fire-on-initialization: false
 

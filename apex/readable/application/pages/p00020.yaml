@@ -57,7 +57,7 @@ server-cache:
 
 regions: 
 - # ====== Region: {Buttons} ===================================
-  id: 106454312052145997972
+  id: 106462832975553809901
   identification: 
     title: '{Buttons}'
     type: Static Content
@@ -73,7 +73,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46986522566537702415
+    template: Buttons Container # 46995043489945514344
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--stickToBottom
@@ -100,7 +100,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: Notes =======================================
-  id: 112030159442963458048
+  id: 112038680366371269977
   identification: 
     title: Notes
     type: Classic Report
@@ -126,7 +126,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -184,7 +184,7 @@ regions:
 
   columns: 
   - # ====== Column: NOTE_TYPE ===================================
-    id: 56024867415717993144
+    id: 56033388339125805073
     identification: 
       column-name: NOTE_TYPE
       type: Plain Text (based on List of Values)
@@ -202,7 +202,7 @@ regions:
 
     list-of-values: 
       type: Shared Component
-      list-of-values: NOTE_TYPES # 56015206664324641550
+      list-of-values: NOTE_TYPES # 56023727587732453479
 
     sorting: 
       sortable: false
@@ -220,7 +220,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: NOTES =======================================
-    id: 56024868217434993144
+    id: 56033389140842805073
     identification: 
       column-name: NOTES
       type: Rich Text
@@ -247,7 +247,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P20_NOTE_TYPE ============================
-  id: 206884037006403
+  id: 8727807444818332
   identification: 
     name: P20_NOTE_TYPE
     type: Hidden
@@ -257,7 +257,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Notes # 112030159442963458048
+    region: Notes # 112038680366371269977
     position: BODY
 
   advanced: 
@@ -278,14 +278,14 @@ page-items:
 
 buttons: 
 - # ====== Button: EDIT ========================================
-  id: 56015642966171939709
+  id: 56024163889579751638
   identification: 
     button-name: EDIT
     label: Edit
 
   layout: 
     sequence: 10
-    region: '{Buttons}' # 106454312052145997972
+    region: '{Buttons}' # 106462832975553809901
     position: CREATE
     start-new-layout: false
     start-new-row: true
@@ -294,7 +294,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -311,17 +311,17 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   security: 
-    authorization-scheme: Tournament Admin # 55893512303411682019
+    authorization-scheme: Tournament Admin # 55902033226819493948
 
 - # ====== Button: CLOSE =======================================
-  id: 56024865925991993133
+  id: 56033386849399805062
   identification: 
     button-name: CLOSE
     label: Close
 
   layout: 
     sequence: 10
-    region: '{Buttons}' # 106454312052145997972
+    region: '{Buttons}' # 106462832975553809901
     position: CLOSE
     start-new-layout: false
     start-new-row: true
@@ -330,7 +330,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -343,7 +343,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Report ======================
-  id: 56024870675791993152
+  id: 56033391599199805081
   identification: 
     name: Refresh Report
 
@@ -362,22 +362,22 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 56024871165455993153
+    id: 56033392088863805082
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: Notes # 112030159442963458048
+      region: Notes # 112038680366371269977
 
     execution: 
       sequence: 10
-      event: Refresh Report # 56024870675791993152
+      event: Refresh Report # 56033391599199805081
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Close Dialog ========================
-  id: 56024871542413993154
+  id: 56033392465821805083
   identification: 
     name: Close Dialog
 
@@ -387,7 +387,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: CLOSE # 56024865925991993133
+    button: CLOSE # 56033386849399805062
 
   execution: 
     event-scope: Static
@@ -395,18 +395,18 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
-    id: 56024872026752993154
+    id: 56033392950160805083
     identification: 
       action: Cancel Dialog
 
     execution: 
       sequence: 10
-      event: Close Dialog # 56024871542413993154
+      event: Close Dialog # 56033392465821805083
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 - # ====== Dynamic Action: Edit Report - Dialog Closed =========
-  id: 56024872439333993154
+  id: 56033393362741805083
   identification: 
     name: Edit Report - Dialog Closed
 
@@ -416,7 +416,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
-    region: Notes # 112030159442963458048
+    region: Notes # 112038680366371269977
 
   execution: 
     event-scope: Static
@@ -424,17 +424,17 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 56024872969273993154
+    id: 56033393892681805083
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: Notes # 112030159442963458048
+      region: Notes # 112038680366371269977
 
     execution: 
       sequence: 10
-      event: Edit Report - Dialog Closed # 56024872439333993154
+      event: Edit Report - Dialog Closed # 56033393362741805083
       fire-when-event-result-is: True
       fire-on-initialization: false
 

@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Login # 46986494461795702403
+  page-template: Login # 46995015385203514332
   template-options: 
   - '#DEFAULT#'
   - t-LoginPage--split
@@ -50,7 +50,7 @@ server-cache:
 
 regions: 
 - # ====== Region: {Info} ======================================
-  id: 6031202310524075
+  id: 14552125718336004
   identification: 
     title: '{Info}'
     type: Static Content
@@ -66,7 +66,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46986522566537702415
+    template: Buttons Container # 46995043489945514344
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--stickToBottom
@@ -93,7 +93,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: Welcome &G_DISCORD.! ========================
-  id: 18014953292042851
+  id: 26535876699854780
   identification: 
     title: Welcome &G_DISCORD.!
     type: Dynamic Content
@@ -137,7 +137,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Hero # 46986552355884702427
+    template: Hero # 46995073279292514356
     template-options: 
     - '#DEFAULT#'
     - t-HeroRegion--iconsCircle
@@ -192,7 +192,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P17_MATCH_PLAYER_ID ======================
-  id: 6021699787357232
+  id: 14542623195169161
   identification: 
     name: P17_MATCH_PLAYER_ID
     type: Hidden
@@ -202,7 +202,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Welcome &G_DISCORD.! # 18014953292042851
+    region: Welcome &G_DISCORD.! # 26535876699854780
     position: BODY
 
   advanced: 
@@ -222,7 +222,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P17_AVATAR ===============================
-  id: 6030928520524072
+  id: 14551851928336001
   identification: 
     name: P17_AVATAR
     type: Hidden
@@ -232,7 +232,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: Welcome &G_DISCORD.! # 18014953292042851
+    region: Welcome &G_DISCORD.! # 26535876699854780
     position: BODY
 
   advanced: 
@@ -252,7 +252,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P17_WHY ==================================
-  id: 6031148221524074
+  id: 14552071629336003
   identification: 
     name: P17_WHY
     type: Display Only
@@ -269,7 +269,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: '{Info}' # 6031202310524075
+    region: '{Info}' # 14552125718336004
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -280,7 +280,7 @@ page-items:
     label-column-span: 3
 
   appearance: 
-    template: Optional # 46986650382572702469
+    template: Optional # 46995171305980514398
     template-options: 
     - '#DEFAULT#'
 
@@ -310,14 +310,14 @@ page-items:
 
 buttons: 
 - # ====== Button: SKIP ========================================
-  id: 6031289945524076
+  id: 14552213353336005
   identification: 
     button-name: SKIP
     label: Skip
 
   layout: 
     sequence: 20
-    region: '{Info}' # 6031202310524075
+    region: '{Info}' # 14552125718336004
     position: PREVIOUS
     start-new-layout: false
     start-new-row: true
@@ -326,7 +326,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -345,14 +345,14 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: NOT_ME ======================================
-  id: 13608432030876104
+  id: 22129355438688033
   identification: 
     button-name: NOT_ME
     label: Nope, I'm a new player!
 
   layout: 
     sequence: 20
-    region: '{Info}' # 6031202310524075
+    region: '{Info}' # 14552125718336004
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -361,7 +361,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -379,7 +379,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Match Player to Discord ID ==========
-  id: 6023018009400606
+  id: 14543941417212535
   identification: 
     name: Match Player to Discord ID
 
@@ -402,7 +402,7 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Oops ========================================
-    id: 6023414809400610
+    id: 14544338217212539
     identification: 
       name: Oops
       action: Alert
@@ -415,7 +415,7 @@ dynamic-actions:
 
     execution: 
       sequence: 40
-      event: Match Player to Discord ID # 6023018009400606
+      event: Match Player to Discord ID # 14543941417212535
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -425,7 +425,7 @@ dynamic-actions:
       value: '-1'
 
   - # ====== Action: Set Value ===================================
-    id: 6023915287400611
+    id: 14544838695212540
     identification: 
       action: Set Value
 
@@ -441,14 +441,14 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Match Player to Discord ID # 6023018009400606
+      event: Match Player to Discord ID # 14543941417212535
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
       wait-for-result: true
 
   - # ====== Action: Execute Server-side Code ====================
-    id: 6024434718400612
+    id: 14545358126212541
     identification: 
       action: Execute Server-side Code
 
@@ -482,14 +482,14 @@ dynamic-actions:
 
     execution: 
       sequence: 30
-      event: Match Player to Discord ID # 6023018009400606
+      event: Match Player to Discord ID # 14543941417212535
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
       wait-for-result: true
 
   - # ====== Action: Success =====================================
-    id: 6024949997400613
+    id: 14545873405212542
     identification: 
       name: Success
       action: Alert
@@ -502,7 +502,7 @@ dynamic-actions:
 
     execution: 
       sequence: 50
-      event: Match Player to Discord ID # 6023018009400606
+      event: Match Player to Discord ID # 14543941417212535
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -512,7 +512,7 @@ dynamic-actions:
       value: '-1'
 
   - # ====== Action: Submit Page =================================
-    id: 6025437010400614
+    id: 14546360418212543
     identification: 
       action: Submit Page
 
@@ -521,13 +521,13 @@ dynamic-actions:
 
     execution: 
       sequence: 60
-      event: Match Player to Discord ID # 6023018009400606
+      event: Match Player to Discord ID # 14543941417212535
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 computations: 
 - # ====== Computation: P17_AVATAR =============================
-  id: 6031051943524073
+  id: 14551975351336002
   identification: 
     item-name: P17_AVATAR
 
@@ -541,7 +541,7 @@ computations:
     pl/sql-function-body: 'return  wmg_discord.avatar(p_discord_id => :G_DISCORD_ID, p_avatar_uri => :G_DISCORD_AVATAR);'
 
 - # ====== Computation: G_DISCORD ==============================
-  id: 27806022245823198
+  id: 36326945653635127
   identification: 
     item-name: G_DISCORD
 
@@ -559,7 +559,7 @@ computations:
     pl/sql-expression: ":APP_USER = 'JRIMBLAS'"
 
 - # ====== Computation: G_DISCORD_ID ===========================
-  id: 27806102721823199
+  id: 36327026129635128
   identification: 
     item-name: G_DISCORD_ID
 
@@ -578,7 +578,7 @@ computations:
 
 branches: 
 - # ====== Branch: Go Finish Player Preference Setup ===========
-  id: 6031392021524077
+  id: 14552315429336006
   identification: 
     name: Go Finish Player Preference Setup
 

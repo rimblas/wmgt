@@ -45,6 +45,14 @@ wmgt.theme = {};
 ( function( theme ) {
     "use strict";
 
+
+/* Initialize Theme */
+theme.init = function() {
+  /* get tooltips going */
+  $(".tooltip").tooltip();
+},
+
+
 /**
  * Static pie charts
  *

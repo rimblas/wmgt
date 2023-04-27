@@ -20,7 +20,7 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
-  execute-when-page-loads: $(".tooltip").tooltip()
+  execute-when-page-loads: wmg.theme.init();
 
 css: 
   file-urls: 
@@ -35,6 +35,11 @@ css:
     }
     
     .tooltip {cursor: help;}
+    .w {
+        display: inline-block;
+        float: right;
+    }
+    
     
     #optionsRegion .t-HeroRegion-title {display: none;}
     [headers="PLAYERS"] {vertical-align: baseline;}
@@ -99,14 +104,14 @@ help:
 
 regions: 
 - # ====== Region: {Next Tournament Info} ======================
-  id: 665559002503481
+  id: 9186482410315410
   identification: 
     title: '{Next Tournament Info}'
     type: Static Content
 
   layout: 
     sequence: 19
-    parent-region: '{col2}' # 3472525362873700
+    parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -115,7 +120,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     - margin-top-none
@@ -141,7 +146,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: {col2} ======================================
-  id: 3472525362873700
+  id: 11993448770685629
   identification: 
     title: '{col2}'
     type: Static Content
@@ -160,7 +165,7 @@ regions:
     - col-md-8
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -185,7 +190,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: {col3} ======================================
-  id: 4916516804479619
+  id: 13437440212291548
   identification: 
     title: '{col3}'
     type: Static Content
@@ -205,7 +210,7 @@ regions:
     - col-xs-12
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -230,7 +235,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: {Next Tournament Brief} =====================
-  id: 4916606800479620
+  id: 13437530208291549
   identification: 
     title: '{Next Tournament Brief}'
     type: Classic Report
@@ -260,7 +265,7 @@ regions:
 
   layout: 
     sequence: 5
-    parent-region: '{col2}' # 3472525362873700
+    parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -269,7 +274,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-none
@@ -297,7 +302,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -330,7 +335,7 @@ regions:
 
   columns: 
   - # ====== Column: SESSION_DATE ================================
-    id: 4916745334479621
+    id: 13437668742291550
     identification: 
       column-name: SESSION_DATE
       type: Plain Text
@@ -374,7 +379,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE =================================
-    id: 24230107440737272
+    id: 32751030848549201
     identification: 
       column-name: EASY_COURSE
       type: Hidden Column
@@ -389,7 +394,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE =================================
-    id: 24230226766737273
+    id: 32751150174549202
     identification: 
       column-name: HARD_COURSE
       type: Hidden Column
@@ -404,7 +409,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: PLAYERS =====================================
-    id: 24230306514737274
+    id: 32751229922549203
     identification: 
       column-name: PLAYERS
       type: Hidden Column
@@ -419,7 +424,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: TBD_CLASS ===================================
-    id: 24230412018737275
+    id: 32751335426549204
     identification: 
       column-name: TBD_CLASS
       type: Hidden Column
@@ -434,7 +439,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: Season Courses ==============================
-  id: 24230504967737276
+  id: 32751428375549205
   identification: 
     title: Season Courses
     type: Classic Report
@@ -547,7 +552,7 @@ regions:
 
   layout: 
     sequence: 10
-    parent-region: '{col3}' # 4916516804479619
+    parent-region: '{col3}' # 13437440212291548
     position: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
@@ -556,7 +561,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--noBorder
@@ -587,7 +592,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -621,7 +626,7 @@ regions:
 
   columns: 
   - # ====== Column: COURSE_ORDER ================================
-    id: 13608297307876103
+    id: 22129220715688032
     identification: 
       column-name: COURSE_ORDER
       type: Hidden Column
@@ -636,7 +641,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: ROUND_NUM ===================================
-    id: 24230641701737277
+    id: 32751565109549206
     identification: 
       column-name: ROUND_NUM
       type: Plain Text
@@ -679,7 +684,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE =================================
-    id: 24230905693737280
+    id: 32751829101549209
     identification: 
       column-name: EASY_COURSE
       type: Plain Text
@@ -714,7 +719,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE =================================
-    id: 24231011939737281
+    id: 32751935347549210
     identification: 
       column-name: HARD_COURSE
       type: Plain Text
@@ -749,7 +754,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: STATUS ======================================
-    id: 24231124372737282
+    id: 32752047780549211
     identification: 
       column-name: STATUS
       type: Plain Text
@@ -784,7 +789,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: ORDER_BY ====================================
-    id: 24231207967737283
+    id: 32752131375549212
     identification: 
       column-name: ORDER_BY
       type: Hidden Column
@@ -799,7 +804,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: URL =========================================
-    id: 24231356951737284
+    id: 32752280359549213
     identification: 
       column-name: URL
       type: Hidden Column
@@ -814,7 +819,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_NAME ===================================
-    id: 31037309466157876
+    id: 39558232873969805
     identification: 
       column-name: EASY_NAME
       type: Hidden Column
@@ -829,7 +834,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_NAME ===================================
-    id: 31037414082157877
+    id: 39558337489969806
     identification: 
       column-name: HARD_NAME
       type: Hidden Column
@@ -844,7 +849,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: STATUS_TITLE ================================
-    id: 31037520179157878
+    id: 39558443586969807
     identification: 
       column-name: STATUS_TITLE
       type: Hidden Column
@@ -859,7 +864,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: {col1} ======================================
-  id: 27805216175823190
+  id: 36326139583635119
   identification: 
     title: '{col1}'
     type: Static Content
@@ -879,7 +884,7 @@ regions:
     - col-xs-12
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -904,14 +909,14 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: {Player Profile Buttons} ====================
-  id: 27805332151823191
+  id: 36326255559635120
   identification: 
     title: '{Player Profile Buttons}'
     type: Static Content
 
   layout: 
     sequence: 20
-    parent-region: '{col1}' # 27805216175823190
+    parent-region: '{col1}' # 36326139583635119
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -924,7 +929,7 @@ regions:
     - col-xs-12
 
   appearance: 
-    template: Buttons Container # 46986522566537702415
+    template: Buttons Container # 46995043489945514344
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--noPadding
@@ -958,7 +963,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: Most recent registrations ===================
-  id: 31038802168157891
+  id: 39559725575969820
   identification: 
     title: Most recent registrations
     type: Classic Report
@@ -967,28 +972,37 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
+      with new_player as (
+          select to_number(value default 0 on conversion error) last_id
+             from wmg_parameters
+            where name_key = 'LAST_REGISTERED_ID'
+      )
       select country_code, country
-          , player_name, tournament_player_created
+          , player_name
+          , case when tp.player_id > new_player.last_id then 'New player!' else tp.rank_name end rank_name
+          , case when tp.player_id > new_player.last_id then 'fa --wm-np' else tp.rank_list_class  end  rank_list_class
+          , tournament_player_created
           , row_number() over (order by tournament_player_created) rn
-      from wmg_tournament_player_v
-      where tournament_session_id = :G_CURRENT_SESSION_ID
-        and active_ind = 'Y'
-      order by tournament_player_created desc
+      from wmg_tournament_player_v tp
+          , new_player
+      where tp.tournament_session_id = :G_CURRENT_SESSION_ID
+        and tp.active_ind = 'Y'
+      order by tp.tournament_player_created desc
       fetch first 5 rows only
       
 
   layout: 
     sequence: 29
-    parent-region: '{col2}' # 3472525362873700
+    parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 6
+    column-span: 7
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -1020,7 +1034,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1055,8 +1069,38 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: RANK_NAME ===================================
+    id: 39135535853390006
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 39135696411390007
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: COUNTRY_CODE ================================
-    id: 31038888775157892
+    id: 39559812182969821
     identification: 
       column-name: COUNTRY_CODE
       type: Plain Text
@@ -1091,7 +1135,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: PLAYER_NAME =================================
-    id: 31039019047157893
+    id: 39559942454969822
     identification: 
       column-name: PLAYER_NAME
       type: Plain Text
@@ -1106,6 +1150,9 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<div>#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div></div>'
 
     sorting: 
       sortable: false
@@ -1123,7 +1170,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: TOURNAMENT_PLAYER_CREATED ===================
-    id: 31039103491157894
+    id: 39560026898969823
     identification: 
       column-name: TOURNAMENT_PLAYER_CREATED
       type: Plain Text
@@ -1158,7 +1205,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: RN ==========================================
-    id: 31039334169157896
+    id: 39560257576969825
     identification: 
       column-name: RN
       type: Plain Text
@@ -1190,7 +1237,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: COUNTRY =====================================
-    id: 31039466038157897
+    id: 39560389445969826
     identification: 
       column-name: COUNTRY
       type: Hidden Column
@@ -1205,7 +1252,7 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: {Player Profile} ============================
-  id: 49332604234854233
+  id: 57853527642666162
   identification: 
     title: '{Player Profile}'
     type: Dynamic Content
@@ -1220,7 +1267,7 @@ regions:
 
   layout: 
     sequence: 10
-    parent-region: '{col1}' # 27805216175823190
+    parent-region: '{col1}' # 36326139583635119
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -1233,7 +1280,7 @@ regions:
     - hidden-xs-down
 
   appearance: 
-    template: Standard # 46986580184360702438
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader js-removeLandmark
@@ -1267,7 +1314,7 @@ regions:
       lazy-loading: false
 
 - # ====== Region: About the next courses ======================
-  id: 24735740413470583646
+  id: 24744261336878395575
   identification: 
     title: About the next courses
     type: Classic Report
@@ -1300,7 +1347,7 @@ regions:
 
   layout: 
     sequence: 30
-    parent-region: '{Next Tournament Info}' # 665559002503481
+    parent-region: '{Next Tournament Info}' # 9186482410315410
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -1309,7 +1356,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46986514536301702411
+    template: Alert # 46995035459709514340
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -1339,7 +1386,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46986618016296702453
+      template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1377,7 +1424,7 @@ regions:
 
   columns: 
   - # ====== Column: EASY_RECORD =================================
-    id: 206705189006401
+    id: 8727628596818330
     identification: 
       column-name: EASY_RECORD
       type: Hidden Column
@@ -1392,7 +1439,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_RECORD =================================
-    id: 206794835006402
+    id: 8727718242818331
     identification: 
       column-name: HARD_RECORD
       type: Hidden Column
@@ -1407,7 +1454,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_STATS_URL ==============================
-    id: 465571518830695
+    id: 8986494926642624
     identification: 
       column-name: EASY_STATS_URL
       type: Hidden Column
@@ -1422,7 +1469,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_STATS_URL ==============================
-    id: 465603171830696
+    id: 8986526579642625
     identification: 
       column-name: HARD_STATS_URL
       type: Hidden Column
@@ -1437,7 +1484,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: TBD_CLASS ===================================
-    id: 6009378356197101
+    id: 14530301764009030
     identification: 
       column-name: TBD_CLASS
       type: Hidden Column
@@ -1452,7 +1499,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: SESSION_DATE ================================
-    id: 24735740504360583647
+    id: 24744261427768395576
     identification: 
       column-name: SESSION_DATE
       type: Plain Text
@@ -1504,7 +1551,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE_CODE ============================
-    id: 24735740660122583648
+    id: 24744261583530395577
     identification: 
       column-name: EASY_COURSE_CODE
       type: Hidden Column
@@ -1519,7 +1566,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE_CODE ============================
-    id: 24735740743520583649
+    id: 24744261666928395578
     identification: 
       column-name: HARD_COURSE_CODE
       type: Hidden Column
@@ -1534,7 +1581,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: EASY_COURSE =================================
-    id: 24735740822580583650
+    id: 24744261745988395579
     identification: 
       column-name: EASY_COURSE
       type: Hidden Column
@@ -1549,7 +1596,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: HARD_COURSE =================================
-    id: 57207806103846896001
+    id: 57216327027254707930
     identification: 
       column-name: HARD_COURSE
       type: Hidden Column
@@ -1564,17 +1611,17 @@ regions:
       escape-special-characters: true
 
 - # ====== Region: Tournament Options ==========================
-  id: 50429446025262004844
+  id: 50437966948669816773
   identification: 
     title: Tournament Options
     type: List
 
   source: 
-    list: Tournament Options # 55884590206608414057
+    list: Tournament Options # 55893111130016225986
 
   layout: 
     sequence: 20
-    parent-region: '{Next Tournament Info}' # 665559002503481
+    parent-region: '{Next Tournament Info}' # 9186482410315410
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -1583,7 +1630,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Hero # 46986552355884702427
+    template: Hero # 46995073279292514356
     template-options: 
     - '#DEFAULT#'
     - t-HeroRegion--featured t-HeroRegion--centered
@@ -1606,11 +1653,11 @@ regions:
     customizable: Not Customizable By End Users
 
   configuration: 
-    build-option: 'Feature: Handle Registrations' # 40382414873609991608
+    build-option: 'Feature: Handle Registrations' # 40390935797017803537
 
   attributes: 
     appearance: 
-      list-template: Cards # 46986628863802702458
+      list-template: Cards # 46995149787210514387
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -1623,7 +1670,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P1_DO_NOT_MATCH_FLAG =====================
-  id: 6007460650197081
+  id: 14528384058009010
   identification: 
     name: P1_DO_NOT_MATCH_FLAG
     type: Hidden
@@ -1633,7 +1680,7 @@ page-items:
 
   layout: 
     sequence: 50
-    region: '{Next Tournament Info}' # 665559002503481
+    region: '{Next Tournament Info}' # 9186482410315410
     position: BODY
 
   advanced: 
@@ -1654,14 +1701,14 @@ page-items:
 
 buttons: 
 - # ====== Button: EDIT ========================================
-  id: 24234310769737314
+  id: 32755234177549243
   identification: 
     button-name: EDIT
     label: Edit Profile
 
   layout: 
     sequence: 10
-    region: '{Player Profile Buttons}' # 27805332151823191
+    region: '{Player Profile Buttons}' # 36326255559635120
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -1670,7 +1717,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1695,14 +1742,14 @@ buttons:
     item: G_PLAYER_ID
 
 - # ====== Button: BADGES ======================================
-  id: 27805104230823189
+  id: 36326027638635118
   identification: 
     button-name: BADGES
     label: My Badges
 
   layout: 
     sequence: 20
-    region: '{Player Profile Buttons}' # 27805332151823191
+    region: '{Player Profile Buttons}' # 36326255559635120
     position: PREVIOUS
     start-new-layout: false
     start-new-row: true
@@ -1711,7 +1758,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1736,14 +1783,14 @@ buttons:
     item: G_PLAYER_ID
 
 - # ====== Button: SETUP_NEW ===================================
-  id: 27807958782823217
+  id: 36328882190635146
   identification: 
     button-name: SETUP_NEW
     label: Setup
 
   layout: 
     sequence: 20
-    region: '{Player Profile Buttons}' # 27805332151823191
+    region: '{Player Profile Buttons}' # 36326255559635120
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -1752,7 +1799,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46986653123744702471
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1775,14 +1822,14 @@ buttons:
     item: G_PLAYER_ID
 
 - # ====== Button: VIEW_ALL ====================================
-  id: 31039652692157899
+  id: 39560576099969828
   identification: 
     button-name: VIEW_ALL
     label: View All
 
   layout: 
     sequence: 10
-    region: Most recent registrations # 31038802168157891
+    region: Most recent registrations # 39559725575969820
     position: EDIT
     start-new-layout: false
     start-new-row: true
@@ -1791,7 +1838,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46986652388380702470
+    button-template: Icon # 46995173311788514399
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1808,7 +1855,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh after close =================
-  id: 24234378956737315
+  id: 32755302364549244
   identification: 
     name: Refresh after close
 
@@ -1818,7 +1865,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
-    button: EDIT # 24234310769737314
+    button: EDIT # 32755234177549243
 
   execution: 
     event-scope: Static
@@ -1826,23 +1873,23 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 24234507703737316
+    id: 32755431111549245
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: '{Player Profile}' # 49332604234854233
+      region: '{Player Profile}' # 57853527642666162
 
     execution: 
       sequence: 10
-      event: Refresh after close # 24234378956737315
+      event: Refresh after close # 32755302364549244
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 computations: 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
-  id: 2316748674575093601
+  id: 2325269597982905530
   identification: 
     item-name: G_CURRENT_SESSION_ID
 
@@ -1866,7 +1913,7 @@ computations:
       fetch first 1 rows only
 
 - # ====== Computation: G_REGISTRATION_ID ======================
-  id: 2316748859420093603
+  id: 2325269782827905532
   identification: 
     item-name: G_REGISTRATION_ID
 
@@ -1887,7 +1934,7 @@ computations:
 
 processes: 
 - # ====== Process: Init Courses ===============================
-  id: 15526039077281949501
+  id: 15534560000689761430
   identification: 
     name: Init Courses
     type: Execute Code
@@ -1927,7 +1974,7 @@ processes:
 
 branches: 
 - # ====== Branch: Go Match existing player to Discord account =
-  id: 6007319317197080
+  id: 14528242725009009
   identification: 
     name: Go Match existing player to Discord account
 
@@ -1972,7 +2019,7 @@ branches:
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
 - # ====== Branch: Go Create New player from Discord account ===
-  id: 24233136358737302
+  id: 32754059766549231
   identification: 
     name: Go Create New player from Discord account
 

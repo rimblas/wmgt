@@ -5,7 +5,7 @@ identification:
   name: Configure Access Control
   alias: CONFIGURE-ACCESS-CONTROL
   title: Configure Access Control
-  page-group: Administration # 46986684228947702497
+  page-group: Administration # 46995205152355514426
 
 appearance: 
   page-mode: Modal Dialog
@@ -22,7 +22,7 @@ navigation:
   warn-on-unsaved-changes: true
 
 security: 
-  authorization-scheme: Administration Rights # 46986682652284702496
+  authorization-scheme: Administration Rights # 46995203575692514425
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: No Arguments Supported
@@ -56,11 +56,11 @@ help:
     </em></p>
 
 configuration: 
-  build-option: 'Feature: Access Control' # 46986679954839702495
+  build-option: 'Feature: Access Control' # 46995200878247514424
 
 regions: 
 - # ====== Region: Access Control Configuration ================
-  id: 46986986741733704095
+  id: 46995507665141516024
   identification: 
     title: Access Control Configuration
     type: Static Content
@@ -76,7 +76,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46986519704134702414
+    template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -101,7 +101,7 @@ regions:
       expand-shortcuts: false
 
 - # ====== Region: Buttons =====================================
-  id: 46986986892821704095
+  id: 46995507816229516024
   identification: 
     title: Buttons
     type: Static Content
@@ -117,7 +117,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46986522566537702415
+    template: Buttons Container # 46995043489945514344
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -143,7 +143,7 @@ regions:
 
 page-items: 
 - # ====== Page Item: P10040_ALLOW_OTHER_USERS =================
-  id: 46986990281432704097
+  id: 46995511204840516026
   identification: 
     name: P10040_ALLOW_OTHER_USERS
     type: Switch
@@ -157,7 +157,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: Access Control Configuration # 46986986741733704095
+    region: Access Control Configuration # 46995507665141516024
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -168,7 +168,7 @@ page-items:
     label-column-span: 3
 
   appearance: 
-    template: Optional # 46986650382572702469
+    template: Optional # 46995171305980514398
     template-options: 
     - '#DEFAULT#'
 
@@ -202,14 +202,14 @@ page-items:
 
 buttons: 
 - # ====== Button: APPLY_CHANGES ===============================
-  id: 46986988085386704096
+  id: 46995509008794516025
   identification: 
     button-name: APPLY_CHANGES
     label: Apply Changes
 
   layout: 
     sequence: 20
-    region: Buttons # 46986986892821704095
+    region: Buttons # 46995507816229516024
     position: CREATE
     start-new-layout: false
     start-new-row: true
@@ -218,7 +218,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -229,14 +229,14 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: CANCEL ======================================
-  id: 46986988392057704097
+  id: 46995509315465516026
   identification: 
     button-name: CANCEL
     label: Cancel
 
   layout: 
     sequence: 10
-    region: Buttons # 46986986892821704095
+    region: Buttons # 46995507816229516024
     position: PREVIOUS
     start-new-layout: false
     start-new-row: true
@@ -245,7 +245,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46986653057215702471
+    button-template: Text # 46995173980623514400
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -256,7 +256,7 @@ buttons:
 
 dynamic-actions: 
 - # ====== Dynamic Action: Cancel Dialog =======================
-  id: 46986988444690704097
+  id: 46995509368098516026
   identification: 
     name: Cancel Dialog
 
@@ -266,7 +266,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: CANCEL # 46986988392057704097
+    button: CANCEL # 46995509315465516026
 
   execution: 
     event-scope: Static
@@ -274,19 +274,19 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
-    id: 46986989140127704097
+    id: 46995510063535516026
     identification: 
       action: Cancel Dialog
 
     execution: 
       sequence: 10
-      event: Cancel Dialog # 46986988444690704097
+      event: Cancel Dialog # 46995509368098516026
       fire-when-event-result-is: True
       fire-on-initialization: false
 
 processes: 
 - # ====== Process: Set Access Control =========================
-  id: 46986990626838704098
+  id: 46995511550246516027
   identification: 
     name: Set Access Control
     type: Execute Code
@@ -320,7 +320,7 @@ processes:
 
 branches: 
 - # ====== Branch: Branch to Admin Page ========================
-  id: 46986989846363704097
+  id: 46995510769771516026
   identification: 
     name: Branch to Admin Page
 
