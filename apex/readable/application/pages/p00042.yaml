@@ -107,7 +107,7 @@ regions:
       fixed-row-height: true
 
     pagination: 
-      type: Scroll
+      type: Page
       show-total-row-count: true
 
     toolbar: 
@@ -187,6 +187,57 @@ regions:
         alias: 331311
 
   columns: 
+  - # ====== Column: RANK ========================================
+    id: 43957942038790315
+    identification: 
+      column-name: RANK
+      type: Display Only
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    settings: 
+      format: HTML
+
+    layout: 
+      sequence: 180
+      column-alignment: center
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: SQL Expression
+      sql-expression: |
+        (select '<div class="' || p.rank_profile_class || ' ' || RANK_LIST_CLASS || '">' || RANK_NAME || '</div>' 
+        from wmg_players_v p
+        where p.id = PLAYER_ID)
+      data-type: VARCHAR2
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Use List of Values
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
   - # ====== Column: TOURNAMENT_SESSION_ID =======================
     id: 40389410769100769145
     identification: 
@@ -302,7 +353,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 180
+      sequence: 190
       column-alignment: center
       stretch: Use Report Setting
 
@@ -362,7 +413,7 @@ regions:
       virtual-keyboard: Decimal
 
     layout: 
-      sequence: 190
+      sequence: 200
       column-alignment: center
       stretch: Use Report Setting
 
@@ -408,7 +459,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 200
+      sequence: 210
       column-alignment: center
       stretch: Use Report Setting
 
@@ -521,7 +572,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: center
       stretch: Use Report Setting
 
@@ -569,7 +620,7 @@ regions:
       text-case: NO CHANGE
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: start
       stretch: Use Report Setting
 
@@ -628,7 +679,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 240
+      sequence: 250
       column-alignment: center
       stretch: Use Report Setting
 
@@ -676,7 +727,7 @@ regions:
       text-case: NO CHANGE
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: start
       stretch: Use Report Setting
 
