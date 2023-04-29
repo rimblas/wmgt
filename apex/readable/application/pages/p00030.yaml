@@ -589,6 +589,64 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P30_SLOT =================================
+  id: 43959270230790328
+  identification: 
+    name: P30_SLOT
+    type: Text Field
+
+  label: 
+    label: Slot
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 75
+    region: Registration # 24744259667333395558
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - u-vh
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P30_ACTIVE_IND ===========================
   id: 2325269686397905531
   identification: 
@@ -1246,6 +1304,8 @@ dynamic-actions:
       code: |
         let el = $(this.triggeringElement).find(".slotOption");
         el.prop("checked", true);
+        // used to detect changes
+        $s("P30_SLOT", el.val());
         highlightRow(el);
 
     execution: 
