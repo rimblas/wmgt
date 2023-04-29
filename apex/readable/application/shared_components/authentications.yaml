@@ -16,7 +16,9 @@
          add to the Post-Auth procedure to fake a user
          set_test_user
         */
-        
+       if :APP_USER != 'DEMO' then
+         return;
+       end if; 
        select id
              , account
              , discord_id
@@ -36,6 +38,7 @@
     redirect-to: Login Page
 
   login-processing: 
+    post-authentication-procedure-name: set_test_user
     switch-in-session: false
 
   real-application-security: 

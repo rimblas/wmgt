@@ -122,10 +122,10 @@ regions:
     security: 
       store-value-encrypted-in-session-state: true
 
-  - # ====== Facet: P6_RANK_NAME =================================
+  - # ====== Facet: P6_RANK_CODE =================================
     id: 43958430193790320
     identification: 
-      name: P6_RANK_NAME
+      name: P6_RANK_CODE
       type: Checkbox Group
 
     label: 
@@ -243,10 +243,10 @@ regions:
     security: 
       store-value-encrypted-in-session-state: true
 
-  - # ====== Filter: P6_RANK_NAME ================================
+  - # ====== Filter: P6_RANK_CODE ================================
     id: 43958430193790320
     identification: 
-      name: P6_RANK_NAME
+      name: P6_RANK_CODE
       type: Checkbox Group
 
     label: 
@@ -381,6 +381,15 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  header-and-footer: 
+    footer-text: |
+      <div class="pro-legend row margin-sm u-justify-content-space-around">
+      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
+      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro player</div>
+      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur player</div>
+      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
+      </div>
+
   server-cache: 
     caching: Disabled
 
@@ -506,7 +515,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 40
+      sequence: 80
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -521,7 +530,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 50
+      sequence: 90
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -540,14 +549,14 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 40
       column-alignment: center
 
     accessibility: 
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<div class="w #RANK_LIST_CLASS#" title="#RANK_NAME#"></div>'
+      html-expression: '<div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
 
     sorting: 
       sortable: true
@@ -568,27 +577,10 @@ regions:
     id: 44155651746157947
     identification: 
       column-name: RANK_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Rank Name
-      alignment: center
+      type: Hidden Column
 
     layout: 
-      sequence: 70
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 50
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -603,7 +595,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 80
+      sequence: 110
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -618,7 +610,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 90
+      sequence: 120
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -633,7 +625,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 100
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -652,7 +644,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 150
       column-alignment: start
 
     accessibility: 
@@ -684,14 +676,14 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 120
+      sequence: 60
       column-alignment: center
 
     accessibility: 
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <i class="em em-flag-#COUNTRY_CODE#"" aria-role="presentation" aria-label="#COUNTRY# Flag" title="#COUNTRY#"></i>
+      html-expression: <i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="#COUNTRY# Flag" title="#COUNTRY#"></i>
 
     sorting: 
       sortable: true
@@ -719,7 +711,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 70
       column-alignment: start
 
     accessibility: 
@@ -747,7 +739,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 150
+      sequence: 140
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -822,7 +814,7 @@ regions:
         from WMG_PLAYERS_V p
 
   layout: 
-    sequence: 30
+    sequence: 99
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1816,4 +1808,36 @@ dynamic-actions:
       event: Refresh On Close # 43958208135790318
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+- # ====== Dynamic Action: Tooltips after refresh ==============
+  id: 43959320988790329
+  identification: 
+    name: Tooltips after refresh
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Players # 87882192386585391
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 43959482221790330
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: wmgt.theme.init();
+
+    execution: 
+      sequence: 10
+      event: Tooltips after refresh # 43959320988790329
+      fire-when-event-result-is: True
+      fire-on-initialization: true
 
