@@ -205,7 +205,7 @@ begin
   )
   loop
     if p_mode = 'MINI' then
-      return '<div class="row col-6 u-justify-content-space-around">' || p.discord_profile 
+      return '<div class="row col-6 col-md-8 u-justify-content-space-around">' || p.discord_profile 
           || ' &nbsp; <span class="' || p.rank_profile_class || '">' || p.rank_name || '</span>'
           || p.flag
       || '</div>';
