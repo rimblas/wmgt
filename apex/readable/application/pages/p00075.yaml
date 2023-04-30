@@ -158,7 +158,7 @@ regions:
     - P75_SHOW_VERYFIED_FLAG
 
   layout: 
-    sequence: 69
+    sequence: 79
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -985,7 +985,7 @@ page-items:
     start-new-row: true
     column: 3
     new-column: true
-    column-span: 8
+    column-span: 6
     label-column-span: Page Template Default
 
   appearance: 
@@ -1000,6 +1000,7 @@ page-items:
     value-required: false
 
   advanced: 
+    post-text-: '"CLEAR_BUTTON"'
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1071,6 +1072,46 @@ page-items:
 
   help: 
     help-text: Show the verified scoresheets. Verified means someone look at the scorecard and confirmed it matches the score submission.
+
+buttons: 
+- # ====== Button: CREATE ======================================
+  id: 45123990407267741
+  identification: 
+    button-name: CREATE
+    label: Add New Round
+
+  layout: 
+    sequence: 69
+    region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    - t-Button--stretch
+    - t-Button--gapTop
+    icon: fa-soccer-ball-o
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9::'
+      page: 9 # Round
+      clear-cache: 9
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Data ========================
@@ -1312,6 +1353,46 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: true
 
+- # ====== Dynamic Action: Clear Result on Clear ===============
+  id: 43959613362790332
+  identification: 
+    name: Clear Result on Clear
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P75_SEARCH
+
+  client-side-condition: 
+    type: Item is null
+    item: P75_SEARCH
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 43959768817790333
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var $ctx=$("#report_table_verifyRegion .t-Report-cell[headers='PLAYER_NAME']");
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+
+    execution: 
+      sequence: 10
+      event: Clear Result on Clear # 43959613362790332
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 computations: 
 - # ====== Computation: P75_WEEK ===============================
   id: 11992252299685617
@@ -1382,4 +1463,20 @@ processes:
 
   comments: 
     comments: This was used to load the points history for previous seasons
+
+- # ====== Process: Refresh MV =================================
+  id: 45125498558399130
+  identification: 
+    name: Refresh MV
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
+
+  execution: 
+    sequence: 20
+    point: Before Header
+    run-process: Once Per Page Visit (default)
 

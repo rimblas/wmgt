@@ -20,7 +20,11 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
-  execute-when-page-loads: wmgt.theme.init();
+  execute-when-page-loads: |
+    wmgt.theme.init();
+    setTimeout(function(){
+    $(".discAttention").addClass("fa-anim-vertical-shake");
+    }, 6500);
 
 css: 
   file-urls: 
@@ -1003,7 +1007,8 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select country_code, country
+      select tp.player_id
+          , country_code, country
           , tp.player_name
           , tp.rank_name
           , tp.rank_list_class
@@ -1110,7 +1115,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 60
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1125,7 +1130,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 70
+      sequence: 80
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1144,7 +1149,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: center
 
     accessibility: 
@@ -1179,7 +1184,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 40
+      sequence: 50
       column-alignment: start
 
     accessibility: 
@@ -1214,7 +1219,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 50
+      sequence: 60
       column-alignment: start
 
     accessibility: 
@@ -1249,7 +1254,7 @@ regions:
       alignment: end
 
     layout: 
-      sequence: 10
+      sequence: 20
       column-alignment: end
 
     accessibility: 
@@ -1277,12 +1282,55 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 30
+      sequence: 40
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
     security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 43959587443790331
+    identification: 
+      column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:#PLAYER_ID#'
+        page: 7 # Player
+        clear-cache: 7
+        values: 
+          p7_id: '#PLAYER_ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Tournament Admin # 55902033226819493948
       escape-special-characters: true
 
 - # ====== Region: About the Discord Login =====================
@@ -1316,7 +1364,7 @@ regions:
     exclude-title-from-translation: false
 
   header-and-footer: 
-    header-text: <div class="legend u-tC">As a player, use Discord to sign-in.<br></div>
+    header-text: <div class="legend u-tC">Use the Discord button to sign-in.<br></div>
 
   server-cache: 
     caching: Disabled
@@ -1698,7 +1746,7 @@ regions:
     html-code: |
       <div class="margin-bottom-sm u-tC">
       <h4>Sign In with Discord</h4>
-      <span aria-hidden="true" class="fa fa-arrow-down-alt fa-anim-vertical-shake fa-lg hidden-sm-down"></span>
+      <span aria-hidden="true" class="discAttention fa fa-arrow-down-alt fa-lg hidden-sm-down"></span>
       </div>
 
   layout: 

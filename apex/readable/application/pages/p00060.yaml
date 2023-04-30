@@ -235,6 +235,9 @@ css:
         background-color: hsl(220deg 100% 97%);
         color: #666;
     }
+    .p0 {
+        color: red;
+    }
     
     td[headers="SEASON_TOTAL"] {
         font-weight: bold;
@@ -3368,7 +3371,7 @@ page-items:
     type: Text Field
 
   label: 
-    label: Player Search
+    label: Player
     alignment: Left
 
   settings: 
@@ -3390,7 +3393,9 @@ page-items:
     column-span: Automatic
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-md-3
+    - col-xxs-5
+    - col-md-5
+    - col-sm-5
     - col-lg-4
 
   appearance: 
@@ -3603,9 +3608,9 @@ page-items:
     column-span: 3
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xss-9
-    - col-xs-8
-    - col-sm-8
+    - col-xxs-5
+    - col-xs-4
+    - col-sm-4
     - col-md-6
     - col-lg-4
 
@@ -3706,9 +3711,9 @@ page-items:
     column-span: 2
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xss-3
-    - col-xs-4
-    - col-sm-4
+    - col-xxs-2
+    - col-xs-3
+    - col-sm-3
     - col-md-2
     - col-lg-3
 
@@ -3728,6 +3733,7 @@ page-items:
       select count(*)
         from wmg_tournament_players 
        where tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+         and active_ind = 'Y'
     used: Always, replacing any existing value in session state
 
   session-state: 
