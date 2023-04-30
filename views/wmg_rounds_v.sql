@@ -88,7 +88,8 @@ select
       nvl(r.s16 - cs.h16, cs.h16 + 4) +
       nvl(r.s17 - cs.h17, cs.h17 + 4) +
       nvl(r.s18 - cs.h18, cs.h18 + 4) scorecard_total
-   , case 
+   , /*
+     case 
      when r.override_score is null and r.final_score is null then
       nvl(r.s1 - cs.h1, 0) +
       nvl(r.s2 - cs.h2, 0) +
@@ -109,8 +110,8 @@ select
       nvl(r.s17 - cs.h17, 0) +
       nvl(r.s18 - cs.h18, 0) 
     else
-      coalesce(r.override_score, r.final_score)
-    end under_par
+    */
+      coalesce(r.override_score, r.final_score) under_par
   , r.final_score
   , case when r.override_score is null then '' else 'Y' end score_override_flag
   , r.override_reason

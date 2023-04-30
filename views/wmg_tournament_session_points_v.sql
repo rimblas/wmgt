@@ -6,7 +6,7 @@ select ts.id tournament_session_id
      , r.easy, r.hard, r.total_score
      , r.pos
      , r.percent_rank
-     , wmg_util.score_points(r.pos, r.percent_rank, r.player_count) points
+     , decode(r.total_score, null, 0, wmg_util.score_points(r.pos, r.percent_rank, r.player_count)) points
      , ts.completed_ind
 from (
 select r.week, r.player_id, r.player_name, r.country_code
