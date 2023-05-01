@@ -70,6 +70,8 @@ regions:
              , p.tournament_player_id
              , p.player_name
              , p.discord_id
+             , p.time_slot
+             , p.room_no
              , r.easy_par
              , r.hard_par
              , r.total_score
@@ -86,8 +88,13 @@ regions:
          where p.week = r.week (+)
            and p.player_id = r.player_id (+)
            and p.week = :P75_WEEK
+           and p.active_ind = 'Y'
+           and (:P75_SLOT is null or :P75_SLOT = p.time_slot)
+           and (:P75_ROOM is null or to_number(:P75_ROOM default null on conversion error) = p.room_no)
       )
       select pos
+           , time_slot
+           , room_no
            , player_id
            , tournament_player_id
            , wmg_discord.avatar_link(p_discord_id => discord_id) avatar
@@ -109,6 +116,8 @@ regions:
            , verified_on
       from  (
           select s.pos
+               , s.time_slot
+               , s.room_no
                , s.player_id
                , s.discord_id
                , s.tournament_player_id
@@ -148,7 +157,7 @@ regions:
             or verification_class = 'N')
         and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
         and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or :P75_SHOW_VERYFIED_FLAG = 'Y')
-      order by display_seq
+      order by time_slot, room_no, display_seq
          , pos
       
     page-items-to-submit: 
@@ -156,16 +165,18 @@ regions:
     - P75_DIFF_ONLY_FLAG
     - P75_SHOW_MISSING_FLAG
     - P75_SHOW_VERYFIED_FLAG
+    - P75_SLOT
+    - P75_ROOM
 
   layout: 
-    sequence: 79
+    sequence: 99
     parent-region: No Parent
     position: BODY
     start-new-layout: false
     start-new-row: true
-    column: 3
+    column: 2
     new-column: true
-    column-span: 8
+    column-span: 9
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -205,7 +216,6 @@ regions:
       - t-Report--staticRowColors
       - t-Report--rowHighlight
       - t-Report--inline
-      - t-Report--hideNoPagination
 
     pagination: 
       type: Row Ranges X to Y (with next and previous links)
@@ -247,7 +257,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 90
       column-alignment: start
 
     accessibility: 
@@ -292,7 +302,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -327,7 +337,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -362,7 +372,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 40
       column-alignment: center
 
     accessibility: 
@@ -393,7 +403,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 130
+      sequence: 160
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -408,7 +418,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 140
+      sequence: 170
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -423,7 +433,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 30
+      sequence: 60
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -438,7 +448,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 150
+      sequence: 180
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -453,7 +463,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 160
+      sequence: 190
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -468,7 +478,74 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 120
+      sequence: 150
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TIME_SLOT ===================================
+    id: 39136185214390012
+    identification: 
+      column-name: TIME_SLOT
+      type: Plain Text
+
+    heading: 
+      heading: Time Slot
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 39136287904390013
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: WMGT#ROOM_NO#
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -502,7 +579,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 70
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -539,7 +616,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -572,7 +649,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 90
+      sequence: 120
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -587,7 +664,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 170
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -602,7 +679,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 200
+      sequence: 230
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -621,7 +698,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 190
+      sequence: 220
       column-alignment: center
 
     accessibility: 
@@ -656,7 +733,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 180
+      sequence: 210
       column-alignment: center
 
     accessibility: 
@@ -687,7 +764,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 40
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -706,7 +783,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 50
+      sequence: 80
       column-alignment: center
 
     accessibility: 
@@ -808,7 +885,7 @@ page-items:
     alignment: Left
     start-new-layout: false
     start-new-row: true
-    column: 3
+    column: 2
     new-column: true
     column-span: 3
     label-column-span: Page Template Default
@@ -873,6 +950,119 @@ page-items:
       
           return options;
       }
+
+- # ====== Page Item: P75_SLOT =================================
+  id: 39135948061390010
+  identification: 
+    name: P75_SLOT
+    type: Select List
+
+  label: 
+    label: Slot
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+    allow-multi-selection: false
+
+  layout: 
+    sequence: 59
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: 2
+    new-column: true
+    column-span: 1
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: TIME_SLOTS # 40414543942160352036
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- All -'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_ROOM =================================
+  id: 39136049405390011
+  identification: 
+    name: P75_ROOM
+    type: Number Field
+
+  label: 
+    label: Room
+    alignment: Left
+
+  settings: 
+    number-alignment: Start
+    virtual-keyboard: Decimal
+
+  layout: 
+    sequence: 69
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 1
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P75_SHOW_MISSING_FLAG ====================
   id: 41135324279776002
@@ -977,15 +1167,15 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 59
+    sequence: 79
     region: No Parent
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
-    column: 3
+    start-new-row: false
+    column: Automatic
     new-column: true
-    column-span: 6
+    column-span: 4
     label-column-span: Page Template Default
 
   appearance: 
@@ -1081,7 +1271,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 69
+    sequence: 89
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -1089,7 +1279,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: 2
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -1130,6 +1320,8 @@ dynamic-actions:
     - P75_DIFF_ONLY_FLAG
     - P75_SHOW_MISSING_FLAG
     - P75_SHOW_VERYFIED_FLAG
+    - P75_SLOT
+    - P75_ROOM
 
   execution: 
     event-scope: Static

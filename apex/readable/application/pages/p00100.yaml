@@ -2443,7 +2443,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 700 display_seq
-             , 'Condors of Better'
+             , 'Condors or Better'
              , +4 data_filter
              , w.course_mode
              , '' drill_class
@@ -3667,7 +3667,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 700 display_seq
-             , 'Condors of Better'
+             , 'Condors or Better'
              , +4 data_filter
              , w.course_mode
              , '' drill_class
@@ -6525,9 +6525,10 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select count(distinct players_id)
-              from wmg_rounds 
-             where week = :P100_WEEK
+      select count(*)
+        from wmg_tournament_players 
+       where tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+         and active_ind = 'Y'
     used: Always, replacing any existing value in session state
 
   session-state: 

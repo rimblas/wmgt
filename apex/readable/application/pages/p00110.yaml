@@ -112,6 +112,45 @@ css:
     .hideBack td[headers="S17"],
     .hideBack #S18,
     .hideBack td[headers="S18"] {display: none;}
+    
+    .hideFront #H1,
+    .hideFront td[headers="H1"],
+    .hideFront #H2,
+    .hideFront td[headers="H2"],
+    .hideFront #H3,
+    .hideFront td[headers="H3"],
+    .hideFront #H4,
+    .hideFront td[headers="H4"],
+    .hideFront #H5,
+    .hideFront td[headers="H5"],
+    .hideFront #H6,
+    .hideFront td[headers="H6"],
+    .hideFront #H7,
+    .hideFront td[headers="H7"],
+    .hideFront #H8,
+    .hideFront td[headers="H8"],
+    .hideFront #H9,
+    .hideFront td[headers="H9"] {display: none;}
+    
+    .hideBack #H10,
+    .hideBack td[headers="H10"],
+    .hideBack #H11,
+    .hideBack td[headers="H11"],
+    .hideBack #H12,
+    .hideBack td[headers="H12"],
+    .hideBack #H13,
+    .hideBack td[headers="H13"],
+    .hideBack #H14,
+    .hideBack td[headers="H14"],
+    .hideBack #H15,
+    .hideBack td[headers="H15"],
+    .hideBack #H16,
+    .hideBack td[headers="H16"],
+    .hideBack #H17,
+    .hideBack td[headers="H17"],
+    .hideBack #H18,
+    .hideBack td[headers="H18"] {display: none;}
+    
     }
     
     
@@ -638,7 +677,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 700 display_seq
-             , 'Condors of Better'
+             , 'Condors or Better'
              , +4 data_filter
              , w.course_mode
              , '' drill_class
@@ -2824,7 +2863,7 @@ regions:
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
        from (
         select 700 display_seq
-             , 'Condors of Better'
+             , 'Condors or Better'
              , +4 data_filter
              , w.course_mode
              , '' drill_class
@@ -4099,7 +4138,7 @@ dynamic-actions:
       region: Player Round Details # 98808650782335523961
 
     execution: 
-      sequence: 30
+      sequence: 40
       event: Show front & back # 13433999077291513
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -4140,7 +4179,9 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: $("#roundDetails").removeClass("hideBack").removeClass("hideFront");
+      code: |
+        $("#roundDetails").removeClass("hideBack").removeClass("hideFront");
+        $(".courseStats").removeClass("hideBack").removeClass("hideFront");
 
     execution: 
       sequence: 10
@@ -4167,7 +4208,7 @@ dynamic-actions:
       region: Player Round Details # 98808650782335523961
 
     execution: 
-      sequence: 60
+      sequence: 80
       event: Show front & back # 13433999077291513
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -4191,7 +4232,103 @@ dynamic-actions:
       region: Player Round Details # 98808650782335523961
 
     execution: 
-      sequence: 40
+      sequence: 60
+      event: Show front & back # 13433999077291513
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: BACK
+
+  - # ====== Action: FRONT: Show Front 9: courseStats ============
+    id: 46152107732838149
+    identification: 
+      name: 'FRONT: Show Front 9: courseStats'
+      action: Remove Class
+
+    settings: 
+      class: hideFront
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .courseStats
+
+    execution: 
+      sequence: 30
+      event: Show front & back # 13433999077291513
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: FRONT
+
+  - # ====== Action: FRONT: Hide Back 9: courseStats =============
+    id: 46152239753838150
+    identification: 
+      name: 'FRONT: Hide Back 9: courseStats'
+      action: Add Class
+
+    settings: 
+      class: hideBack
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .courseStats
+
+    execution: 
+      sequence: 50
+      event: Show front & back # 13433999077291513
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: FRONT
+
+  - # ====== Action: BACK: Hide Front 9: courseStats =============
+    id: 47961861254877901
+    identification: 
+      name: 'BACK: Hide Front 9: courseStats'
+      action: Add Class
+
+    settings: 
+      class: hideFront
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .courseStats
+
+    execution: 
+      sequence: 70
+      event: Show front & back # 13433999077291513
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P110_FRONT_BACK
+      value: BACK
+
+  - # ====== Action: BACK: Show Back 9: courseStats ==============
+    id: 47961965225877902
+    identification: 
+      name: 'BACK: Show Back 9: courseStats'
+      action: Remove Class
+
+    settings: 
+      class: hideBack
+
+    affected-elements: 
+      selection-type: jQuery Selector
+      jquery-selector: .courseStats
+
+    execution: 
+      sequence: 90
       event: Show front & back # 13433999077291513
       fire-when-event-result-is: True
       fire-on-initialization: false

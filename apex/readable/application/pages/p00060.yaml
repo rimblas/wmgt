@@ -328,6 +328,7 @@ regions:
             select aw.tournament_session_id
              from all_weeks aw
           )
+          and p.active_ind = 'Y'
       )
       , sessions_pivot as (
           select player_id
@@ -3639,7 +3640,7 @@ page-items:
       </button>
       
     post-text-: |
-      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn" aria-expanded="false" aria-controls="weekNav" type="button" title="Prev Week" aria-label="Prev Week" data-nav="next">
+      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn" aria-expanded="false" aria-controls="weekNav" type="button" title="Next Week" aria-label="Prev Week" data-nav="next">
       <span class="t-Icon fa fa-chevron-right" aria-hidden="true"></span>
       </button>
       

@@ -1057,8 +1057,12 @@ regions:
       </div>
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: G_CURRENT_SESSION_ID
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions
+      where id = :G_CURRENT_SESSION_ID
+        and rooms_open_flag is null
 
   server-cache: 
     caching: Disabled
@@ -1291,7 +1295,7 @@ regions:
       escape-special-characters: true
 
   - # ====== Column: PLAYER_ID ===================================
-    id: 43959587443790331
+    id: 46151834826838146
     identification: 
       column-name: PLAYER_ID
       type: Link
@@ -1302,7 +1306,7 @@ regions:
 
     layout: 
       sequence: 10
-      column-alignment: center
+      column-alignment: start
 
     accessibility: 
       value-identifies-row: false
