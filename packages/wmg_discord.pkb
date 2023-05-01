@@ -284,12 +284,17 @@ begin
        , discord_id = l_player_rec.discord_id
        , discord_avatar = l_player_rec.discord_avatar
        , discord_discriminator = l_player_rec.discord_discriminator
-    where id = p_into_player_id;
+    where id = p_into_player_id
+      and discord_id is null;
 
   log('.. Move tournament registration', l_scope);
   update wmg_tournament_players
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
+
+  update wmg_rounds
+     set players_id = p_into_player_id
+   where players_id = p_from_player_id;
 
   if p_remove_from_player then
     delete
