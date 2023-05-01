@@ -245,13 +245,14 @@ regions:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 4
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
+    - margin-top-md
     render-components: Above Content
 
   accessibility: 
@@ -349,6 +350,854 @@ regions:
 
     layout: 
       sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Promotion to <span class="fa -wm-rank-pro-pro
+  id: 47962095348877903
+  identification: 
+    title: Promotion to <span class="fa -wm-rank-pro-profile -wm-rank-pro">Pro</span>
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select p.*
+        from wmg_tournament_session_points_v p
+       where p.tournament_session_id = :G_CURRENT_SESSION_ID
+         and p.pos <= 5
+         and p.rank_code != 'PRO'
+       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 4), pos
+      
+
+  layout: 
+    sequence: 30
+    parent-region: Current  Session # 56178155412404412208
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: <div class="legend">These changes will happen automatically when the tournament closes. Take note now</div>
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: TOURNAMENT_SESSION_ID =======================
+    id: 47962188469877904
+    identification: 
+      column-name: TOURNAMENT_SESSION_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 47962204262877905
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 47962366993877906
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 47962476383877907
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 47962514309877908
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 47962681002877909
+    identification: 
+      column-name: RANK_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Previous Rank
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: NEW
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 47962722577877910
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 47962845169877911
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 47962983627877912
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total Score
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 47963027995877913
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PERCENT_RANK ================================
+    id: 47963106135877914
+    identification: 
+      column-name: PERCENT_RANK
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS ======================================
+    id: 47963249593877915
+    identification: 
+      column-name: POINTS
+      type: Plain Text
+
+    heading: 
+      heading: Points
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COMPLETED_IND ===============================
+    id: 47963352279877916
+    identification: 
+      column-name: COMPLETED_IND
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Promotion to <span class="fa -wm-rank-semi-pr
+  id: 47963423161877917
+  identification: 
+    title: Promotion to <span class="fa -wm-rank-semi-profile -wm-rank-semi">Semi-Pro</span>
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select p.*
+        from wmg_tournament_session_points_v p
+       where p.tournament_session_id = :G_CURRENT_SESSION_ID
+         and p.pos <= 15
+         and p.rank_code not in ('PRO', 'SEMI')
+       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 4), pos  
+      
+
+  layout: 
+    sequence: 40
+    parent-region: Current  Session # 56178155412404412208
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: <div class="legend">These changes will happen automatically when the tournament closes. Take note now</div>
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: TOURNAMENT_SESSION_ID =======================
+    id: 47963579592877918
+    identification: 
+      column-name: TOURNAMENT_SESSION_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 47963679848877919
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 47963782122877920
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 47963835547877921
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 47963965500877922
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 47964003317877923
+    identification: 
+      column-name: RANK_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Previous Rank
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      highlight-words: NEW
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 47964111303877924
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 47964275330877925
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 47964375316877926
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total Score
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 47964476076877927
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PERCENT_RANK ================================
+    id: 47964549765877928
+    identification: 
+      column-name: PERCENT_RANK
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS ======================================
+    id: 47964607420877929
+    identification: 
+      column-name: POINTS
+      type: Plain Text
+
+    heading: 
+      heading: Points
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COMPLETED_IND ===============================
+    id: 47964737947877930
+    identification: 
+      column-name: COMPLETED_IND
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema

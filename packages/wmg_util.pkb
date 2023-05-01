@@ -874,9 +874,19 @@ end discard_points;
 /**
  * PRIVATE
  * Given a tournament ID and Tournament Session ID 
- * Discard the lowest points fom each player
+ * Promote players to their new status: Ama, Semi, Pro
  *
+ * Guideline:
  *
+ *    PRO status can be achieved by the following:
+ *    (1x) Top 5 -or- (3x) Top 10 
+ *
+ *    Players with 85 season points or more retained PRO status from Season 8
+ *
+ *    SEMI-PRO status can be achieved by the following:
+ *    (1x) Top 15  -or- (3x) Top 20 with 9 pts.
+ *
+ **
  * @example
  * 
  * @issue
@@ -906,10 +916,51 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
+       and p.points > 0  -- new players that actually played
        and p.rank_code = 'NEW'
    );
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
+  /*
+   *    PRO status can be achieved by the following:
+   *    (1x) Top 5 -or- (3x) Top 10 
+   */
+
+  log('.. Advance to PRO', l_scope);
+  update wmg_players
+     set rank_code = 'PRO'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 5
+       and p.rank_code != 'PRO'
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
+  /*
+   *    SEMI-PRO status can be achieved by the following:
+   *    (1x) Top 15  -or- (3x) Top 20 with 9 pts.
+   */
+
+  log('.. Advance to SEMI-PRO', l_scope);
+  update wmg_players
+     set rank_code = 'SEMI'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 15
+       and p.rank_code not in ('PRO', 'SEMI')
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
 
   log('END', l_scope);
 
