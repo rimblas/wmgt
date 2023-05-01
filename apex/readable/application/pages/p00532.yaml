@@ -1,8 +1,8 @@
 ---
-# ====== Page: Wmg Tournament Sessions =======================
+# ====== Page: Tournament Sessions ===========================
 id: 532
 identification: 
-  name: Wmg Tournament Sessions
+  name: Tournament Sessions
   alias: WMG-TOURNAMENT-SESSIONS
   title: Tournament Sessions
 
@@ -99,6 +99,483 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: Last Played =================================
+  id: 47964843790877931
+  identification: 
+    title: Last Played
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select ts.week, ts.round_num, ts.session_date
+      , c.id course_id, c.code, c.name
+      from wmg_tournament_sessions ts
+         , wmg_tournament_courses tc
+         , wmg_courses c
+      where tc.tournament_session_id = ts.id
+        and tc.tournament_session_id != nvl(:P532_ID,0)
+        and tc.course_id = c.id
+        and tc.course_id = :P532_EASY_COURSE_ID
+        order by ts.session_date desc
+       fetch first 2 rows only
+      
+    page-items-to-submit: 
+    - P532_ID
+    - P532_EASY_COURSE_ID
+
+  layout: 
+    sequence: 90
+    parent-region: Tournament Sessions # 56158045789158236792
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--stacked
+    - t-Region--scrollBody
+    - margin-top-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- Never Played Before -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: COURSE_ID ===================================
+    id: 9133916515384836
+    identification: 
+      column-name: COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 47964906322877932
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: On
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmMonth fmDD, YYYY
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_NUM ===================================
+    id: 47965039165877933
+    identification: 
+      column-name: ROUND_NUM
+      type: Plain Text
+
+    heading: 
+      heading: 'Round #'
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CODE ========================================
+    id: 47965177547877934
+    identification: 
+      column-name: CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 47965273910877935
+    identification: 
+      column-name: NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 47965545871877938
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Last Played =================================
+  id: 47965682906877939
+  identification: 
+    title: Last Played
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select ts.week, ts.round_num, ts.session_date
+      , c.code, c.name
+      from wmg_tournament_sessions ts
+         , wmg_tournament_courses tc
+         , wmg_courses c
+      where tc.tournament_session_id = ts.id
+        and tc.tournament_session_id != nvl(:P532_ID,0)
+        and tc.course_id = c.id
+        and tc.course_id = :P532_HARD_COURSE_ID
+        order by ts.session_date desc
+       fetch first 2 rows only
+      
+    page-items-to-submit: 
+    - P532_ID
+    - P532_HARD_COURSE_ID
+
+  layout: 
+    sequence: 100
+    parent-region: Tournament Sessions # 56158045789158236792
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--stacked
+    - t-Region--scrollBody
+    - margin-top-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- Never Played Before -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: WEEK ========================================
+    id: 47965786664877940
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_NUM ===================================
+    id: 47965878557877941
+    identification: 
+      column-name: ROUND_NUM
+      type: Plain Text
+
+    heading: 
+      heading: 'Round #'
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 47965900512877942
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: On
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmMonth fmDD, YYYY
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CODE ========================================
+    id: 47966008515877943
+    identification: 
+      column-name: CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 47966112439877944
+    identification: 
+      column-name: NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 - # ====== Region: Rooms =======================================
   id: 40389412381026769161
@@ -719,13 +1196,13 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Required - Floating # 46995172770404514399
     template-options: 
     - '#DEFAULT#'
     width: 32
 
   validation: 
-    value-required: false
+    value-required: true
     maximum-length: 255
 
   advanced: 
@@ -779,13 +1256,13 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Required - Floating # 46995172770404514399
     template-options: 
     - '#DEFAULT#'
     width: 32
 
   validation: 
-    value-required: false
+    value-required: true
     maximum-length: 40
 
   advanced: 
@@ -828,7 +1305,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 90
+    sequence: 110
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -889,7 +1366,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 100
+    sequence: 120
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1407,6 +1884,150 @@ dynamic-actions:
       fire-on-initialization: false
       stop-execution-on-error: true
       wait-for-result: true
+
+- # ====== Dynamic Action: Refresh On Change ===================
+  id: 47965350787877936
+  identification: 
+    name: Refresh On Change
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P532_EASY_COURSE_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Show ========================================
+    id: 9133418215384831
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47964843790877931
+
+    execution: 
+      sequence: 20
+      event: Refresh On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is not null
+      item: P532_EASY_COURSE_ID
+
+  - # ====== Action: Hide ========================================
+    id: 9133512970384832
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47964843790877931
+
+    execution: 
+      sequence: 30
+      event: Refresh On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is null
+      item: P532_EASY_COURSE_ID
+
+  - # ====== Action: Refresh =====================================
+    id: 47965485459877937
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47964843790877931
+
+    execution: 
+      sequence: 10
+      event: Refresh On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Hard On Change ==============
+  id: 47966285196877945
+  identification: 
+    name: Refresh Hard On Change
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P532_HARD_COURSE_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Hide ========================================
+    id: 9133606906384833
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47965682906877939
+
+    execution: 
+      sequence: 20
+      event: Refresh Hard On Change # 47966285196877945
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is null
+      item: P532_HARD_COURSE_ID
+
+  - # ====== Action: Show ========================================
+    id: 9133777204384834
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47965682906877939
+
+    execution: 
+      sequence: 30
+      event: Refresh Hard On Change # 47966285196877945
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is not null
+      item: P532_HARD_COURSE_ID
+
+  - # ====== Action: Refresh =====================================
+    id: 47966321485877946
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Last Played # 47965682906877939
+
+    execution: 
+      sequence: 10
+      event: Refresh Hard On Change # 47966285196877945
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 56158058497222236800

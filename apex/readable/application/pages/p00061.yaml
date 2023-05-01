@@ -1,0 +1,3441 @@
+---
+# ====== Page: View Season Results ===========================
+id: 61
+identification: 
+  name: View Season Results
+  alias: VIEW-SEASON-RESULTS
+  title: View Season Results
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: true
+  list: Tournament Options # 55893111130016225986
+  list-position: Top
+  list-template: Top Navigation Tabs # 46995168148239514396
+  template-options: 
+  - '#DEFAULT#'
+  - t-NavTabs--inlineLabels-lg
+  - t-NavTabs--displayLabels-sm
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+javascript: 
+  file-urls: 
+  - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+
+css: 
+  file-urls: 
+  - '#APP_FILES#css/week-lov#MIN#.css'
+  - //emoji-css.afeld.me/emoji.css
+  inline: |
+    @media (max-width: 640px) {
+    
+        :root {
+            --ut-report-cell-padding-y:.2rem;
+            --ut-report-cell-padding-x:.4rem;
+    
+        }
+    }
+    .hide_nav_next .t-Form-itemText--post {display: none;}
+    .hide_nav_pre .t-Form-itemText--pre {display: none;}
+    
+    #weekResults {
+        --ut-report-cell-padding-y: .35rem;
+        --ut-report-cell-alt-background-color: #dadada;
+    }
+    #raceRegion {
+        --ut-report-cell-padding-y: .35rem;
+    }
+    
+    @media (max-width: 639px) {
+      #POS, td[headers="POS"] {
+           --ut-report-cell-padding-x: .4rem;
+           --ut-report-header-cell-padding-x: .2rem;
+      }
+      #COUNTRY_CODE, td[headers="COUNTRY_CODE"] {
+           --ut-report-cell-padding-x: .4rem;
+           --ut-report-header-cell-padding-x: .1rem;
+      }
+    }
+    
+    .w {
+        display: inline-block;
+        float: right;
+    }
+    
+    .discardY {
+        text-decoration: line-through;
+        color: #BBB;
+    }
+    
+    .points {
+        color: white;
+        font-weight: 700;
+    }
+    .top {
+        background-color: hsl(220deg 100% 39%);
+    }
+    .p10 {
+        background-color: hsl(220deg 100% 43%);
+    }
+    .p9 {
+        background-color: hsl(220deg 100% 48%);
+    }
+    .p8 {
+        background-color: hsl(220deg 100% 55%);
+    }
+    .p7 {
+        background-color: hsl(220deg 100% 61%);
+    }
+    .p6 {
+        background-color: hsl(220deg 100% 67%);
+    }
+    .p5 {
+        background-color: hsl(220deg 100% 73%);
+    }
+    .p4 {
+        background-color: hsl(220deg 100% 79%);
+    }
+    .p3 {
+        background-color: hsl(220deg 100% 85%);
+    }
+    .p2 {
+        background-color: hsl(220deg 100% 91%);
+        color: #777;
+    }
+    .p1 {
+        background-color: hsl(220deg 100% 97%);
+        color: #666;
+    }
+    .p0 {
+        color: red;
+    }
+    
+    td[headers="SEASON_TOTAL"] {
+        font-weight: bold;
+    }
+    .&P61_WEEK. {
+        background-color: rgb(79, 79, 189);
+        color: white;
+        font-weight: bold;
+    }
+    
+    .&P61_WEEK..discardY {
+        color: #bfbfbf;
+        font-weight: normal;
+    }
+    
+    .t-Report--altRowsDefault .t-Report-report tr.mark:nth-child(odd) {
+        --ut-report-cell-background-color: #ff0;
+        color: #000;
+    }
+    #raceRegion .t-Report-wrap {float: none;}
+    #raceRegion .t-Report-report, 
+    #raceRegion .t-Report-wrap {
+        min-width: 50%;
+    }
+    #itemsRegion {
+      flex-direction: row;
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
+    }
+    
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Application Default
+  page-access-protection: Unrestricted
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    The <b>Week Results</b> shows the placement of players and the points they will earn for the week.  
+    Click on "About the Points" to understand how points are assigned.<br>
+    <br>
+    The <b>Season Race</b> shows the placement of players for the duration of the tournament.<br> 
+    The crossed out scores on the Season Race are the lowest scored being discarded for a player. Every 3 weeks the lowest
+    score is discarded, meaning the best 2 out of 3 scores is used. When you're unable to play that also counts as a low 
+    score and will be considered as a discarded score. This way you can miss up to 4 weeks of the 12 week seasion and have
+    the same opportunity.
+
+regions: 
+- # ====== Region: Season Race (&P61_TOURNAMENT.) ==============
+  id: 60866510953427100
+  identification: 
+    title: Season Race (&P61_TOURNAMENT.)
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with all_weeks as (
+        select ts.id tournament_session_id, ts.round_num, ts.week, ts.session_date
+         from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+      )
+      , all_tournament_players as (
+        select distinct p.player_id, w.tournament_session_id, w.round_num, w.week, w.session_date
+          from wmg_tournament_players p
+             , all_weeks w
+         where p.tournament_session_id in (
+            select aw.tournament_session_id
+             from all_weeks aw
+          )
+          and p.active_ind = 'Y'
+      )
+      , sessions_pivot as (
+          select player_id
+               , max(w1_points)        w1_points
+               , max(w1_week)          w1_week
+               , max(w1_discarded_points_flag)  w1_discard
+               , max(w2_points)        w2_points
+               , max(w2_week)          w2_week
+               , max(w2_discarded_points_flag)  w2_discard
+               , max(w3_points)        w3_points
+               , max(w3_week)          w3_week
+               , max(w3_discarded_points_flag)  w3_discard
+               , max(w4_points)        w4_points
+               , max(w4_week)          w4_week
+               , max(w4_discarded_points_flag)  w4_discard
+               , max(w5_points)        w5_points
+               , max(w5_week)          w5_week
+               , max(w5_discarded_points_flag)  w5_discard
+               , max(w6_points)        w6_points
+               , max(w6_week)          w6_week
+               , max(w6_discarded_points_flag)  w6_discard
+               , max(w7_points)        w7_points
+               , max(w7_week)          w7_week
+               , max(w7_discarded_points_flag)  w7_discard
+               , max(w8_points)        w8_points
+               , max(w8_week)          w8_week
+               , max(w8_discarded_points_flag)  w8_discard
+               , max(w9_points)        w9_points
+               , max(w9_week)          w9_week
+               , max(w9_discarded_points_flag)  w9_discard
+               , max(w10_points)       w10_points
+               , max(w10_week)         w10_week
+               , max(w10_discarded_points_flag) w10_discard
+               , max(w11_points)       w11_points
+               , max(w11_week)         w11_week
+               , max(w11_discarded_points_flag) w11_discard
+               , max(w12_points)       w12_points
+               , max(w12_week)         w12_week
+               , max(w12_discarded_points_flag) w12_discard
+          from (
+              select ap.player_id
+                   , coalesce(sp.points, p.points) points
+                   , p.discarded_points_flag
+                   , ap.round_num
+                   , coalesce(sp.week, ap.week) week
+                   , ap.session_date
+          --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+              from wmg_tournament_players p
+                 , all_tournament_players ap
+                 , wmg_tournament_session_points_v sp
+              where ap.player_id = p.player_id(+)
+                and ap.tournament_session_id = p.tournament_session_id (+)
+                and ap.week = sp.week (+)
+                and ap.player_id = sp.player_id (+)
+                and sp.week (+) = :P61_WEEK
+              order by ap.session_date
+          )
+          pivot (
+              any_value(round_num)    round_num
+            , any_value(week)         week
+            , any_value(session_date) session_date
+            , any_value(points)       points
+            , any_value(discarded_points_flag) discarded_points_flag
+            for round_num in (
+                1 as W1
+              , 2 as W2
+              , 3 as W3
+              , 4 as W4
+              , 5 as W5
+              , 6 as W6
+              , 7 as W7
+              , 8 as W8
+              , 9 as W9
+              , 10 as W10
+              , 11 as W11
+              , 12 as W12
+            )
+          )
+          group by player_id
+      )
+      , final as (
+      select rank() over (order by r.season_total desc) pos
+           , r.player_id
+           , r.player_name
+           , r.country_code
+           , r.season_total
+           , r.rank_name
+           , r.rank_list_class
+           , r.w1_points
+           , r.w2_points
+           , r.w3_points
+           , r.w4_points
+           , r.w5_points
+           , r.w6_points
+           , r.w7_points
+           , r.w8_points
+           , r.w9_points
+           , r.w10_points
+           , r.w11_points
+           , r.w12_points
+           , r.w1_discard
+           , r.w2_discard
+           , r.w3_discard
+           , r.w4_discard
+           , r.w5_discard
+           , r.w6_discard
+           , r.w7_discard
+           , r.w8_discard
+           , r.w9_discard
+           , r.w10_discard
+           , r.w11_discard
+           , r.w12_discard
+           , r.w1_week
+           , r.w2_week
+           , r.w3_week
+           , r.w4_week
+           , r.w5_week
+           , r.w6_week
+           , r.w7_week
+           , r.w8_week
+           , r.w9_week
+           , r.w10_week
+           , r.w11_week
+           , r.w12_week
+           , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
+        from (
+        select p.player_name
+             , p.country_code
+             , p.rank_name
+             , p.rank_list_class
+             , decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
+             + decode(sp.w2_discard, 'Y', 0, nvl(sp.w2_points,0))
+             + decode(sp.w3_discard, 'Y', 0, nvl(sp.w3_points,0))
+             + decode(sp.w4_discard, 'Y', 0, nvl(sp.w4_points,0))
+             + decode(sp.w5_discard, 'Y', 0, nvl(sp.w5_points,0))
+             + decode(sp.w6_discard, 'Y', 0, nvl(sp.w6_points,0))
+             + decode(sp.w7_discard, 'Y', 0, nvl(sp.w7_points,0))
+             + decode(sp.w8_discard, 'Y', 0, nvl(sp.w8_points,0))
+             + decode(sp.w9_discard, 'Y', 0, nvl(sp.w9_points,0))
+             + decode(sp.w10_discard, 'Y', 0, nvl(sp.w10_points,0))
+             + decode(sp.w11_discard, 'Y', 0, nvl(sp.w11_points,0))
+             + decode(sp.w12_discard, 'Y', 0, nvl(sp.w12_points,0)) season_total
+           , sp.*
+        from sessions_pivot sp
+           , wmg_players_v p
+        where p.id = sp.player_id
+      ) r
+      )
+      , me as (
+          select nvl(max(player_id),-1) me_player_id, nvl(max(pos),0) my_pos
+            from final
+           where player_id = :G_PLAYER_ID
+      )
+      select f.*
+      from final f
+      , me
+      where (:P61_ONLY_ME_IND = 'N' 
+        or (me.me_player_id = -1 or (f.pos between greatest((me.my_pos - 4),1) and (me.my_pos + 4)))
+        )
+      order by 5 desc
+      
+    page-items-to-submit: 
+    - P61_TOURNAMENT_ID
+    - P61_WEEK
+    - P61_ONLY_ME_IND
+
+  layout: 
+    sequence: 35
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - js-showMaximizeButton
+    - t-Region--showIcon
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: raceRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: |
+      <div class="pro-legend row margin-sm u-justify-content-space-around">
+      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
+      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro player</div>
+      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur player</div>
+      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
+      </div>
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players
+      where tournament_session_id in (
+          select id
+          from wmg_tournament_sessions
+          where week = :P61_WEEK
+      )
+      union
+        select 1
+          from wmg_tournaments
+         where current_flag = 'Y'
+           and id in (
+          select tournament_id
+            from wmg_tournament_sessions
+          where week = :P61_WEEK
+      )
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--verticalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y of Z (no pagination)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: PL/SQL Function Body
+      pl/sql-function-body: |
+        declare 
+          l_headings varchar2(32767);
+        begin
+        
+        select listagg('W' || round_num ||'<br>'|| to_char(session_date, 'MM/DD'), ':') within group (order by session_date)
+        into l_headings
+        from (
+            select ts.tournament_id
+                 , ts.round_num
+                 , ts.week
+                 , ts.session_date
+            from wmg_tournament_sessions ts
+            where ts.tournament_id = :P61_TOURNAMENT_ID
+        );
+        
+          return  'Edit:Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
+        end;
+         
+        
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: POS =========================================
+    id: 48337924106877127
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 48338383061877131
+    identification: 
+      column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:130:&SESSION.::&DEBUG.::P130_PLAYER_ID:#PLAYER_ID#'
+        page: 130 # Player Tournament Details
+        values: 
+          p130_player_id: '#PLAYER_ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Tournament Admin # 55902033226819493948
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 48338785185877132
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID,P120_TOURNAMENT_ID:#PLAYER_ID#,&P61_TOURNAMENT_ID.'
+        page: 120 # Player Profile
+        clear-cache: 120
+        values: 
+          p120_player_id: '#PLAYER_ID#'
+          p120_tournament_id: '&P61_TOURNAMENT_ID.'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS#" title="#RANK_NAME#"></div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 48339136380877133
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: <i class="fa fa-flag-o"></i>
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-label="Flag #COUNTRY_CODE#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SEASON_TOTAL ================================
+    id: 48339560296877135
+    identification: 
+      column-name: SEASON_TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Season Total
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_NAME ===================================
+    id: 48339990347877137
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 460
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 48340330484877138
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 450
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_POINTS ===================================
+    id: 48340765853877140
+    identification: 
+      column-name: W1_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W1 Points
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W1_WEEK# discard#W1_DISCARD#">#W1_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_POINTS ===================================
+    id: 48341162061877142
+    identification: 
+      column-name: W2_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W2 Points
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W2_WEEK# discard#W2_DISCARD#">#W2_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 2
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_POINTS ===================================
+    id: 48341541036877143
+    identification: 
+      column-name: W3_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W3 Points
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W3_WEEK# discard#W3_DISCARD#">#W3_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 3
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_POINTS ===================================
+    id: 48341930848877145
+    identification: 
+      column-name: W4_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W4 Points
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W4_WEEK# discard#W4_DISCARD#">#W4_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 4
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_POINTS ===================================
+    id: 48342324534877146
+    identification: 
+      column-name: W5_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W5 Points
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W5_WEEK# discard#W5_DISCARD#">#W5_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 5
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_POINTS ===================================
+    id: 48342700737877147
+    identification: 
+      column-name: W6_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W6 Points
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W6_WEEK# discard#W6_DISCARD#">#W6_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 6
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_POINTS ===================================
+    id: 48343129290877149
+    identification: 
+      column-name: W7_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W7 Points
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W7_WEEK# discard#W7_DISCARD#">#W7_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 7
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_POINTS ===================================
+    id: 48343519220877150
+    identification: 
+      column-name: W8_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W8 Points
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W8_WEEK# discard#W8_DISCARD#">#W8_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 8
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_POINTS ===================================
+    id: 48343968662877152
+    identification: 
+      column-name: W9_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W9 Points
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W9_WEEK# discard#W9_DISCARD#">#W9_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 9
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_POINTS ==================================
+    id: 48344303793877153
+    identification: 
+      column-name: W10_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W10 Points
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W10_WEEK# discard#W10_DISCARD#">#W10_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 10
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_POINTS ==================================
+    id: 48344710582877155
+    identification: 
+      column-name: W11_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W11 Points
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W11_WEEK# discard#W11_DISCARD#">#W11_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 11
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_POINTS ==================================
+    id: 48345138589877156
+    identification: 
+      column-name: W12_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W12 Points
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W12_WEEK# discard#W12_DISCARD#">#W12_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 12
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_DISCARD ==================================
+    id: 48345515601877157
+    identification: 
+      column-name: W1_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_DISCARD ==================================
+    id: 48345938908877158
+    identification: 
+      column-name: W2_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_DISCARD ==================================
+    id: 48346343391877159
+    identification: 
+      column-name: W3_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_DISCARD ==================================
+    id: 48346792938877160
+    identification: 
+      column-name: W4_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 220
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_DISCARD ==================================
+    id: 48347114392877162
+    identification: 
+      column-name: W5_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 230
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_DISCARD ==================================
+    id: 48347535846877163
+    identification: 
+      column-name: W6_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_DISCARD ==================================
+    id: 48347977789877164
+    identification: 
+      column-name: W7_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_DISCARD ==================================
+    id: 48348331269877165
+    identification: 
+      column-name: W8_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_DISCARD ==================================
+    id: 48348776943877167
+    identification: 
+      column-name: W9_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_DISCARD =================================
+    id: 48349188974877168
+    identification: 
+      column-name: W10_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 280
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_DISCARD =================================
+    id: 48349530447877169
+    identification: 
+      column-name: W11_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 290
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_DISCARD =================================
+    id: 48349966562877171
+    identification: 
+      column-name: W12_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 300
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_WEEK =====================================
+    id: 48350396834877172
+    identification: 
+      column-name: W1_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 310
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_WEEK =====================================
+    id: 48350735091877173
+    identification: 
+      column-name: W2_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 320
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_WEEK =====================================
+    id: 48351106834877175
+    identification: 
+      column-name: W3_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 330
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_WEEK =====================================
+    id: 48351505661877176
+    identification: 
+      column-name: W4_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 340
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_WEEK =====================================
+    id: 48351965848877177
+    identification: 
+      column-name: W5_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 350
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_WEEK =====================================
+    id: 48352341417877179
+    identification: 
+      column-name: W6_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 360
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_WEEK =====================================
+    id: 48352717065877180
+    identification: 
+      column-name: W7_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 370
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_WEEK =====================================
+    id: 48353151832877181
+    identification: 
+      column-name: W8_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 380
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_WEEK =====================================
+    id: 48353578396877182
+    identification: 
+      column-name: W9_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 390
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_WEEK ====================================
+    id: 48353932400877183
+    identification: 
+      column-name: W10_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 400
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_WEEK ====================================
+    id: 48354201235877185
+    identification: 
+      column-name: W11_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 410
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_WEEK ====================================
+    id: 48354678860877201
+    identification: 
+      column-name: W12_WEEK
+      type: Hidden Column
+
+    layout: 
+      sequence: 420
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SELECTED_PLAYER =============================
+    id: 48355058194877203
+    identification: 
+      column-name: SELECTED_PLAYER
+      type: Hidden Column
+
+    layout: 
+      sequence: 430
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Most h1n Current Season =====================
+  id: 24511323117856423672
+  identification: 
+    title: Most h1n Current Season
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.*, rank() over (order by r.hn1 desc) pos
+      from (
+          select substr(r.week,1,3) season
+           , p.player_name
+           , sum(r.score) hn1
+        from wmg_rounds_unpivot_mv r
+           , wmg_players_v p
+           , wmg_courses_v c
+      where r.player_id = p.id
+      and c.course_id = r.course_id
+      and r.score = 1
+       and r.week like ( select prefix_tournament || '%' from wmg_tournaments where current_flag = 'Y')
+      group by substr(r.week,1,3)
+             , p.player_name
+      order by 3 desc
+      ) r
+      
+
+  layout: 
+    sequence: 20
+    parent-region: Other Results # 108353009591029174790
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: SEASON ======================================
+    id: 48375227408877276
+    identification: 
+      column-name: SEASON
+      type: Plain Text
+
+    heading: 
+      heading: Season
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 48375627902877277
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player Name
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HN1 =========================================
+    id: 48376084488877278
+    identification: 
+      column-name: HN1
+      type: Plain Text
+
+    heading: 
+      heading: Hn1
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 48376430484877278
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Most h1n Over the last &P61_TOTAL_WEEKS. week
+  id: 24511328164635496100
+  identification: 
+    title: Most h1n Over the last &P61_TOTAL_WEEKS. weeks
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select r.*, rank() over (order by r.hn1 desc) pos
+      from (
+      select p.player_name
+           , sum(r.score) hn1
+        from wmg_rounds_unpivot_mv r
+           , wmg_players_v p
+           , wmg_courses_v c
+      where r.player_id = p.id
+      and c.course_id = r.course_id
+      and r.score = 1
+      -- r.week like 'S07%'
+      group by p.player_name
+      order by 2 desc
+      ) r
+
+  layout: 
+    sequence: 20
+    parent-region: Other Results # 108353009591029174790
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_NAME =================================
+    id: 48377138710877282
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player Name
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HN1 =========================================
+    id: 48377568503877283
+    identification: 
+      column-name: HN1
+      type: Plain Text
+
+    heading: 
+      heading: Hn1
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 48377815195877284
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {items} =====================================
+  id: 106680515790002094521
+  identification: 
+    title: '{items}'
+    type: Static Content
+
+  layout: 
+    sequence: 5
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: itemsRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Other Results ===============================
+  id: 108353009591029174790
+  identification: 
+    title: Other Results
+    type: Static Content
+
+  layout: 
+    sequence: 45
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P61_SELECTOR =============================
+  id: 48368222302877254
+  identification: 
+    name: P61_SELECTOR
+    type: Radio Group
+
+  label: 
+    label: View
+    alignment: Left
+
+  settings: 
+    number-of-columns: 2
+    page-action-on-selection: Redirect and Set Value
+
+  layout: 
+    sequence: 5
+    region: '{items}' # 106680515790002094521
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-12
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Static Values
+    static-values: 'STATIC2:Week;WEEK,Season;SEASON'
+    display-extra-values: true
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: SEASON
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: false
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_WEEK =================================
+  id: 48368686710877259
+  identification: 
+    name: P61_WEEK
+    type: Popup LOV
+
+  label: 
+    label: Week
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{items}' # 106680515790002094521
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 3
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-5
+    - col-xs-4
+    - col-sm-4
+    - col-md-6
+    - col-lg-4
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - '&P61_NAV_PREV.'
+    - '&P61_NAV_NEXT.'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: WEEKS # 41203762596358122145
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    pre-text: |
+      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn hidden-xxs-down" aria-expanded="false" aria-controls="weekNav" type="button" title="Prev Week" aria-label="Prev Week" data-nav="prev">
+      <span class="t-Icon fa fa-chevron-left" aria-hidden="true"></span>
+      </button>
+      
+    post-text-: |
+      <button class="t-Button t-Button--noLabel t-Button--icon t-Button--iconOnly t-Button--noUI week_nav_btn hidden-xxs-down" aria-expanded="false" aria-controls="weekNav" type="button" title="Next Week" aria-label="Prev Week" data-nav="next">
+      <span class="t-Icon fa fa-chevron-right" aria-hidden="true"></span>
+      </button>
+      
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  advanced: 
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~WEEK.">' +
+           '<div class="content-list">' +
+              '<div class="week-info-list">' +
+                 '<span class="season-name">~SEASON.</span>' +                    
+                 '<span class="week-name">Week ~WEEK_NO.</span>' +
+                 '<hr>' +
+                 '<div class="courses">' +
+                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
+                   '<span class="hard">~HARD_COURSE.</span>' +
+                 '</div>' +
+              '</div>' +
+           '</div>'+
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
+
+- # ====== Page Item: P61_TOTAL_PLAYERS ========================
+  id: 48369021732877261
+  identification: 
+    name: P61_TOTAL_PLAYERS
+    type: Display Only
+
+  label: 
+    label: Total Players
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 20
+    region: '{items}' # 106680515790002094521
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-2
+    - col-xs-3
+    - col-sm-3
+    - col-md-2
+    - col-lg-3
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-textCenter
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(*)
+        from wmg_tournament_players 
+       where tournament_session_id = :P61_TOURNAMENT_SESSION_ID
+         and active_ind = 'Y'
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P61_WEEK
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_SEARCH ===============================
+  id: 48369450452877263
+  identification: 
+    name: P61_SEARCH
+    type: Text Field
+
+  label: 
+    label: Player
+    alignment: Left
+
+  settings: 
+    subtype: Search
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 30
+    region: '{items}' # 106680515790002094521
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-5
+    - col-md-5
+    - col-sm-5
+    - col-lg-4
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-search
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_ONLY_ME_IND ==========================
+  id: 48369878284877263
+  identification: 
+    name: P61_ONLY_ME_IND
+    type: Switch
+
+  label: 
+    label: Find Me?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 40
+    region: '{items}' # 106680515790002094521
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 1
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_PLAYER_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_H ====================================
+  id: 48370247769877264
+  identification: 
+    name: P61_H
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 50
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_MODE =================================
+  id: 48370667230877265
+  identification: 
+    name: P61_MODE
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 60
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_EASY =================================
+  id: 48371067600877266
+  identification: 
+    name: P61_EASY
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 70
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P61_WEEK 
+          )
+         and course_mode = 'E'
+    used: Always, replacing any existing value in session state
+
+  default: 
+    type: Static
+    static-value: Easy Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_HARD =================================
+  id: 48371442668877268
+  identification: 
+    name: P61_HARD
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 80
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select name
+          from wmg_courses_v
+         where course_id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P61_WEEK 
+          )
+         and course_mode = 'H'
+    used: Always, replacing any existing value in session state
+
+  default: 
+    type: Static
+    static-value: Hard Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_TOURNAMENT ===========================
+  id: 48371812295877268
+  identification: 
+    name: P61_TOURNAMENT
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 90
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_TOURNAMENT_ID ========================
+  id: 48372203479877269
+  identification: 
+    name: P61_TOURNAMENT_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 100
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_TOURNAMENT_SESSION_ID ================
+  id: 48372631446877270
+  identification: 
+    name: P61_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 110
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_BADGE_ID =============================
+  id: 48373047736877271
+  identification: 
+    name: P61_BADGE_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 120
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_NAV_DIRECTION ========================
+  id: 48373465713877271
+  identification: 
+    name: P61_NAV_DIRECTION
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 130
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_NAV_PREV =============================
+  id: 48373875345877273
+  identification: 
+    name: P61_NAV_PREV
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 140
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: show
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_NAV_NEXT =============================
+  id: 48374258851877273
+  identification: 
+    name: P61_NAV_NEXT
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 150
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P61_TOTAL_WEEKS ==========================
+  id: 48378276881877284
+  identification: 
+    name: P61_TOTAL_WEEKS
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Most h1n Over the last &P61_TOTAL_WEEKS. weeks # 24511328164635496100
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: DOWNLOAD ====================================
+  id: 48378652187877313
+  identification: 
+    button-name: DOWNLOAD
+    label: Download Detailed Results
+
+  layout: 
+    sequence: 30
+    region: Breadcrumb # 59007190296908349363
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--mobileHideLabel
+    - t-Button--small
+    - t-Button--simple
+    - t-Button--iconLeft
+    - t-Button--gapTop
+    css-classes: 
+    - col-xss-3
+    - col-xs-3
+    icon: fa-download-alt
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:62:&SESSION.::&DEBUG.:62:P62_WEEK:&P61_WEEK.'
+      page: 62 # Results Download
+      clear-cache: 62
+      values: 
+        p62_week: '&P61_WEEK.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+- # ====== Button: VERIFY_RESULTS ==============================
+  id: 48379026676877314
+  identification: 
+    button-name: VERIFY_RESULTS
+    label: Verify Results
+
+  layout: 
+    sequence: 40
+    region: Breadcrumb # 59007190296908349363
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--mobileHideLabel
+    - t-Button--small
+    - t-Button--simple
+    - t-Button--iconLeft
+    - t-Button--gapTop
+    css-classes: 
+    - col-xss-3
+    - col-xs-3
+    icon: fa-exchange
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:75:&SESSION.::&DEBUG.:75:P75_WEEK:&P61_WEEK.'
+      page: 75 # Verify Results
+      clear-cache: 75
+      values: 
+        p75_week: '&P61_WEEK.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+dynamic-actions: 
+- # ====== Dynamic Action: Hoist Week Classes to TD ============
+  id: 48381526313877327
+  identification: 
+    name: Hoist Week Classes to TD
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Season Race (&P61_TOURNAMENT.) # 60866510953427100
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48382018560877328
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var c = $v("P61_WEEK");
+        
+        $("td ." + c).each(
+          function(){
+            var $el = $(this)
+        
+            $el.parent("td").addClass(c);
+          }
+        )
+
+    execution: 
+      sequence: 10
+      event: Hoist Week Classes to TD # 48381526313877327
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+- # ====== Dynamic Action: Reload on Change ====================
+  id: 48382410993877329
+  identification: 
+    name: Reload on Change
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P61_WEEK
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 48382913163877330
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: REFRESH
+      show-processing: true
+
+    execution: 
+      sequence: 10
+      event: Reload on Change # 48382410993877329
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Search as we type ===================
+  id: 48384241425877332
+  identification: 
+    name: Search as we type
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.KEYUP
+    selection-type: Item(s)
+    item(s): 
+    - P61_SEARCH
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48384749722877333
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
+        // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
+        var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME'],#report_table_raceRegion .t-Report-cell[headers='PLAYER_NAME']")
+          , $other=$("#badgeKey,.pro-legend")
+          , term=$v("P61_SEARCH");
+        
+        
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+        if (apex.theme.mq("(max-width: 768px)")) {
+          $other.show();
+        }
+        
+        if (term) {
+          // mark the search term and hide everything that didn't get marked
+          $ctx.mark(term, {
+            separateWordSearch: false,
+            diacritics: true,
+            done: function() {
+              $ctx.not(":has(mark)").parents("tr").hide();
+              if ($ctx.find("mark").length > 0 && apex.theme.mq("(max-width: 768px)")) {
+                 // if something is found and we're on a small device, hide the other regions
+                 $other.hide();
+               }
+            }
+          });
+        }
+        
+        
+
+    execution: 
+      sequence: 10
+      event: Search as we type # 48384241425877332
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+- # ====== Dynamic Action: Only Me Refresh =====================
+  id: 48385193864877334
+  identification: 
+    name: Only Me Refresh
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P61_ONLY_ME_IND
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 48386158966877337
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Season Race (&P61_TOURNAMENT.) # 60866510953427100
+
+    execution: 
+      sequence: 20
+      event: Only Me Refresh # 48385193864877334
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Clear on Change =====================
+  id: 48386527511877338
+  identification: 
+    name: Clear on Change
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P61_SEARCH
+
+  client-side-condition: 
+    type: Item is null
+    item: P61_SEARCH
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48387011875877339
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME'],#report_table_raceRegion .t-Report-cell[headers='PLAYER_NAME']")
+          , $other=$("#badgeKey,.pro-legend");
+        
+        
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+        if (apex.theme.mq("(max-width: 768px)")) {
+          $other.show();
+        }
+        
+
+    execution: 
+      sequence: 10
+      event: Clear on Change # 48386527511877338
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Next & Prev Week Navigation =========
+  id: 48387443161877339
+  identification: 
+    name: Next & Prev Week Navigation
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .week_nav_btn
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 48387996805877341
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.nav
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P61_NAV_DIRECTION
+
+    execution: 
+      sequence: 10
+      event: Next & Prev Week Navigation # 48387443161877339
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Set Value ===================================
+    id: 48388407066877343
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select decode(:P61_NAV_DIRECTION, 'next', next_week, prev_week)
+        from (
+        select lag(week) over (partition by tournament_id order by round_num) prev_week
+             , id, round_num, week
+             , lead(week) over (partition by tournament_id order by round_num) next_week
+        from wmg_tournament_sessions
+        )
+        where week = :P61_WEEK
+      items-to-submit: 
+      - P61_WEEK
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P61_WEEK
+
+    execution: 
+      sequence: 20
+      event: Next & Prev Week Navigation # 48387443161877339
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+- # ====== Dynamic Action: Sticky Items ========================
+  id: 48388857926877344
+  identification: 
+    name: Sticky Items
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48389332093877344
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var vRegion$ = $(this.affectedElements[0]);
+        vRegion$.stickyWidget();
+        // .find('.js-stickyTableHeader')
+
+    affected-elements: 
+      selection-type: Region
+      region: '{items}' # 106680515790002094521
+
+    execution: 
+      sequence: 10
+      event: Sticky Items # 48388857926877344
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+computations: 
+- # ====== Computation: P61_TOTAL_WEEKS ========================
+  id: 48379544086877318
+  identification: 
+    item-name: P61_TOTAL_WEEKS
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select count(distinct week)
+      from  wmg_rounds
+      
+
+processes: 
+- # ====== Process: Init =======================================
+  id: 48379897494877319
+  identification: 
+    name: Init
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+       if :P61_WEEK is null then
+          select week
+            into :P61_WEEK
+            from wmg_tournament_sessions_v
+           where tournament_session_id = :G_CURRENT_SESSION_ID;
+           :P61_TOURNAMENT_SESSION_ID := :G_CURRENT_SESSION_ID;
+       end if;
+      
+           select tournament_session_id
+                , tournament_id
+                , prefix_tournament
+            into :P61_TOURNAMENT_SESSION_ID
+               , :P61_TOURNAMENT_ID
+               , :P61_TOURNAMENT
+            from wmg_tournament_sessions_v
+           where week = :P61_WEEK;
+      
+           select decode(prev_week, null, 'hide_nav_pre') NAV_PREV
+                , decode(next_week, null, 'hide_nav_next') NAV_NEXT
+             into :P61_NAV_PREV
+                , :P61_NAV_NEXT
+              from (
+              select lag(week) over (partition by tournament_id order by round_num) prev_week
+                   , id, round_num, week
+                   , lead(week) over (partition by tournament_id order by round_num) next_week
+              from wmg_tournament_sessions
+              )
+              where week = :P61_WEEK;
+      
+      exception
+      when NO_DATA_FOUND then
+       null;
+      end;
+      
+      
+
+  execution: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+- # ====== Process: BADGES =====================================
+  id: 48380287891877321
+  identification: 
+    name: BADGES
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      declare
+        l_badge_rec wmg_player_badges%rowtype;
+        l_inc number;
+        l_return varchar2(10);
+      begin
+        l_badge_rec.player_id := to_number(apex_application.g_x02);
+        l_badge_rec.badge_type_code := apex_application.g_x03;
+        l_badge_rec.tournament_session_id := :P61_TOURNAMENT_SESSION_ID;
+      
+        if apex_application.g_x01 = 'Add' then
+          l_inc := 1;
+          l_badge_rec.badge_count := 1;
+          l_return := 'ADDED';
+        else
+          l_inc := -1;
+          l_badge_rec.badge_count := 0;
+          l_return := 'REMOVED';
+        end if;
+      
+        update wmg_player_badges
+           set badge_count = case when l_inc = -1 then least(0, badge_count + l_inc) else badge_count + l_inc end
+         where player_id = l_badge_rec.player_id
+           and badge_type_code = l_badge_rec.badge_type_code
+           and tournament_session_id = l_badge_rec.tournament_session_id
+           returning id into l_badge_rec.id;
+      
+          if SQL%ROWCOUNT = 0 then
+            insert into wmg_player_badges(
+                player_id
+              , badge_type_code
+              , tournament_session_id
+              , badge_count
+            )
+            values (
+                l_badge_rec.player_id
+              , l_badge_rec.badge_type_code
+              , l_badge_rec.tournament_session_id
+              , l_badge_rec.badge_count
+            )
+            returning id into l_badge_rec.id;
+      
+          end if;
+      
+          apex_json.open_object; -- {
+            apex_json.write('status', l_return);
+            if l_return = 'ADDED' then
+              apex_json.write('id', l_badge_rec.id);
+              apex_json.write('badge', apex_application.g_x03);
+            end if;
+          apex_json.close_object; -- }
+      
+      end;
+      
+      
+
+  execution: 
+    sequence: 10
+    point: Ajax Callback
+    run-process: Once Per Page Visit (default)
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+branches: 
+- # ====== Branch: View Week ===================================
+  id: 47966577963877948
+  identification: 
+    name: View Week
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::P60_SELECTOR,P60_WEEK:&P61_SELECTOR.,&P61_WEEK.&success_msg=#SUCCESS_MSG#'
+      page: 60 # View Weekly Results
+      values: 
+        p60_selector: '&P61_SELECTOR.'
+        p60_week: '&P61_WEEK.'
+
+  server-side-condition: 
+    type: Item = Value
+    item: P61_SELECTOR
+    value: WEEK
+

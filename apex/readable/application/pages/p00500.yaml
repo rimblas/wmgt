@@ -245,7 +245,7 @@ regions:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: 4
+    column-span: 3
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -276,12 +276,10 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Contextual Info # 46995134732718514381
       template-options: 
       - '#DEFAULT#'
-      - t-Report--staticRowColors
-      - t-Report--rowHighlightOff
-      - t-Report--inline
+      - t-ContextualInfo-label--stacked
 
     pagination: 
       type: No Pagination (Show All Rows)
@@ -1570,7 +1568,7 @@ regions:
     link: 
       target: 
         url: 'f?p=&APP_ID.:532:&SESSION.::&DEBUG.:532:P532_ID:#ID#'
-        page: 532 # Wmg Tournament Sessions
+        page: 532 # Tournament Sessions
         clear-cache: 532
         values: 
           p532_id: '#ID#'
@@ -1942,7 +1940,7 @@ buttons:
   id: 20127465655175550
   identification: 
     button-name: POP_WMG_TOURNAMENT_SESSIONS
-    label: Add Wmg Tournament Sessions
+    label: Add New Tournament
 
   layout: 
     sequence: 10
@@ -1966,7 +1964,7 @@ buttons:
     action: Redirect to Page in this Application
     target: 
       url: 'f?p=&APP_ID.:532:&SESSION.::&DEBUG.:RP,532:P532_TOURNAMENT_ID:&P500_TOURNAMENT_ID.'
-      page: 532 # Wmg Tournament Sessions
+      page: 532 # Tournament Sessions
       clear-cache: RP,532
       values: 
         p532_tournament_id: '&P500_TOURNAMENT_ID.'
@@ -2071,11 +2069,11 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
-- # ====== Button: NEW_TOURNAMENT ==============================
+- # ====== Button: NEW_SEASON ==================================
   id: 56024165352799751653
   identification: 
-    button-name: NEW_TOURNAMENT
-    label: New Tournament
+    button-name: NEW_SEASON
+    label: New Season
 
   layout: 
     sequence: 10
@@ -2182,7 +2180,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
-    button: NEW_TOURNAMENT # 56024165352799751653
+    button: NEW_SEASON # 56024165352799751653
 
   execution: 
     event-scope: Static
