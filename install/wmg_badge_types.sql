@@ -1,5 +1,5 @@
 -- drop objects
-drop table wmg_badge_types cascade constraints;
+-- drop table wmg_badge_types cascade constraints;
 
 -- create tables
 create table wmg_badge_types (
