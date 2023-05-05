@@ -834,6 +834,11 @@ page-items:
   quick-picks: 
     show-quick-picks: false
 
+  read-only: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: not apex_authorization.is_authorized (p_authorization_name => 'Contribution Rights')
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
