@@ -50,15 +50,23 @@ regions:
     sql-query: |
       select sum(decode(active_ind, 'Y', 1, 0)) registered
            , sum(decode(active_ind, 'Y', 0, 1)) unregistered
-      from wmg_tournament_player_v
-       where TOURNAMENT_ID in (
-           select ID
-             from WMG_TOURNAMENTS
-            where CURRENT_FLAG = 'Y'
-       )
-        and (completed_ind = 'N'
-          or completed_on > current_timestamp - 1
-       )
+      from wmg_tournament_players
+      where tournament_session_id in (
+      
+         select id 
+           from wmg_tournament_sessions
+           where TOURNAMENT_ID in (
+               select ID
+                 from WMG_TOURNAMENTS
+                where CURRENT_FLAG = 'Y'
+           )
+            and (
+                completed_ind = 'N'
+              or (completed_ind = 'Y' and completed_on > current_timestamp - 1)
+            )
+          order by decode(completed_ind, 'N', 1, 2)
+          fetch first 1 rows only
+      )
       
 
   layout: 
@@ -211,22 +219,25 @@ regions:
     sql-query: |
       with curr_session as (
           select id tournament_session_id, week
-              from wmg_tournament_sessions
-              where 
-               TOURNAMENT_ID in (
-                   select ID
-                     from WMG_TOURNAMENTS
-                    where CURRENT_FLAG = 'Y'
-               )
-                and (completed_ind = 'N'
-                  or completed_on > current_timestamp - 1
-               )
+           from wmg_tournament_sessions
+           where TOURNAMENT_ID in (
+               select ID
+                 from WMG_TOURNAMENTS
+                where CURRENT_FLAG = 'Y'
+           )
+            and (
+                completed_ind = 'N'
+              or (completed_ind = 'Y' and completed_on > current_timestamp - 1)
+            )
+          order by decode(completed_ind, 'N', 1, 2)
+          fetch first 1 rows only
       )
       , tp as (
-        select *
-         from wmg_tournament_player_v tp
+        select 1
+         from wmg_tournament_players tp
            , curr_session s
         where tp.tournament_session_id = s.tournament_session_id
+          and tp.active_ind = 'Y'
       )
       select scorecards, (select count(*) total_players from tp) total_players
       from (

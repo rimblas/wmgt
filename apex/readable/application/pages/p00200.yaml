@@ -133,10 +133,10 @@ regions:
       show: false
 
     series: 
-    - # ====== Series: Std Dev =====================================
+    - # ====== Series: Dificulty ===================================
       id: 8728499094818338
       identification: 
-        name: Std Dev
+        name: Dificulty
 
       execution: 
         sequence: 10
@@ -144,12 +144,26 @@ regions:
       source: 
         location: Local Database
         type: SQL Query
-        sql-query: |
-          select course_id, course_code, h, difficulty
-               , case when h = :P200_H then '#437c94' else '#4c825c' end color
-          from  wmg_course_stats_v
-          where course_id = :P200_COURSE_ID
-          
+        sql-query: |2
+           with stats as (
+             select course_id
+                  , h
+                  , round(avg(u.par + 10),3) difficulty
+                  , count(*) entries
+             from  wmg_rounds_unpivot_mv u
+             group by u.course_id, u.h
+          )
+          select c.id course_id
+               , c.code course_code
+               , st.h
+               , st.difficulty
+               , st.entries
+               , case when st.h = :P200_H then '#437c94' else '#4c825c' end color
+           from stats st
+              , wmg_courses c
+          where st.course_id = c.id
+            and course_id = :P200_COURSE_ID
+          order by st.h
         page-items-to-submit: 
         - P200_COURSE_ID.P200_H
 
@@ -190,7 +204,7 @@ regions:
                , case when h = :P200_H then '#437c94' else '#4c825c' end color
           from  wmg_course_stats_v
           where course_id = :P200_COURSE_ID
-          
+          order by h
         page-items-to-submit: 
         - P200_COURSE_ID
         - P200_H
@@ -244,9 +258,11 @@ regions:
       identification: 
         name: y
         show-axis: true
-        title: Dificulty
+        title: Avg Score
 
       value: 
+        format: Decimal
+        decimal-places: 2
         format-scaling: Automatic
         baseline-scaling: Zero
         scale: Linear
@@ -490,7 +506,9 @@ regions:
       dim-on-hover: true
 
     multi-series-chart-data: 
-      fill-gaps-in-chart-data: false
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
 
     settings: 
       zoom-and-scroll: No
@@ -642,7 +660,7 @@ regions:
     - P200_S
 
   layout: 
-    sequence: 70
+    sequence: 85
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -839,6 +857,175 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Top 15 Easiest Holes ========================
+  id: 9134001623384837
+  identification: 
+    title: Top 15 Easiest Holes
+    type: Chart
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select course_id, course_code, h, score_avg
+           , case when course_id = :P200_COURSE_ID and h = :P200_H then '#437c94' else '#4c825c' end color
+           , course_code || ' #' || h label
+      from  wmg_course_stats_v
+      order by score_avg
+      fetch first 15 rows only
+
+  layout: 
+    sequence: 65
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 9134151567384838
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Holes By Difficulty =========================
+      id: 9134234319384839
+      identification: 
+        name: Holes By Difficulty
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Region Source
+
+      column-mapping: 
+        label: LABEL
+        value-aggregation: No Aggregation
+        value: SCORE_AVG
+
+      appearance: 
+        color: '&COLOR.'
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_COURSE_ID", #COURSE_ID#);$s("P200_H", #H#)'
+
+      label: 
+        show: false
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 9134365479384840
+      identification: 
+        name: x
+        show-axis: true
+        title: Course & Hole
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 9134480641384841
+      identification: 
+        name: y
+        show-axis: true
+        title: Score Average
+
+      value: 
+        minimum: 0
+        maximum: 7
+        format: Decimal
+        decimal-places: 2
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
 - # ====== Region: Top Scores ==================================
   id: 16129973281878833
   identification: 
@@ -1033,6 +1220,248 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Preview Hole in Button ======================
+  id: 49528074745520801
+  identification: 
+    title: Preview Hole in Button
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      for p in (
+      select apex_page.get_url(p_page => 16
+                             , p_items=>'P16_C,P16_H'
+                             , p_values => p.course_id || ',' || :P200_H) url
+      from wmg_course_previews_v p
+         , wmg_courses_v c
+      where 1 = 1 
+        and p.course_id = c.course_id
+        and c.course_id = :P200_COURSE_ID
+        and p.hole = nvl(:P200_H,0)
+      )
+      loop
+      return '<style>'
+      || '#PREVIEW_BTN {
+          background-image: url(' || p.url || ');
+          background-size: cover;
+          width: 7rem;
+          height: 7rem;
+          position: absolute;
+          right: 2rem;
+          top: 4rem;
+          z-index: 1;
+      }
+      #PREVIEW_BTN .t-Icon {display: none;}'
+      || '</style>';
+      end loop;
+    page-items-to-submit: 
+    - P200_COURSE_ID
+    - P200_H
+
+  layout: 
+    sequence: 105
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
+- # ====== Region: Top 15 Most Difficult Holes =================
+  id: 49531562996520836
+  identification: 
+    title: Top 15 Most Difficult Holes
+    type: Chart
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select course_id, course_code, h, score_avg
+           , case when course_id = :P200_COURSE_ID and h = :P200_H then '#437c94' else '#4c825c' end color
+           , course_code || ' #' || h label
+      from  wmg_course_stats_v
+      order by score_avg desc
+      fetch first 15 rows only
+
+  layout: 
+    sequence: 75
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 49531629907520837
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Holes By Difficulty =========================
+      id: 49531790457520838
+      identification: 
+        name: Holes By Difficulty
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Region Source
+
+      column-mapping: 
+        label: LABEL
+        value-aggregation: No Aggregation
+        value: SCORE_AVG
+
+      appearance: 
+        color: '&COLOR.'
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_COURSE_ID", #COURSE_ID#);$s("P200_H", #H#)'
+
+      label: 
+        show: false
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 49531800707520839
+      identification: 
+        name: x
+        show-axis: true
+        title: Course & Hole
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 49531992986520840
+      identification: 
+        name: y
+        show-axis: true
+        title: Score Average
+
+      value: 
+        minimum: 0
+        maximum: 7
+        format: Decimal
+        decimal-places: 2
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
 - # ====== Region: Hole Preview ================================
   id: 20769742293250454856
   identification: 
@@ -1059,7 +1488,7 @@ regions:
     - P200_H
 
   layout: 
-    sequence: 80
+    sequence: 95
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1430,6 +1859,9 @@ buttons:
     action: Defined by Dynamic Action
     execute-validations: true
 
+  security: 
+    authorization-scheme: Administration Rights # 46995203575692514425
+
 - # ====== Button: SHOW_SCORE ==================================
   id: 8986842662642628
   identification: 
@@ -1458,6 +1890,9 @@ buttons:
     action: Defined by Dynamic Action
     execute-validations: true
 
+  security: 
+    authorization-scheme: Administration Rights # 46995203575692514425
+
 - # ====== Button: PREVIEW =====================================
   id: 8988693421642646
   identification: 
@@ -1480,11 +1915,14 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--pillStart
-    icon: fa-photo
+    icon: fa-photo fam-minus fam-is-warning
 
   behavior: 
     action: Defined by Dynamic Action
     execute-validations: true
+
+  advanced: 
+    static-id: PREVIEW_BTN
 
 - # ====== Button: OK ==========================================
   id: 9182971008281418
@@ -1602,7 +2040,7 @@ dynamic-actions:
       region: All Courses by Difficulty # 8985304397642613
 
     execution: 
-      sequence: 50
+      sequence: 60
       event: Refresh on Change # 8985036673642610
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -1618,6 +2056,21 @@ dynamic-actions:
 
     execution: 
       sequence: 20
+      event: Refresh on Change # 8985036673642610
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 49528273316520803
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Preview Hole in Button # 49528074745520801
+
+    execution: 
+      sequence: 50
       event: Refresh on Change # 8985036673642610
       fire-when-event-result-is: True
       fire-on-initialization: false
@@ -1762,6 +2215,21 @@ dynamic-actions:
 
     execution: 
       sequence: 20
+      event: Refresh Hole Stats # 8987896733642638
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 49528115631520802
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Preview Hole in Button # 49528074745520801
+
+    execution: 
+      sequence: 30
       event: Refresh Hole Stats # 8987896733642638
       fire-when-event-result-is: True
       fire-on-initialization: false
