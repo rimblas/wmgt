@@ -32,13 +32,6 @@ javascript:
   function-and-global-variable-declaration: |
     var selectedRank;
     
-    // https://stackoverflow.com/questions/8077919/how-can-i-make-a-group-of-checkboxes-mutually-exclusive
-    function enforeMutualExcludedCheckBox(el, group) {
-      var isChecked= $(el).prop("checked");
-      $(group).prop("checked", false);
-      $(el).prop("checked", isChecked);
-    }
-    
 
 css: 
   file-urls: 
@@ -52,6 +45,13 @@ css:
             --ut-report-cell-padding-x:.4rem;
     
         }
+        .wm-search-item:first-child {
+         width: 100%;
+       }
+       .wm-search-item {
+        width: 50%;
+       }
+    
     }
     .hide_nav_next .t-Form-itemText--post {display: none;}
     .hide_nav_pre .t-Form-itemText--pre {display: none;}
@@ -3339,7 +3339,11 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: selectedRank = this.triggeringElement.value
+      code: |
+        selectedRank = this.triggeringElement.value
+        if (selectedRank === "ALL") {
+          selectedRank = ""
+        }
 
     execution: 
       sequence: 20
@@ -3361,8 +3365,6 @@ dynamic-actions:
       code: |
         // Highlight the search term using markjs.io (and even filter away the non-matching lines)
         var $ctx=$("#report_table_raceRegion .t-Report-cell[headers='POS'] .rank");
-        
-        enforeMutualExcludedCheckBox(this.triggeringElement, ".wm-search");
         
         // Remove previous marked elements and ensure they all show
         $ctx.unmark().parents("tr").show();
