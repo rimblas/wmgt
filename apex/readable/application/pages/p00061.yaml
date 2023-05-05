@@ -29,6 +29,16 @@ navigation:
 javascript: 
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+  function-and-global-variable-declaration: |
+    var selectedRank;
+    
+    // https://stackoverflow.com/questions/8077919/how-can-i-make-a-group-of-checkboxes-mutually-exclusive
+    function enforeMutualExcludedCheckBox(el, group) {
+      var isChecked= $(el).prop("checked");
+      $(group).prop("checked", false);
+      $(el).prop("checked", isChecked);
+    }
+    
 
 css: 
   file-urls: 
@@ -174,11 +184,14 @@ server-cache:
 
 help: 
   help-text: |
+    Use the <i>View</i> toggle to focus on the <b>Week</b>ly Results or the <b>Season></b> race.<br>
+    <br><br>
+    
     The <b>Week Results</b> shows the placement of players and the points they will earn for the week.  
     Click on "About the Points" to understand how points are assigned.<br>
-    <br>
-    The <b>Season Race</b> shows the placement of players for the duration of the tournament.<br> 
-    The crossed out scores on the Season Race are the lowest scored being discarded for a player. Every 3 weeks the lowest
+    <br><br>
+    The <b>Season Race</b> shows the placement of players for the duration of the seasopm.<br> 
+    The crossed out scores on the Season Race are the lowest score being discarded for a player. Every 3 weeks the lowest
     score is discarded, meaning the best 2 out of 3 scores is used. When you're unable to play that also counts as a low 
     score and will be considered as a discarded score. This way you can miss up to 4 weeks of the 12 week seasion and have
     the same opportunity.
@@ -294,6 +307,7 @@ regions:
            , r.player_name
            , r.country_code
            , r.season_total
+           , r.rank_code
            , r.rank_name
            , r.rank_list_class
            , r.w1_points
@@ -336,6 +350,7 @@ regions:
         from (
         select p.player_name
              , p.country_code
+             , p.rank_code
              , p.rank_name
              , p.rank_list_class
              , decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
@@ -367,7 +382,9 @@ regions:
       where (:P61_ONLY_ME_IND = 'N' 
         or (me.me_player_id = -1 or (f.pos between greatest((me.my_pos - 4),1) and (me.my_pos + 4)))
         )
-      order by 5 desc
+        and f.season_total > 0
+      order by f.season_total desc, nls_upper(f.player_name)
+      
       
     page-items-to-submit: 
     - P61_TOURNAMENT_ID
@@ -404,13 +421,7 @@ regions:
     exclude-title-from-translation: false
 
   header-and-footer: 
-    header-text: |
-      <div class="pro-legend row margin-sm u-justify-content-space-around">
-      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
-      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro player</div>
-      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur player</div>
-      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
-      </div>
+    header-text: '"RANK_LEGEND_SEARCH"'
 
   server-side-condition: 
     type: Rows returned
@@ -519,7 +530,9 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+      html-expression: |
+        <span class="#SELECTED_PLAYER#">#POS#</span>
+        <span class="u-vh rank">#RANK_CODE#</span>
 
     sorting: 
       sortable: false
@@ -1594,6 +1607,21 @@ regions:
 
     layout: 
       sequence: 430
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 49531064777520831
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 470
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -3269,6 +3297,90 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Sticky Items # 48388857926877344
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Rank Selectors ======================
+  id: 49531155994520832
+  identification: 
+    name: Rank Selectors
+
+  execution: 
+    sequence: 100
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: jQuery Selector
+    jquery-selector: .wm-search
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 49531252613520833
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: selectedRank = ""
+
+    execution: 
+      sequence: 10
+      event: Rank Selectors # 49531155994520832
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set the Search Rank =========================
+    id: 49531377042520834
+    identification: 
+      name: Set the Search Rank
+      action: Execute JavaScript Code
+
+    settings: 
+      code: selectedRank = this.triggeringElement.value
+
+    execution: 
+      sequence: 20
+      event: Rank Selectors # 49531155994520832
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: this.triggeringElement.checked
+
+  - # ====== Action: Filter the Ranks ============================
+    id: 49531448969520835
+    identification: 
+      name: Filter the Ranks
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
+        var $ctx=$("#report_table_raceRegion .t-Report-cell[headers='POS'] .rank");
+        
+        enforeMutualExcludedCheckBox(this.triggeringElement, ".wm-search");
+        
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+        
+        if (selectedRank) {
+          // mark the search selectedRank and hide everything that didn't get marked
+          $ctx.mark(selectedRank, {
+            done: function() {
+              $ctx.not(":has(mark)").parents("tr").hide();
+            }
+          });
+        }
+        
+        
+
+    execution: 
+      sequence: 30
+      event: Rank Selectors # 49531155994520832
       fire-when-event-result-is: True
       fire-on-initialization: false
 

@@ -30,6 +30,7 @@ javascript:
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   function-and-global-variable-declaration: |
+    var selectedRank;
     function badgeMenuAction(btn, actionMenu, badge, player) {
      apex.server.process('BADGES'
         , {x01: actionMenu.label.split(' ')[0],
@@ -77,11 +78,17 @@ javascript:
     //  btn$.data("badges", JSON.stringify(badge_json));
       btn$.data("badges", badge_json);
     }
-    
+    // https://stackoverflow.com/questions/8077919/how-can-i-make-a-group-of-checkboxes-mutually-exclusive
+    function enforeMutualExcludedCheckBox(el, group) {
+      var isChecked= $(el).prop("checked");
+      $(group).prop("checked", false);
+      $(el).prop("checked", isChecked);
+    }
     
   execute-when-page-loads: |
     var menu$ = $("<div id='badge_list_menu'></div>");
     $("body").append(menu$);
+    wmgt.theme.init();
     menu$.menu({
       iconType: "em",
       items: [
@@ -163,7 +170,19 @@ css:
             --ut-report-cell-padding-x:.4rem;
     
         }
+    
+        td[headers="AVATAR"],
+        th#AVATAR {display: none;}
+    
+        td.t-Report-cell[headers="PLAYER_NAME"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 128px;
+            white-space: nowrap;
+       }
+    
     }
+    
     .hide_nav_next .t-Form-itemText--post {display: none;}
     .hide_nav_pre .t-Form-itemText--pre {display: none;}
     
@@ -176,8 +195,10 @@ css:
     }
     
     @media (max-width: 639px) {
-      #POS, td[headers="POS"] {
-           --ut-report-cell-padding-x: .4rem;
+      #POS, #EASY, #HARD, #TOTAL_SCORE, #POINTS, td[headers="POS"],
+      td.t-Report-cell
+       {
+           --ut-report-cell-padding-x: .3rem;
            --ut-report-header-cell-padding-x: .2rem;
       }
       #COUNTRY_CODE, td[headers="COUNTRY_CODE"] {
@@ -186,14 +207,14 @@ css:
       }
     }
     
+    tr.podium td {
+        --ut-report-cell-padding-y: .7rem;
+        --ut-report-cell-background-color: hsl(45.59deg 100% 73%);
+    }
+    
     .w {
         display: inline-block;
         float: right;
-    }
-    
-    .discardY {
-        text-decoration: line-through;
-        color: #BBB;
     }
     
     .points {
@@ -239,9 +260,6 @@ css:
         color: red;
     }
     
-    td[headers="SEASON_TOTAL"] {
-        font-weight: bold;
-    }
     .&P60_WEEK. {
         background-color: rgb(79, 79, 189);
         color: white;
@@ -257,11 +275,7 @@ css:
         --ut-report-cell-background-color: #ff0;
         color: #000;
     }
-    #raceRegion .t-Report-wrap {float: none;}
-    #raceRegion .t-Report-report, 
-    #raceRegion .t-Report-wrap {
-        min-width: 50%;
-    }
+    
     #itemsRegion {
       flex-direction: row;
       display: flex;
@@ -295,11 +309,14 @@ server-cache:
 
 help: 
   help-text: |
+    Use the <i>View</i> toggle to focus on the <b>Week</b>ly Results or the <b>Season></b> race.<br>
+    <br><br>
+    
     The <b>Week Results</b> shows the placement of players and the points they will earn for the week.  
     Click on "About the Points" to understand how points are assigned.<br>
-    <br>
-    The <b>Season Race</b> shows the placement of players for the duration of the tournament.<br> 
-    The crossed out scores on the Season Race are the lowest scored being discarded for a player. Every 3 weeks the lowest
+    <br><br>
+    The <b>Season Race</b> shows the placement of players for the duration of the seasopm.<br> 
+    The crossed out scores on the Season Race are the lowest score being discarded for a player. Every 3 weeks the lowest
     score is discarded, meaning the best 2 out of 3 scores is used. When you're unable to play that also counts as a low 
     score and will be considered as a discarded score. This way you can miss up to 4 weeks of the 12 week seasion and have
     the same opportunity.
@@ -319,12 +336,7 @@ regions:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 6
-    column-css-classes: 
-    - col-xs-12
-    - col-sm-12
-    - col-md-12
-    - col-lg-5
+    column-span: Automatic
 
   appearance: 
     template: Blank with Attributes # 46995040627542514343
@@ -1150,17 +1162,21 @@ regions:
       )
       select p.pos
            , p.player_id
-           , p.country_code
-           , p.player_name
+           , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
+           , pp.country_code
+           , pp.country
+           , pp.player_name
            , p.easy
            , p.hard
            , p.total_score
            , p.points
-           , case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end point_class
+           ,  case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
+           || case when p.pos <= 3 then ' podium' end point_class
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
-           , r.name rank_name
-           , r.list_class rank_list_class
+           , pp.rank_code
+           , pp.rank_name
+           , pp.rank_list_class
            , case when p.completed_ind = 'N' then
                case p.pos 
                when 1 then 'em-first_place_medal '
@@ -1176,20 +1192,20 @@ regions:
       --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
       from wmg_tournament_session_points_v p
-      , wmg_ranks r
+      , wmg_players_v pp
       , coconut
       , cactus
       , badges
       , me
       where p.week = :P60_WEEK
-        and p.rank_code = r.code
+        and p.player_id = pp.id
         and p.player_id = coconut.player_id (+)
         and p.player_id = cactus.player_id (+)
         and p.player_id = badges.player_id (+)
         and (:P60_ONLY_ME_IND = 'N' 
           or (me.player_id = -1 or (p.pos between greatest((me.pos - 2),1) and (me.pos + 3)))
         )
-      order by p.pos
+      order by p.pos, nls_upper(p.player_name)
       
     page-items-to-submit: 
     - P60_WEEK
@@ -1227,6 +1243,9 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  header-and-footer: 
+    header-text: '"RANK_LEGEND_SEARCH"'
+
   server-cache: 
     caching: Disabled
 
@@ -1243,7 +1262,6 @@ regions:
       template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
-      - t-Report--stretch
       - t-Report--altRowsDefault
       - t-Report--rowHighlightOff
       - t-Report--verticalBorders
@@ -1281,30 +1299,10 @@ regions:
     id: 9131754515384814
     identification: 
       column-name: COUNTRY_CODE
-      type: Plain Text
-
-    heading: 
-      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
-      alignment: center
+      type: Hidden Column
 
     layout: 
       sequence: 40
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY_CODE#"></i>'
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1319,7 +1317,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 110
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1334,7 +1332,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 120
+      sequence: 140
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1353,7 +1351,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: center
 
     accessibility: 
@@ -1391,7 +1389,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: center
 
     accessibility: 
@@ -1429,7 +1427,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 160
+      sequence: 170
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1444,7 +1442,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 170
+      sequence: 180
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1459,7 +1457,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1471,6 +1469,91 @@ regions:
     id: 41140040258776049
     identification: 
       column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 47966709657877950
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: User is Authenticated (not public)
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: COUNTRY =====================================
+    id: 48533849608964201
+    identification: 
+      column-name: COUNTRY
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 49530580415520826
+    identification: 
+      column-name: RANK_CODE
       type: Hidden Column
 
     layout: 
@@ -1489,7 +1572,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 100
+      sequence: 120
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1508,7 +1591,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 80
       column-alignment: end
 
     accessibility: 
@@ -1540,7 +1623,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 70
+      sequence: 90
       column-alignment: end
 
     accessibility: 
@@ -1572,7 +1655,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 110
       column-alignment: center
 
     accessibility: 
@@ -1607,7 +1690,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -1639,7 +1722,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 50
+      sequence: 70
       column-alignment: start
 
     accessibility: 
@@ -1654,7 +1737,7 @@ regions:
           p110_week: '&P60_WEEK.'
           p110_player_id: '#PLAYER_ID#'
 
-      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS#" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
 
     sorting: 
       sortable: false
@@ -1678,7 +1761,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Rank
+      heading: '#'
       alignment: center
 
     layout: 
@@ -1689,7 +1772,9 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+      html-expression: |
+        <span class="#SELECTED_PLAYER#">#POS#</span>
+        <span class="u-vh rank">#RANK_CODE#</span>
 
     sorting: 
       sortable: false
@@ -2692,7 +2777,9 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: $(".mark").parents("tr").addClass("mark")
+      code: |
+        $(".mark").parents("tr").addClass("mark");
+        wmgt.theme.init(); // tooltips
 
     execution: 
       sequence: 10
@@ -2971,6 +3058,9 @@ dynamic-actions:
     event-scope: Static
     type: Immediate
 
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
   actions: 
   - # ====== Action: Refresh =====================================
     id: 41138419360776033
@@ -2986,6 +3076,95 @@ dynamic-actions:
       event: Refresh on Close # 41138341573776032
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+- # ====== Dynamic Action: Rank Selectors ======================
+  id: 49530602545520827
+  identification: 
+    name: Rank Selectors
+
+  execution: 
+    sequence: 110
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: jQuery Selector
+    jquery-selector: .wm-search
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Get Selected Value ==========================
+    id: 49530771871520828
+    identification: 
+      name: Get Selected Value
+      action: Execute JavaScript Code
+
+    settings: 
+      code: selectedRank = this.triggeringElement.value
+
+    execution: 
+      sequence: 10
+      event: Rank Selectors # 49530602545520827
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: this.triggeringElement.checked
+
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 49530813689520829
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
+        // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
+        var $ctx=$("#report_table_weekResults .t-Report-cell[headers='POS'] .rank");
+        
+        enforeMutualExcludedCheckBox(this.triggeringElement, ".wm-search");
+        
+        // Remove previous marked elements and ensure they all show
+        $ctx.unmark().parents("tr").show();
+        
+        if (selectedRank) {
+          // mark the search selectedRank and hide everything that didn't get marked
+          $ctx.mark(selectedRank, {
+            done: function() {
+              $ctx.not(":has(mark)").parents("tr").hide();
+            }
+          });
+        }
+        
+        
+
+    execution: 
+      sequence: 30
+      event: Rank Selectors # 49530602545520827
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Clear Selected Value ========================
+    id: 49530976437520830
+    identification: 
+      name: Clear Selected Value
+      action: Execute JavaScript Code
+
+    settings: 
+      code: selectedRank = ""
+
+    execution: 
+      sequence: 20
+      event: Rank Selectors # 49530602545520827
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: '!this.triggeringElement.checked'
 
 - # ====== Dynamic Action: Hoist Classes to TD =================
   id: 2325273968654905574
@@ -3018,6 +3197,15 @@ dynamic-actions:
                 c = $el.attr("class");
         
             $el.parent("td").addClass(c);
+          }
+        );
+        
+        $("td .podium").each(
+          function(){
+            var $el = $(this);
+                // c = $el.attr("class");
+        
+            $el.parents("tr").addClass("podium");
           }
         )
 
