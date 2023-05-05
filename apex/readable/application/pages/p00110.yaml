@@ -3835,6 +3835,36 @@ page-items:
   comments: 
     comments: hidden-sm-up
 
+- # ====== Page Item: P110_TOURNAMENT_SESSION_ID ===============
+  id: 49529935505520820
+  identification: 
+    name: P110_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: '{Player Details}' # 13433645010291510
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P110_MODE ================================
   id: 21358732488077948836
   identification: 
@@ -4536,12 +4566,21 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
+      if :P110_WEEK is null and :P110_TOURNAMENT_SESSION_ID is not null then
+        select week
+          into :P110_WEEK 
+          from wmg_tournament_sessions
+         where id = :P110_TOURNAMENT_SESSION_ID;
+      end if;
+      
       select s.easy_course_id
            , s.hard_course_id 
        into :P110_EASY_ID
           , :P110_HARD_ID
       from wmg_tournament_sessions_v s
-      where s.week = :P110_WEEK;
+      where (:P110_TOURNAMENT_SESSION_ID is null or s.tournament_session_id = :P110_TOURNAMENT_SESSION_ID)
+        and s.week = :P110_WEEK;
+        
 
   execution: 
     sequence: 10

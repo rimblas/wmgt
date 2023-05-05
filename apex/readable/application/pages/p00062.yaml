@@ -50,6 +50,9 @@ regions:
       select *
       from (
       select player_name
+      , rank_code
+      , easy_course_code easy_code
+      , hard_course_code hard_code
       , easy_s1 e1
       , easy_s2 e2
       , easy_s3 e3
@@ -93,8 +96,10 @@ regions:
       from (
         select r.player_id
              , r.player_name
+             , r.rank_code
              , r.under_par
              , c.course_mode
+             , c.code course_code
              , r.s1
              , r.s2
              , r.s3
@@ -136,7 +141,8 @@ regions:
         , sum(s16) s16 
         , sum(s17) s17 
         , sum(s18) s18 
-        , sum(under_par) par for course_mode in (
+        , sum(under_par) par 
+        , any_value(course_code) course_code for course_mode in (
           'E' EASY, 'H' HARD
          )
         )
@@ -214,6 +220,102 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: RANK_CODE ===================================
+    id: 49529644155520817
+    identification: 
+      column-name: RANK_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Rank Code
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_CODE ===================================
+    id: 49529715548520818
+    identification: 
+      column-name: EASY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Easy Code
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_CODE ===================================
+    id: 49529801120520819
+    identification: 
+      column-name: HARD_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Hard Code
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: E1 ==========================================
     id: 24470677400210685179
     identification: 
@@ -225,7 +327,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 50
+      sequence: 60
       column-alignment: end
 
     accessibility: 
@@ -257,7 +359,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 70
       column-alignment: end
 
     accessibility: 
@@ -289,7 +391,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 70
+      sequence: 80
       column-alignment: end
 
     accessibility: 
@@ -321,7 +423,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 90
       column-alignment: end
 
     accessibility: 
@@ -353,7 +455,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -385,7 +487,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -417,7 +519,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -449,7 +551,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -481,7 +583,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -513,7 +615,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -545,7 +647,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: end
 
     accessibility: 
@@ -577,7 +679,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: end
 
     accessibility: 
@@ -609,7 +711,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: end
 
     accessibility: 
@@ -641,7 +743,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 180
+      sequence: 190
       column-alignment: end
 
     accessibility: 
@@ -673,7 +775,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 190
+      sequence: 200
       column-alignment: end
 
     accessibility: 
@@ -705,7 +807,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 200
+      sequence: 210
       column-alignment: end
 
     accessibility: 
@@ -737,7 +839,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: end
 
     accessibility: 
@@ -769,7 +871,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: end
 
     accessibility: 
@@ -801,7 +903,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: end
 
     accessibility: 
@@ -833,7 +935,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 240
+      sequence: 250
       column-alignment: end
 
     accessibility: 
@@ -865,7 +967,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 250
+      sequence: 260
       column-alignment: end
 
     accessibility: 
@@ -897,7 +999,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 260
+      sequence: 270
       column-alignment: end
 
     accessibility: 
@@ -929,7 +1031,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 270
+      sequence: 280
       column-alignment: end
 
     accessibility: 
@@ -961,7 +1063,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 280
+      sequence: 290
       column-alignment: end
 
     accessibility: 
@@ -993,7 +1095,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 290
+      sequence: 300
       column-alignment: end
 
     accessibility: 
@@ -1025,7 +1127,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 300
+      sequence: 310
       column-alignment: end
 
     accessibility: 
@@ -1057,7 +1159,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 310
+      sequence: 320
       column-alignment: end
 
     accessibility: 
@@ -1089,7 +1191,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 320
+      sequence: 330
       column-alignment: end
 
     accessibility: 
@@ -1121,7 +1223,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 330
+      sequence: 340
       column-alignment: end
 
     accessibility: 
@@ -1153,7 +1255,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 340
+      sequence: 350
       column-alignment: end
 
     accessibility: 
@@ -1185,7 +1287,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 350
+      sequence: 360
       column-alignment: end
 
     accessibility: 
@@ -1217,7 +1319,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 360
+      sequence: 370
       column-alignment: end
 
     accessibility: 
@@ -1249,7 +1351,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 370
+      sequence: 380
       column-alignment: end
 
     accessibility: 
@@ -1281,7 +1383,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 380
+      sequence: 390
       column-alignment: end
 
     accessibility: 
@@ -1313,7 +1415,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 390
+      sequence: 400
       column-alignment: end
 
     accessibility: 
@@ -1345,7 +1447,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 400
+      sequence: 410
       column-alignment: end
 
     accessibility: 
@@ -1409,7 +1511,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 410
+      sequence: 420
       column-alignment: end
 
     accessibility: 
@@ -1441,7 +1543,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 420
+      sequence: 430
       column-alignment: end
 
     accessibility: 
@@ -1505,7 +1607,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 430
+      sequence: 440
       column-alignment: end
 
     accessibility: 
