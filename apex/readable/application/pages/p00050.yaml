@@ -119,6 +119,14 @@ css:
         font-size: 1.2rem;
         line-height: 1.7em;
     }
+    /* verified Read Only State */
+    .verifiedY {outline: 1px solid green;}
+    span[id*=P50_ES],
+    span[id*=P50_HS] {
+        border: 1px solid #333;
+        padding: 1px 14px;
+        border-radius: 7px;
+    }
     
     
     #P50_ESCORE_DISPLAY,
@@ -219,6 +227,8 @@ regions:
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
+    css-classes: 
+    - verified&P50_VERIFIED_FLAG.
     render-components: Above Content
 
   accessibility: 
@@ -228,6 +238,11 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  read-only: 
+    type: Item = Value
+    item: P50_VERIFIED_FLAG
+    value: Y
 
   server-cache: 
     caching: Disabled
@@ -1013,6 +1028,11 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  read-only: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P50_VERIFIED_FLAG = 'Y'"
+
   server-cache: 
     caching: Disabled
 
@@ -1070,6 +1090,11 @@ regions:
     static-id: easyCourse
     region-display-selector: false
     exclude-title-from-translation: false
+
+  read-only: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P50_VERIFIED_FLAG = 'Y'"
 
   server-cache: 
     caching: Disabled
@@ -1965,6 +1990,36 @@ page-items:
   id: 41135584926776004
   identification: 
     name: P50_PREV_PAGE_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 100
+    region: '{Player & Round Details}' # 40825883820734223932
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_VERIFIED_FLAG ========================
+  id: 46933794155678615
+  identification: 
+    name: P50_VERIFIED_FLAG
     type: Hidden
 
   settings: 
@@ -6962,8 +7017,9 @@ buttons:
     database-action: SQL UPDATE action
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: P50_E_ID
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P50_E_ID is not null and nvl(:P50_VERIFIED_FLAG, 'x') != 'Y'"
 
 - # ====== Button: CANCEL ======================================
   id: 12337410691723505
@@ -7094,6 +7150,39 @@ buttons:
     type: Item is NOT NULL
     item: P50_PREV_PAGE_ID
 
+- # ====== Button: VERIFIED ====================================
+  id: 46933856448678616
+  identification: 
+    button-name: VERIFIED
+    label: Scored Verified!
+
+  layout: 
+    sequence: 40
+    region: Your Results # 9131124459384808
+    position: COPY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--success
+    icon: fa-badge-check
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+  server-side-condition: 
+    type: Item = Value
+    item: P50_VERIFIED_FLAG
+    value: Y
+
 - # ====== Button: ADD =========================================
   id: 15533023413906445159
   identification: 
@@ -7162,6 +7251,11 @@ buttons:
 
   advanced: 
     static-id: BTN_SAVE
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: "nvl(:P50_VERIFIED_FLAG, 'x') != 'Y'"
 
 dynamic-actions: 
 - # ====== Dynamic Action: Celebrate with Confetti =============
@@ -7420,6 +7514,42 @@ dynamic-actions:
       item: P50_UPDATE_SCORES_FLAG
       value: Y
 
+- # ====== Dynamic Action: What is verified ====================
+  id: 46933964980678617
+  identification: 
+    name: What is verified
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: VERIFIED # 46933856448678616
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Alert =======================================
+    id: 46934050102678618
+    identification: 
+      action: Alert
+
+    settings: 
+      title: Verified!
+      message: Your scores have been verified!
+      style: Success
+      icon: fa-badge-check
+      ok-label: Ok
+
+    execution: 
+      sequence: 10
+      event: What is verified # 46933964980678617
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Init Player LOV =====================
   id: 18814955086933324174
   identification: 
@@ -7659,13 +7789,16 @@ processes:
              begin
                -- get the room assingment
                select 'WMGT' || room_no
+                    , decode(verified_score_flag, 'Y', 'Y', null)
                  into :P50_ROOM_NAME
+                    , :P50_VERIFIED_FLAG
                  from wmg_tournament_players
                 where tournament_session_id = :G_CURRENT_SESSION_ID
                   and player_id = :P50_PLAYERS_ID;
               exception
                when NO_DATA_FOUND then
                  null;
+                 :P50_VERIFIED_FLAG := null;
              end;
       
              -- check to see if there's rounds already
@@ -7715,6 +7848,7 @@ processes:
       
           :P50_E_ID := null;
           :P50_H_ID := null;
+          :P50_VERIFIED_FLAG := null;
       end;
       
       

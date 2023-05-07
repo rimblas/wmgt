@@ -1117,14 +1117,14 @@ regions:
     sql-query: |
       with coconut as (
           select u.week
-               , u.player_id, sum(case when par <= 0 then 1 else 0 end) under_par
+               , u.player_id, sum(case when score is not null and par <= 0 then 1 else 0 end) under_par
                , sum(case when score = 1 then 1 else 0 end) hn1_count
             from wmg_rounds_unpivot_mv u
                , wmg_tournament_sessions ts
            where ts.week = u.week
              and u.week = :P60_WEEK
              and ts.completed_ind = 'N'  -- only live results
-           having sum(case when par <= 0 then 1 else 0 end) = 36
+           having sum(case when par <= 0 and score is not null then 1 else 0 end) = 36
            group by u.week, u.player_id
       )
       , cactus as (
