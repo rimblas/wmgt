@@ -12,11 +12,15 @@ set define off
 
 PRO TABLES
 PRO ________________________________________
+alter table wmg_tournament_players add verified_note                  varchar2(200);
+
 
 
 PRO VIEWS
 PRO ________________________________________
 
+PRO .. wmg_tournament_player_v
+@../views/wmg_tournament_player_v.sql
 
 
 PRO PACKAGES

@@ -16,6 +16,7 @@ create table wmg_tournament_players (
     verified_score_flag            varchar2(1),
     verified_by                    varchar2(60),
     verified_on                    timestamp with local time zone,
+    verified_note                  varchar2(200),
     active_ind                     varchar2(1) constraint wmg_tournament_players_ck_active check (active_ind in ('Y', 'N')) not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,

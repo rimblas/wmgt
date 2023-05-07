@@ -31,6 +31,7 @@ select t.id                              tournament_id
      , tp.points                         points
      , tp.discarded_points_flag          discarded_points_flag
      , tp.verified_score_flag
+     , tp.verified_note
      , tp.verified_by
      , tp.verified_on
      , tp.active_ind                     active_ind

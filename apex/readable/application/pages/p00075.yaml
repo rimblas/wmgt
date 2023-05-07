@@ -29,8 +29,10 @@ css:
   inline: |
     .verification {cursor:pointer;}
     .vYES {color: green;}
+    .vERROR {color: red;}
     .vYES:before {content: "\f14a";}
     .vNO:before {content: "\f096";}
+    .vERROR:before {content: "\eb00";}
     
     
 
@@ -81,6 +83,7 @@ regions:
              , r.hard_scorecard
              , r.total_scorecard
              , p.verified_score_flag
+             , p.verified_note
              , p.verified_by
              , p.verified_on
           from wmg_tournament_results_v r
@@ -112,6 +115,7 @@ regions:
            , verification_class
            , verified
            , verified_score_flag
+           , verified_note
            , verified_by
            , verified_on
       from  (
@@ -147,8 +151,9 @@ regions:
                      when pos is null then 3
                      else 2 
                   end display_seq
-                , decode(s.verified_score_flag, null, 'NO', 'YES') verified
+                , decode(s.verified_score_flag, null, 'NO', 'E', 'ERROR', 'YES') verified
                 , s.verified_score_flag
+                , s.verified_note
                 , s.verified_by
                 , s.verified_on
             from scorecards s
@@ -156,7 +161,7 @@ regions:
       where (:P75_DIFF_ONLY_FLAG = 'N'
             or verification_class = 'N')
         and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
-        and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or :P75_SHOW_VERYFIED_FLAG = 'Y')
+        and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E')))
       order by time_slot, room_no, display_seq
          , pos
       
@@ -169,7 +174,7 @@ regions:
     - P75_ROOM
 
   layout: 
-    sequence: 99
+    sequence: 109
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -804,6 +809,80 @@ regions:
     security: 
       escape-special-characters: false
 
+  - # ====== Column: VERIFIED_NOTE ===============================
+    id: 43960696557790342
+    identification: 
+      column-name: VERIFIED_NOTE
+      type: Plain Text
+
+    heading: 
+      heading: Notes
+      alignment: center
+
+    layout: 
+      sequence: 240
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Note ========================================
+  id: 43960816507790344
+  identification: 
+    title: Note
+    type: Static Content
+
+  layout: 
+    sequence: 119
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup # 46995091106884514363
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-size480x320
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 page-items: 
 - # ====== Page Item: P75_DIFF_ONLY_FLAG =======================
   id: 11992577855685620
@@ -847,7 +926,7 @@ page-items:
 
   default: 
     type: Static
-    static-value: Y
+    static-value: N
 
   session-state: 
     storage: Per Session (Persistent)
@@ -966,7 +1045,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 59
+    sequence: 69
     region: No Parent
     position: BODY
     alignment: Left
@@ -1026,7 +1105,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 69
+    sequence: 79
     region: No Parent
     position: BODY
     alignment: Left
@@ -1106,7 +1185,7 @@ page-items:
 
   default: 
     type: Static
-    static-value: N
+    static-value: Y
 
   session-state: 
     storage: Per Session (Persistent)
@@ -1167,7 +1246,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 79
+    sequence: 89
     region: No Parent
     position: BODY
     alignment: Left
@@ -1250,7 +1329,7 @@ page-items:
 
   default: 
     type: Static
-    static-value: N
+    static-value: Y
 
   session-state: 
     storage: Per Session (Persistent)
@@ -1263,7 +1342,150 @@ page-items:
   help: 
     help-text: Show the verified scoresheets. Verified means someone look at the scorecard and confirmed it matches the score submission.
 
+- # ====== Page Item: P75_NEW_FLAG =============================
+  id: 43960706365790343
+  identification: 
+    name: P75_NEW_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 59
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_VERIFICATION_NOTE ====================
+  id: 43960917057790345
+  identification: 
+    name: P75_VERIFICATION_NOTE
+    type: Textarea
+
+  label: 
+    label: Note
+    alignment: Left
+
+  settings: 
+    resizable: true
+    auto-height: false
+    character-counter: false
+    trim-spaces: Leading and Trailing
+
+  layout: 
+    sequence: 10
+    region: Note # 43960816507790344
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+    height: 5
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
+- # ====== Button: ADD_NOTE ====================================
+  id: 43961015185790346
+  identification: 
+    button-name: ADD_NOTE
+    label: Add Note
+
+  layout: 
+    sequence: 20
+    region: Note # 43960816507790344
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-check
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: CANCEL_NOTE =================================
+  id: 43961464901790350
+  identification: 
+    button-name: CANCEL_NOTE
+    label: Cancel
+
+  layout: 
+    sequence: 30
+    region: Note # 43960816507790344
+    position: CLOSE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 - # ====== Button: CREATE ======================================
   id: 45123990407267741
   identification: 
@@ -1271,7 +1493,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 89
+    sequence: 99
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -1395,12 +1617,22 @@ dynamic-actions:
       pl/sql-code: |
         -- toggle the verification
         update wmg_tournament_players
-           set verified_score_flag = decode(verified_score_flag, null, 'Y', null)
-             , verified_by = decode(verified_score_flag, null, sys_context('APEX$SESSION','APP_USER'), null)
-             , verified_on = decode(verified_score_flag, null, current_timestamp, null)
-        where id = :P75_ID;
+           set verified_score_flag = case
+                                       when verified_score_flag is null then 'Y'
+                                       when verified_score_flag = 'Y' then 'E'
+                                       when verified_score_flag = 'E' then null
+                                    end
+             , verified_by = case when verified_score_flag = 'Y' or verified_score_flag is null then sys_context('APEX$SESSION','APP_USER') else null end
+             , verified_on = case when verified_score_flag = 'Y' or verified_score_flag is null then current_timestamp else null end
+             , verified_note = case when verified_score_flag = 'Y' or verified_score_flag is null then verified_note else null end
+        where id = :P75_ID
+        returning verified_score_flag into :P75_NEW_FLAG;
+        
       items-to-submit: 
       - P75_ID
+      items-to-return: 
+      - P75_NEW_FLAG
+      suppress-change-event: false
 
     execution: 
       sequence: 50
@@ -1431,7 +1663,7 @@ dynamic-actions:
       action: Remove Class
 
     settings: 
-      class: vNO vYES verification
+      class: vNO vYES vERR verification
 
     affected-elements: 
       selection-type: Triggering Element
@@ -1582,6 +1814,182 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Clear Result on Clear # 43959613362790332
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Open Notes for Error ================
+  id: 43961121223790347
+  identification: 
+    name: Open Notes for Error
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P75_NEW_FLAG
+
+  client-side-condition: 
+    type: Item = Value
+    item: P75_NEW_FLAG
+    value: E
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 43961236833790348
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select verified_note
+        from wmg_tournament_players
+        where id = :P75_ID
+      items-to-submit: 
+      - P75_ID
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P75_VERIFICATION_NOTE
+
+    execution: 
+      sequence: 10
+      event: Open Notes for Error # 43961121223790347
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Open Region =================================
+    id: 43961393806790349
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Note # 43960816507790344
+
+    execution: 
+      sequence: 20
+      event: Open Notes for Error # 43961121223790347
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close Notes =========================
+  id: 46932389954678601
+  identification: 
+    name: Close Notes
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: CANCEL_NOTE # 43961464901790350
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 46932486817678602
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Note # 43960816507790344
+
+    execution: 
+      sequence: 10
+      event: Close Notes # 46932389954678601
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Save Note ===========================
+  id: 46932552190678603
+  identification: 
+    name: Save Note
+
+  execution: 
+    sequence: 80
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: ADD_NOTE # 43961015185790346
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute Server-side Code ====================
+    id: 46932677826678604
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        update wmg_tournament_players
+          set verified_note = :P75_VERIFICATION_NOTE
+        where id = :P75_ID;
+        :P75_VERIFICATION_NOTE := null;
+      items-to-submit: 
+      - P75_VERIFICATION_NOTE
+      - P75_ID
+      items-to-return: 
+      - P75_VERIFICATION_NOTE
+      suppress-change-event: false
+
+    execution: 
+      sequence: 10
+      event: Save Note # 46932552190678603
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 46932765621678605
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Verify Results # 11998064850694896
+
+    execution: 
+      sequence: 30
+      event: Save Note # 46932552190678603
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Close Region ================================
+    id: 46932872883678606
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Note # 43960816507790344
+
+    execution: 
+      sequence: 20
+      event: Save Note # 46932552190678603
       fire-when-event-result-is: True
       fire-on-initialization: false
 
