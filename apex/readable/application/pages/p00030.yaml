@@ -1702,13 +1702,28 @@ branches:
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55902033226819493948
 
+- # ====== Branch: Go See the Rooms ============================
+  id: 49532101155520842
+  identification: 
+    name: Go See the Rooms
+
+  execution: 
+    sequence: 30
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 40 # Room Selections & Assignments
+
 - # ====== Branch: Go To Page 1 ================================
   id: 53005783069505846341
   identification: 
     name: Go To Page 1
 
   execution: 
-    sequence: 10
+    sequence: 20
     point: After Processing
 
   behavior: 
@@ -1716,4 +1731,7 @@ branches:
     target: 
       url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
       page: 1 # Home
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
