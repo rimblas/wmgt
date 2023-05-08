@@ -6866,7 +6866,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -6882,11 +6882,12 @@ buttons:
   behavior: 
     action: Redirect to Page in this Application
     target: 
-      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60:P60_WEEK:&P100_WEEK.'
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60:P60_WEEK,P60_SELECTOR:&P100_WEEK.,WEEK'
       page: 60 # View Weekly Results
       clear-cache: 60
       values: 
         p60_week: '&P100_WEEK.'
+        p60_selector: WEEK
 
     warn-on-unsaved-changes: Do Not Check
 
@@ -7143,14 +7144,14 @@ dynamic-actions:
       set-max-height: 300
       details-query: |
         with week_courses as (
-          select id course_id, course_mode, :P100_WEEK week
-            from wmg_courses
-           where id in (
-              select distinct course_id
-                from wmg_rounds 
-               where week = :P100_WEEK 
-            )
-           and course_mode = '#COURSE_MODE#'
+        select id course_id, course_mode, :P100_WEEK week
+          from wmg_courses
+         where id in (
+            select distinct course_id
+              from wmg_rounds 
+             where week = :P100_WEEK 
+          )
+         and course_mode = '#COURSE_MODE#'
         )
         select r.player_name "Player"
              , case :P100_H 
@@ -7177,52 +7178,75 @@ dynamic-actions:
          where r.week = w.week
            and r.course_id = w.course_id
            and (
-               (#DATA_FILTER# = 99 -- Aces
-                  and (
-                     (:P100_H = 'H1' and r.s1 = 1)
-                  or (:P100_H = 'H2' and r.s2 = 1)
-                  or (:P100_H = 'H3' and r.s3 = 1)
-                  or (:P100_H = 'H4' and r.s4 = 1)
-                  or (:P100_H = 'H5' and r.s5 = 1)
-                  or (:P100_H = 'H6' and r.s6 = 1)
-                  or (:P100_H = 'H7' and r.s7 = 1)
-                  or (:P100_H = 'H8' and r.s8 = 1)
-                  or (:P100_H = 'H9' and r.s9 = 1)
-                  or (:P100_H = 'H10' and r.s10 = 1)
-                  or (:P100_H = 'H11' and r.s11 = 1)
-                  or (:P100_H = 'H12' and r.s12 = 1)
-                  or (:P100_H = 'H13' and r.s13 = 1)
-                  or (:P100_H = 'H14' and r.s14 = 1)
-                  or (:P100_H = 'H15' and r.s15 = 1)
-                  or (:P100_H = 'H16' and r.s16 = 1)
-                  or (:P100_H = 'H17' and r.s17 = 1)
-                  or (:P100_H = 'H18' and r.s18 = 1)
-                  )
-               )
-               or (
-                   #DATA_FILTER# < 99
-                  and (
-                     (:P100_H = 'H1' and r.s1 + #DATA_FILTER# = r.h1)
-                  or (:P100_H = 'H2' and r.s2 + #DATA_FILTER# = r.h2)
-                  or (:P100_H = 'H3' and r.s3 + #DATA_FILTER# = r.h3)
-                  or (:P100_H = 'H4' and r.s4 + #DATA_FILTER# = r.h4)
-                  or (:P100_H = 'H5' and r.s5 + #DATA_FILTER# = r.h5)
-                  or (:P100_H = 'H6' and r.s6 + #DATA_FILTER# = r.h6)
-                  or (:P100_H = 'H7' and r.s7 + #DATA_FILTER# = r.h7)
-                  or (:P100_H = 'H8' and r.s8 + #DATA_FILTER# = r.h8)
-                  or (:P100_H = 'H9' and r.s9 + #DATA_FILTER# = r.h9)
-                  or (:P100_H = 'H10' and r.s10 + #DATA_FILTER# = r.h10)
-                  or (:P100_H = 'H11' and r.s11 + #DATA_FILTER# = r.h11)
-                  or (:P100_H = 'H12' and r.s12 + #DATA_FILTER# = r.h12)
-                  or (:P100_H = 'H13' and r.s13 + #DATA_FILTER# = r.h13)
-                  or (:P100_H = 'H14' and r.s14 + #DATA_FILTER# = r.h14)
-                  or (:P100_H = 'H15' and r.s15 + #DATA_FILTER# = r.h15)
-                  or (:P100_H = 'H16' and r.s16 + #DATA_FILTER# = r.h16)
-                  or (:P100_H = 'H17' and r.s17 + #DATA_FILTER# = r.h17)
-                  or (:P100_H = 'H18' and r.s18 + #DATA_FILTER# = r.h18)
-                  )
-               )
+           (#DATA_FILTER# = 99 -- Aces
+              and (
+                 (:P100_H = 'H1' and r.s1 = 1)
+              or (:P100_H = 'H2' and r.s2 = 1)
+              or (:P100_H = 'H3' and r.s3 = 1)
+              or (:P100_H = 'H4' and r.s4 = 1)
+              or (:P100_H = 'H5' and r.s5 = 1)
+              or (:P100_H = 'H6' and r.s6 = 1)
+              or (:P100_H = 'H7' and r.s7 = 1)
+              or (:P100_H = 'H8' and r.s8 = 1)
+              or (:P100_H = 'H9' and r.s9 = 1)
+              or (:P100_H = 'H10' and r.s10 = 1)
+              or (:P100_H = 'H11' and r.s11 = 1)
+              or (:P100_H = 'H12' and r.s12 = 1)
+              or (:P100_H = 'H13' and r.s13 = 1)
+              or (:P100_H = 'H14' and r.s14 = 1)
+              or (:P100_H = 'H15' and r.s15 = 1)
+              or (:P100_H = 'H16' and r.s16 = 1)
+              or (:P100_H = 'H17' and r.s17 = 1)
+              or (:P100_H = 'H18' and r.s18 = 1)
+              )
            )
+         or (
+             #DATA_FILTER# between 3 and 99
+            and (
+               (:P100_H = 'H1' and r.s1 + #DATA_FILTER# = r.h1)
+            or (:P100_H = 'H2' and r.s2 + #DATA_FILTER# = r.h2)
+            or (:P100_H = 'H3' and r.s3 + #DATA_FILTER# = r.h3)
+            or (:P100_H = 'H4' and r.s4 + #DATA_FILTER# = r.h4)
+            or (:P100_H = 'H5' and r.s5 + #DATA_FILTER# = r.h5)
+            or (:P100_H = 'H6' and r.s6 + #DATA_FILTER# = r.h6)
+            or (:P100_H = 'H7' and r.s7 + #DATA_FILTER# = r.h7)
+            or (:P100_H = 'H8' and r.s8 + #DATA_FILTER# = r.h8)
+            or (:P100_H = 'H9' and r.s9 + #DATA_FILTER# = r.h9)
+            or (:P100_H = 'H10' and r.s10 + #DATA_FILTER# = r.h10)
+            or (:P100_H = 'H11' and r.s11 + #DATA_FILTER# = r.h11)
+            or (:P100_H = 'H12' and r.s12 + #DATA_FILTER# = r.h12)
+            or (:P100_H = 'H13' and r.s13 + #DATA_FILTER# = r.h13)
+            or (:P100_H = 'H14' and r.s14 + #DATA_FILTER# = r.h14)
+            or (:P100_H = 'H15' and r.s15 + #DATA_FILTER# = r.h15)
+            or (:P100_H = 'H16' and r.s16 + #DATA_FILTER# = r.h16)
+            or (:P100_H = 'H17' and r.s17 + #DATA_FILTER# = r.h17)
+            or (:P100_H = 'H18' and r.s18 + #DATA_FILTER# = r.h18)
+            )
+          )
+         or (
+             #DATA_FILTER# = 4
+            and (
+               (:P100_H = 'H1' and r.s1 + #DATA_FILTER# <= r.h1)
+            or (:P100_H = 'H2' and r.s2 + #DATA_FILTER# <= r.h2)
+            or (:P100_H = 'H3' and r.s3 + #DATA_FILTER# <= r.h3)
+            or (:P100_H = 'H4' and r.s4 + #DATA_FILTER# <= r.h4)
+            or (:P100_H = 'H5' and r.s5 + #DATA_FILTER# <= r.h5)
+            or (:P100_H = 'H6' and r.s6 + #DATA_FILTER# <= r.h6)
+            or (:P100_H = 'H7' and r.s7 + #DATA_FILTER# <= r.h7)
+            or (:P100_H = 'H8' and r.s8 + #DATA_FILTER# <= r.h8)
+            or (:P100_H = 'H9' and r.s9 + #DATA_FILTER# <= r.h9)
+            or (:P100_H = 'H10' and r.s10 + #DATA_FILTER# <= r.h10)
+            or (:P100_H = 'H11' and r.s11 + #DATA_FILTER# <= r.h11)
+            or (:P100_H = 'H12' and r.s12 + #DATA_FILTER# <= r.h12)
+            or (:P100_H = 'H13' and r.s13 + #DATA_FILTER# <= r.h13)
+            or (:P100_H = 'H14' and r.s14 + #DATA_FILTER# <= r.h14)
+            or (:P100_H = 'H15' and r.s15 + #DATA_FILTER# <= r.h15)
+            or (:P100_H = 'H16' and r.s16 + #DATA_FILTER# <= r.h16)
+            or (:P100_H = 'H17' and r.s17 + #DATA_FILTER# <= r.h17)
+            or (:P100_H = 'H18' and r.s18 + #DATA_FILTER# <= r.h18)
+            )
+          )
+        )
         order by 1
       when-no-data-found: No players
 
