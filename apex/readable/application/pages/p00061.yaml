@@ -2971,6 +2971,40 @@ buttons:
     authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
+- # ====== Dynamic Action: Highlight Player ====================
+  id: 47346733396734817
+  identification: 
+    name: Highlight Player
+
+  execution: 
+    sequence: 110
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Season Race (&P61_TOURNAMENT.) # 60866510953427100
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 47347197750734832
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $(".mark").parents("tr").addClass("mark");
+        wmgt.theme.init(); // tooltips
+
+    execution: 
+      sequence: 10
+      event: Highlight Player # 47346733396734817
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Hoist Week Classes to TD ============
   id: 48381526313877327
   identification: 
