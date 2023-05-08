@@ -78,12 +78,6 @@ javascript:
     //  btn$.data("badges", JSON.stringify(badge_json));
       btn$.data("badges", badge_json);
     }
-    // https://stackoverflow.com/questions/8077919/how-can-i-make-a-group-of-checkboxes-mutually-exclusive
-    function enforeMutualExcludedCheckBox(el, group) {
-      var isChecked= $(el).prop("checked");
-      $(group).prop("checked", false);
-      $(el).prop("checked", isChecked);
-    }
     
   execute-when-page-loads: |
     var menu$ = $("<div id='badge_list_menu'></div>");
@@ -181,6 +175,13 @@ css:
             white-space: nowrap;
        }
     
+       .wm-search-item:first-child {
+         width: 100%;
+       }
+       .wm-search-item {
+        width: 50%;
+       }
+    
     }
     
     .hide_nav_next .t-Form-itemText--post {display: none;}
@@ -211,17 +212,23 @@ css:
         --ut-report-cell-padding-y: .7rem;
         --ut-report-cell-background-color: hsl(45.59deg 100% 73%);
     }
+    tr.podium.podium2 td {
+        --ut-report-cell-background-color: #d4d4d4
+    }
+    tr.podium.podium3 td {
+        --ut-report-cell-background-color: #e4b281
+    }
     
     .w {
         display: inline-block;
         float: right;
     }
     
-    .points {
+    span.points {
         color: white;
         font-weight: 700;
     }
-    .top {
+    td.top {
         background-color: hsl(220deg 100% 39%);
     }
     .p10 {
@@ -1124,7 +1131,7 @@ regions:
            where ts.week = u.week
              and u.week = :P60_WEEK
              and ts.completed_ind = 'N'  -- only live results
-           having sum(case when par <= 0 and score is not null then 1 else 0 end) = 36
+           having sum(case when par <= 0 then 1 else 0 end) = 36
            group by u.week, u.player_id
       )
       , cactus as (
@@ -1171,7 +1178,7 @@ regions:
            , p.total_score
            , p.points
            ,  case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
-           || case when p.pos <= 3 then ' podium' end point_class
+           || case when p.pos <= 3 then ' podium podium' || p.pos  end point_class
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
            , pp.rank_code
@@ -1262,7 +1269,7 @@ regions:
       template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
-      - t-Report--altRowsDefault
+      - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--verticalBorders
       - t-Report--hideNoPagination
@@ -3102,7 +3109,11 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: selectedRank = this.triggeringElement.value
+      code: |
+        selectedRank = this.triggeringElement.value
+        if (selectedRank === "ALL") {
+          selectedRank = ""
+        }
 
     execution: 
       sequence: 10
@@ -3124,8 +3135,6 @@ dynamic-actions:
         // Highlight the search term using markjs.io (and even filter away the non-matching lines)
         // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
         var $ctx=$("#report_table_weekResults .t-Report-cell[headers='POS'] .rank");
-        
-        enforeMutualExcludedCheckBox(this.triggeringElement, ".wm-search");
         
         // Remove previous marked elements and ensure they all show
         $ctx.unmark().parents("tr").show();
@@ -3203,9 +3212,9 @@ dynamic-actions:
         $("td .podium").each(
           function(){
             var $el = $(this);
-                // c = $el.attr("class");
+            c = $el.attr("class");
         
-            $el.parents("tr").addClass("podium");
+            $el.parents("tr").addClass(c);
           }
         )
 
