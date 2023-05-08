@@ -30,6 +30,7 @@ select t.id                              tournament_id
      , tp.room_no                        room_no
      , tp.points                         points
      , tp.discarded_points_flag          discarded_points_flag
+     , tp.no_show_flag
      , tp.verified_score_flag
      , tp.verified_note
      , tp.verified_by

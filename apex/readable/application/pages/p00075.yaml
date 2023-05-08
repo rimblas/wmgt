@@ -27,13 +27,17 @@ css:
   file-urls: 
   - '#APP_FILES#css/week-lov#MIN#.css'
   inline: |
-    .verification {cursor:pointer;}
+    .noshow, .verification {cursor:pointer;}
     .vYES {color: green;}
     .vERROR {color: red;}
     .vYES:before {content: "\f14a";}
-    .vNO:before {content: "\f096";}
+    .NA_:before,.vNO:before {content: "\f096";}
     .vERROR:before {content: "\eb00";}
+    span.NA_Y:before {content: "\e9e5"; color: orange;font-weight: bold;}
     
+    tr.NA_Y td{text-decoration: line-through; opacity: 50%;}
+    tr.NA_Y td[headers="NO_SHOW_FLAG"],
+    tr.NA_Y td[headers^="VERIFIE"] {text-decoration:none; opacity: 100%;}
     
 
 security: 
@@ -86,6 +90,7 @@ regions:
              , p.verified_note
              , p.verified_by
              , p.verified_on
+             , p.no_show_flag
           from wmg_tournament_results_v r
              , wmg_tournament_player_v p
          where p.week = r.week (+)
@@ -118,6 +123,7 @@ regions:
            , verified_note
            , verified_by
            , verified_on
+           , no_show_flag
       from  (
           select s.pos
                , s.time_slot
@@ -156,12 +162,13 @@ regions:
                 , s.verified_note
                 , s.verified_by
                 , s.verified_on
+                , s.no_show_flag
             from scorecards s
       )
-      where (:P75_DIFF_ONLY_FLAG = 'N'
-            or verification_class = 'N')
+      where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and no_show_flag = 'Y'))
+        and (:P75_DIFF_ONLY_FLAG = 'N' or (verification_class = 'N' or :P75_SHOW_NO_SHOWS_FLAG = 'Y' ))
         and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
-        and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E')))
+        and (( :P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
       order by time_slot, room_no, display_seq
          , pos
       
@@ -170,11 +177,12 @@ regions:
     - P75_DIFF_ONLY_FLAG
     - P75_SHOW_MISSING_FLAG
     - P75_SHOW_VERYFIED_FLAG
+    - P75_SHOW_NO_SHOWS_FLAG
     - P75_SLOT
     - P75_ROOM
 
   layout: 
-    sequence: 109
+    sequence: 119
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -684,7 +692,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 230
+      sequence: 240
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -703,7 +711,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: center
 
     accessibility: 
@@ -738,7 +746,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: center
 
     accessibility: 
@@ -820,11 +828,46 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 240
+      sequence: 250
       column-alignment: start
 
     accessibility: 
       value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NO_SHOW_FLAG ================================
+    id: 46932932793678607
+    identification: 
+      column-name: NO_SHOW_FLAG
+      type: Plain Text
+
+    heading: 
+      heading: No Show?
+      alignment: center
+
+    layout: 
+      sequence: 210
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="noshow fa NA_#NO_SHOW_FLAG#" title="Player did not show"></span>
 
     sorting: 
       sortable: false
@@ -848,7 +891,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 119
+    sequence: 129
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -908,6 +951,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1045,7 +1090,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 69
+    sequence: 79
     region: No Parent
     position: BODY
     alignment: Left
@@ -1055,6 +1100,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1105,7 +1152,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 79
+    sequence: 89
     region: No Parent
     position: BODY
     alignment: Left
@@ -1115,6 +1162,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1167,6 +1216,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1208,7 +1259,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 49
+    sequence: 59
     region: No Parent
     position: BODY
 
@@ -1246,7 +1297,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 89
+    sequence: 99
     region: No Parent
     position: BODY
     alignment: Left
@@ -1311,6 +1362,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1352,7 +1405,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 59
+    sequence: 69
     region: No Parent
     position: BODY
 
@@ -1429,6 +1482,63 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P75_SHOW_NO_SHOWS_FLAG ===================
+  id: 46933662109678614
+  identification: 
+    name: P75_SHOW_NO_SHOWS_FLAG
+    type: Switch
+
+  label: 
+    label: Show No Shows?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 49
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Show the "No Show" players only
+
 buttons: 
 - # ====== Button: ADD_NOTE ====================================
   id: 43961015185790346
@@ -1493,7 +1603,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 99
+    sequence: 109
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -1501,7 +1611,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: 2
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -1542,6 +1652,7 @@ dynamic-actions:
     - P75_DIFF_ONLY_FLAG
     - P75_SHOW_MISSING_FLAG
     - P75_SHOW_VERYFIED_FLAG
+    - P75_SHOW_NO_SHOWS_FLAG
     - P75_SLOT
     - P75_ROOM
 
@@ -1697,7 +1808,7 @@ dynamic-actions:
     name: Search as you type
 
   execution: 
-    sequence: 30
+    sequence: 40
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
@@ -1751,7 +1862,7 @@ dynamic-actions:
     name: Tooltips
 
   execution: 
-    sequence: 40
+    sequence: 50
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
@@ -1769,7 +1880,13 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: $(".verification").tooltip()
+      code: |
+        $(".verification").tooltip()
+        
+        $(".NA_Y").each(function (i){
+          let el = this;
+          $(el).parents("tr").addClass("NA_Y");
+        });
 
     execution: 
       sequence: 10
@@ -1783,7 +1900,7 @@ dynamic-actions:
     name: Clear Result on Clear
 
   execution: 
-    sequence: 50
+    sequence: 60
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -1823,7 +1940,7 @@ dynamic-actions:
     name: Open Notes for Error
 
   execution: 
-    sequence: 60
+    sequence: 70
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -1891,7 +2008,7 @@ dynamic-actions:
     name: Close Notes
 
   execution: 
-    sequence: 70
+    sequence: 80
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -1924,7 +2041,7 @@ dynamic-actions:
     name: Save Note
 
   execution: 
-    sequence: 80
+    sequence: 90
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -1990,6 +2107,128 @@ dynamic-actions:
     execution: 
       sequence: 20
       event: Save Note # 46932552190678603
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Toggle No Shows =====================
+  id: 46933024822678608
+  identification: 
+    name: Toggle No Shows
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .noshow
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Remove Class ================================
+    id: 46933172669678609
+    identification: 
+      action: Remove Class
+
+    settings: 
+      class: NA_ NA_Y
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 10
+      event: Toggle No Shows # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Get player ID ===============================
+    id: 46933267690678610
+    identification: 
+      name: Get player ID
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P75_ID
+
+    execution: 
+      sequence: 20
+      event: Toggle No Shows # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Add Class ===================================
+    id: 46933366229678611
+    identification: 
+      action: Add Class
+
+    settings: 
+      class: fa-square-selected-o fa-anim-spin
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 30
+      event: Toggle No Shows # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 46933422045678612
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        -- toggle the verification
+        update wmg_tournament_players
+           set no_show_flag = case
+                                       when no_show_flag is null then 'Y'
+                                       when no_show_flag = 'Y' then null
+                                    end
+             , verified_score_flag = case when no_show_flag is null then 'Y' else null end
+             , verified_note = case when no_show_flag is null then 'No show' else null end
+             , verified_by = case when no_show_flag is null then sys_context('APEX$SESSION','APP_USER') else null end
+             , verified_on = case when no_show_flag is null then current_timestamp else null end
+        where id = :P75_ID;
+        
+      items-to-submit: 
+      - P75_ID
+
+    execution: 
+      sequence: 40
+      event: Toggle No Shows # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 46933569768678613
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Verify Results # 11998064850694896
+
+    execution: 
+      sequence: 50
+      event: Toggle No Shows # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
 

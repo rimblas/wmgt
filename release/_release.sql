@@ -3,16 +3,17 @@ set feedback off
 set verify off
 
 
-PRO APEX DISABLE APP
-PRO ________________________________________
+-- PRO APEX DISABLE APP
+-- PRO ________________________________________
 
-set define &
-@../apex/apex_disable 200
-set define off
+-- set define &
+-- @../apex/apex_disable 200
+-- set define off
 
 PRO TABLES
 PRO ________________________________________
-alter table wmg_tournament_players add verified_note                  varchar2(200);
+alter table wmg_tournament_players add no_show_flag                  varchar2(1);
+comment on column wmg_tournament_players.no_show_flag is 'Flag players that do not show up';
 
 
 
@@ -40,6 +41,6 @@ PRO ________________________________________
 
 PRO APEX 
 PRO ________________________________________
-@../apex/pre_apex_install.sql
-@../apex/f200.sql
+-- @../apex/pre_apex_install.sql
+-- @../apex/f200.sql
 

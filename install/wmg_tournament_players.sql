@@ -17,6 +17,7 @@ create table wmg_tournament_players (
     verified_by                    varchar2(60),
     verified_on                    timestamp with local time zone,
     verified_note                  varchar2(200),
+    no_show_flag                   varchar2(1)
     active_ind                     varchar2(1) constraint wmg_tournament_players_ck_active check (active_ind in ('Y', 'N')) not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
@@ -33,6 +34,7 @@ comment on table wmg_tournament_players is 'Players signed up for a specific ses
 comment on column wmg_tournament_players.points is 'Points scored by a player on the session. 1st = 25, 2nd = 21, etc...';
 comment on column wmg_tournament_players.discarded_points_flag is 'Indicates these points have been discarded as 1 out of every 3 sessions gets points discarded';
 comment on column wmg_tournament_players.verified_score_flag is 'Indicates these scorecard submission has been verified';
+comment on column wmg_tournament_players.no_show_flag is 'Flag players that do not show up';
 
 create or replace trigger wmg_tournament_players_bu
     before update 

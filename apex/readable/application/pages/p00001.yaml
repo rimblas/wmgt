@@ -1977,7 +1977,7 @@ regions:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 6
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -1997,6 +1997,14 @@ regions:
     static-id: weekResults
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.id = :G_CURRENT_SESSION_ID
+        and s.rooms_open_flag is null
 
   server-cache: 
     caching: Cache By Session

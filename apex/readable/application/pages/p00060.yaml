@@ -175,7 +175,7 @@ css:
             white-space: nowrap;
        }
     
-        .wm-search-item:first-child {
+       .wm-search-item:first-child {
          width: 100%;
        }
        .wm-search-item {
@@ -212,17 +212,23 @@ css:
         --ut-report-cell-padding-y: .7rem;
         --ut-report-cell-background-color: hsl(45.59deg 100% 73%);
     }
+    tr.podium.podium2 td {
+        --ut-report-cell-background-color: #d4d4d4
+    }
+    tr.podium.podium3 td {
+        --ut-report-cell-background-color: #e4b281
+    }
     
     .w {
         display: inline-block;
         float: right;
     }
     
-    .points {
+    span.points {
         color: white;
         font-weight: 700;
     }
-    .top {
+    td.top {
         background-color: hsl(220deg 100% 39%);
     }
     .p10 {
@@ -1118,7 +1124,7 @@ regions:
     sql-query: |
       with coconut as (
           select u.week
-               , u.player_id, sum(case when par <= 0 then 1 else 0 end) under_par
+               , u.player_id, sum(case when score is not null and par <= 0 then 1 else 0 end) under_par
                , sum(case when score = 1 then 1 else 0 end) hn1_count
             from wmg_rounds_unpivot_mv u
                , wmg_tournament_sessions ts
@@ -1172,7 +1178,7 @@ regions:
            , p.total_score
            , p.points
            ,  case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
-           || case when p.pos <= 3 then ' podium' end point_class
+           || case when p.pos <= 3 then ' podium podium' || p.pos  end point_class
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
            , pp.rank_code
@@ -1263,7 +1269,7 @@ regions:
       template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
-      - t-Report--altRowsDefault
+      - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--verticalBorders
       - t-Report--hideNoPagination
@@ -3206,9 +3212,9 @@ dynamic-actions:
         $("td .podium").each(
           function(){
             var $el = $(this);
-                // c = $el.attr("class");
+            c = $el.attr("class");
         
-            $el.parents("tr").addClass("podium");
+            $el.parents("tr").addClass(c);
           }
         )
 
