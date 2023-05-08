@@ -782,7 +782,7 @@ begin
            and current_flag = 'Y'
       )
       , discard as (
-        select round( count(*)/3 ) drop_count
+        select floor( count(*)/3 ) drop_count
              , count(*) total_sessions
           from wmg_tournament_sessions ts
              , curr_tournament
@@ -829,7 +829,7 @@ begin
            and current_flag = 'Y'
       )
       , discard as (
-        select round( count(*)/3 ) drop_count
+        select floor( count(*)/3 ) drop_count
              , count(*) total_sessions
           from wmg_tournament_sessions ts
              , curr_tournament
