@@ -165,10 +165,10 @@ regions:
                 , s.no_show_flag
             from scorecards s
       )
-      where (:P75_DIFF_ONLY_FLAG = 'N' or verification_class = 'N')
-        and (:P75_SHOW_NO_SHOWS_FLAG = 'N' or no_show_flag = 'Y')
+      where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and no_show_flag = 'Y'))
+        and (:P75_DIFF_ONLY_FLAG = 'N' or (verification_class = 'N' or :P75_SHOW_NO_SHOWS_FLAG = 'Y' ))
         and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
-        and ((:P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null) or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E')))
+        and (( :P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
       order by time_slot, room_no, display_seq
          , pos
       
@@ -951,6 +951,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1098,6 +1100,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1158,6 +1162,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1210,6 +1216,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1354,6 +1362,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1496,6 +1506,8 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
