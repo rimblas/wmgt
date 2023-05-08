@@ -47,9 +47,68 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select *
+      with badges as (
+       select p.tournament_session_id, p.player_id
+              -- need to expand by the badge_count, because people can habe multiple-badges
+            , listagg( (select listagg(b.code, ' ') from dual connect by level <= p.badge_count) , ' ')  within group ( order by b.display_seq) other_badges
+        from wmg_player_badges p
+           , wmg_badge_types b
+        where p.badge_type_code = b.code
+      --    and p.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+          and b.selectable_ind = 'Y'
+        group by p.tournament_session_id, p.player_id
+      )
+      select 
+        tp.pos
+      , d.player_name
+      , tp.points
+      , d.rank_code
+      , d.easy_code
+      , d.hard_code
+      , d.e1
+      , d.e2
+      , d.e3
+      , d.e4
+      , d.e5
+      , d.e6
+      , d.e7
+      , d.e8
+      , d.e9
+      , d.e10
+      , d.e11
+      , d.e12
+      , d.e13
+      , d.e14
+      , d.e15
+      , d.e16
+      , d.e17
+      , d.e18
+      , d.h1
+      , d.h2
+      , d.h3
+      , d.h4
+      , d.h5
+      , d.h6
+      , d.h7
+      , d.h8
+      , d.h9
+      , d.h10
+      , d.h11
+      , d.h12
+      , d.h13
+      , d.h14
+      , d.h15
+      , d.h16
+      , d.h17
+      , d.h18
+      , d.easy
+      , d.hard
+      , tp.total_score
+      , badges.other_badges
       from (
-      select player_name
+      select week
+      , player_id
+      , player_name
       , rank_code
       , easy_course_code easy_code
       , hard_course_code hard_code
@@ -91,10 +150,9 @@ regions:
       , hard_s18 h18
       , easy_par easy
       , hard_par hard
-      , easy_par + hard_par total_score
-      , rank() over (order by easy_par + hard_par) pos
       from (
-        select r.player_id
+        select r.week
+             , r.player_id
              , r.player_name
              , r.rank_code
              , r.under_par
@@ -146,8 +204,15 @@ regions:
           'E' EASY, 'H' HARD
          )
         )
-      )
-      order by pos, player_name
+      ) d 
+      , wmg_tournament_session_points_v tp
+      , badges
+      where tp.week = d.week
+        and tp.player_id = d.player_id
+        and tp.tournament_session_id = badges.tournament_session_id (+)
+        and tp.player_id = badges.player_id (+)
+      order by tp.pos, tp.points, tp.player_name
+      
     page-items-to-submit: 
     - P62_WEEK
 
@@ -220,6 +285,70 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: POINTS ======================================
+    id: 46934269510678620
+    identification: 
+      column-name: POINTS
+      type: Plain Text
+
+    heading: 
+      heading: Points
+      alignment: center
+
+    layout: 
+      sequence: 450
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: OTHER_BADGES ================================
+    id: 46934379146678621
+    identification: 
+      column-name: OTHER_BADGES
+      type: Plain Text
+
+    heading: 
+      heading: Badges
+      alignment: center
+
+    layout: 
+      sequence: 460
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: RANK_CODE ===================================
     id: 49529644155520817
     identification: 
