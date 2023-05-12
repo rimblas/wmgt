@@ -20,11 +20,22 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
+  file-urls: 
+  - '&G_APP_FILES.lib/jquery.syotimer.min.js'
+  function-and-global-variable-declaration: |
+    function start_timer(t) {
+    $(".syotimer").syotimer({
+      date: new Date(t),
+      layout: "dhm",
+      headTitle: "Next tournament starts in"
+    });
+    }
   execute-when-page-loads: |
     wmgt.theme.init();
     setTimeout(function(){
     $(".discAttention").addClass("fa-anim-vertical-shake");
-    }, 6500);
+    }, 9500);
+    
 
 css: 
   file-urls: 
@@ -140,6 +151,32 @@ css:
         --ut-report-cell-padding-x:.4rem;
     }
     
+    /* https://github.com/mrfratello/SyoTimer */
+    .syotimer {
+      text-align: center;
+      margin: 1.5em 0;
+    }
+    .syotimer__head {
+        font-size: 1em;
+    }
+    .syotimer-cell {
+      display: inline-block;
+      margin: 0 5px;
+    
+      width: 79px;
+    }
+    .syotimer-cell__value {
+      font-size: 2em;
+      color: var(--u-color-1);
+    
+      height: 2em;
+      line-height: 2em;
+    
+      margin: 0 0 5px;
+    }
+    .syotimer-cell__unit {
+      font-size: 12px;
+    }
 
 security: 
   authentication: Page Is Public
@@ -316,24 +353,38 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select s.session_date
-           , nvl(ec.name, 'TBD -') easy_course
-           , nvl(hc.name, 'TBD -') hard_course
-           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
-           , case when ec.id is null then 'u-vh' else '' end tbd_class
-      from wmg_tournament_sessions_v s
-         , wmg_courses ec
-         , wmg_courses hc
-      where s.easy_course_id = ec.id (+)
-        and s.hard_course_id = hc.id (+)
-        and s.tournament_id in (
-          select id
-            from wmg_tournaments
-           where current_flag = 'Y'
+      with next_session as (
+        select s.session_date
+             , nvl(ec.name, 'TBD -') easy_course
+             , nvl(hc.name, 'TBD -') hard_course
+             , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
+             , case when ec.id is null then 'u-vh' else '' end tbd_class
+             , to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00+00:00' session_date_utc_str
+             , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') session_date_utc
+        from wmg_tournament_sessions_v s
+           , wmg_courses ec
+           , wmg_courses hc
+        where s.easy_course_id = ec.id (+)
+          and s.hard_course_id = hc.id (+)
+          and s.tournament_id in (
+            select id
+              from wmg_tournaments
+             where current_flag = 'Y'
+        )
+        order by session_date desc
+        fetch first 1 rows only
       )
-      and session_date+1.2 > trunc(sysdate)
-      order by session_date desc
-      fetch first 1 rows only
+      select session_date
+           , easy_course
+           , hard_course
+           , players
+           , tbd_class
+           , case when session_date_utc > systimestamp then
+                session_date_utc_str
+             else ''
+             end countdown_timer
+      from next_session
+      where session_date_utc + 1 > systimestamp
 
   layout: 
     sequence: 5
@@ -406,6 +457,46 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: COUNTDOWN_TIMER =============================
+    id: 9134551094384842
+    identification: 
+      column-name: COUNTDOWN_TIMER
+      type: Plain Text
+
+    heading: 
+      heading: Countdown Timer
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if COUNTDOWN_TIMER/}
+        <script>
+        setTimeout(function(){start_timer("#COUNTDOWN_TIMER#")}, 700);
+        </script>
+        {endif/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
   - # ====== Column: SESSION_DATE ================================
     id: 13437668742291550
     identification: 
@@ -941,6 +1032,12 @@ regions:
   identification: 
     title: '{col1}'
     type: Static Content
+
+  source: 
+    html-code: |
+      <div class="syotimer">
+      </div>
+      
 
   layout: 
     sequence: 1
@@ -2831,46 +2928,6 @@ computations:
         and tp.tournament_session_id = :G_CURRENT_SESSION_ID
         and p.account_login = :APP_USER
         and tp.active_ind = 'Y'
-
-processes: 
-- # ====== Process: Init Courses ===============================
-  id: 15534560000689761430
-  identification: 
-    name: Init Courses
-    type: Execute Code
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: |
-      begin
-      select s.easy_course_id
-           , s.hard_course_id
-        into :G_COURSE_ID_EASY
-           , :G_COURSE_ID_HARD
-      from wmg_tournament_sessions_v s
-      where s.tournament_id in (
-          select id
-            from wmg_tournaments
-           where current_flag = 'Y'
-      )
-      and s.session_date+1 >= trunc(current_timestamp)
-      order by session_date
-      fetch first 1 rows only;
-      exception 
-      when NO_DATA_FOUND then
-        :G_COURSE_ID_EASY:= null;
-        :G_COURSE_ID_HARD:= null;
-      end;
-      
-
-  execution: 
-    sequence: 10
-    point: After Header
-    run-process: Once Per Page Visit (default)
-
-  server-side-condition: 
-    type: Never
 
 branches: 
 - # ====== Branch: Go Match existing player to Discord account =
