@@ -3288,11 +3288,24 @@ processes:
     pl/sql-code: |
       begin
        if :P60_WEEK is null then
-          select week
+      
+          with prev_ts as (
+              select id tournament_session_id, week
+              from wmg_tournament_sessions
+              where (tournament_id, round_num) in (
+                  select s.tournament_id, s.round_num - 1
+                  from wmg_tournament_sessions s
+                  where s.id = :G_CURRENT_SESSION_ID
+              )
+          )
+          select decode(ts.rooms_open_flag, 'Y', ts.week, prev_ts.week) week
+               , decode(ts.rooms_open_flag, 'Y', ts.id, prev_ts.tournament_session_id) 
             into :P60_WEEK
-            from wmg_tournament_sessions_v
-           where tournament_session_id = :G_CURRENT_SESSION_ID;
-           :P60_TOURNAMENT_SESSION_ID := :G_CURRENT_SESSION_ID;
+               , :P60_TOURNAMENT_SESSION_ID
+            from wmg_tournament_sessions ts
+               , prev_ts
+           where ts.id = :G_CURRENT_SESSION_ID;
+      
        end if;
       
            select tournament_session_id
