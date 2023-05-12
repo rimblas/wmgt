@@ -1031,6 +1031,32 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
+      with best_round as (
+        select course_id, sum(score) best_strokes
+        from (
+          select course_id, h, score, row_number()  over (partition by course_id, h order by people desc) rn
+          from (
+              select u.course_id, u.h, u.score, count(*) people
+                from  wmg_rounds_unpivot_mv u
+               where u.course_id = :P200_COURSE_ID
+               group by u.course_id, u.h, u.score
+          )
+        )
+       where rn = 1
+       group by course_id
+      )
+      select week, player_name, under_par
+      from (
+          select '- Realistic - ' week, '' player_name, r.best_strokes - c.course_par under_par
+          from wmg_courses_v c
+             ,  best_round r
+          where r.course_id = c.course_id
+            and c.course_id = :P200_COURSE_ID
+          union all
+          select '- Utopia -' week, '' player_name, best_under under_par
+          from wmg_courses_v
+          where course_id = :P200_COURSE_ID
+          union all
           select max(week) week, player_name, under_par
           from wmg_rounds_v
           where course_id = :P200_COURSE_ID
@@ -1043,7 +1069,10 @@ regions:
               fetch first 10 rows only
            )
            group by player_name, under_par
-       order by under_par asc, week
+       )
+       order by 
+       -- decode(player_name, null, 1,2),
+       under_par asc, week
     page-items-to-submit: 
     - P200_COURSE_ID
 
@@ -1073,6 +1102,13 @@ regions:
     static-id: topPlayersRegion
     region-display-selector: true
     exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">
+      • The Utopia score is a theoretical score made of the best score on each hole from all players from all the times the course was played in the tournament<br>
+      • The Realistic score is a good high score made of the most common score people obtain on a hole
+      </div>
 
   server-cache: 
     caching: Disabled
@@ -1199,6 +1235,12 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if !PLAYER_NAME/}<b>{endif/}
+        #UNDER_PAR#
+        {if !PLAYER_NAME/}</b>{endif/}
 
     sorting: 
       sortable: false
