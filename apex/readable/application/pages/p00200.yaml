@@ -133,10 +133,10 @@ regions:
       show: false
 
     series: 
-    - # ====== Series: Dificulty ===================================
+    - # ====== Series: Std Dev Formula =============================
       id: 8728499094818338
       identification: 
-        name: Dificulty
+        name: Std Dev Formula
 
       execution: 
         sequence: 10
@@ -144,32 +144,27 @@ regions:
       source: 
         location: Local Database
         type: SQL Query
-        sql-query: |2
-           with stats as (
-             select course_id
-                  , h
-                  , round(avg(u.par + 10),3) difficulty
-                  , count(*) entries
-             from  wmg_rounds_unpivot_mv u
-             group by u.course_id, u.h
+        sql-query: |
+          with std_scale as (
+             select max(std_dev) max_std_dev
+               from wmg_course_stats_v
           )
-          select c.id course_id
-               , c.code course_code
-               , st.h
-               , st.difficulty
-               , st.entries
-               , case when st.h = :P200_H then '#437c94' else '#4c825c' end color
-           from stats st
-              , wmg_courses c
-          where st.course_id = c.id
-            and course_id = :P200_COURSE_ID
-          order by st.h
+          select s.course_id, s.course_code, s.h
+               , case 
+                   when s.std_dev = 0 then 0
+                   else round(s.std_dev / std_scale.max_std_dev * 10,1)
+                   end  value
+               , case when s.h = :P200_H then '#437c94' else '#4c825c' end color
+          from  wmg_course_stats_v s
+             , std_scale
+          where s.course_id = :P200_COURSE_ID
+          order by s.h
         page-items-to-submit: 
         - P200_COURSE_ID.P200_H
 
       column-mapping: 
         label: H
-        value: DIFFICULTY
+        value: VALUE
 
       appearance: 
         color: '&COLOR.'
@@ -188,10 +183,10 @@ regions:
       advanced: 
         static-id: stddev
 
-    - # ====== Series: Strokes =====================================
+    - # ====== Series: Score Avg ===================================
       id: 8986679051642626
       identification: 
-        name: Strokes
+        name: Score Avg
 
       execution: 
         sequence: 20
@@ -228,7 +223,7 @@ regions:
         maximum-rows-to-process: 20
 
       advanced: 
-        static-id: strokes
+        static-id: scoreAvg
 
     axes: 
     - # ====== Axis: x =============================================
@@ -1036,18 +1031,18 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select max(week) week, player_name, under_par
-      from wmg_rounds_v
-      where course_id = :P200_COURSE_ID
-        and (player_name, under_par) in (
-          select player_name, min(under_par)
+          select max(week) week, player_name, under_par
           from wmg_rounds_v
           where course_id = :P200_COURSE_ID
-          group by player_name
-          order by 2 asc
-          fetch first 10 rows only
-       )
-       group by player_name, under_par
+            and (player_name, under_par) in (
+              select player_name, min(under_par)
+              from wmg_rounds_v
+              where course_id = :P200_COURSE_ID
+              group by player_name
+              order by 2 asc
+              fetch first 10 rows only
+           )
+           group by player_name, under_par
        order by under_par asc, week
     page-items-to-submit: 
     - P200_COURSE_ID
@@ -1831,11 +1826,11 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
-- # ====== Button: SHOW_STROKES ================================
+- # ====== Button: SHOW_SCORE ==================================
   id: 8986734531642627
   identification: 
-    button-name: SHOW_STROKES
-    label: By Strokes
+    button-name: SHOW_SCORE
+    label: By Score Avg
 
   layout: 
     sequence: 20
@@ -1860,13 +1855,13 @@ buttons:
     execute-validations: true
 
   security: 
-    authorization-scheme: Administration Rights # 46995203575692514425
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
-- # ====== Button: SHOW_SCORE ==================================
+- # ====== Button: SHOW_STD_DEV ================================
   id: 8986842662642628
   identification: 
-    button-name: SHOW_SCORE
-    label: By Score
+    button-name: SHOW_STD_DEV
+    label: By Std Dev
 
   layout: 
     sequence: 30
@@ -1891,7 +1886,7 @@ buttons:
     execute-validations: true
 
   security: 
-    authorization-scheme: Administration Rights # 46995203575692514425
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 - # ====== Button: PREVIEW =====================================
   id: 8988693421642646
@@ -2086,7 +2081,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: SHOW_STROKES # 8986734531642627
+    button: SHOW_SCORE # 8986734531642627
 
   execution: 
     event-scope: Static
@@ -2118,7 +2113,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
-    button: SHOW_SCORE # 8986842662642628
+    button: SHOW_STD_DEV # 8986842662642628
 
   execution: 
     event-scope: Static
@@ -2131,7 +2126,7 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: 'apex.region("courseStatsChart").widget().ojChart({hiddenCategories: ["strokes"]});'
+      code: 'apex.region("courseStatsChart").widget().ojChart({hiddenCategories: ["scoreAvg"]});'
 
     execution: 
       sequence: 10
