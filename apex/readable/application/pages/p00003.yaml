@@ -55,6 +55,917 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Course Round ================================
+  id: 46934495371678622
+  identification: 
+    title: Course Round
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select ROUND_ID,
+             PLAYER_ID,
+             PLAYER_NAME,
+             COURSE_CODE,
+             S1,
+             S2,
+             S3,
+             S4,
+             S5,
+             S6,
+             S7,
+             S8,
+             S9,
+             S10,
+             S11,
+             S12,
+             S13,
+             S14,
+             S15,
+             S16,
+             S17,
+             S18,
+             COURSE_PAR,
+             ROUND_STROKES,
+             SCORECARD_TOTAL,
+             UNDER_PAR
+        from WMG_ROUNDS_V
+      where week = 'S00W00'
+        and player_id = 0
+        and course_id = :P3_ID
+    page-items-to-submit: 
+    - P3_ID
+
+  layout: 
+    sequence: 25
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P3_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: S1 ==========================================
+    id: 46935208910678630
+    identification: 
+      column-name: S1
+      type: Plain Text
+
+    heading: 
+      heading: S1
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S2 ==========================================
+    id: 46935364794678631
+    identification: 
+      column-name: S2
+      type: Plain Text
+
+    heading: 
+      heading: S2
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S3 ==========================================
+    id: 46935459974678632
+    identification: 
+      column-name: S3
+      type: Plain Text
+
+    heading: 
+      heading: S3
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S4 ==========================================
+    id: 46935544775678633
+    identification: 
+      column-name: S4
+      type: Plain Text
+
+    heading: 
+      heading: S4
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S5 ==========================================
+    id: 46935647513678634
+    identification: 
+      column-name: S5
+      type: Plain Text
+
+    heading: 
+      heading: S5
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S6 ==========================================
+    id: 46935771016678635
+    identification: 
+      column-name: S6
+      type: Plain Text
+
+    heading: 
+      heading: S6
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S7 ==========================================
+    id: 46935800156678636
+    identification: 
+      column-name: S7
+      type: Plain Text
+
+    heading: 
+      heading: S7
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S8 ==========================================
+    id: 46935982117678637
+    identification: 
+      column-name: S8
+      type: Plain Text
+
+    heading: 
+      heading: S8
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S9 ==========================================
+    id: 46936015521678638
+    identification: 
+      column-name: S9
+      type: Plain Text
+
+    heading: 
+      heading: S9
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S10 =========================================
+    id: 46936184457678639
+    identification: 
+      column-name: S10
+      type: Plain Text
+
+    heading: 
+      heading: S10
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S11 =========================================
+    id: 46936287300678640
+    identification: 
+      column-name: S11
+      type: Plain Text
+
+    heading: 
+      heading: S11
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S12 =========================================
+    id: 46936347024678641
+    identification: 
+      column-name: S12
+      type: Plain Text
+
+    heading: 
+      heading: S12
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S13 =========================================
+    id: 46936481013678642
+    identification: 
+      column-name: S13
+      type: Plain Text
+
+    heading: 
+      heading: S13
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S14 =========================================
+    id: 46936508099678643
+    identification: 
+      column-name: S14
+      type: Plain Text
+
+    heading: 
+      heading: S14
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S15 =========================================
+    id: 46936634256678644
+    identification: 
+      column-name: S15
+      type: Plain Text
+
+    heading: 
+      heading: S15
+      alignment: center
+
+    layout: 
+      sequence: 190
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S16 =========================================
+    id: 46936737830678645
+    identification: 
+      column-name: S16
+      type: Plain Text
+
+    heading: 
+      heading: S16
+      alignment: center
+
+    layout: 
+      sequence: 200
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S17 =========================================
+    id: 46936801491678646
+    identification: 
+      column-name: S17
+      type: Plain Text
+
+    heading: 
+      heading: S17
+      alignment: center
+
+    layout: 
+      sequence: 210
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S18 =========================================
+    id: 46936948051678647
+    identification: 
+      column-name: S18
+      type: Plain Text
+
+    heading: 
+      heading: S18
+      alignment: center
+
+    layout: 
+      sequence: 220
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 48727341219200507
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 48727575178200509
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_CODE =================================
+    id: 48727832071200512
+    identification: 
+      column-name: COURSE_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_STROKES ===============================
+    id: 48730313439200537
+    identification: 
+      column-name: ROUND_STROKES
+      type: Plain Text
+
+    heading: 
+      heading: Strokes
+      alignment: center
+
+    layout: 
+      sequence: 240
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SCORECARD_TOTAL =============================
+    id: 48740081178254406
+    identification: 
+      column-name: SCORECARD_TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Score
+      alignment: center
+
+    layout: 
+      sequence: 250
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 48741118746254417
+    identification: 
+      column-name: COURSE_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Course Par
+      alignment: center
+
+    layout: 
+      sequence: 230
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_ID ====================================
+    id: 48741297743254418
+    identification: 
+      column-name: ROUND_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_ID,P9_PREV_ID:#ROUND_ID#,&APP_PAGE_ID.'
+        page: 9 # Round
+        clear-cache: 9
+        values: 
+          p9_id: '#ROUND_ID#'
+          p9_prev_id: '&APP_PAGE_ID.'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Previews ====================================
   id: 7057236443361582671
   identification: 
@@ -76,7 +987,7 @@ regions:
     order-by-clause: HOLE
 
   layout: 
-    sequence: 25
+    sequence: 35
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -413,6 +1324,36 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P3_ROUND_ID ==============================
+  id: 48741509017254421
+  identification: 
+    name: P3_ROUND_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Course Round # 46934495371678622
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted
@@ -1791,6 +2732,39 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: ADD_ROUND ===================================
+  id: 46934594683678623
+  identification: 
+    button-name: ADD_ROUND
+    label: Add Round
+
+  layout: 
+    sequence: 10
+    region: Course Round # 46934495371678622
+    position: CREATE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-plus
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: "select 1 from wmg_rounds where week = 'S00W00' and players_id = 0 and course_id = :P3_ID"
+
 - # ====== Button: ADD_PREVIEW =================================
   id: 7057236631691582673
   identification: 
@@ -2084,6 +3058,28 @@ computations:
     pl/sql-expression: 'upper(:P3_CODE)'
 
 processes: 
+- # ====== Process: Add Ideal Round ============================
+  id: 48741383836254419
+  identification: 
+    name: Add Ideal Round
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: "insert into wmg_rounds (week, players_id, course_id) values('S00W00', 0, :P3_ID) returning id into :P3_ROUND_ID;"
+
+  execution: 
+    sequence: 40
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: ADD_ROUND # 46934594683678623
+
 - # ====== Process: Initialize form Course Strokes =============
   id: 15143134385721735743
   identification: 
@@ -2223,7 +3219,7 @@ processes:
     type: Close Dialog
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -2235,13 +3231,31 @@ processes:
     value: SAVE,DELETE
 
 branches: 
+- # ====== Branch: Create/Edit Ideal Round =====================
+  id: 48741425794254420
+  identification: 
+    name: Create/Edit Ideal Round
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_ID:&P3_ROUND_ID.&success_msg=#SUCCESS_MSG#'
+      page: 9 # Round
+      clear-cache: 9
+      values: 
+        p9_id: '&P3_ROUND_ID.'
+
 - # ====== Branch: Stay on Create ==============================
   id: 15143134721540735746
   identification: 
     name: Stay on Create
 
   execution: 
-    sequence: 10
+    sequence: 20
     point: After Processing
 
   behavior: 

@@ -1801,6 +1801,7 @@ page-items:
               where week= :P9_WEEK
           )
       )
+      or (:P9_WEEK = 'S00W00' and :P9_PLAYERS_ID = 0)
       order by case course_mode when 'E' then 1 else 2 end
     display-extra-values: true
     display-null-value: false
@@ -4487,7 +4488,7 @@ buttons:
     column: 9
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -5440,6 +5441,11 @@ processes:
   error: 
     display-location: Inline in Notification
 
+  server-side-condition: 
+    type: Item != Value
+    item: P9_WEEK
+    value: S00W00
+
   parameters: 
   - # ====== Parameter: p_week ===================================
     id: 22126202855688002
@@ -5586,6 +5592,11 @@ processes:
 
   error: 
     display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Item != Value
+    item: P9_WEEK
+    value: S00W00
 
 - # ====== Process: Initialize form Course =====================
   id: 47357079099745620438

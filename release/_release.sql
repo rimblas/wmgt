@@ -28,7 +28,7 @@ PRO ________________________________________
 PRO DML
 PRO ________________________________________
 
-
+insert into wmg_players (id, account, name, discord_id) values (0, 'SYSTEM', 'System', 0);
 
 PRO DDL
 PRO ________________________________________

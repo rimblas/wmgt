@@ -1047,13 +1047,19 @@ regions:
       )
       select week, player_name, under_par
       from (
+          select '- Leaderboard - ' week, '' player_name, SCORECARD_TOTAL under_par
+          from wmg_rounds_v r
+          where r.course_id = :P200_COURSE_ID
+            and r.player_id = 0
+            and r.week = 'S00W00' 
+          union all
           select '- Realistic - ' week, '' player_name, r.best_strokes - c.course_par under_par
           from wmg_courses_v c
              ,  best_round r
           where r.course_id = c.course_id
             and c.course_id = :P200_COURSE_ID
           union all
-          select '- Utopia -' week, '' player_name, best_under under_par
+          select '- Utopian -' week, '' player_name, best_under under_par
           from wmg_courses_v
           where course_id = :P200_COURSE_ID
           union all
@@ -1106,8 +1112,10 @@ regions:
   header-and-footer: 
     footer-text: |
       <div class="legend">
-      • The Utopia score is a theoretical score made of the best score on each hole from all players from all the times the course was played in the tournament<br>
-      • The Realistic score is a good high score made of the most common score people obtain on a hole
+      • The <b>Utopian</b> score is a theoretical score made of the best score on each hole from all players from all the times the course was played in the tournament<br>
+      • The <b>Realistic</b> score is a good high score made of the most common score people obtain on a hole<br>
+      • The <b>Leaderboard</b> score is a curated score put together by someone with intimate knowledge of the game using their understanding of what's possible. 
+      This score would often be the all-time high on the leaderboards.<br>
       </div>
 
   server-cache: 
