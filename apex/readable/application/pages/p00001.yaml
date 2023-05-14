@@ -23,11 +23,12 @@ javascript:
   file-urls: 
   - '&G_APP_FILES.lib/jquery.syotimer.min.js'
   function-and-global-variable-declaration: |
-    function start_timer(t) {
+    function start_timer(time, title) {
     $(".syotimer").syotimer({
-      date: new Date(t),
-      layout: "dhm",
-      headTitle: "Next tournament starts in"
+      date: new Date(time),
+      layout: "hm",
+      doubleNumbers: false,
+      headTitle: title
     });
     }
   execute-when-page-loads: |
@@ -374,17 +375,44 @@ regions:
         order by session_date desc
         fetch first 1 rows only
       )
-      select session_date
-           , easy_course
-           , hard_course
-           , players
-           , tbd_class
-           , case when session_date_utc > systimestamp then
-                session_date_utc_str
-             else ''
-             end countdown_timer
-      from next_session
-      where session_date_utc + 1 > systimestamp
+      , slots_n as (
+          select level n
+           from dual
+           connect by level <= 6
+          )
+      , slots as (
+          select slot || ':00' d, slot t
+          from (
+              select lpad( (n-1)*4,2,0) slot
+              from slots_n
+          )
+      )
+      , next_room_timer as (
+        select *
+        from (
+        select to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d) session_date_utc
+             , to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d || '+00:00' session_date_utc_str
+             , decode(slots.t, '00', 'Next tournament starts in', 'UTC ' || slots.d || ' starts in') title
+             , s.session_date
+        from next_session s
+           , slots
+        )
+        where session_date_utc > systimestamp - NUMTODSINTERVAL(2, 'MINUTE')
+        order by session_date_utc
+        fetch first 1 rows only
+      )
+      select ns.session_date
+           , ns.easy_course
+           , ns.hard_course
+           , ns.players
+           , ns.tbd_class
+           , nr.session_date_utc_str countdown_timer
+           , nr.title
+       from next_session ns
+          , next_room_timer nr
+      where ns.session_date_utc + 1 > systimestamp
+        and ns.session_date = nr.session_date (+)
+      
 
   layout: 
     sequence: 5
@@ -478,7 +506,7 @@ regions:
       html-expression: |
         {if COUNTDOWN_TIMER/}
         <script>
-        setTimeout(function(){start_timer("#COUNTDOWN_TIMER#")}, 700);
+        setTimeout(function(){start_timer("#COUNTDOWN_TIMER#", "#TITLE#")}, 700);
         </script>
         {endif/}
 
@@ -594,6 +622,21 @@ regions:
 
     layout: 
       sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TITLE =======================================
+    id: 38738530413129118
+    identification: 
+      column-name: TITLE
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
