@@ -43,10 +43,11 @@ css:
     tr.NA_Y td[headers="NO_SHOW_FLAG"],
     tr.NA_Y td[headers^="VERIFIE"] {text-decoration:none; opacity: 100%;}
     
-    td[headers="ROOM_NO"] div {font-weight: bold; font-size: 1.2rem}
+    td[headers="ROOM_NO"] div {font-weight: bold; font-size: 1.1rem}
     td[headers="ROOM_NO"] div a {color: var(--ut-region-text-color,var(--ut-component-text-default-color));}
     
     td[headers="ROOM_NO"].is-current,
+    td[headers="ROOM_NO"].is-current div,
     td[headers="ROOM_NO"].is-current a {
     background-color: var(--u-color-5);
     color: white;
@@ -97,6 +98,7 @@ regions:
              , r.total_score
              , r.easy_round_id
              , r.hard_round_id
+             , r.round_created_on
              , r.easy_scorecard
              , r.hard_scorecard
              , r.total_scorecard
@@ -126,6 +128,7 @@ regions:
            , total_scorecard
            , easy_round_id
            , hard_round_id
+           , round_created_on
            , easy_par
            , hard_par
            , total_score
@@ -151,6 +154,7 @@ regions:
                , s.total_scorecard
                , s.easy_round_id
                , s.hard_round_id
+               , s.round_created_on
                , s.easy_par
                , s.hard_par
                , s.total_score
@@ -433,7 +437,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 160
+      sequence: 170
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -448,7 +452,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 170
+      sequence: 180
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -478,7 +482,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 190
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -493,7 +497,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 190
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -694,7 +698,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 200
+      sequence: 210
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -709,7 +713,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 240
+      sequence: 250
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -724,18 +728,18 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: When
+      heading: Verified When
       alignment: center
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: center
 
     accessibility: 
       value-identifies-row: false
 
     appearance: 
-      format-mask: SINCE
+      format-mask: SINCE_SHORT
 
     sorting: 
       sortable: false
@@ -763,7 +767,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: center
 
     accessibility: 
@@ -845,7 +849,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 250
+      sequence: 260
       column-alignment: start
 
     accessibility: 
@@ -877,7 +881,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: center
 
     accessibility: 
@@ -885,6 +889,41 @@ regions:
 
     column-formatting: 
       html-expression: <span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="noshow fa NA_#NO_SHOW_FLAG#" title="Player did not show"></span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROUND_CREATED_ON ============================
+    id: 49532418866520845
+    identification: 
+      column-name: ROUND_CREATED_ON
+      type: Plain Text
+
+    heading: 
+      heading: When
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE_SHORT
 
     sorting: 
       sortable: false
@@ -986,7 +1025,6 @@ regions:
     template: Blank with Attributes # 46995040627542514343
     template-options: 
     - '#DEFAULT#'
-    - margin-top-md
     - margin-right-none
     render-components: Above Content
 
@@ -1008,7 +1046,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 15
+      number-of-rows: 50
 
     appearance: 
       template-type: Theme
@@ -1021,8 +1059,7 @@ regions:
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
+      type: No Pagination (Show All Rows)
       partial-page-refresh: true
 
     performance: 
@@ -2684,13 +2721,11 @@ dynamic-actions:
              , verified_on = case when verified_score_flag = 'Y' or verified_score_flag is null then current_timestamp else null end
              , verified_note = case when verified_score_flag = 'Y' or verified_score_flag is null then verified_note else null end
         where id = :P75_ID;
+        
         -- returning verified_score_flag into :P75_NEW_FLAG;
         
       items-to-submit: 
       - P75_ID
-      items-to-return: 
-      - P75_NEW_FLAG
-      suppress-change-event: false
 
     execution: 
       sequence: 40

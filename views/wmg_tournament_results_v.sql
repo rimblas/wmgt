@@ -6,6 +6,7 @@ select week
      , player_name
      , easy_round_id
      , hard_round_id
+     , round_created_on
      , easy_par
      , hard_par
      , total_score
@@ -18,6 +19,7 @@ from (
   , player_name
   , easy_round_id
   , hard_round_id
+  , greatest(easy_created_on, hard_created_on) round_created_on
   , easy_par
   , hard_par
   , easy_par + hard_par total_score
@@ -32,11 +34,15 @@ from (
          , r.scorecard_total
          , c.course_mode
          , r.round_id
+         , r.created_on
       from wmg_rounds_v r, wmg_courses c
     where r.course_id = c.id
     )
    pivot (
-    sum(under_par) par, sum(scorecard_total) scorecard, max(round_id) round_id for course_mode in (
+      sum(under_par) par, sum(scorecard_total) scorecard
+    , max(round_id) round_id 
+    , max(created_on) created_on 
+    for course_mode in (
       'E' EASY, 'H' HARD
      )
     )
