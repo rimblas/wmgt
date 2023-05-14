@@ -13,7 +13,7 @@ set define off
 PRO TABLES
 PRO ________________________________________
 
-
+@../install/wmg_tournament_rooms.sql
 
 PRO VIEWS
 PRO ________________________________________
@@ -28,6 +28,18 @@ PRO ________________________________________
 PRO DML
 PRO ________________________________________
 
+insert into wmg_tournament_rooms (
+  tournament_session_id
+, time_slot
+, room_no
+)
+select distinct tournament_session_id
+     , time_slot
+     , room_no
+  from wmg_tournament_players
+ where tournament_session_id = 522
+   and active_ind = 'Y'
+/
 
 
 PRO DDL

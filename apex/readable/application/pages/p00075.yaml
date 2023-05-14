@@ -27,7 +27,7 @@ css:
   file-urls: 
   - '#APP_FILES#css/week-lov#MIN#.css'
   inline: |
-    .noshow, .verification {cursor:pointer;}
+    .noshow, .verification, .roomVerification {cursor:pointer;}
     .vYES {color: green;}
     .vERROR {color: red;}
     .vYES:before {content: "\f14a";}
@@ -35,10 +35,24 @@ css:
     .vERROR:before {content: "\eb00";}
     span.NA_Y:before {content: "\e9e5"; color: orange;font-weight: bold;}
     
+    .is-current .roomVerification.vYES {
+        color: #00cc00;
+    }
+    
     tr.NA_Y td{text-decoration: line-through; opacity: 50%;}
     tr.NA_Y td[headers="NO_SHOW_FLAG"],
     tr.NA_Y td[headers^="VERIFIE"] {text-decoration:none; opacity: 100%;}
     
+    td[headers="ROOM_NO"] div {font-weight: bold; font-size: 1.2rem}
+    td[headers="ROOM_NO"] div a {color: var(--ut-region-text-color,var(--ut-component-text-default-color));}
+    
+    td[headers="ROOM_NO"].is-current,
+    td[headers="ROOM_NO"].is-current a {
+    background-color: var(--u-color-5);
+    color: white;
+    }
+    
+    #roomTabs {background-color: lightgray;}
 
 security: 
   authorization-scheme: Contribution Rights # 46995203801871514425
@@ -182,14 +196,16 @@ regions:
     - P75_ROOM
 
   layout: 
-    sequence: 119
+    sequence: 129
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: 2
     new-column: true
     column-span: 9
+    column-css-classes: 
+    - padding-left-none
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -198,6 +214,7 @@ regions:
     - t-Region--noPadding
     - t-Region--hideHeader
     - t-Region--scrollBody
+    - margin-left-none
     render-components: Above Content
 
   accessibility: 
@@ -891,7 +908,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 129
+    sequence: 139
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -925,6 +942,252 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: Rooms =======================================
+  id: 48741676080254422
+  identification: 
+    title: Rooms
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select id
+           , time_slot
+           , room_no
+           , case when to_number(:P75_ROOM default null on conversion error) = r.room_no then 'is-current' else '' end current_class
+           , decode(r.verified_score_flag, null, 'NO', 'E', 'ERROR', 'YES') verified
+           , verified_score_flag
+           , verified_by
+           , verified_on
+        from wmg_tournament_rooms r
+       where r.tournament_session_id = (select id from wmg_tournament_sessions where week = :P75_WEEK)
+         and (:P75_SLOT = r.time_slot)
+      order by r.time_slot, r.room_no
+    page-items-to-submit: 
+    - P75_WEEK
+    - P75_ROOM
+    - P75_SLOT
+
+  layout: 
+    sequence: 119
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 1
+    column-css-classes: 
+    - padding-right-none
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-md
+    - margin-right-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: roomTabs
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 48741793860254423
+    identification: 
+      column-name: ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TIME_SLOT ===================================
+    id: 48741833380254424
+    identification: 
+      column-name: TIME_SLOT
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 48741946498254425
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <div data-room="#ROOM_NO#" data-id="#ID#" class="roomTab #CURRENT_CLASS#">
+        <span aria-hidden="true"  data-id="#ID#" class="roomVerification fa v#VERIFIED#" title="Verified: #VERIFIED# #VERIFIED_BY# #VERIFIED_ON#"></span>
+        <a href="javascript:$s('P75_ROOM', #ROOM_NO#)">WGMT#ROOM_NO#<a/>
+        </div>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_SCORE_FLAG =========================
+    id: 48742013017254426
+    identification: 
+      column-name: VERIFIED_SCORE_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_BY =================================
+    id: 48742198049254427
+    identification: 
+      column-name: VERIFIED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_ON =================================
+    id: 48742235526254428
+    identification: 
+      column-name: VERIFIED_ON
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CURRENT_CLASS ===============================
+    id: 48742471310254430
+    identification: 
+      column-name: CURRENT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED ====================================
+    id: 48742877604254434
+    identification: 
+      column-name: VERIFIED
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 page-items: 
 - # ====== Page Item: P75_DIFF_ONLY_FLAG =======================
@@ -1676,10 +1939,25 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Toggle Verification =================
+  - # ====== Action: Refresh =====================================
+    id: 48742598056254431
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 48741676080254422
+
+    execution: 
+      sequence: 20
+      event: Refresh Data # 11991347459685608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Toggle Player Verification ==========
   id: 41136182668776010
   identification: 
-    name: Toggle Verification
+    name: Toggle Player Verification
 
   execution: 
     sequence: 20
@@ -1712,7 +1990,7 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Toggle Verification # 41136182668776010
+      event: Toggle Player Verification # 41136182668776010
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -1726,6 +2004,12 @@ dynamic-actions:
     settings: 
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
+        declare
+         l_tournament_session_id wmg_tournament_sessions.id%type;
+         l_verified_score_flag   wmg_tournament_rooms.verified_score_flag%type;
+         l_time_slot wmg_tournament_rooms.time_slot%type;
+         l_room_no   wmg_tournament_rooms.room_no%type;
+        begin
         -- toggle the verification
         update wmg_tournament_players
            set verified_score_flag = case
@@ -1739,6 +2023,28 @@ dynamic-actions:
         where id = :P75_ID
         returning verified_score_flag into :P75_NEW_FLAG;
         
+        begin
+            select distinct tournament_session_id, verified_score_flag, time_slot, room_no
+              into l_tournament_session_id, l_verified_score_flag, l_time_slot, l_room_no
+            from wmg_tournament_players
+            where (tournament_session_id, time_slot, room_no) in (
+                select tournament_session_id, time_slot, room_no
+                  from wmg_tournament_players
+                 where id = :P75_ID
+            );
+        exception
+        when TOO_MANY_ROWS then
+          l_verified_score_flag := null;
+        end;
+        
+        update wmg_tournament_rooms
+           set verified_score_flag = l_verified_score_flag
+         where tournament_session_id = l_tournament_session_id
+           and time_slot = l_time_slot
+           and room_no = l_room_no;
+        
+        end;
+        
       items-to-submit: 
       - P75_ID
       items-to-return: 
@@ -1747,7 +2053,7 @@ dynamic-actions:
 
     execution: 
       sequence: 50
-      event: Toggle Verification # 41136182668776010
+      event: Toggle Player Verification # 41136182668776010
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -1764,7 +2070,7 @@ dynamic-actions:
 
     execution: 
       sequence: 60
-      event: Toggle Verification # 41136182668776010
+      event: Toggle Player Verification # 41136182668776010
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -1781,7 +2087,7 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Toggle Verification # 41136182668776010
+      event: Toggle Player Verification # 41136182668776010
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -1798,7 +2104,22 @@ dynamic-actions:
 
     execution: 
       sequence: 40
-      event: Toggle Verification # 41136182668776010
+      event: Toggle Player Verification # 41136182668776010
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 48743561596254441
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 48741676080254422
+
+    execution: 
+      sequence: 70
+      event: Toggle Player Verification # 41136182668776010
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -1808,7 +2129,7 @@ dynamic-actions:
     name: Search as you type
 
   execution: 
-    sequence: 40
+    sequence: 50
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
@@ -1862,7 +2183,7 @@ dynamic-actions:
     name: Tooltips
 
   execution: 
-    sequence: 50
+    sequence: 60
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
@@ -1900,7 +2221,7 @@ dynamic-actions:
     name: Clear Result on Clear
 
   execution: 
-    sequence: 60
+    sequence: 70
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -1940,7 +2261,7 @@ dynamic-actions:
     name: Open Notes for Error
 
   execution: 
-    sequence: 70
+    sequence: 80
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -2008,7 +2329,7 @@ dynamic-actions:
     name: Close Notes
 
   execution: 
-    sequence: 80
+    sequence: 90
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -2041,7 +2362,7 @@ dynamic-actions:
     name: Save Note
 
   execution: 
-    sequence: 90
+    sequence: 100
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -2116,7 +2437,7 @@ dynamic-actions:
     name: Toggle No Shows
 
   execution: 
-    sequence: 30
+    sequence: 40
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -2229,6 +2550,168 @@ dynamic-actions:
     execution: 
       sequence: 50
       event: Toggle No Shows # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Hoist Current Class =================
+  id: 48742674051254432
+  identification: 
+    name: Hoist Current Class
+
+  execution: 
+    sequence: 110
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Rooms # 48741676080254422
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48742766483254433
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(this.affectedElements[0]).find(".is-current").parents("td").addClass("is-current")
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 48741676080254422
+
+    execution: 
+      sequence: 10
+      event: Hoist Current Class # 48742674051254432
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+- # ====== Dynamic Action: Toggle Room Verification ============
+  id: 48742901542254435
+  identification: 
+    name: Toggle Room Verification
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: .roomVerification
+
+  execution: 
+    event-scope: Dynamic
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Remove Class ================================
+    id: 48743053202254436
+    identification: 
+      action: Remove Class
+
+    settings: 
+      class: vNO vYES vERR roomVerification
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 10
+      event: Toggle Room Verification # 48742901542254435
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Get Room ID =================================
+    id: 48743129773254437
+    identification: 
+      name: Get Room ID
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.id
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P75_ID
+
+    execution: 
+      sequence: 20
+      event: Toggle Room Verification # 48742901542254435
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Add Class ===================================
+    id: 48743205658254438
+    identification: 
+      action: Add Class
+
+    settings: 
+      class: fa-square-selected-o fa-anim-spin
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 30
+      event: Toggle Room Verification # 48742901542254435
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 48743399684254439
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        -- toggle the verification
+        update wmg_tournament_rooms
+           set verified_score_flag = case
+                                       when verified_score_flag is null then 'Y'
+                                       when verified_score_flag = 'Y' then 'E'
+                                       when verified_score_flag = 'E' then null
+                                    end
+             , verified_by = case when verified_score_flag = 'Y' or verified_score_flag is null then sys_context('APEX$SESSION','APP_USER') else null end
+             , verified_on = case when verified_score_flag = 'Y' or verified_score_flag is null then current_timestamp else null end
+             , verified_note = case when verified_score_flag = 'Y' or verified_score_flag is null then verified_note else null end
+        where id = :P75_ID;
+        -- returning verified_score_flag into :P75_NEW_FLAG;
+        
+      items-to-submit: 
+      - P75_ID
+      items-to-return: 
+      - P75_NEW_FLAG
+      suppress-change-event: false
+
+    execution: 
+      sequence: 40
+      event: Toggle Room Verification # 48742901542254435
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 48743441248254440
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 48741676080254422
+
+    execution: 
+      sequence: 50
+      event: Toggle Room Verification # 48742901542254435
       fire-when-event-result-is: True
       fire-on-initialization: false
 

@@ -368,6 +368,21 @@ begin
          and time_slot = time_slots.time_slot
          and id = l_room_id_tbl(idx).player_id;
 
+
+    log('.. Add room', l_scope);
+    forall idx in 1 .. l_room_id_tbl.count
+      insert into wmg_tournament_rooms (
+          tournament_session_id
+        , time_slot
+        , room_no
+      )
+      values (
+          p_tournament_session_id
+        , time_slots.time_slot
+        , l_room_id_tbl(idx).room_no
+      );
+
+
   end loop; 
 
   log('.. Stamp room assignments date', l_scope);
