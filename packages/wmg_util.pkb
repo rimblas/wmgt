@@ -939,25 +939,6 @@ begin
 
 
   /*
-   *    PRO status can be achieved by the following:
-   *    (1x) Top 5 -or- (3x) Top 10 
-   */
-
-  log('.. Advance to PRO', l_scope);
-  update wmg_players
-     set rank_code = 'PRO'
-   where id in (
-    select p.player_id
-      from wmg_tournament_session_points_v p
-     where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 5
-       and p.rank_code != 'PRO'
-   );
-  
-  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
-
-
-  /*
    *    SEMI-PRO status can be achieved by the following:
    *    (1x) Top 15  -or- (3x) Top 20 with 9 pts.
    */
@@ -971,6 +952,26 @@ begin
      where p.tournament_session_id = p_tournament_session_id
        and p.pos <= 15
        and p.rank_code not in ('PRO', 'SEMI')
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
+
+  /*
+   *    PRO status can be achieved by the following:
+   *    (1x) Top 5 -or- (3x) Top 10 
+   */
+
+  log('.. Advance to PRO', l_scope);
+  update wmg_players
+     set rank_code = 'PRO'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 5
+       and p.rank_code != 'PRO'
    );
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
