@@ -65,3 +65,13 @@ NAME         DATA TYPE           NULL  DEFAULT    COMMENTS
  SCORE       NUMBER              Yes              Strokes taken by the player
  PAR         NUMBER              Yes              The under par value for a hole.
  ```
+
+
+### Assets
+
+The Application Property `BUCKET` is used to access static files like course previews. There's a `wmgt-asset` bucket setup in the OCI Object Storage that's currently holding several of these assets.
+
+The following blog post was extremly helpful for setting this up:
+http://blog.osdev.org/oci/2020/10/15/oci-objectstorage-website.html
+
+
