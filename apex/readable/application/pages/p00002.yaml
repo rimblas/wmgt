@@ -83,7 +83,7 @@ regions:
              NAME,
              COURSE_MODE
            , course_par
-           , 'https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/' || code || '_FULL.JPG' icon
+           , :BUCKET || code || '_FULL.jpg' icon
         from WMG_COURSES_V
       
 
@@ -305,7 +305,7 @@ regions:
         escape-special-characters: true
 
       configuration: 
-        build-option: AWS_IMAGES # 42104784668155184248
+        build-option: BUCKET_IMAGES # 42104784668155184248
 
     - # ====== Column: ID ==========================================
       id: 46995225536171514589
