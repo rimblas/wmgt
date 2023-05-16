@@ -23,13 +23,35 @@ javascript:
   file-urls: 
   - '&G_APP_FILES.lib/jquery.syotimer.min.js'
   function-and-global-variable-declaration: |
+    function getDiff(nextDate) {
+      const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
+      const oneHour = 1 * 60 * 60 * 1000; // milliseconds in an hour
+      const nextD = new Date(nextDate);
+      const diff = Math.abs(new Date() - nextD); // difference between now and the provided date
+    
+      if (diff > (2*oneDay)) {
+          return 'dh';
+      }
+      if (diff > oneDay) {
+        return 'dhm'; // difference is greater than a day
+      }
+      else if (diff > oneHour) {
+          return 'hm'; // difference is greater than an hour
+      }
+      else {
+        return 'ms'; // difference is less than an hour
+      }
+    }
+    
     function start_timer(time, title) {
-    $(".syotimer").syotimer({
-      date: new Date(time),
-      layout: "hm",
-      doubleNumbers: false,
-      headTitle: title
-    });
+        var layoutFormat;
+        layoutFormat = getDiff(time);
+        $(".syotimer").syotimer({
+            date: new Date(time),
+            layout: layoutFormat,
+            doubleNumbers: false,
+            headTitle: title
+        });
     }
   execute-when-page-loads: |
     wmgt.theme.init();
@@ -88,13 +110,19 @@ css:
     height: 240px;
     }
     
-    @media (min-width: 767px) {
-        .courseIcon:hover {
-        transform: scale(1.2);
-        transition: .25s transform;
-        }
-    
+    .nextCourses .courseLink {
+            box-shadow: var(--ut-cardlist-box-shadow,var(--ut-component-box-shadow));
     }
+    .nextCourses .course {
+        transition: transform .2s ease;
+    }
+    .nextCourses .course:hover {
+        transform: translateY(-0.5rem);
+    }
+    .nextCourses .course a {
+        color: var(--ut-component-text-title-color);
+    }
+    
     
     .nextCourses {text-align: center;}
     .nextCourses .name {font-weight: 700; font-size: 1.1em;}
@@ -1830,17 +1858,21 @@ regions:
     column-formatting: 
       html-expression: |
         <div class="row nextCourses">
-            <div class="col easy">
-                <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
+            <div class="col course easy">
+                <a href="#EASY_STATS_URL#">
+                    <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
                 <div class="score #TBD_CLASS#">Best Score #EASY_RECORD#</div>
-                <img class="courseIcon #TBD_CLASS#" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#EASY_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
-                <div class="info #EASY_RECORD# #TBD_CLASS#">How hard is #EASY_COURSE_CODE#? <a href="#EASY_STATS_URL#">See here</a></div>
+                <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#EASY_COURSE_CODE#_FULL.jpg" loading="lazy">
+                <div class="info #EASY_RECORD# #TBD_CLASS#">How hard is #EASY_COURSE_CODE#?</div>
+                </a>
             </div>
-            <div class="col hard">
-                <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
+            <div class="col course hard">
+                <a href="#HARD_STATS_URL#">
+                    <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
                 <div class="score #TBD_CLASS#">Best Score #HARD_RECORD#</div>
-                <img class="courseIcon #TBD_CLASS#" src="https://wmgt-stats.s3.us-west-1.amazonaws.com/course-assets/full-course-img/#HARD_COURSE_CODE#_FULL.JPG" loading="lazy"><br>
-                <div class="info #TBD_CLASS#">How hard is #HARD_COURSE_CODE#? <a href="#HARD_STATS_URL#">See here</a></div>
+                <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#HARD_COURSE_CODE#_FULL.jpg" loading="lazy">
+                <div class="info #HARD_RECORD# #TBD_CLASS#">How hard is #HARD_COURSE_CODE#?</div>
+                </a>
             </div>
         </div>
 
