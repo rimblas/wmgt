@@ -43,16 +43,17 @@ css:
     tr.NA_Y td[headers="NO_SHOW_FLAG"],
     tr.NA_Y td[headers^="VERIFIE"] {text-decoration:none; opacity: 100%;}
     
-    td[headers="ROOM_NO"] div {font-weight: bold; font-size: 1.1rem}
-    td[headers="ROOM_NO"] div a {color: var(--ut-region-text-color,var(--ut-component-text-default-color));}
+    td[headers^="ROOM_NO"] div {font-weight: bold; font-size: 1.1rem}
+    td[headers^="ROOM_NO"] div a {color: var(--ut-region-text-color,var(--ut-component-text-default-color));}
     
-    td[headers="ROOM_NO"].is-current,
-    td[headers="ROOM_NO"].is-current div,
-    td[headers="ROOM_NO"].is-current a {
-    background-color: var(--u-color-5);
+    td[headers^="ROOM_NO"].is-current,
+    td[headers^="ROOM_NO"].is-current div,
+    td[headers^="ROOM_NO"].is-current a {
+    background-color: var(--u-color-1);
     color: white;
     }
-    
+    #roomTabs td[headers^="ROOM_NO"] {padding-inline-start: 0;}
+    #roomTabs th[id^="ROOM_NO"] {display: none;}
     #roomTabs {background-color: lightgray;}
 
 security: 
@@ -102,6 +103,9 @@ regions:
              , r.easy_scorecard
              , r.hard_scorecard
              , r.total_scorecard
+             , p.rank_name
+             , p.rank_list_class
+             , p.rank_code
              , p.verified_score_flag
              , p.verified_note
              , p.verified_by
@@ -123,6 +127,7 @@ regions:
            , tournament_player_id
            , wmg_discord.avatar_link(p_discord_id => discord_id) avatar
            , player_name
+           , player_rank
            , easy_scorecard
            , hard_scorecard
            , total_scorecard
@@ -149,6 +154,7 @@ regions:
                , s.discord_id
                , s.tournament_player_id
                , s.player_name
+               , case when s.rank_code = 'NEW' then '<span class="' || s.rank_list_class || ' tooltip" title="' || s.rank_name || '"></span>' end player_rank
                , s.easy_scorecard
                , s.hard_scorecard
                , s.total_scorecard
@@ -207,9 +213,11 @@ regions:
     start-new-row: false
     column: 2
     new-column: true
-    column-span: 9
+    column-span: 10
     column-css-classes: 
     - padding-left-none
+    - null
+    - col-xxs-10
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -308,7 +316,7 @@ regions:
           p50_h_id: '#HARD_ROUND_ID#'
           p50_prev_page_id: '&APP_PAGE_ID.#TOURNAMENT_SESSION_ID#'
 
-      link-text: '#PLAYER_NAME#'
+      link-text: '#PLAYER_NAME# #PLAYER_RANK#'
 
     sorting: 
       sortable: false
@@ -336,7 +344,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -371,7 +379,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -437,7 +445,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 170
+      sequence: 180
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -452,7 +460,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 190
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -482,7 +490,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 190
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -497,7 +505,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 200
+      sequence: 210
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -512,13 +520,28 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 150
+      sequence: 160
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
     security: 
       escape-special-characters: true
+
+  - # ====== Column: PLAYER_RANK =================================
+    id: 38738673678129119
+    identification: 
+      column-name: PLAYER_RANK
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
 
   - # ====== Column: TIME_SLOT ===================================
     id: 39136185214390012
@@ -527,7 +550,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Time Slot
+      heading: Slot
       alignment: center
 
     layout: 
@@ -613,7 +636,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -650,7 +673,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -683,7 +706,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 120
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -698,7 +721,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 210
+      sequence: 220
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -713,7 +736,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 250
+      sequence: 260
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -732,7 +755,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 240
+      sequence: 250
       column-alignment: center
 
     accessibility: 
@@ -767,7 +790,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: center
 
     accessibility: 
@@ -849,7 +872,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 260
+      sequence: 270
       column-alignment: start
 
     accessibility: 
@@ -881,7 +904,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: center
 
     accessibility: 
@@ -916,7 +939,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: center
 
     accessibility: 
@@ -992,7 +1015,8 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select id
+      select decode(:P75_SLOT, null, time_slot, null) split_group
+           , id
            , time_slot
            , room_no
            , case when to_number(:P75_ROOM default null on conversion error) = r.room_no then 'is-current' else '' end current_class
@@ -1002,7 +1026,7 @@ regions:
            , verified_on
         from wmg_tournament_rooms r
        where r.tournament_session_id = (select id from wmg_tournament_sessions where week = :P75_WEEK)
-         and (:P75_SLOT = r.time_slot)
+         and (:P75_SLOT is null or :P75_SLOT = r.time_slot)
       order by r.time_slot, r.room_no
     page-items-to-submit: 
     - P75_WEEK
@@ -1020,6 +1044,8 @@ regions:
     column-span: 1
     column-css-classes: 
     - padding-right-none
+    - null
+    - col-xxs-2
 
   appearance: 
     template: Blank with Attributes # 46995040627542514343
@@ -1066,7 +1092,9 @@ regions:
       lazy-loading: false
 
     break-formatting: 
-      break-columns: No Break
+      break-columns: First Column
+      style: Repeat Headings on Break
+      repeat-heading-format: <b>#COLUMN_VALUE#</b>
 
     advanced: 
       strip-html: false
@@ -1089,7 +1117,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 10
+      sequence: 20
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1104,7 +1132,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1123,7 +1151,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 40
       column-alignment: end
 
     accessibility: 
@@ -1133,7 +1161,7 @@ regions:
       html-expression: |
         <div data-room="#ROOM_NO#" data-id="#ID#" class="roomTab #CURRENT_CLASS#">
         <span aria-hidden="true"  data-id="#ID#" class="roomVerification fa v#VERIFIED#" title="Verified: #VERIFIED# #VERIFIED_BY# #VERIFIED_ON#"></span>
-        <a href="javascript:$s('P75_ROOM', #ROOM_NO#)">WGMT#ROOM_NO#<a/>
+        <a href="javascript:$s('P75_ROOM', #ROOM_NO#);"><span class="hidden-xs-down">WGMT</span>#ROOM_NO#<a/>
         </div>
 
     sorting: 
@@ -1158,7 +1186,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 60
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1173,7 +1201,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 70
+      sequence: 80
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1188,7 +1216,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 80
+      sequence: 90
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1203,7 +1231,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 40
+      sequence: 50
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1218,10 +1246,46 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 50
+      sequence: 60
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SPLIT_GROUP =================================
+    id: 49532550358520846
+    identification: 
+      column-name: SPLIT_GROUP
+      type: Plain Text
+
+    heading: 
+      heading: Time Slot
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Item is NULL
+      item: P75_SLOT
 
     security: 
       escape-special-characters: true
