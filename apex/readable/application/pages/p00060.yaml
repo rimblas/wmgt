@@ -2794,6 +2794,26 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: true
 
+  - # ====== Action: Badge Tooltips ==============================
+    id: 49532640205520847
+    identification: 
+      name: Badge Tooltips
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $('.badge').tooltip({
+          content: $('#badgeKey').html(), // Set tooltip content to contents of #badgeKey table
+          track: true, // Enable mouse tracking to keep tooltip open while hovering over it
+          delay: 500 // Set delay to half a second (500 milliseconds)
+        });
+
+    execution: 
+      sequence: 20
+      event: Highlight Player # 12528683820550023
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Search as we type ===================
   id: 36327504110635133
   identification: 
