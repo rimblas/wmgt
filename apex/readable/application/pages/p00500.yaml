@@ -803,7 +803,7 @@ regions:
       select p.*
         from wmg_tournament_session_points_v p
        where p.tournament_session_id = :G_CURRENT_SESSION_ID
-         and p.pos <= 15
+         and p.pos between 6 and 15
          and p.rank_code not in ('PRO', 'SEMI')
        order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 4), pos  
       
