@@ -6,7 +6,8 @@ with stats as (
         , round(avg(par),3) par_avg, round(stddev(par),3) std_dev, round(variance(par),3) std_dev_var
         , round(avg(score),3) score_avg, round(stddev(score),2) score_std_dev
         , count(*) entries
-   from  wmg_rounds_unpivot_mv
+    from wmg_rounds_unpivot_mv
+   where player_id != 0
    group by course_id, h
 )
 , strokes as (
@@ -43,8 +44,8 @@ select c.id course_id
      , st.score_avg
      , st.score_std_dev difficulty
      , st.entries
-from  stats st, strokes s
-   , wmg_courses c
+ from stats st, strokes s
+    , wmg_courses c
 where st.h = s.h
   and st.course_id = s.course_id
   and s.course_id = c.id

@@ -10,6 +10,7 @@ select course_id
          -- , min(score)  s
          , min(par) min_par
     from wmg_rounds_unpivot_mv
+   where player_id != 0  -- remove the curated system score
    group by course_id,  h
    )
  group by course_id

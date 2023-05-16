@@ -1039,6 +1039,7 @@ regions:
               select u.course_id, u.h, u.score, count(*) people
                 from  wmg_rounds_unpivot_mv u
                where u.course_id = :P200_COURSE_ID
+                 and u.player_id != 0  -- remove the curated system score
                group by u.course_id, u.h, u.score
           )
         )
@@ -1062,6 +1063,7 @@ regions:
           select '- Utopian -' week, '' player_name, best_under under_par
           from wmg_courses_v
           where course_id = :P200_COURSE_ID
+            and best_under is not null
           union all
           select max(week) week, player_name, under_par
           from wmg_rounds_v
