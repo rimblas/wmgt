@@ -13,7 +13,7 @@ set define off
 PRO TABLES
 PRO ________________________________________
 
-@../install/wmg_messages.sql
+
 
 PRO VIEWS
 PRO ________________________________________
