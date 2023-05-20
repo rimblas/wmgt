@@ -275,7 +275,7 @@ begin
    where id = p_from_player_id;
 
   log('.. Link to correct player', l_scope);
-  update  wmg_players
+  update wmg_players
      set account = l_player_rec.account
        , name = l_player_rec.name
        , account_login = l_player_rec.account_login
@@ -284,8 +284,8 @@ begin
        , discord_id = l_player_rec.discord_id
        , discord_avatar = l_player_rec.discord_avatar
        , discord_discriminator = l_player_rec.discord_discriminator
-    where id = p_into_player_id
-      and discord_id is null;
+   where id = p_into_player_id
+     and discord_id is null;
 
   log('.. Move tournament registration', l_scope);
   update wmg_tournament_players

@@ -46,12 +46,12 @@ javascript:
     function start_timer(time, title) {
         var layoutFormat;
         layoutFormat = getDiff(time);
-        $(".syotimer").syotimer({
-            date: new Date(time),
-            layout: layoutFormat,
-            doubleNumbers: false,
-            headTitle: title
-        });
+    $(".syotimer").syotimer({
+      date: new Date(time),
+      layout: layoutFormat,
+      doubleNumbers: false,
+      headTitle: title
+    });
     }
   execute-when-page-loads: |
     wmgt.theme.init();
@@ -577,7 +577,7 @@ regions:
       html-expression: |
         <div class="row nextCourses">
             <div class="col-4 when">Tournament: <b>#SESSION_DATE#</b></div>
-            <div class="col-3 who">Registered Players: <b>#PLAYERS#</b></div>
+            <div class="col-3 who">Registered Players: <b>#PLAYERS#</b> <a class="hidden-xs-up" href="#recentReg"><span aria-hidden="true" class="fa fa-angle-double-down"></span></a></div>
             <div class="col-5 what">Courses: <b>#EASY_COURSE#</b> &amp; <b>#HARD_COURSE#</b></div>
         </div>
         
@@ -2728,6 +2728,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P1_MESSAGE_FLAG ==========================
+  id: 49804755463068405
+  identification: 
+    name: P1_MESSAGE_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 60
+    region: '{Next Tournament Info}' # 9186482410315410
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: EDIT ========================================
   id: 32755234177549243
@@ -3084,6 +3114,34 @@ branches:
           -- This is a new player that needs to be setup
           return true;
       end;
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+- # ====== Branch: Go Read messages ============================
+  id: 49804647993068404
+  identification: 
+    name: Go Read messages
+
+  execution: 
+    sequence: 30
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:19:&SESSION.::&DEBUG.:19::&success_msg=#SUCCESS_MSG#'
+      page: 19 # Display Message To Player
+      clear-cache: 19
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select *
+      from wmg_messages
+      where to_player_id = :G_PLAYER_ID
+      and new_message_ind = 'Y'
+      and :P1_MESSAGE_FLAG is null
 
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER

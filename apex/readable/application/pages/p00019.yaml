@@ -1,0 +1,470 @@
+---
+# ====== Page: Display Message To Player =====================
+id: 19
+identification: 
+  name: Display Message To Player
+  alias: DISPLAY-MESSAGE
+  title: Display Message To Player
+
+appearance: 
+  page-mode: Normal
+  page-template: Login # 46995015385203514332
+  template-options: 
+  - '#DEFAULT#'
+  - t-LoginPage--split
+  - t-LoginPage--bg1
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  inline: |
+    :root {
+    --ut-avp-label-width: 60%;
+    }
+    .t-PageBody--login {background-image: none!important;}
+    .t-Login-bg {
+        background-color: blue;
+    }
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: You Have a New Message! =====================
+  id: 49812257133092135
+  identification: 
+    title: You Have a New Message!
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_MESSAGES
+    include-rowid-column: false
+    where-clause: 'to_player_id = :G_PLAYER_ID'
+
+  order-by: 
+    type: None
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Login # 46995098614618514366
+    template-options: 
+    - '#DEFAULT#'
+    - t-Login-region--headerTitle js-removeLandmark
+    - js-headingLevel-3
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Value Attribute Pairs - Column # 46995141981277514384
+      template-options: 
+      - '#DEFAULT#'
+      - t-AVPList--fixedLabelSmall
+      - t-AVPList--leftAligned
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 49812521452092712
+    identification: 
+      column-name: ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 0
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TO_PLAYER_ID ================================
+    id: 49812924555092712
+    identification: 
+      column-name: TO_PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 2
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: MESSAGE_FROM ================================
+    id: 49813364050092713
+    identification: 
+      column-name: MESSAGE_FROM
+      type: Plain Text
+
+    heading: 
+      heading: ' From'
+      alignment: start
+
+    layout: 
+      sequence: 3
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: MESSAGE =====================================
+    id: 49813700015092714
+    identification: 
+      column-name: MESSAGE
+      type: Rich Text
+
+    heading: 
+      heading: Message
+      alignment: start
+
+    layout: 
+      sequence: 4
+      column-alignment: start
+
+    settings: 
+      format: Markdown
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+  - # ====== Column: DISPLAY_COUNT ===============================
+    id: 49814161281092715
+    identification: 
+      column-name: DISPLAY_COUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 5
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISPLAY_MODE ================================
+    id: 49814517854092715
+    identification: 
+      column-name: DISPLAY_MODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 6
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: MESSAGE_DATE ================================
+    id: 49814902448092716
+    identification: 
+      column-name: MESSAGE_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Send
+      alignment: center
+
+    layout: 
+      sequence: 7
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {Info} ======================================
+  id: 97719653396081590
+  identification: 
+    title: '{Info}'
+    type: Static Content
+
+  layout: 
+    sequence: 29
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46995043489945514344
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--stickToBottom
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+buttons: 
+- # ====== Button: READ ========================================
+  id: 49820891193110711
+  identification: 
+    button-name: READ
+    label: Mark as Read
+
+  layout: 
+    sequence: 30
+    region: '{Info}' # 97719653396081590
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-check-square-o
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: SKIP ========================================
+  id: 49821240726110712
+  identification: 
+    button-name: SKIP
+    label: Remind me later
+
+  layout: 
+    sequence: 20
+    region: '{Info}' # 97719653396081590
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::P1_MESSAGE_FLAG:Y'
+      page: 1 # Home
+      values: 
+        p1_message_flag: Y
+
+    warn-on-unsaved-changes: Do Not Check
+
+processes: 
+- # ====== Process: Mark as read ===============================
+  id: 49804405848068402
+  identification: 
+    name: Mark as read
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_messages
+        set new_message_ind = 'N'
+      where to_player_id = :G_PLAYER_ID;
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Message Marked as Read
+
+  error: 
+    display-location: Inline in Notification
+
+- # ====== Process: Init =======================================
+  id: 49804599015068403
+  identification: 
+    name: Init
+    type: Execute Code
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_messages
+        set display_count = display_count + 1
+      where to_player_id = :G_PLAYER_ID;
+
+  execution: 
+    sequence: 10
+    point: After Header
+    run-process: Once Per Page Visit (default)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P1_MESSAGE_FLAG
+
+branches: 
+- # ====== Branch: Message Read ================================
+  id: 49804918060068407
+  identification: 
+    name: Message Read
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.::P1_MESSAGE_FLAG:Y&success_msg=#SUCCESS_MSG#'
+      page: 1 # Home
+      values: 
+        p1_message_flag: Y
+

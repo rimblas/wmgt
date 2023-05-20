@@ -1214,21 +1214,21 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: About & Rules ===============================
-  id: 50437967039206816774
+- # ====== Region: Messages ====================================
+  id: 48744088232254446
   identification: 
-    title: About & Rules
+    title: Messages
     type: Static Content
 
   layout: 
-    sequence: 10
-    parent-region: No Parent
+    sequence: 20
+    parent-region: '{col1}' # 48744215735254448
     position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: 2
+    column-span: Automatic
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -1242,7 +1242,90 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {col1} ======================================
+  id: 48744215735254448
+  identification: 
+    title: '{col1}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 2
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
     region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: About & Rules ===============================
+  id: 50437967039206816774
+  identification: 
+    title: About & Rules
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{col1}' # 48744215735254448
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -1274,7 +1357,7 @@ regions:
       
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -2045,6 +2128,38 @@ buttons:
       url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:40::'
       page: 40 # Room Selections & Assignments
       clear-cache: 40
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: VIEW_MESSAGES ===============================
+  id: 48744150101254447
+  identification: 
+    button-name: VIEW_MESSAGES
+    label: Add/Send Messages
+
+  layout: 
+    sequence: 10
+    region: Messages # 48744088232254446
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:540:&SESSION.::&DEBUG.:::'
+      page: 540 # Messages
 
     warn-on-unsaved-changes: Do Not Check
 
