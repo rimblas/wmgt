@@ -206,7 +206,7 @@ regions:
     - P75_ROOM
 
   layout: 
-    sequence: 129
+    sequence: 139
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -218,6 +218,7 @@ regions:
     - padding-left-none
     - null
     - col-xxs-10
+    - col-sm-11
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -970,7 +971,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 139
+    sequence: 149
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1034,7 +1035,7 @@ regions:
     - P75_SLOT
 
   layout: 
-    sequence: 119
+    sequence: 129
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1046,6 +1047,7 @@ regions:
     - padding-right-none
     - null
     - col-xxs-2
+    - col-sm-1
 
   appearance: 
     template: Blank with Attributes # 46995040627542514343
@@ -1454,18 +1456,19 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 79
+    sequence: 89
     region: No Parent
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
-    column: 2
+    start-new-row: false
+    column: Automatic
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
     column-css-classes: 
     - col-xxs-6
+    - col-sm-2
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1516,7 +1519,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 89
+    sequence: 99
     region: No Parent
     position: BODY
     alignment: Left
@@ -1528,6 +1531,7 @@ page-items:
     label-column-span: Page Template Default
     column-css-classes: 
     - col-xxs-6
+    - col-sm-2
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1661,7 +1665,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 99
+    sequence: 109
     region: No Parent
     position: BODY
     alignment: Left
@@ -1671,6 +1675,8 @@ page-items:
     new-column: true
     column-span: 4
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1903,6 +1909,57 @@ page-items:
   help: 
     help-text: Show the "No Show" players only
 
+- # ====== Page Item: P75_SPACER ===============================
+  id: 49532895945520849
+  identification: 
+    name: P75_SPACER
+    type: Display Only
+
+  label: 
+    label: New
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 79
+    region: No Parent
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: 1
+    new-column: true
+    column-span: 1
+    label-column-span: 0
+    column-css-classes: 
+    - hidden-sm-down
+
+  appearance: 
+    template: Hidden # 46995171218955514398
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: ADD_NOTE ====================================
   id: 43961015185790346
@@ -1967,7 +2024,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 109
+    sequence: 119
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -1975,7 +2032,10 @@ buttons:
     column: Automatic
     new-column: true
     column-span: 2
-    alignment: Right
+    column-css-classes: 
+    - col-xxs-6
+    - col-sm-4
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -1995,9 +2055,6 @@ buttons:
       clear-cache: 9
 
     warn-on-unsaved-changes: Do Not Check
-
-  security: 
-    authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh Data ========================
