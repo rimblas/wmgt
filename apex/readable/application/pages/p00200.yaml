@@ -31,6 +31,10 @@ css:
   inline: |
     #P200_H_DISPLAY {width: 6rem;}
     
+    #P200_GOALS_IND_CONTAINER {
+    --ut-field-padding-y: 0;
+    --a-field-input-padding-y: 0px;
+    }
 
 security: 
   authentication: Page Is Public
@@ -547,6 +551,7 @@ regions:
                 from  wmg_rounds_unpivot_mv u
                where u.course_id = :P200_COURSE_ID
                  and u.h = :P200_H
+                 and u.player_id > 0
                group by u.score
           )
           select stroke
@@ -757,19 +762,19 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: ACCOUNT =====================================
-    id: 8988334571642643
+  - # ====== Column: TIMES =======================================
+    id: 8988588540642645
     identification: 
-      column-name: ACCOUNT
+      column-name: TIMES
       type: Plain Text
 
     heading: 
-      heading: Account
+      heading: Times
       alignment: center
 
     layout: 
-      sequence: 20
-      column-alignment: start
+      sequence: 30
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -789,19 +794,19 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: TIMES =======================================
-    id: 8988588540642645
+  - # ====== Column: WEEKS =======================================
+    id: 9187346610315419
     identification: 
-      column-name: TIMES
+      column-name: WEEKS
       type: Plain Text
 
     heading: 
-      heading: Times
+      heading: Weeks
       alignment: center
 
     layout: 
-      sequence: 30
-      column-alignment: end
+      sequence: 40
+      column-alignment: start
 
     accessibility: 
       value-identifies-row: false
@@ -1077,6 +1082,7 @@ regions:
               order by 2 asc
               fetch first 10 rows only
            )
+           and :P200_GOALS_IND = 'N'
            group by player_name, under_par
        )
        order by 
@@ -1084,6 +1090,7 @@ regions:
        under_par asc, week
     page-items-to-submit: 
     - P200_COURSE_ID
+    - P200_GOALS_IND
 
   layout: 
     sequence: 55
@@ -1878,6 +1885,58 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P200_GOALS_IND ===========================
+  id: 49532920947520850
+  identification: 
+    name: P200_GOALS_IND
+    type: Switch
+
+  label: 
+    label: Goals?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 10
+    region: Top Scores # 16129973281878833
+    position: EDIT
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: N
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: SHOW_SCORE ==================================
   id: 8986734531642627
@@ -2393,6 +2452,40 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Close Player Drill Down # 9185764827315403
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Top Scores ==================
+  id: 55136194706510001
+  identification: 
+    name: Refresh Top Scores
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P200_GOALS_IND
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 55136270551510002
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Scores # 16129973281878833
+
+    execution: 
+      sequence: 10
+      event: Refresh Top Scores # 55136194706510001
       fire-when-event-result-is: True
       fire-on-initialization: false
 
