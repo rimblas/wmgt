@@ -30,7 +30,7 @@ javascript:
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   function-and-global-variable-declaration: |
-    var selectedRank;
+    var selectedRank,selectedRankClass;
     function badgeMenuAction(btn, actionMenu, badge, player) {
      apex.server.process('BADGES'
         , {x01: actionMenu.label.split(' ')[0],
@@ -228,6 +228,7 @@ css:
         color: white;
         font-weight: 700;
     }
+    span.top {font-weight: bold;}
     td.top {
         background-color: hsl(220deg 100% 39%);
     }
@@ -290,6 +291,15 @@ css:
       width: 100%;
       background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
     }
+    
+    .searchLabel,
+    #RANK_POS,
+    td[headers="RANK_POS"] {display:none;}
+    
+    .search-on .searchLabel  {display:inline-block;}
+    .search-on #RANK_POS,
+    .search-on td[headers="RANK_POS"] {display:table-cell;}
+    
     
 
 security: 
@@ -1168,6 +1178,7 @@ regions:
              and player_id = :G_PLAYER_ID
       )
       select p.pos
+           , rank() over (partition by p.rank_code order by p.pos) rank_pos
            , p.player_id
            , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
            , pp.country_code
@@ -1177,7 +1188,7 @@ regions:
            , p.hard
            , p.total_score
            , p.points
-           ,  case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
+           , case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
            || case when p.pos <= 3 then ' podium podium' || p.pos  end point_class
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
@@ -1317,6 +1328,38 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: RANK_POS ====================================
+    id: 9134653353384843
+    identification: 
+      column-name: RANK_POS
+      type: Plain Text
+
+    heading: 
+      heading: 'Rank #'
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: SELECTED_PLAYER =============================
     id: 12528418345550021
     identification: 
@@ -1324,7 +1367,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 130
+      sequence: 140
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1339,7 +1382,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 140
+      sequence: 150
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1358,7 +1401,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: center
 
     accessibility: 
@@ -1396,7 +1439,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: center
 
     accessibility: 
@@ -1434,7 +1477,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 170
+      sequence: 180
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1449,7 +1492,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 190
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1464,7 +1507,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 200
+      sequence: 210
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1479,7 +1522,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 210
+      sequence: 220
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1564,7 +1607,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 190
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1579,7 +1622,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 120
+      sequence: 130
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1669,7 +1712,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<span class="points #POINT_CLASS#">#POINTS#</span>'
+      html-expression: '<span class="points #TOP_CLASS# #POINT_CLASS#">#POINTS#</span>'
 
     sorting: 
       sortable: false
@@ -1768,11 +1811,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: '#'
+      heading: '<span class="searchLabel">Overall</span> #'
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: center
 
     accessibility: 
@@ -3131,8 +3174,12 @@ dynamic-actions:
     settings: 
       code: |
         selectedRank = this.triggeringElement.value
+        selectedRankClass = $(this.triggeringElement).parents(".wm-search-item").find("div").attr("class").split(" ")[0]; // get the class
+        
         if (selectedRank === "ALL") {
           selectedRank = ""
+          selectedRankClass = ""
+          $("#weekResults").removeClass("search-on");
         }
 
     execution: 
@@ -3164,6 +3211,8 @@ dynamic-actions:
           $ctx.mark(selectedRank, {
             done: function() {
               $ctx.not(":has(mark)").parents("tr").hide();
+              $("#weekResults").addClass("search-on");
+              $("#weekResults").find("#RANK_POS").html('<div class="fa ' + selectedRankClass + '"></div><div>Rank #</div>');
             }
           });
         }

@@ -30,7 +30,7 @@ javascript:
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   function-and-global-variable-declaration: |
-    var selectedRank;
+    var selectedRank, selectedRankClass;
     
 
 css: 
@@ -85,45 +85,6 @@ css:
         color: #BBB;
     }
     
-    .points {
-        color: white;
-        font-weight: 700;
-    }
-    .top {
-        background-color: hsl(220deg 100% 39%);
-    }
-    .p10 {
-        background-color: hsl(220deg 100% 43%);
-    }
-    .p9 {
-        background-color: hsl(220deg 100% 48%);
-    }
-    .p8 {
-        background-color: hsl(220deg 100% 55%);
-    }
-    .p7 {
-        background-color: hsl(220deg 100% 61%);
-    }
-    .p6 {
-        background-color: hsl(220deg 100% 67%);
-    }
-    .p5 {
-        background-color: hsl(220deg 100% 73%);
-    }
-    .p4 {
-        background-color: hsl(220deg 100% 79%);
-    }
-    .p3 {
-        background-color: hsl(220deg 100% 85%);
-    }
-    .p2 {
-        background-color: hsl(220deg 100% 91%);
-        color: #777;
-    }
-    .p1 {
-        background-color: hsl(220deg 100% 97%);
-        color: #666;
-    }
     .p0 {
         color: red;
     }
@@ -158,6 +119,15 @@ css:
       width: 100%;
       background-color:  var(--ut-region-header-background-color,var(--ut-region-background-color,var(--ut-component-background-color)))
     }
+    
+    .searchLabel,
+    #RANK_POS,
+    td[headers="RANK_POS"] {display:none;}
+    
+    .search-on .searchLabel  {display:inline-block;}
+    .search-on #RANK_POS,
+    .search-on td[headers="RANK_POS"] {display:table-cell;}
+    
     
 
 security: 
@@ -376,7 +346,8 @@ regions:
             from final
            where player_id = :G_PLAYER_ID
       )
-      select f.*
+      select rank() over (partition by f.rank_code order by f.pos) rank_pos
+           , f.*
       from final f
       , me
       where (:P61_ONLY_ME_IND = 'N' 
@@ -500,7 +471,7 @@ regions:
             where ts.tournament_id = :P61_TOURNAMENT_ID
         );
         
-          return  'Edit:Rank:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
+          return  'Edit:Rank #:#:<i class="fa fa-flag-o"></i>:Player:Season<br>Total:' || l_headings;
         end;
          
         
@@ -512,6 +483,38 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: RANK_POS ====================================
+    id: 9134775362384844
+    identification: 
+      column-name: RANK_POS
+      type: Plain Text
+
+    heading: 
+      heading: 'Rank #'
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: POS =========================================
     id: 48337924106877127
     identification: 
@@ -519,11 +522,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Rank
+      heading: '#'
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: center
 
     accessibility: 
@@ -602,7 +605,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 40
+      sequence: 50
       column-alignment: start
 
     accessibility: 
@@ -645,7 +648,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 40
       column-alignment: center
 
     accessibility: 
@@ -680,7 +683,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 50
+      sequence: 60
       column-alignment: end
 
     accessibility: 
@@ -708,7 +711,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 460
+      sequence: 450
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -723,7 +726,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 450
+      sequence: 440
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -742,7 +745,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 70
       column-alignment: end
 
     accessibility: 
@@ -777,7 +780,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 70
+      sequence: 80
       column-alignment: end
 
     accessibility: 
@@ -820,7 +823,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 90
       column-alignment: end
 
     accessibility: 
@@ -863,7 +866,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -906,7 +909,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -949,7 +952,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -992,7 +995,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -1035,7 +1038,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -1078,7 +1081,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -1121,7 +1124,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: end
 
     accessibility: 
@@ -1164,7 +1167,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: end
 
     accessibility: 
@@ -1207,7 +1210,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: end
 
     accessibility: 
@@ -1621,7 +1624,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 470
+      sequence: 460
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -3324,7 +3327,9 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: selectedRank = ""
+      code: |
+        selectedRank = ""
+        selectedRankClass= ""
 
     execution: 
       sequence: 10
@@ -3340,9 +3345,13 @@ dynamic-actions:
 
     settings: 
       code: |
-        selectedRank = this.triggeringElement.value
+        selectedRank = this.triggeringElement.value // get the rank code
+        selectedRankClass = $(this.triggeringElement).parents(".wm-search-item").find("div").attr("class").split(" ")[0]; // get the class
         if (selectedRank === "ALL") {
           selectedRank = ""
+          selectedRankClass = ""
+          $("#raceRegion").removeClass("search-on");
+        
         }
 
     execution: 
@@ -3374,6 +3383,8 @@ dynamic-actions:
           $ctx.mark(selectedRank, {
             done: function() {
               $ctx.not(":has(mark)").parents("tr").hide();
+              $("#raceRegion").addClass("search-on");
+              $("#raceRegion").find("#RANK_POS").html('<div class="fa ' + selectedRankClass + '"></div><div>Rank #</div>');
             }
           });
         }
