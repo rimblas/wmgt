@@ -369,21 +369,21 @@ begin
          and id = l_room_id_tbl(idx).player_id;
 
 
-    log('.. Add room', l_scope);
-    forall idx in 1 .. l_room_id_tbl.count
-      insert into wmg_tournament_rooms (
-          tournament_session_id
-        , time_slot
-        , room_no
-      )
-      values (
-          p_tournament_session_id
-        , time_slots.time_slot
-        , l_room_id_tbl(idx).room_no
-      );
-
-
   end loop; 
+
+  log('.. Add room', l_scope);
+  insert into wmg_tournament_rooms (
+      tournament_session_id
+    , time_slot
+    , room_no
+  )
+  select distinct tournament_session_id
+       , time_slot
+       , room_no
+    from wmg_tournament_players
+   where tournament_session_id = p_tournament_session_id
+     and active_ind = 'Y';
+
 
   log('.. Stamp room assignments date', l_scope);
   update wmg_tournament_sessions

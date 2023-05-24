@@ -40,7 +40,7 @@ begin
   $IF $$LOGGER $THEN
   logger.log(p_text => p_msg, p_scope => p_ctx);
   $ELSE
-  -- dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
+  dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
   $END
 
