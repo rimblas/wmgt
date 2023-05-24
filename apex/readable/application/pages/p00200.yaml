@@ -640,15 +640,16 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select p.account, u.score, count(*) times, listagg(u.week, ', ') weeks
+      select p.player_name, u.score, count(*) times, listagg(u.week, ', ') weeks
       from  wmg_rounds_unpivot_mv u
-         , wmg_players p
+          , wmg_players_v p
       where u.player_id = p.id
         and u.course_id = :P200_COURSE_ID
         and u.h = :P200_H
         and u.score = :P200_S
-      group by p.account, u.score
-      order by 3 desc, p.account
+        and u.player_id > 0
+      group by p.player_name, u.score
+      order by 3 desc, p.player_name
     page-items-to-submit: 
     - P200_COURSE_ID
     - P200_H
@@ -820,18 +821,18 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: WEEKS =======================================
-    id: 9187346610315419
+  - # ====== Column: PLAYER_NAME =================================
+    id: 49532784866520848
     identification: 
-      column-name: WEEKS
+      column-name: PLAYER_NAME
       type: Plain Text
 
     heading: 
-      heading: Weeks
+      heading: Player
       alignment: center
 
     layout: 
-      sequence: 40
+      sequence: 20
       column-alignment: start
 
     accessibility: 
