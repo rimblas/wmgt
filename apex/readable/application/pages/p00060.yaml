@@ -268,6 +268,13 @@ css:
         color: red;
     }
     
+    .points.missing {
+        text-decoration: line-through;
+        color: #e05252;
+        font-weight: normal;
+        cursor: help;
+    }
+    
     .&P60_WEEK. {
         background-color: rgb(79, 79, 189);
         color: white;
@@ -1177,26 +1184,28 @@ regions:
            where week = :P60_WEEK
              and player_id = :G_PLAYER_ID
       )
-      select p.pos
-           , rank() over (partition by p.rank_code order by p.pos) rank_pos
-           , p.player_id
+      select sp.pos
+           , rank() over (partition by sp.rank_code order by sp.pos) rank_pos
+           , sp.player_id
            , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
            , pp.country_code
            , pp.country
            , pp.player_name
-           , p.easy
-           , p.hard
-           , p.total_score
-           , p.points
-           , case when p.pos <= 10 then 'top' else 'p' || to_char(p.points) end
-           || case when p.pos <= 3 then ' podium podium' || p.pos  end point_class
+           , sp.easy
+           , sp.hard
+           , sp.total_score
+           , coalesce(p.points, sp.points) points
+           , case when sp.pos <= 10 then 'top' else 'p' || to_char(sp.points) end
+           || case when p.points = 0 then ' missing tooltip' end
+           || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
+           , case when p.points = 0 then 'Failed to complete round, or submit scores before deadline' end points_title
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
-           , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+           , case when sp.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
            , pp.rank_code
            , pp.rank_name
            , pp.rank_list_class
-           , case when p.completed_ind = 'N' then
-               case p.pos 
+           , case when sp.completed_ind = 'N' then
+               case sp.pos 
                when 1 then 'em-first_place_medal '
                when 2 then 'em-second_place_medal '
                when 3 then 'em-third_place_medal '
@@ -1206,24 +1215,27 @@ regions:
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) 
           || ' ' || other_badges badges
            , nvl(badges.badge_json, '{}') badge_json
-           , apex_page.get_url(p_page => '65', p_items => 'P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID', p_values=> p.tournament_session_id || ','||p.player_id) edit_badges_link
+           , apex_page.get_url(p_page => '65', p_items => 'P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID', p_values=> sp.tournament_session_id || ','||sp.player_id) edit_badges_link
       --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
-      from wmg_tournament_session_points_v p
+      from wmg_tournament_session_points_v sp
+      , wmg_tournament_players p
       , wmg_players_v pp
       , coconut
       , cactus
       , badges
       , me
-      where p.week = :P60_WEEK
-        and p.player_id = pp.id
-        and p.player_id = coconut.player_id (+)
-        and p.player_id = cactus.player_id (+)
-        and p.player_id = badges.player_id (+)
+      where sp.week = :P60_WEEK
+        and sp.player_id = pp.id
+        and sp.player_id = coconut.player_id (+)
+        and sp.player_id = cactus.player_id (+)
+        and sp.player_id = badges.player_id (+)
+        and sp.player_id = p.player_id (+)
+        and sp.tournament_session_id = p.tournament_session_id (+)
         and (:P60_ONLY_ME_IND = 'N' 
-          or (me.player_id = -1 or (p.pos between greatest((me.pos - 2),1) and (me.pos + 3)))
+          or (me.player_id = -1 or (sp.pos between greatest((me.pos - 2),1) and (me.pos + 3)))
         )
-      order by p.pos, nls_upper(p.player_name)
+      order by sp.pos, nls_upper(sp.player_name)
       
     page-items-to-submit: 
     - P60_WEEK
@@ -1367,7 +1379,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 140
+      sequence: 150
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1382,7 +1394,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 150
+      sequence: 160
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1401,7 +1413,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: center
 
     accessibility: 
@@ -1439,7 +1451,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: center
 
     accessibility: 
@@ -1477,7 +1489,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 180
+      sequence: 190
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1492,7 +1504,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 190
+      sequence: 200
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1507,7 +1519,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 210
+      sequence: 220
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1522,7 +1534,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 220
+      sequence: 230
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1607,7 +1619,22 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 200
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS_TITLE ================================
+    id: 55136786209510007
+    identification: 
+      column-name: POINTS_TITLE
+      type: Hidden Column
+
+    layout: 
+      sequence: 140
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1712,7 +1739,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<span class="points #TOP_CLASS# #POINT_CLASS#">#POINTS#</span>'
+      html-expression: '<span class="points #POINT_CLASS#" title="#POINTS_TITLE#">#POINTS#</span>'
 
     sorting: 
       sortable: false

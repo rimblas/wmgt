@@ -30,7 +30,7 @@ javascript:
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   function-and-global-variable-declaration: |
-    var selectedRank, selectedRankClass;
+    var selectedRank = "ALL", selectedRankClass;
     
 
 css: 
@@ -232,7 +232,7 @@ regions:
                , max(w12_discarded_points_flag) w12_discard
           from (
               select ap.player_id
-                   , coalesce(sp.points, p.points) points
+                   , coalesce(p.points, sp.points) points
                    , p.discarded_points_flag
                    , ap.round_num
                    , coalesce(sp.week, ap.week) week
@@ -2306,72 +2306,6 @@ page-items:
           return options;
       }
 
-- # ====== Page Item: P61_TOTAL_PLAYERS ========================
-  id: 48369021732877261
-  identification: 
-    name: P61_TOTAL_PLAYERS
-    type: Display Only
-
-  label: 
-    label: Total Players
-    alignment: Left
-
-  settings: 
-    format: Plain Text
-    based-on: Item Value
-    show-line-breaks: true
-    send-on-page-submit: true
-
-  layout: 
-    sequence: 20
-    region: '{items}' # 106680515790002094521
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: false
-    column: Automatic
-    new-column: true
-    column-span: 2
-    label-column-span: Page Template Default
-    column-css-classes: 
-    - col-xxs-2
-    - col-xs-3
-    - col-sm-3
-    - col-md-2
-    - col-lg-3
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    css-classes: 
-    - u-textCenter
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    type: SQL Query (return single value)
-    sql-query: |
-      select count(*)
-        from wmg_tournament_players 
-       where tournament_session_id = :P61_TOURNAMENT_SESSION_ID
-         and active_ind = 'Y'
-    used: Always, replacing any existing value in session state
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
-
-  server-side-condition: 
-    type: Item is NOT NULL
-    item: P61_WEEK
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
 - # ====== Page Item: P61_SEARCH ===============================
   id: 48369450452877263
   identification: 
@@ -3088,8 +3022,20 @@ dynamic-actions:
           $other.show();
         }
         
+        console.log({selectedRank});
         if (term) {
+        
+          if (!!selectedRank) {
+            // all good already showing all results
+          }
+          else {
+              // show all first
+              $s("f01_ALL", "ALL");
+              selectedRank = "";
+          }
+        
           // mark the search term and hide everything that didn't get marked
+          
           $ctx.mark(term, {
             separateWordSearch: false,
             diacritics: true,
@@ -3328,8 +3274,8 @@ dynamic-actions:
 
     settings: 
       code: |
-        selectedRank = ""
-        selectedRankClass= ""
+        selectedRank = "";
+        selectedRankClass= "";
 
     execution: 
       sequence: 10
@@ -3348,10 +3294,13 @@ dynamic-actions:
         selectedRank = this.triggeringElement.value // get the rank code
         selectedRankClass = $(this.triggeringElement).parents(".wm-search-item").find("div").attr("class").split(" ")[0]; // get the class
         if (selectedRank === "ALL") {
-          selectedRank = ""
-          selectedRankClass = ""
+          selectedRank = "";
+          selectedRankClass = "";
           $("#raceRegion").removeClass("search-on");
-        
+          apex.item("P61_SEARCH").enable();
+        }
+        else {
+            apex.item("P61_SEARCH").disable();
         }
 
     execution: 
