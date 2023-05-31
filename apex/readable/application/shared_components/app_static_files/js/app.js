@@ -51,6 +51,33 @@ theme.init = function() {
   $(".tooltip").tooltip();
 },
 
+
+
+/* Week LOV Template */
+theme.weekLovTemplate = function (options) {
+    options.display = "list";
+
+    options.recordTemplate = (
+  '<li data-id="~WEEK.">' +
+     '<div class="content-list">' +
+        '<div class="week-info-list">' +
+           '<span class="season-name">~SEASON.</span>' +
+           '<span class="week-name">Week ~WEEK_NO.</span>' +
+           '<hr>' +
+           '<div class="courses">' +
+             '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
+             '<span class="hard">~HARD_COURSE.</span>' +
+           '</div>' +
+        '</div>' +
+     '</div>'+
+  '</li>').replace(/~/g, "&");
+
+    return options;
+},
+
+
+
+
 /**
  * Static pie charts
  *

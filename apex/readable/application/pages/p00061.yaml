@@ -2284,27 +2284,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   advanced: 
-    initialization-javascript-function: |
-      function(options) {
-          options.display = "list";
-      
-          options.recordTemplate = (
-        '<li data-id="~WEEK.">' +
-           '<div class="content-list">' +
-              '<div class="week-info-list">' +
-                 '<span class="season-name">~SEASON.</span>' +                    
-                 '<span class="week-name">Week ~WEEK_NO.</span>' +
-                 '<hr>' +
-                 '<div class="courses">' +
-                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
-                   '<span class="hard">~HARD_COURSE.</span>' +
-                 '</div>' +
-              '</div>' +
-           '</div>'+
-        '</li>').replace(/~/g, "&");
-      
-          return options;
-      }
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P61_SEARCH ===============================
   id: 48369450452877263
