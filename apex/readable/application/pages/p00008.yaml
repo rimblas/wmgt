@@ -1855,7 +1855,7 @@ regions:
     default: 
       type: Expression
       language: PL/SQL
-      pl/sql-expression: apex_util.get_preference('WMG_WEEK')
+      pl/sql-expression: "case when :P8_PID is null then apex_util.get_preference('WMG_WEEK') else null end"
 
     security: 
       store-value-encrypted-in-session-state: true
@@ -2142,7 +2142,7 @@ regions:
     default: 
       type: Expression
       language: PL/SQL
-      pl/sql-expression: apex_util.get_preference('WMG_WEEK')
+      pl/sql-expression: "case when :P8_PID is null then apex_util.get_preference('WMG_WEEK') else null end"
 
     security: 
       store-value-encrypted-in-session-state: true

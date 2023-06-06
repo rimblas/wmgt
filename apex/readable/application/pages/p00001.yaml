@@ -1588,6 +1588,60 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: {Player Profile Buttons2} ===================
+  id: 57673531577599604
+  identification: 
+    title: '{Player Profile Buttons2}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{col1}' # 36326139583635119
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-12
+
+  appearance: 
+    template: Buttons Container # 46995043489945514344
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--noPadding
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Player Profile} ============================
   id: 57853527642666162
   identification: 
@@ -2954,6 +3008,42 @@ buttons:
     - In
     - with
     - Discord"
+
+- # ====== Button: MY_ROUNDS ===================================
+  id: 57673651285599605
+  identification: 
+    button-name: MY_ROUNDS
+    label: My Rounds
+
+  layout: 
+    sequence: 10
+    region: '{Player Profile Buttons2}' # 57673531577599604
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+    icon: fa-layout-nav-left-cards
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:8:&SESSION.::&DEBUG.:8:P8_PID:&G_PLAYER_ID.'
+      page: 8 # Rounds
+      clear-cache: 8
+      values: 
+        p8_pid: '&G_PLAYER_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh after close =================
