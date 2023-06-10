@@ -184,7 +184,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 30
+    sequence: 40
     region: Welcome &G_DISCORD.! # 59882845077489659
     position: BODY
 
@@ -380,6 +380,69 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P18_NAME =================================
+  id: 57677017896599639
+  identification: 
+    name: P18_NAME
+    type: Text Field
+
+  label: 
+    label: Display name
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 30
+    region: Welcome &G_DISCORD.! # 59882845077489659
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: '&G_DISCORD_NAME.'
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    inline-help-text: Set ONLY if you use a Display Name for the WMG Discord server different than your username.
+
 buttons: 
 - # ====== Button: SETUP =======================================
   id: 32754198309549232
@@ -534,6 +597,7 @@ processes:
          update wmg_players
             set country_code =  :P18_COUNTRY_CODE
               , prefered_tz  =  :P18_TZ
+              , name = :P18_NAME
           where id = :P18_MATCH_PLAYER_ID;
       
          :G_PLAYER_ID := :P18_MATCH_PLAYER_ID; 
@@ -546,6 +610,7 @@ processes:
         , discord_discriminator
         , account_login
         , account
+        , name
         , country_code
         , prefered_tz
       )
@@ -555,6 +620,7 @@ processes:
        , :G_DISCORD_DISCRIMINATOR
        , :G_DISCORD || '  (discord)'
        , :G_DISCORD
+       , :P18_NAME
        , :P18_COUNTRY_CODE
        , :P18_TZ
       )
