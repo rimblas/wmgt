@@ -3044,6 +3044,42 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: MY_BEST =====================================
+  id: 57673796510599606
+  identification: 
+    button-name: MY_BEST
+    label: Best Scores
+
+  layout: 
+    sequence: 20
+    region: '{Player Profile Buttons2}' # 57673531577599604
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+    icon: fa-layout-nav-left-cards
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:140:&SESSION.::&DEBUG.:140:P140_PLAYER_ID:&G_PLAYER_ID.'
+      page: 140 # Best Scores
+      clear-cache: 140
+      values: 
+        p140_player_id: '&G_PLAYER_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh after close =================
   id: 32755302364549244
