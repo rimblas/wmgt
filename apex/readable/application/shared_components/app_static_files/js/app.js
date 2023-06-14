@@ -55,7 +55,7 @@ theme.init = function() {
 
 /* Week LOV Template */
 theme.weekLovTemplate = function (options) {
-    options.display = "list";
+    options.display = "grid";
 
     options.recordTemplate = (
   '<li data-id="~WEEK.">' +

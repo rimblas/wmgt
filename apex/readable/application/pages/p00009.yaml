@@ -1657,7 +1657,6 @@ page-items:
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
-    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P9_S1 ====================================
@@ -2899,7 +2898,6 @@ page-items:
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
-    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
   help: 
@@ -4889,6 +4887,7 @@ processes:
   identification: 
     name: Save Last Created Record ID
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -4912,6 +4911,7 @@ processes:
   identification: 
     name: Save Override Info
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -4941,6 +4941,7 @@ processes:
   identification: 
     name: Save Match Verification Pairs
     type: Invoke API
+    execution-chain: None
 
   settings: 
     type: PL/SQL Package
@@ -5034,6 +5035,7 @@ processes:
   identification: 
     name: Initialize form Round
     type: Form - Initialization
+    execution-chain: None
     form-region: Round # 46995274814383515488
 
   execution: 
@@ -5046,6 +5048,7 @@ processes:
   identification: 
     name: Process form Round
     type: Form - Automatic Row Processing (DML)
+    execution-chain: None
     form-region: Round # 46995274814383515488
 
   settings: 
@@ -5074,6 +5077,7 @@ processes:
   identification: 
     name: Close Dialog
     type: Close Dialog
+    execution-chain: None
 
   execution: 
     sequence: 60
@@ -5092,6 +5096,7 @@ processes:
   identification: 
     name: Save Last Default Course Values
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -5118,6 +5123,7 @@ processes:
   identification: 
     name: Initialize form Course
     type: Form - Initialization
+    execution-chain: None
     form-region: '{Course Strokes}' # 141764614561785866230
 
   execution: 
@@ -5130,6 +5136,7 @@ processes:
   identification: 
     name: Get Course Strokes
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -5151,6 +5158,7 @@ processes:
   identification: 
     name: Set Player Name for Message
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database

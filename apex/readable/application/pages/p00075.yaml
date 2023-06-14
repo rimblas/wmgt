@@ -2173,6 +2173,18 @@ dynamic-actions:
         exception
         when TOO_MANY_ROWS then
           l_verified_score_flag := null;
+        
+          -- if there's at least one E on the room keep the room with an E
+          select case when count(*) > 0 then 'E' else null end
+            into l_verified_score_flag
+            from wmg_tournament_players
+            where (tournament_session_id, time_slot, room_no) in (
+                select tournament_session_id, time_slot, room_no
+                  from wmg_tournament_players
+                 where id = :P75_ID
+            )
+             and verified_score_flag = 'E';
+        
         end;
         
         update wmg_tournament_rooms
@@ -2878,6 +2890,7 @@ processes:
   identification: 
     name: Load History
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -2927,6 +2940,7 @@ processes:
   identification: 
     name: Refresh MV
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
