@@ -1,0 +1,957 @@
+---
+# ====== Page: Best Scores ===================================
+id: 140
+identification: 
+  name: Best Scores
+  alias: BEST-SCORES
+  title: Best Scores
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Application Default
+  page-access-protection: Unrestricted
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Compare Scores ==============================
+  id: 57675336189599622
+  identification: 
+    title: Compare Scores
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with players_best as (
+        select players_id, round_id, course_id, under_par
+        from (
+          select r.players_id, r.id round_id, r.course_id, coalesce(r.override_score, r.final_score) under_par
+               , row_number() over (partition by r.players_id, r.course_id order by coalesce(r.override_score, r.final_score)) rn
+           from wmg_rounds r
+          where r.players_id = :P140_PLAYER2_ID
+        )
+        where rn = 1
+      )
+      , courses_easy as (
+          select e.id easy_course_id
+               , e.code easy_course
+               , e.name easy_name
+               , p.under_par best_easy
+               , p.round_id easy_round_id
+               , release_order
+          from wmg_courses e
+             , players_best p
+          where e.course_mode = 'E'
+            and p.course_id (+) = e.id
+      )
+      , courses_hard as (
+          select h.id hard_course_id
+               , h.code hard_course
+               , h.name hard_name
+               , p.under_par best_hard
+               , p.round_id hard_round_id
+               , h.release_order
+          from wmg_courses h
+             , players_best p
+          where h.course_mode = 'H'
+           and p.course_id (+) = h.id
+      )
+      , courses_pivot as (
+          select e.easy_course_id
+               , e.easy_course
+               , e.easy_name
+               , e.best_easy
+               , e.easy_round_id
+               , h.best_hard
+               , h.hard_course_id
+               , h.hard_round_id
+               , h.hard_course
+               , h.hard_name
+               , coalesce(e.release_order, h.release_order) course_order     
+          from courses_easy e
+          full outer join courses_hard h
+          on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
+      )
+      select easy_name
+           , best_easy
+           , best_hard
+           , easy_round_id
+           , hard_round_id
+      from courses_pivot
+      order by course_order
+    page-items-to-submit: 
+    - P140_PLAYER2_ID
+
+  layout: 
+    sequence: 20
+    parent-region: '{col2}' # 57676372236599632
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--hideHeader
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlight
+      - t-Report--inline
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: EASY_NAME ===================================
+    id: 57675458059599623
+    identification: 
+      column-name: EASY_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BEST_EASY ===================================
+    id: 57675541860599624
+    identification: 
+      column-name: BEST_EASY
+      type: Link
+
+    heading: 
+      heading: Best Easy
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER2_ID.,#EASY_ROUND_ID#'
+        page: 10 # Player Round Details
+        clear-cache: 10
+        values: 
+          p10_player_id: '&P140_PLAYER2_ID.'
+          p10_round_id: '#EASY_ROUND_ID#'
+
+      link-text: '#BEST_EASY#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BEST_HARD ===================================
+    id: 57675616946599625
+    identification: 
+      column-name: BEST_HARD
+      type: Link
+
+    heading: 
+      heading: Best Hard
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER2_ID.,#HARD_ROUND_ID#'
+        page: 10 # Player Round Details
+        clear-cache: 10
+        values: 
+          p10_player_id: '&P140_PLAYER2_ID.'
+          p10_round_id: '#HARD_ROUND_ID#'
+
+      link-text: '#BEST_HARD#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_ROUND_ID ===============================
+    id: 57675759560599626
+    identification: 
+      column-name: EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ROUND_ID ===============================
+    id: 57675820629599627
+    identification: 
+      column-name: HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {col1} ======================================
+  id: 57676296522599631
+  identification: 
+    title: '{col1}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {col2} ======================================
+  id: 57676372236599632
+  identification: 
+    title: '{col2}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Best Scores =================================
+  id: 61204151009493615
+  identification: 
+    title: Best Scores
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with players_best as (
+        select players_id, round_id, course_id, under_par
+        from (
+          select r.players_id, r.id round_id, r.course_id, coalesce(r.override_score, r.final_score) under_par
+               , row_number() over (partition by r.players_id, r.course_id order by coalesce(r.override_score, r.final_score)) rn
+           from wmg_rounds r
+          where r.players_id = :P140_PLAYER_ID
+        )
+        where rn = 1
+      )
+      , courses_easy as (
+          select e.id easy_course_id
+               , e.code easy_course
+               , e.name easy_name
+               , p.under_par best_easy
+               , p.round_id easy_round_id
+               , release_order
+          from wmg_courses e
+             , players_best p
+          where e.course_mode = 'E'
+            and p.course_id (+) = e.id
+      )
+      , courses_hard as (
+          select h.id hard_course_id
+               , h.code hard_course
+               , h.name hard_name
+               , p.under_par best_hard
+               , p.round_id hard_round_id
+               , h.release_order
+          from wmg_courses h
+             , players_best p
+          where h.course_mode = 'H'
+           and p.course_id (+) = h.id
+      )
+      , courses_pivot as (
+          select e.easy_course_id
+               , e.easy_course
+               , e.easy_name
+               , e.best_easy
+               , e.easy_round_id
+               , h.best_hard
+               , h.hard_course_id
+               , h.hard_round_id
+               , h.hard_course
+               , h.hard_name
+               , coalesce(e.release_order, h.release_order) course_order     
+          from courses_easy e
+          full outer join courses_hard h
+          on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
+      )
+      select easy_name
+           , best_easy
+           , best_hard
+           , easy_round_id
+           , hard_round_id
+      from courses_pivot
+      order by course_order
+    page-items-to-submit: 
+    - P140_PLAYER_ID
+
+  layout: 
+    sequence: 20
+    parent-region: '{col1}' # 57676296522599631
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--hideHeader
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlight
+      - t-Report--inline
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+      maximum-rows-to-process: 500
+
+    messages: 
+      when-no-data-found: no data found
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: EASY_NAME ===================================
+    id: 61204562476493623
+    identification: 
+      column-name: EASY_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 1
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BEST_EASY ===================================
+    id: 61204942364493626
+    identification: 
+      column-name: BEST_EASY
+      type: Link
+
+    heading: 
+      heading: Best Easy
+      alignment: center
+
+    layout: 
+      sequence: 2
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER_ID.,#EASY_ROUND_ID#'
+        page: 10 # Player Round Details
+        clear-cache: 10
+        values: 
+          p10_player_id: '&P140_PLAYER_ID.'
+          p10_round_id: '#EASY_ROUND_ID#'
+
+      link-text: '#BEST_EASY#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BEST_HARD ===================================
+    id: 61205335319493627
+    identification: 
+      column-name: BEST_HARD
+      type: Link
+
+    heading: 
+      heading: Best Hard
+      alignment: center
+
+    layout: 
+      sequence: 3
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER_ID.,#HARD_ROUND_ID#'
+        page: 10 # Player Round Details
+        clear-cache: 10
+        values: 
+          p10_player_id: '&P140_PLAYER_ID.'
+          p10_round_id: '#HARD_ROUND_ID#'
+
+      link-text: '#BEST_HARD#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_ROUND_ID ===============================
+    id: 61205722218493627
+    identification: 
+      column-name: EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 4
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ROUND_ID ===============================
+    id: 61206177780493629
+    identification: 
+      column-name: HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 5
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
+- # ====== Page Item: P140_PLAYER2_ID ==========================
+  id: 57675959674599628
+  identification: 
+    name: P140_PLAYER2_ID
+    type: Popup LOV
+
+  label: 
+    label: Second Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{col2}' # 57676372236599632
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xs-8
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P140_PLAYER_ID ===========================
+  id: 61206813645503782
+  identification: 
+    name: P140_PLAYER_ID
+    type: Popup LOV
+
+  label: 
+    label: Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{col1}' # 57676296522599631
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xs-8
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Results =====================
+  id: 57673844496599607
+  identification: 
+    name: Refresh Results
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P140_PLAYER_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 57673995923599608
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Best Scores # 61204151009493615
+
+    execution: 
+      sequence: 10
+      event: Refresh Results # 57673844496599607
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Compare =====================
+  id: 57676002746599629
+  identification: 
+    name: Refresh Compare
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P140_PLAYER2_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 57676194011599630
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Compare Scores # 57675336189599622
+
+    execution: 
+      sequence: 40
+      event: Refresh Compare # 57676002746599629
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Show ========================================
+    id: 57676491118599633
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: Compare Scores # 57675336189599622
+
+    execution: 
+      sequence: 20
+      event: Refresh Compare # 57676002746599629
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is not null
+      item: P140_PLAYER2_ID
+
+  - # ====== Action: Hide ========================================
+    id: 57676541951599634
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Compare Scores # 57675336189599622
+
+    execution: 
+      sequence: 10
+      event: Refresh Compare # 57676002746599629
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is null
+      item: P140_PLAYER2_ID
+

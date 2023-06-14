@@ -50,11 +50,26 @@ regions:
 
   source: 
     location: Local Database
-    type: Table / View
-    table-owner: Parsing Schema
-    table-name: WMG_TOURNAMENT_PLAYER_V
-    include-rowid-column: false
-    where-clause: 'player_id = :P130_PLAYER_ID'
+    type: SQL Query
+    sql-query: |
+      select CODE,
+             ROUND_NUM,
+             SESSION_DATE,
+             WEEK,
+             TOURNAMENT_PLAYER_ID,
+             TIME_SLOT,
+             ROOM_NO,
+             POINTS,
+             DISCARDED_POINTS_FLAG,
+             NO_SHOW_FLAG,
+             VERIFIED_SCORE_FLAG,
+             VERIFIED_NOTE,
+             VERIFIED_BY,
+             VERIFIED_ON,
+             PLAYER_ID,
+             PLAYER_NAME
+        from WMG_TOURNAMENT_PLAYER_V
+       where player_id = :P130_PLAYER_ID
 
   layout: 
     sequence: 20
@@ -89,13 +104,7 @@ regions:
   attributes: 
     id: 20131795888284682
     edit: 
-      enabled: true
-      allowed-operations: 
-      - Add Row
-      - Update Row
-      - Delete Row
-      lost-update-type: Row Values
-      add-row-if-empty: true
+      enabled: false
 
     performance: 
       lazy-loading: false
@@ -148,29 +157,6 @@ regions:
         alias: 201322
 
   columns: 
-  - # ====== Column: APEX$ROW_SELECTOR ===========================
-    id: 20132574561284691
-    identification: 
-      column-name: APEX$ROW_SELECTOR
-      type: Row Selector
-
-    settings: 
-      enable-multi-select: true
-      show-select-all: true
-      hide-control: false
-
-    layout: 
-      sequence: 10
-
-  - # ====== Column: APEX$ROW_ACTION =============================
-    id: 20133041526284692
-    identification: 
-      column-name: APEX$ROW_ACTION
-      type: Actions Menu
-
-    layout: 
-      sequence: 20
-
   - # ====== Column: ROUND_NUM ===================================
     id: 20147983874284754
     identification: 
@@ -179,15 +165,15 @@ regions:
 
     heading: 
       heading: Round Num
-      alignment: start
+      alignment: center
 
     settings: 
       format: Plain Text
       based-on: Item Value
 
     layout: 
-      sequence: 60
-      column-alignment: start
+      sequence: 90
+      column-alignment: center
       stretch: Use Report Setting
 
     accessibility: 
@@ -233,7 +219,7 @@ regions:
       based-on: Item Value
 
     layout: 
-      sequence: 80
+      sequence: 100
       column-alignment: start
       stretch: Use Report Setting
 
@@ -284,7 +270,7 @@ regions:
       search-as-you-type: false
 
     layout: 
-      sequence: 90
+      sequence: 80
       column-alignment: start
       stretch: Use Report Setting
 
@@ -293,6 +279,7 @@ regions:
 
     validation: 
       value-required: true
+      maximum-length: 40
 
     list-of-values: 
       type: Shared Component
@@ -339,16 +326,29 @@ regions:
     id: 20158997839284776
     identification: 
       column-name: TOURNAMENT_PLAYER_ID
-      type: Hidden
+      type: Link
 
-    settings: 
-      value-protected: true
+    heading: 
+      heading: Edit
+      alignment: center
 
     layout: 
       sequence: 40
+      column-alignment: center
+      stretch: Use Report Setting
 
     accessibility: 
       value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:135:&SESSION.::&DEBUG.:135:P135_ID:&TOURNAMENT_PLAYER_ID.'
+        page: 135 # Maintain Player Tournament Details
+        clear-cache: 135
+        values: 
+          p135_id: '&TOURNAMENT_PLAYER_ID.'
+
+      link-text: '&EDIT_BUTTON.'
 
     source: 
       type: Database Column
@@ -360,8 +360,9 @@ regions:
     default: 
       duplicate-copies-existing-value: true
 
-    session-state: 
-      data-type: VARCHAR2
+    column-filter: 
+      enabled: true
+      lov-type: Distinct Column
 
     export-/-printing: 
       include-in-export-/-print: false
@@ -369,6 +370,10 @@ regions:
     enable-users-to: 
       sort: true
       control-break/aggregate: true
+      hide: true
+
+    security: 
+      escape-special-characters: true
 
   - # ====== Column: TIME_SLOT ===================================
     id: 20159940119284778
@@ -381,7 +386,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 130
+      sequence: 120
       column-alignment: start
       stretch: Use Report Setting
 
@@ -441,7 +446,7 @@ regions:
       virtual-keyboard: Numeric
 
     layout: 
-      sequence: 140
+      sequence: 130
       column-alignment: end
       stretch: Use Report Setting
 
@@ -488,7 +493,7 @@ regions:
       virtual-keyboard: Numeric
 
     layout: 
-      sequence: 150
+      sequence: 140
       column-alignment: end
       stretch: Use Report Setting
 
@@ -528,7 +533,7 @@ regions:
 
     heading: 
       heading: Discarded?
-      alignment: start
+      alignment: center
 
     settings: 
       use-defaults: false
@@ -536,8 +541,8 @@ regions:
       on-label: Yes
 
     layout: 
-      sequence: 160
-      column-alignment: start
+      sequence: 150
+      column-alignment: center
       stretch: Use Report Setting
 
     accessibility: 
@@ -575,25 +580,25 @@ regions:
       control-break/aggregate: true
       hide: true
 
-  - # ====== Column: ACTIVE_IND ==================================
-    id: 20163978136284783
+  - # ====== Column: PLAYER_ID ===================================
+    id: 20168966680284791
     identification: 
-      column-name: ACTIVE_IND
+      column-name: PLAYER_ID
       type: Hidden
 
     settings: 
       value-protected: true
 
     layout: 
-      sequence: 100
+      sequence: 60
 
     accessibility: 
       value-identifies-row: false
 
     source: 
       type: Database Column
-      database-column: ACTIVE_IND
-      data-type: VARCHAR2
+      database-column: PLAYER_ID
+      data-type: NUMBER
       query-only: false
       primary-key: false
 
@@ -609,45 +614,88 @@ regions:
     enable-users-to: 
       sort: false
 
-  - # ====== Column: PLAYER_ID ===================================
-    id: 20168966680284791
+  - # ====== Column: CODE ========================================
+    id: 55136824742510008
     identification: 
-      column-name: PLAYER_ID
-      type: Popup LOV
+      column-name: CODE
+      type: Display Only
 
     heading: 
-      heading: Player
-      alignment: start
+      heading: Season
+      alignment: center
 
     settings: 
-      display-as: Inline Popup
-      initial-fetch: Automatic
-      multiple-values: false
-      manual-entry: false
-      search-as-you-type: true
-      minimum-characters: No minimum (0)
+      format: Plain Text
+      based-on: Item Value
 
     layout: 
       sequence: 50
-      column-alignment: start
+      column-alignment: center
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: CODE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: NO_SHOW_FLAG ================================
+    id: 55139045977510030
+    identification: 
+      column-name: NO_SHOW_FLAG
+      type: Switch
+
+    heading: 
+      heading: No Show ?
+      alignment: center
+
+    settings: 
+      use-defaults: true
+
+    layout: 
+      sequence: 160
+      column-alignment: center
       stretch: Use Report Setting
 
     accessibility: 
       value-identifies-row: false
 
     validation: 
-      value-required: true
-
-    list-of-values: 
-      type: Shared Component
-      list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
-      display-extra-values: true
-      display-null-value: true
+      value-required: false
 
     source: 
       type: Database Column
-      database-column: PLAYER_ID
-      data-type: NUMBER
+      database-column: NO_SHOW_FLAG
+      data-type: VARCHAR2
       query-only: false
       primary-key: false
 
@@ -662,22 +710,281 @@ regions:
       - Case Insensitive
       - Regular Expression
       text-case: Mixed
-      lov-type: Use List of Values
+      lov-type: Distinct Column
       exact-match: true
 
     export-/-printing: 
-      include-in-export-/-print: false
+      include-in-export-/-print: true
 
     enable-users-to: 
       sort: true
       control-break/aggregate: true
       hide: true
 
-    read-only: 
-      type: Expression
-      language: PL/SQL
-      pl/sql-expression: ':TOURNAMENT_PLAYER_ID is not null'
-      execute: For Each Row
+  - # ====== Column: VERIFIED_SCORE_FLAG =========================
+    id: 55139127715510031
+    identification: 
+      column-name: VERIFIED_SCORE_FLAG
+      type: Switch
+
+    heading: 
+      heading: Verified ?
+      alignment: center
+
+    settings: 
+      use-defaults: true
+
+    layout: 
+      sequence: 170
+      column-alignment: center
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+
+    source: 
+      type: Database Column
+      database-column: VERIFIED_SCORE_FLAG
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: VERIFIED_NOTE ===============================
+    id: 55139200830510032
+    identification: 
+      column-name: VERIFIED_NOTE
+      type: Textarea
+
+    heading: 
+      heading: Verified Note
+      alignment: start
+
+    settings: 
+      resizable: true
+      auto-height: false
+      character-counter: false
+      trim-spaces: Leading and Trailing
+
+    layout: 
+      sequence: 180
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+      maximum-length: 200
+
+    source: 
+      type: Database Column
+      database-column: VERIFIED_NOTE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: false
+      hide: true
+
+  - # ====== Column: VERIFIED_BY =================================
+    id: 55139384058510033
+    identification: 
+      column-name: VERIFIED_BY
+      type: Display Only
+
+    heading: 
+      heading: Verified By
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 190
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: VERIFIED_BY
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: VERIFIED_ON =================================
+    id: 55139473029510034
+    identification: 
+      column-name: VERIFIED_ON
+      type: Display Only
+
+    heading: 
+      heading: Verified On
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 200
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: VERIFIED_ON
+      data-type: TIMESTAMP WITH LOCAL TIME ZONE
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      lov-type: Distinct Column
+      date-ranges: All
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 55139903875510039
+    identification: 
+      column-name: PLAYER_NAME
+      type: Display Only
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: PLAYER_NAME
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: false
+      hide: true
 
   printing: 
     page: 
@@ -723,15 +1030,39 @@ page-items:
   id: 16731483024921841
   identification: 
     name: P130_PLAYER_ID
-    type: Hidden
+    type: Display Only
+
+  label: 
+    label: Player
+    alignment: Left
 
   settings: 
-    value-protected: true
+    format: Plain Text
+    based-on: Display Value of List of Values
+    show-line-breaks: true
+    send-on-page-submit: true
 
   layout: 
     sequence: 10
     region: Player Tournament Details # 20131217344284680
     position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -749,60 +1080,37 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-processes: 
-- # ====== Process: Player Tournament Details - Save Interactive
-  id: 20171879490284799
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh on Close ====================
+  id: 55140950455510049
   identification: 
-    name: Player Tournament Details - Save Interactive Grid Data
-    type: Interactive Grid - Automatic Row Processing (DML)
-    editable-region: Player Tournament Details # 20131217344284680
-
-  settings: 
-    target-type: PL/SQL Code
-    pl/sql-code-to-insert/update/delete: |
-      begin
-          case :APEX$ROW_STATUS
-          when 'C' then
-            insert into wmg_tournament_players(
-                tournament_session_id
-                , player_id
-                , time_slot
-                , room_no
-                , points
-                , discarded_points_flag
-                , active_ind
-              )
-            select ts.id
-                 , :PLAYER_ID
-                 , :TIME_SLOT
-                 , :ROOM_NO
-                 , :POINTS
-                 , case when :DISCARDED_POINTS_FLAG = 'Y' then 'Y' else '' end
-                 , 'Y'
-              from wmg_tournament_sessions ts
-             where ts.week = :WEEK;
-      
-          when 'U' then
-            update wmg_tournament_players
-              set points = :POINTS
-                , discarded_points_flag = case when :DISCARDED_POINTS_FLAG = 'Y' then 'Y' else '' end
-                , time_slot = :TIME_SLOT
-                , room_no   = :ROOM_NO
-            where id = :TOURNAMENT_PLAYER_ID;
-          end case;
-      end;
-      
-    prevent-lost-updates: true
-    lock-row: Yes
+    name: Refresh on Close
 
   execution: 
     sequence: 10
-    point: Processing
-    run-process: Once Per Page Visit (default)
 
-  error: 
-    display-location: Inline in Notification
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Region
+    region: Player Tournament Details # 20131217344284680
 
-  server-side-condition: 
-    execution-scope: For Created and Modified Rows
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 55141031787510050
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Tournament Details # 20131217344284680
+
+    execution: 
+      sequence: 10
+      event: Refresh on Close # 55140950455510049
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 

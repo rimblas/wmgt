@@ -13,6 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 dialog: 
+  width: 1024
   chained: true
 
 navigation-menu: 
@@ -52,6 +53,9 @@ regions:
     table-owner: Parsing Schema
     table-name: WMG_ROUNDS_V
     include-rowid-column: false
+    where-clause: |
+      (player_id = :P10_PLAYER_ID or :P10_PLAYER_ID is null)
+      and (round_id = :P10_ROUND_ID or :P10_ROUND_ID is null)
 
   order-by: 
     type: None
@@ -134,18 +138,63 @@ regions:
       enabled: false
 
   columns: 
-  - # ====== Column: PLAYER_ID ===================================
-    id: 49408557042815526094
+  - # ====== Column: RANK_CODE ===================================
+    id: 57674178461599610
     identification: 
-      column-name: PLAYER_ID
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 682
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 57674246606599611
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 692
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SCORECARD_TOTAL =============================
+    id: 57674353149599612
+    identification: 
+      column-name: SCORECARD_TOTAL
+      type: Hidden Column
+
+    layout: 
+      sequence: 702
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: FINAL_SCORE =================================
+    id: 57674445513599613
+    identification: 
+      column-name: FINAL_SCORE
       type: Plain Text
 
     heading: 
-      heading: Player Id
-      alignment: end
+      heading: Score
+      alignment: center
 
     layout: 
-      sequence: 1
+      sequence: 712
       column-alignment: end
 
     accessibility: 
@@ -166,31 +215,29 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 49408557042815526094
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 1
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: ACCOUNT =====================================
     id: 49408557487769526094
     identification: 
       column-name: ACCOUNT
-      type: Plain Text
-
-    heading: 
-      heading: Account
-      alignment: start
+      type: Hidden Column
 
     layout: 
       sequence: 2
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -205,11 +252,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Player Name
+      heading: Player
       alignment: start
 
     layout: 
-      sequence: 3
+      sequence: 22
       column-alignment: start
 
     accessibility: 
@@ -234,27 +281,10 @@ regions:
     id: 49408558242122526094
     identification: 
       column-name: COURSE_ID
-      type: Plain Text
-
-    heading: 
-      heading: Course Id
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 4
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 32
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -269,11 +299,11 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Course Code
+      heading: Course
       alignment: start
 
     layout: 
-      sequence: 5
+      sequence: 42
       column-alignment: start
 
     accessibility: 
@@ -298,27 +328,10 @@ regions:
     id: 49408559053829526095
     identification: 
       column-name: COURSE_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Course Name
-      alignment: start
+      type: Hidden Column
 
     layout: 
-      sequence: 6
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 52
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -330,27 +343,10 @@ regions:
     id: 49408559450966526095
     identification: 
       column-name: COURSE_MODE
-      type: Plain Text
-
-    heading: 
-      heading: Course Mode
-      alignment: start
+      type: Hidden Column
 
     layout: 
-      sequence: 7
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 62
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -362,27 +358,10 @@ regions:
     id: 49408559887398526095
     identification: 
       column-name: H1
-      type: Plain Text
-
-    heading: 
-      heading: H1
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 8
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 82
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -394,27 +373,10 @@ regions:
     id: 49408560299572526095
     identification: 
       column-name: H2
-      type: Plain Text
-
-    heading: 
-      heading: H2
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 9
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 92
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -426,27 +388,10 @@ regions:
     id: 49408560695456526096
     identification: 
       column-name: H3
-      type: Plain Text
-
-    heading: 
-      heading: H3
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 10
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 102
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -458,27 +403,10 @@ regions:
     id: 49408561074450526096
     identification: 
       column-name: H4
-      type: Plain Text
-
-    heading: 
-      heading: H4
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 11
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 112
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -490,27 +418,10 @@ regions:
     id: 49408561428769526096
     identification: 
       column-name: H5
-      type: Plain Text
-
-    heading: 
-      heading: H5
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 12
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 122
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -522,27 +433,10 @@ regions:
     id: 49408561888734526096
     identification: 
       column-name: H6
-      type: Plain Text
-
-    heading: 
-      heading: H6
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 13
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 132
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -554,27 +448,10 @@ regions:
     id: 49408562315834526096
     identification: 
       column-name: H7
-      type: Plain Text
-
-    heading: 
-      heading: H7
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 14
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 142
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -586,27 +463,10 @@ regions:
     id: 49408562680006526097
     identification: 
       column-name: H8
-      type: Plain Text
-
-    heading: 
-      heading: H8
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 15
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 152
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -618,27 +478,10 @@ regions:
     id: 49408563109788526097
     identification: 
       column-name: H9
-      type: Plain Text
-
-    heading: 
-      heading: H9
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 16
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 162
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -650,27 +493,10 @@ regions:
     id: 49408563490481526097
     identification: 
       column-name: H10
-      type: Plain Text
-
-    heading: 
-      heading: H10
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 17
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 172
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -682,27 +508,10 @@ regions:
     id: 49408563891439526097
     identification: 
       column-name: H11
-      type: Plain Text
-
-    heading: 
-      heading: H11
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 18
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 182
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -714,27 +523,10 @@ regions:
     id: 49408564235218526097
     identification: 
       column-name: H12
-      type: Plain Text
-
-    heading: 
-      heading: H12
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 19
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 192
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -746,27 +538,10 @@ regions:
     id: 49408564643974526097
     identification: 
       column-name: H13
-      type: Plain Text
-
-    heading: 
-      heading: H13
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 20
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 202
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -778,27 +553,10 @@ regions:
     id: 49408565026933526098
     identification: 
       column-name: H14
-      type: Plain Text
-
-    heading: 
-      heading: H14
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 21
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 212
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -810,27 +568,10 @@ regions:
     id: 49408565436685526098
     identification: 
       column-name: H15
-      type: Plain Text
-
-    heading: 
-      heading: H15
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 22
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 222
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -842,27 +583,10 @@ regions:
     id: 49408565913020526098
     identification: 
       column-name: H16
-      type: Plain Text
-
-    heading: 
-      heading: H16
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 23
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 232
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -874,27 +598,10 @@ regions:
     id: 49408566237008526098
     identification: 
       column-name: H17
-      type: Plain Text
-
-    heading: 
-      heading: H17
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 24
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 242
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -906,27 +613,10 @@ regions:
     id: 49408566719410526098
     identification: 
       column-name: H18
-      type: Plain Text
-
-    heading: 
-      heading: H18
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 25
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 252
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -938,27 +628,10 @@ regions:
     id: 49408567058679526099
     identification: 
       column-name: COURSE_PAR
-      type: Plain Text
-
-    heading: 
-      heading: Course Par
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 26
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 262
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -970,27 +643,10 @@ regions:
     id: 49408567470957526099
     identification: 
       column-name: ROUND_ID
-      type: Plain Text
-
-    heading: 
-      heading: Round Id
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 27
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 272
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1002,27 +658,10 @@ regions:
     id: 49408567829302526099
     identification: 
       column-name: ROUND_PLAYED_ON
-      type: Plain Text
-
-    heading: 
-      heading: Round Played On
-      alignment: start
+      type: Hidden Column
 
     layout: 
-      sequence: 28
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 282
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1041,7 +680,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 29
+      sequence: 12
       column-alignment: start
 
     accessibility: 
@@ -1066,27 +705,10 @@ regions:
     id: 49408568697352526099
     identification: 
       column-name: ROOM_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Room Name
-      alignment: start
+      type: Hidden Column
 
     layout: 
-      sequence: 30
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 292
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1102,10 +724,10 @@ regions:
 
     heading: 
       heading: S1
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 31
+      sequence: 302
       column-alignment: end
 
     accessibility: 
@@ -1134,10 +756,10 @@ regions:
 
     heading: 
       heading: S2
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 32
+      sequence: 312
       column-alignment: end
 
     accessibility: 
@@ -1166,10 +788,10 @@ regions:
 
     heading: 
       heading: S3
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 33
+      sequence: 322
       column-alignment: end
 
     accessibility: 
@@ -1198,10 +820,10 @@ regions:
 
     heading: 
       heading: S4
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 34
+      sequence: 332
       column-alignment: end
 
     accessibility: 
@@ -1230,10 +852,10 @@ regions:
 
     heading: 
       heading: S5
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 35
+      sequence: 342
       column-alignment: end
 
     accessibility: 
@@ -1262,10 +884,10 @@ regions:
 
     heading: 
       heading: S6
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 36
+      sequence: 352
       column-alignment: end
 
     accessibility: 
@@ -1294,10 +916,10 @@ regions:
 
     heading: 
       heading: S7
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 37
+      sequence: 362
       column-alignment: end
 
     accessibility: 
@@ -1326,10 +948,10 @@ regions:
 
     heading: 
       heading: S8
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 38
+      sequence: 372
       column-alignment: end
 
     accessibility: 
@@ -1358,10 +980,10 @@ regions:
 
     heading: 
       heading: S9
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 39
+      sequence: 382
       column-alignment: end
 
     accessibility: 
@@ -1390,10 +1012,10 @@ regions:
 
     heading: 
       heading: S10
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 40
+      sequence: 392
       column-alignment: end
 
     accessibility: 
@@ -1422,10 +1044,10 @@ regions:
 
     heading: 
       heading: S11
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 41
+      sequence: 402
       column-alignment: end
 
     accessibility: 
@@ -1454,10 +1076,10 @@ regions:
 
     heading: 
       heading: S12
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 42
+      sequence: 412
       column-alignment: end
 
     accessibility: 
@@ -1486,10 +1108,10 @@ regions:
 
     heading: 
       heading: S13
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 43
+      sequence: 422
       column-alignment: end
 
     accessibility: 
@@ -1518,10 +1140,10 @@ regions:
 
     heading: 
       heading: S14
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 44
+      sequence: 432
       column-alignment: end
 
     accessibility: 
@@ -1550,10 +1172,10 @@ regions:
 
     heading: 
       heading: S15
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 45
+      sequence: 442
       column-alignment: end
 
     accessibility: 
@@ -1582,10 +1204,10 @@ regions:
 
     heading: 
       heading: S16
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 46
+      sequence: 452
       column-alignment: end
 
     accessibility: 
@@ -1614,10 +1236,10 @@ regions:
 
     heading: 
       heading: S17
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 47
+      sequence: 462
       column-alignment: end
 
     accessibility: 
@@ -1646,10 +1268,10 @@ regions:
 
     heading: 
       heading: S18
-      alignment: end
+      alignment: center
 
     layout: 
-      sequence: 48
+      sequence: 472
       column-alignment: end
 
     accessibility: 
@@ -1674,27 +1296,10 @@ regions:
     id: 49408676230226526105
     identification: 
       column-name: ROUND_STROKES
-      type: Plain Text
-
-    heading: 
-      heading: Round Strokes
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 49
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 482
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1706,27 +1311,10 @@ regions:
     id: 49408676624802526106
     identification: 
       column-name: PAR1
-      type: Plain Text
-
-    heading: 
-      heading: Par1
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 50
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 492
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1738,27 +1326,10 @@ regions:
     id: 49408677095938526106
     identification: 
       column-name: PAR2
-      type: Plain Text
-
-    heading: 
-      heading: Par2
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 51
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 502
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1770,27 +1341,10 @@ regions:
     id: 49408677521043526106
     identification: 
       column-name: PAR3
-      type: Plain Text
-
-    heading: 
-      heading: Par3
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 52
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 512
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1802,27 +1356,10 @@ regions:
     id: 49408677867410526106
     identification: 
       column-name: PAR4
-      type: Plain Text
-
-    heading: 
-      heading: Par4
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 53
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 522
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1834,27 +1371,10 @@ regions:
     id: 49408678312744526106
     identification: 
       column-name: PAR5
-      type: Plain Text
-
-    heading: 
-      heading: Par5
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 54
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 532
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1866,27 +1386,10 @@ regions:
     id: 49408678635026526107
     identification: 
       column-name: PAR6
-      type: Plain Text
-
-    heading: 
-      heading: Par6
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 55
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 542
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1898,27 +1401,10 @@ regions:
     id: 49408679042711526108
     identification: 
       column-name: PAR7
-      type: Plain Text
-
-    heading: 
-      heading: Par7
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 56
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 552
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1930,27 +1416,10 @@ regions:
     id: 49408679503910526108
     identification: 
       column-name: PAR8
-      type: Plain Text
-
-    heading: 
-      heading: Par8
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 57
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 562
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1962,27 +1431,10 @@ regions:
     id: 49408679904008526108
     identification: 
       column-name: PAR9
-      type: Plain Text
-
-    heading: 
-      heading: Par9
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 58
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 572
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1994,27 +1446,10 @@ regions:
     id: 49408680274412526108
     identification: 
       column-name: PAR10
-      type: Plain Text
-
-    heading: 
-      heading: Par10
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 59
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 582
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2026,27 +1461,10 @@ regions:
     id: 49408680665181526109
     identification: 
       column-name: PAR11
-      type: Plain Text
-
-    heading: 
-      heading: Par11
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 60
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 592
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2058,27 +1476,10 @@ regions:
     id: 49408681097102526109
     identification: 
       column-name: PAR12
-      type: Plain Text
-
-    heading: 
-      heading: Par12
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 61
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 602
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2090,27 +1491,10 @@ regions:
     id: 49408681476298526109
     identification: 
       column-name: PAR13
-      type: Plain Text
-
-    heading: 
-      heading: Par13
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 62
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 612
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2122,27 +1506,10 @@ regions:
     id: 49408681917801526109
     identification: 
       column-name: PAR14
-      type: Plain Text
-
-    heading: 
-      heading: Par14
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 63
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 622
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2154,27 +1521,10 @@ regions:
     id: 49408682261915526109
     identification: 
       column-name: PAR15
-      type: Plain Text
-
-    heading: 
-      heading: Par15
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 64
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 632
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2186,27 +1536,10 @@ regions:
     id: 49408682712405526109
     identification: 
       column-name: PAR16
-      type: Plain Text
-
-    heading: 
-      heading: Par16
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 65
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 642
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2218,27 +1551,10 @@ regions:
     id: 49408683036093526110
     identification: 
       column-name: PAR17
-      type: Plain Text
-
-    heading: 
-      heading: Par17
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 66
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 652
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2250,27 +1566,10 @@ regions:
     id: 49408683476755526110
     identification: 
       column-name: PAR18
-      type: Plain Text
-
-    heading: 
-      heading: Par18
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 67
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 662
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2282,27 +1581,10 @@ regions:
     id: 49408683826155526110
     identification: 
       column-name: UNDER_PAR
-      type: Plain Text
-
-    heading: 
-      heading: Under Par
-      alignment: end
+      type: Hidden Column
 
     layout: 
-      sequence: 68
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
+      sequence: 672
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2311,43 +1593,19 @@ regions:
       escape-special-characters: true
 
 page-items: 
-- # ====== Page Item: P10_PLAYER_ID ============================
-  id: 49314172159316588542
+- # ====== Page Item: P10_ROUND_ID =============================
+  id: 57674067503599609
   identification: 
-    name: P10_PLAYER_ID
-    type: Text Field
-
-  label: 
-    label: Player
-    alignment: Left
+    name: P10_ROUND_ID
+    type: Hidden
 
   settings: 
-    subtype: Text
-    trim-spaces: Leading and Trailing
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    value-protected: true
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: Player Round Details # 49408556648041526027
     position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 30
-
-  validation: 
-    value-required: false
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -2357,10 +1615,38 @@ page-items:
     used: Only when current value in session state is null
 
   session-state: 
+    data-type: VARCHAR2
     storage: Per Session (Persistent)
 
-  quick-picks: 
-    show-quick-picks: false
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P10_PLAYER_ID ============================
+  id: 49314172159316588542
+  identification: 
+    name: P10_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Player Round Details # 49408556648041526027
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
 
   security: 
     session-state-protection: Unrestricted

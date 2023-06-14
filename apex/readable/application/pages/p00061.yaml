@@ -32,6 +32,7 @@ javascript:
   function-and-global-variable-declaration: |
     var selectedRank = "ALL", selectedRankClass;
     
+  execute-when-page-loads: wmgt.theme.init();
 
 css: 
   file-urls: 
@@ -276,6 +277,7 @@ regions:
            , r.player_id
            , r.player_name
            , r.country_code
+           , r.country
            , r.season_total
            , r.rank_code
            , r.rank_name
@@ -320,6 +322,7 @@ regions:
         from (
         select p.player_name
              , p.country_code
+             , p.country
              , p.rank_code
              , p.rank_name
              , p.rank_list_class
@@ -620,7 +623,7 @@ regions:
           p120_player_id: '#PLAYER_ID#'
           p120_tournament_id: '&P61_TOURNAMENT_ID.'
 
-      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS#" title="#RANK_NAME#"></div>'
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
 
     sorting: 
       sortable: false
@@ -655,7 +658,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: '<i class="em em-flag-#COUNTRY_CODE#" aria-label="Flag #COUNTRY_CODE#"></i>'
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
 
     sorting: 
       sortable: false
@@ -1632,6 +1635,21 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: COUNTRY =====================================
+    id: 57673424815599603
+    identification: 
+      column-name: COUNTRY
+      type: Hidden Column
+
+    layout: 
+      sequence: 470
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Most h1n Current Season =====================
   id: 24511323117856423672
   identification: 
@@ -2284,27 +2302,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   advanced: 
-    initialization-javascript-function: |
-      function(options) {
-          options.display = "list";
-      
-          options.recordTemplate = (
-        '<li data-id="~WEEK.">' +
-           '<div class="content-list">' +
-              '<div class="week-info-list">' +
-                 '<span class="season-name">~SEASON.</span>' +                    
-                 '<span class="week-name">Week ~WEEK_NO.</span>' +
-                 '<hr>' +
-                 '<div class="courses">' +
-                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
-                   '<span class="hard">~HARD_COURSE.</span>' +
-                 '</div>' +
-              '</div>' +
-           '</div>'+
-        '</li>').replace(/~/g, "&");
-      
-          return options;
-      }
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P61_SEARCH ===============================
   id: 48369450452877263

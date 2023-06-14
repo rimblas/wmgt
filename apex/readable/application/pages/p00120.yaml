@@ -386,6 +386,129 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: {Best Scores} ===============================
+  id: 57676790858599636
+  identification: 
+    title: '{Best Scores}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: 'select :P120_PLAYER_ID player_id from dual'
+
+  layout: 
+    sequence: 10
+    parent-region: '{Profile}' # 22129666461688036
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 57676863286599637
+    identification: 
+      column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: See Best Scores
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:140:&SESSION.::&DEBUG.:140:P140_PLAYER_ID:#PLAYER_ID#'
+        page: 140 # Best Scores
+        clear-cache: 140
+        values: 
+          p140_player_id: '#PLAYER_ID#'
+
+      link-text: ' <span class="t-Button-label">See Best Scores</span>'
+      link-attributes: ' class="t-Button"'
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Badges & Achivements ========================
   id: 95599643753790401
   identification: 
@@ -832,6 +955,21 @@ dynamic-actions:
 
     execution: 
       sequence: 20
+      event: Refresh on Change # 16211947337742881
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 57676958003599638
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Best Scores}' # 57676790858599636
+
+    execution: 
+      sequence: 30
       event: Refresh on Change # 16211947337742881
       fire-when-event-result-is: True
       fire-on-initialization: false

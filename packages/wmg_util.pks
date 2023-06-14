@@ -46,6 +46,7 @@ procedure reset_room_assignments(
 
 procedure possible_player_match (
     p_discord_account in wmg_players.account%type
+  , p_discord_name    in wmg_players.name%type
   , p_discord_id      in wmg_players.discord_id%type
   , x_players_tbl     in out nocopy tab_keyval_type
 );

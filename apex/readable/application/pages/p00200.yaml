@@ -1899,7 +1899,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: Top Scores # 16129973281878833
     position: EDIT
     alignment: Left
@@ -2086,6 +2086,44 @@ buttons:
   behavior: 
     action: Defined by Dynamic Action
     execute-validations: true
+
+- # ====== Button: BEST_SCORES =================================
+  id: 57676624431599635
+  identification: 
+    button-name: BEST_SCORES
+    label: See Other Best Scores
+
+  layout: 
+    sequence: 10
+    region: Top Scores # 16129973281878833
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 2
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text # 46995173980623514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--stretch
+    - t-Button--padTop
+    icon: fa-clipboard-list
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:140:&SESSION.::&DEBUG.:140:P140_PLAYER_ID:&G_PLAYER_ID.'
+      page: 140 # Best Scores
+      clear-cache: 140
+      values: 
+        p140_player_id: '&G_PLAYER_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh on Change ===================

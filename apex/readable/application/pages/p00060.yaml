@@ -256,15 +256,15 @@ css:
     .p3 {
         background-color: hsl(220deg 100% 85%);
     }
-    .p2 {
+    .points.p2 {
         background-color: hsl(220deg 100% 91%);
         color: #777;
     }
-    .p1 {
+    .points.p1 {
         background-color: hsl(220deg 100% 97%);
         color: #666;
     }
-    .p0 {
+    .points.p0 {
         color: red;
     }
     
@@ -2468,27 +2468,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
   advanced: 
-    initialization-javascript-function: |
-      function(options) {
-          options.display = "list";
-      
-          options.recordTemplate = (
-        '<li data-id="~WEEK.">' +
-           '<div class="content-list">' +
-              '<div class="week-info-list">' +
-                 '<span class="season-name">~SEASON.</span>' +                    
-                 '<span class="week-name">Week ~WEEK_NO.</span>' +
-                 '<hr>' +
-                 '<div class="courses">' +
-                   '<span class="easy">~EASY_COURSE.</span>' + ' & ' +
-                   '<span class="hard">~HARD_COURSE.</span>' +
-                 '</div>' +
-              '</div>' +
-           '</div>'+
-        '</li>').replace(/~/g, "&");
-      
-          return options;
-      }
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P60_TOTAL_PLAYERS ========================
   id: 58999002369755516160
