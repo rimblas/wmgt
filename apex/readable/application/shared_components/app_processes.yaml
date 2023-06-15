@@ -14,7 +14,7 @@
          set account = :G_DISCORD
            , account_login = :G_DISCORD || '  (discord)'
            , discord_avatar = :G_DISCORD_AVATAR
-           , name = :G_DISCORD_NAME
+           , name = nvl(:G_DISCORD_NAME, name)
            , discord_discriminator =:G_DISCORD_DISCRIMINATOR
         where discord_id = :G_DISCORD_ID
           and (nvl(account, '~NA~') != nvl(:G_DISCORD, '~NA~')

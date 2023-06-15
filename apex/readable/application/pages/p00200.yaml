@@ -35,6 +35,20 @@ css:
     --ut-field-padding-y: 0;
     --a-field-input-padding-y: 0px;
     }
+    
+    .topScores .t-Report-report tr:nth-child(1) {
+        background-color: var(--u-color-4);
+        color: var(--u-color-4-contrast);
+    }
+    .topScores .t-Report-report tr:nth-child(2) {
+        background-color: var(--u-color-5);
+        color: var(--u-color-5-contrast);
+    }
+    .topScores .t-Report-report tr:nth-child(3) {
+        background-color: var(--u-color-3);
+        color: var(--u-color-3-contrast);
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -2526,4 +2540,50 @@ dynamic-actions:
       event: Refresh Top Scores # 55136194706510001
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+  - # ====== Action: Add Class ===================================
+    id: 57677176390599640
+    identification: 
+      action: Add Class
+
+    settings: 
+      class: topScores
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Scores # 16129973281878833
+
+    execution: 
+      sequence: 20
+      event: Refresh Top Scores # 55136194706510001
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item = Value
+      item: P200_GOALS_IND
+      value: Y
+
+  - # ====== Action: Remove Class ================================
+    id: 57677245019599641
+    identification: 
+      action: Remove Class
+
+    settings: 
+      class: topScores
+
+    affected-elements: 
+      selection-type: Region
+      region: Top Scores # 16129973281878833
+
+    execution: 
+      sequence: 30
+      event: Refresh Top Scores # 55136194706510001
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item != Value
+      item: P200_GOALS_IND
+      value: Y
 

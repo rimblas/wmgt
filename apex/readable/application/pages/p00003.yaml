@@ -1062,7 +1062,7 @@ regions:
 
     pagination: 
       type: Scroll
-      show-total-row-count: false
+      show-total-count: false
 
     actions: 
     - # ====== Action: FULL_CARD ===================================
@@ -3063,6 +3063,7 @@ processes:
   identification: 
     name: Add Ideal Round
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -3085,6 +3086,7 @@ processes:
   identification: 
     name: Initialize form Course Strokes
     type: Form - Initialization
+    execution-chain: None
     form-region: '{Course Strokes}' # 94328147408148739796
 
   execution: 
@@ -3097,6 +3099,7 @@ processes:
   identification: 
     name: Add Strokes Message
     type: Execute Code
+    execution-chain: None
 
   source: 
     location: Local Database
@@ -3159,6 +3162,7 @@ processes:
   identification: 
     name: Process form Course Strokes
     type: Form - Automatic Row Processing (DML)
+    execution-chain: None
     form-region: '{Course Strokes}' # 94328147408148739796
 
   settings: 
@@ -3184,6 +3188,7 @@ processes:
   identification: 
     name: Initialize form Course
     type: Form - Initialization
+    execution-chain: None
     form-region: Course # 46995217613009514582
 
   execution: 
@@ -3196,6 +3201,7 @@ processes:
   identification: 
     name: Process form Course
     type: Form - Automatic Row Processing (DML)
+    execution-chain: None
     form-region: Course # 46995217613009514582
 
   settings: 
@@ -3217,6 +3223,7 @@ processes:
   identification: 
     name: Close Dialog
     type: Close Dialog
+    execution-chain: None
 
   execution: 
     sequence: 50
@@ -3237,7 +3244,7 @@ branches:
     name: Create/Edit Ideal Round
 
   execution: 
-    sequence: 10
+    sequence: 20
     point: After Processing
 
   behavior: 
@@ -3255,7 +3262,7 @@ branches:
     name: Stay on Create
 
   execution: 
-    sequence: 20
+    sequence: 10
     point: After Processing
 
   behavior: 

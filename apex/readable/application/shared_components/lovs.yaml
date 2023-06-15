@@ -111,7 +111,7 @@
       from (
       select level - 36 l
       from dual
-      connect by level < 72   
+      connect by level < 73
       )
 
   column-mapping: 
@@ -370,7 +370,7 @@
     sql-query: |
       select week
            , week || ': ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') week_info
-          , prefix_tournament season
+          , 'Season ' || substr(prefix_tournament,2) season
           , round_num week_no
           , nvl(easy_course_code, 'TBD') easy_course
           , nvl(hard_course_code, 'TBD') hard_course
