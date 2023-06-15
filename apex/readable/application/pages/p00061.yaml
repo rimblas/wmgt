@@ -92,15 +92,21 @@ css:
     
     td[headers="SEASON_TOTAL"] {
         font-weight: bold;
+        background-color: var(--u-color-3);
+        color: var(--u-color-3-contrast);
+    }
+    tr.mark td[headers="SEASON_TOTAL"],
+    tr.mark .&P61_WEEK. {
+        background-color: #ff0;
+        color: #000;
     }
     .&P61_WEEK. {
-        background-color: rgb(79, 79, 189);
-        color: white;
-        font-weight: bold;
+        background-color: var(--u-color-16);
+        color: var(--u-color-16-contrast);
     }
     
     .&P61_WEEK..discardY {
-        color: #bfbfbf;
+        color: var(--u-color-16-contrast);
         font-weight: normal;
     }
     
@@ -2182,6 +2188,8 @@ page-items:
     - col-xxs-12
     - col-xs-12
     - col-sm-12
+    - col-md-3
+    - col-lg-3
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -2246,13 +2254,13 @@ page-items:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: 3
+    column-span: 4
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xxs-5
-    - col-xs-4
-    - col-sm-4
-    - col-md-6
+    - col-xxs-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-4
     - col-lg-4
 
   appearance: 
@@ -2333,8 +2341,8 @@ page-items:
     column-span: Automatic
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xxs-5
-    - col-md-5
+    - col-xxs-6
+    - col-md-4
     - col-sm-5
     - col-lg-4
 
@@ -2391,6 +2399,8 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - hidden-xs-down
 
   appearance: 
     template: Optional - Floating # 46995171503553514398

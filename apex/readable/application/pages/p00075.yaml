@@ -2885,56 +2885,6 @@ computations:
     item: P75_WEEK
 
 processes: 
-- # ====== Process: Load History ===============================
-  id: 14530841320009035
-  identification: 
-    name: Load History
-    type: Execute Code
-    execution-chain: None
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: |
-      insert into wmg_tournament_players (
-         tournament_session_id
-       , player_id
-       , time_slot
-       , active_ind
-       , points
-      )
-      select s.id
-           , p.id
-           , '00:00'
-           , 'Y'
-           , load.points
-      from wmg_tournament_sessions s
-         , wmg_players p
-         , wmg_wmgt_scores_tmp load
-      where p.account = load.username
-        and s.week = :P75_WEEK;
-      
-
-  execution: 
-    sequence: 10
-    point: Processing
-    run-process: Once Per Page Visit (default)
-
-  success-message: 
-    success-message: Loaded!
-
-  error: 
-    display-location: Inline in Notification
-
-  server-side-condition: 
-    type: Never
-
-  security: 
-    authorization-scheme: Administration Rights # 46995203575692514425
-
-  comments: 
-    comments: This was used to load the points history for previous seasons
-
 - # ====== Process: Refresh MV =================================
   id: 45125498558399130
   identification: 

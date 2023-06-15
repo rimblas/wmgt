@@ -370,7 +370,7 @@
     sql-query: |
       select week
            , week || ': ' || nvl(easy_course_code, 'TBD') || ' & ' || nvl(hard_course_code, 'TBD') week_info
-          , prefix_tournament season
+          , 'Season ' || substr(prefix_tournament,2) season
           , round_num week_no
           , nvl(easy_course_code, 'TBD') easy_course
           , nvl(hard_course_code, 'TBD') hard_course
