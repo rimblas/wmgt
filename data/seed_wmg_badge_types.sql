@@ -76,7 +76,7 @@ begin
   {
     "code": "DUCK",
     "name": "Duck",
-    "description": "Dual Ace (One of only 2 players to ace a hole)",
+    "description": "Rare Ace (Small number of players to ace a hole)",
     "icon_class": "em em-duck",
     "system": "N",
     "selectable": "Y",
@@ -85,7 +85,7 @@ begin
   {
     "code": "BEETLE",
     "name": "Beetle",
-    "description": "Rare (1-3 players) non-ace best scores",
+    "description": "Rare non-ace best score (Small number of players)",
     "icon_class": "em em-beetle",
     "system": "N",
     "selectable": "Y",
