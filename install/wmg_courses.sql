@@ -7,6 +7,7 @@ create table wmg_courses (
     course_mode                    varchar2(1 char) constraint courses_course_mode_ck
                                    check (course_mode in ('E','H')),
     release_order                  number not null,
+    release_date                   date not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
     updated_on                     timestamp with local time zone,
