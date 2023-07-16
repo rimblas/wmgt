@@ -77,14 +77,26 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select course_ID id,
-             release_order,
-             CODE,
-             NAME,
-             COURSE_MODE
-           , course_par
-           , :BUCKET || code || '_FULL.jpg' icon
-        from WMG_COURSES_V
+      with course_stats as (
+        select tc.course_id, max(ts.session_date) last_played, count(*) played_count
+        from wmg_tournament_sessions ts
+           , wmg_tournament_courses tc
+        where tc.tournament_session_id = ts.id
+       group by tc.course_id
+      )
+      select c.course_id id
+           , c.release_order
+           , c.release_date
+           , c.code
+           , c.name
+           , c.course_mode
+           , c.course_par
+           , :BUCKET || c.code || '_FULL.jpg' icon
+           , s.last_played
+           , nvl(s.played_count, 0) played_count
+        from wmg_courses_v c
+           , course_stats s
+      where c.course_id = s.course_id (+)
       
 
   layout: 
@@ -140,7 +152,7 @@ regions:
       search-field: true
       finder-drop-down: true
       reports-select-list: true
-      rows-per-page-selector: false
+      rows-per-page-selector: true
 
     actions-menu: 
       include-actions-menu: true
@@ -164,6 +176,7 @@ regions:
       subscription: false
 
     download: 
+      authorization: Contribution Rights # 46995203801871514425
       formats: 
       - CSV
       - HTML
@@ -229,6 +242,131 @@ regions:
       security: 
         escape-special-characters: true
 
+    - # ====== Column: LAST_PLAYED =================================
+      id: 57677393969599642
+      identification: 
+        column-name: LAST_PLAYED
+        type: Plain Text
+
+      heading: 
+        heading: Last Played
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 80
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      source: 
+        primary-key: false
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: PLAYED_COUNT ================================
+      id: 57677406328599643
+      identification: 
+        column-name: PLAYED_COUNT
+        type: Plain Text
+
+      heading: 
+        heading: No of Times Played
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 90
+        column-alignment: end
+
+      accessibility: 
+        value-identifies-row: false
+
+      source: 
+        primary-key: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: RELEASE_DATE ================================
+      id: 57677574251599644
+      identification: 
+        column-name: RELEASE_DATE
+        type: Plain Text
+
+      heading: 
+        heading: Release Date
+        alignment: center
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 20
+        column-alignment: center
+
+      accessibility: 
+        value-identifies-row: false
+
+      source: 
+        primary-key: false
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
     - # ====== Column: COURSE_PAR ==================================
       id: 15143134301979735742
       identification: 
@@ -243,7 +381,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 60
+        sequence: 70
         column-alignment: end
 
       accessibility: 
@@ -284,7 +422,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 30
+        sequence: 40
         column-alignment: center
 
       accessibility: 
@@ -349,7 +487,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 20
+        sequence: 30
         column-alignment: start
 
       accessibility: 
@@ -383,14 +521,14 @@ regions:
         type: Link
 
       heading: 
-        heading: Name
+        heading: Course Name
         alignment: start
 
       single-row-view: 
         use-column-heading: true
 
       layout: 
-        sequence: 40
+        sequence: 50
         column-alignment: start
 
       accessibility: 
@@ -441,7 +579,7 @@ regions:
         use-column-heading: true
 
       layout: 
-        sequence: 50
+        sequence: 60
         column-alignment: center
 
       accessibility: 

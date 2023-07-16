@@ -2146,6 +2146,10 @@ processes:
           p_tournament_id        =>  :P532_TOURNAMENT_ID
         , p_tournament_session_id => :P532_ID
       );
+      -- make the changes visible right away
+      apex_region.purge_cache (
+          p_page_id    => 1
+      );
 
   execution: 
     sequence: 30
