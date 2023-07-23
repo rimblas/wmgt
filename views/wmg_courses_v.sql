@@ -19,6 +19,7 @@ select
     c.id                                         course_id,
     c.release_order,
     c.release_date,
+    c.course_group,
     c.code                                       code,
     c.name                                       name,
     c.code || ' - ' || c.name prepared_name,
