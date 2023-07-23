@@ -29,8 +29,17 @@ navigation:
 javascript: 
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+  - //cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js
+  - null
   function-and-global-variable-declaration: |
     var selectedRank,selectedRankClass;
+    function confetti_time() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
     function badgeMenuAction(btn, actionMenu, badge, player) {
      apex.server.process('BADGES'
         , {x01: actionMenu.label.split(' ')[0],
@@ -2873,6 +2882,52 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: true
 
+- # ====== Dynamic Action: Celebrate with Confetti =============
+  id: 20605983648883943
+  identification: 
+    name: Celebrate with Confetti
+
+  execution: 
+    sequence: 120
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Request = Value
+    value: SUCCESS
+
+  comments: 
+    comments: |
+      New condition to celebrate the top 10:
+      select 1
+      from wmg_tournament_session_points_v
+      where week = :P50_WEEK
+        and player_id = :P50_PLAYERS_ID
+        and points <= 10
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 20606349410883951
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: confetti_time()
+
+    execution: 
+      sequence: 10
+      event: Celebrate with Confetti # 20605983648883943
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: '!apex.theme.mq("(prefers-reduced-motion)")'
+
 - # ====== Dynamic Action: Search as we type ===================
   id: 36327504110635133
   identification: 
@@ -3514,8 +3569,9 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:61:&SESSION.::&DEBUG.::P61_SELECTOR,P61_WEEK:&P60_SELECTOR.,&P60_WEEK.&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:61:&SESSION.:&REQUEST.:&DEBUG.::P61_SELECTOR,P61_WEEK:&P60_SELECTOR.,&P60_WEEK.&success_msg=#SUCCESS_MSG#'
       page: 61 # View Season Results
+      request: '&REQUEST.'
       values: 
         p61_selector: '&P60_SELECTOR.'
         p61_week: '&P60_WEEK.'

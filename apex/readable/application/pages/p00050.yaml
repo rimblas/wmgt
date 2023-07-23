@@ -30,16 +30,7 @@ javascript:
   file-urls: 
   - '&G_APP_FILES.lib/knockout-3.5.0.js'
   - '&G_APP_FILES.lib/knockout-pre-rendered.min.js'
-  - //cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js
   - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js'
-  function-and-global-variable-declaration: |
-    function confetti_time() {
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
-    }
   execute-when-page-loads: |
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
@@ -201,16 +192,16 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: Your Results ================================
+- # ====== Region: Verification ================================
   id: 9131124459384808
   identification: 
-    title: Your Results
+    title: Verification
     type: Static Content
 
   layout: 
-    sequence: 10
-    parent-region: '{Player & Round Details}' # 40825883820734223932
-    position: SUB_REGIONS
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
     start-new-layout: false
     start-new-row: true
     column: 4
@@ -254,113 +245,6 @@ regions:
     comments: |
       Debugging knockout:
       <pre data-bind="text: ko.toJSON($root, null, 2)"></pre>
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: Would you enter your scorecards too? ========
-  id: 9131605698384813
-  identification: 
-    title: Would you enter your scorecards too?
-    type: Static Content
-
-  source: 
-    html-code: |
-      <br>
-      Thank you, you have done the bare minimum that is required.<br>
-      <br>
-      Please go ahead and enter your full scorecard, or someone else will have to enter it for you.<br>
-      When you enter your scorecard, our tournament stats and badges, are accurate and provided in near real-time.
-
-  layout: 
-    sequence: 2
-    parent-region: No Parent
-    position: BODY
-    start-new-layout: false
-    start-new-row: true
-    column: 3
-    new-column: true
-    column-span: 8
-
-  appearance: 
-    template: Alert # 46995035459709514340
-    template-options: 
-    - '#DEFAULT#'
-    - t-Alert--horizontal
-    - t-Alert--customIcons
-    - t-Alert--info
-    - margin-bottom-none
-    icon: fa-question-circle-o
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: true
-    exclude-title-from-translation: false
-
-  server-side-condition: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
-- # ====== Region: enter your scorecards Buttons ===============
-  id: 12337639125723507
-  identification: 
-    title: enter your scorecards Buttons
-    type: Static Content
-
-  layout: 
-    sequence: 3
-    parent-region: No Parent
-    position: BODY
-    start-new-layout: false
-    start-new-row: true
-    column: 3
-    new-column: true
-    column-span: 8
-
-  appearance: 
-    template: Buttons Container # 46995043489945514344
-    template-options: 
-    - '#DEFAULT#'
-    - t-ButtonRegion--noBorder
-    - margin-top-none
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-side-condition: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
 
   attributes: 
     settings: 
@@ -951,7 +835,6 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - u-vh&P50_ENTER_SCORECARD_FLAG.
     - scoreCards
 
   appearance: 
@@ -1007,16 +890,15 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - u-vh&P50_ENTER_SCORECARD_FLAG.
     - scoreCards
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Content Block # 46995069112127514354
     template-options: 
     - '#DEFAULT#'
-    - t-Region--noBorder
-    - t-Region--scrollBody
-    - margin-top-none
+    - t-ContentBlock--h3
+    - t-ContentBlock--lightBG
+    - t-ContentBlock--headingFontAlt
     render-components: Above Content
 
   accessibility: 
@@ -1071,15 +953,15 @@ regions:
     new-column: true
     column-span: Automatic
     column-css-classes: 
-    - u-vh&P50_ENTER_SCORECARD_FLAG.
     - scoreCards
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Content Block # 46995069112127514354
     template-options: 
     - '#DEFAULT#'
-    - t-Region--noBorder
-    - t-Region--scrollBody
+    - t-ContentBlock--h3
+    - t-ContentBlock--lightBG
+    - t-ContentBlock--headingFontAlt
     render-components: Above Content
 
   accessibility: 
@@ -1246,7 +1128,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1278,6 +1160,10 @@ page-items:
     - data-bind="init,
     - 'value:'
     - escore"
+    post-text-: |
+      <span class="correctScoreCheck" data-bind="visible: easyMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
+      <span class="incorrectScoreCheck" data-bind="visible: easyError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
+      
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1314,7 +1200,7 @@ page-items:
 
   layout: 
     sequence: 20
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -1346,6 +1232,10 @@ page-items:
     - data-bind="init,
     - 'value:'
     - hscore"
+    post-text-: |
+      <span class="correctScoreCheck" data-bind="visible: hardMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
+      <span class="incorrectScoreCheck" data-bind="visible: hardError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
+      
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -1384,7 +1274,7 @@ page-items:
 
   layout: 
     sequence: 30
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -4208,8 +4098,6 @@ page-items:
     - total_hard"
     post-text-: |
       <span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnHard()">Override in place</span>
-      <span class="correctScoreCheck" data-bind="visible: hardMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
-      <span class="incorrectScoreCheck" data-bind="visible: hardError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
       
     warn-on-unsaved-changes: Page Default
 
@@ -4487,6 +4375,11 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  read-only: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P50_VERIFIED_FLAG is not null or not apex_authorization.is_authorized (p_authorization_name => 'Contribution Rights' )"
 
   security: 
     session-state-protection: Unrestricted
@@ -6775,8 +6668,6 @@ page-items:
     - overrideOnEasy()}"
     post-text-: |
       <span class="a-Form-error hidden-sm-down" data-bind="visible: overrideOnEasy()">Override in place</span>
-      <span class="correctScoreCheck" data-bind="visible: easyMatches()"><i class="fa fa-check-circle" title="It's a match!"></i></span>
-      <span class="incorrectScoreCheck" data-bind="visible: easyError()"><i class="fa fa-warning" title="The scores do not match!"></i></span>
       
     warn-on-unsaved-changes: Page Default
 
@@ -6994,7 +6885,7 @@ buttons:
 
   layout: 
     sequence: 20
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: CREATE
     start-new-layout: false
     start-new-row: true
@@ -7019,66 +6910,7 @@ buttons:
   server-side-condition: 
     type: Expression
     language: PL/SQL
-    pl/sql-expression: ":P50_E_ID is not null and nvl(:P50_VERIFIED_FLAG, 'x') != 'Y'"
-
-- # ====== Button: CANCEL ======================================
-  id: 12337410691723505
-  identification: 
-    button-name: CANCEL
-    label: Nah, I'll pass
-
-  layout: 
-    sequence: 10
-    region: enter your scorecards Buttons # 12337639125723507
-    position: PREVIOUS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: false
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Redirect to Page in this Application
-    target: 
-      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:::'
-      page: 60 # View Weekly Results
-
-    warn-on-unsaved-changes: Do Not Check
-
-- # ====== Button: ENTER_SCORE_CARDS ===========================
-  id: 12337581260723506
-  identification: 
-    button-name: ENTER_SCORE_CARDS
-    label: Sure, I'll enter them!
-
-  layout: 
-    sequence: 20
-    region: enter your scorecards Buttons # 12337639125723507
-    position: NEXT
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: false
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--success
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Defined by Dynamic Action
-    execute-validations: true
+    pl/sql-expression: ":P50_E_ID is not null and nvl(:P50_VERIFIED_FLAG, 'x') != 'Y' and 1=2"
 
 - # ====== Button: CREATE ======================================
   id: 14528425372009011
@@ -7088,7 +6920,7 @@ buttons:
 
   layout: 
     sequence: 30
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: CREATE
     start-new-layout: false
     start-new-row: true
@@ -7158,7 +6990,7 @@ buttons:
 
   layout: 
     sequence: 40
-    region: Your Results # 9131124459384808
+    region: Verification # 9131124459384808
     position: COPY
     start-new-layout: false
     start-new-row: true
@@ -7273,9 +7105,7 @@ dynamic-actions:
     event-scope: Static
 
   server-side-condition: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: ':P50_E_ID is not null and :P50_H_ID is not null and :P50_ES1 is null and :P50_ENTER_SCORECARD_FLAG is null'
+    type: Never
 
   comments: 
     comments: |
@@ -7304,114 +7134,6 @@ dynamic-actions:
     client-side-condition: 
       type: JavaScript expression
       javascript-expression: '!apex.theme.mq("(prefers-reduced-motion)")'
-
-- # ====== Dynamic Action: Continue to full scorecard ==========
-  id: 12337735006723508
-  identification: 
-    name: Continue to full scorecard
-
-  execution: 
-    sequence: 30
-
-  when: 
-    event: EVENT.EVENT.BROWSER.CLICK
-    selection-type: Button
-    button: ENTER_SCORE_CARDS # 12337581260723506
-
-  execution: 
-    event-scope: Static
-    type: Immediate
-
-  actions: 
-  - # ====== Action: Hide Prompts ================================
-    id: 12337805463723509
-    identification: 
-      name: Hide Prompts
-      action: Hide
-
-    affected-elements: 
-      selection-type: Region
-      region: Would you enter your scorecards too? # 9131605698384813
-
-    execution: 
-      sequence: 10
-      event: Continue to full scorecard # 12337735006723508
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-  - # ====== Action: Hide Prompts ================================
-    id: 12337944895723510
-    identification: 
-      name: Hide Prompts
-      action: Hide
-
-    affected-elements: 
-      selection-type: Region
-      region: enter your scorecards Buttons # 12337639125723507
-
-    execution: 
-      sequence: 20
-      event: Continue to full scorecard # 12337735006723508
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-  - # ====== Action: Set Focus ===================================
-    id: 12338062357723511
-    identification: 
-      action: Set Focus
-
-    affected-elements: 
-      selection-type: Item(s)
-      item(s): 
-      - P50_ES1
-
-    execution: 
-      sequence: 50
-      event: Continue to full scorecard # 12337735006723508
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-  - # ====== Action: Show Scorecard Entry ========================
-    id: 14528777698009014
-    identification: 
-      name: Show Scorecard Entry
-      action: Remove Class
-
-    settings: 
-      class: u-vh
-
-    affected-elements: 
-      selection-type: jQuery Selector
-      jquery-selector: .scoreCards
-
-    execution: 
-      sequence: 40
-      event: Continue to full scorecard # 12337735006723508
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-  - # ====== Action: Set Value ===================================
-    id: 14528859341009015
-    identification: 
-      action: Set Value
-
-    settings: 
-      set-type: Static Assignment
-      value: Y
-      suppress-change-event: false
-
-    affected-elements: 
-      selection-type: Item(s)
-      item(s): 
-      - P50_ENTER_SCORECARD_FLAG
-
-    execution: 
-      sequence: 30
-      event: Continue to full scorecard # 12337735006723508
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-      stop-execution-on-error: true
-      wait-for-result: true
 
 - # ====== Dynamic Action: Updating Records ====================
   id: 22128073291688020
@@ -7550,6 +7272,37 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Focus on 1st field ==================
+  id: 49805761931068415
+  identification: 
+    name: Focus on 1st field
+
+  execution: 
+    sequence: 70
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Set Focus ===================================
+    id: 49805830348068416
+    identification: 
+      action: Set Focus
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P50_ES1
+
+    execution: 
+      sequence: 10
+      event: Focus on 1st field # 49805761931068415
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Init Player LOV =====================
   id: 18814955086933324174
   identification: 
@@ -7659,15 +7412,17 @@ validations:
   validation: 
     type: Expression
     language: PL/SQL
-    pl/sql-expression: ':P50_ESCORE_DISPLAY != :P50_EASY_COURSE_FINAL_SCORE'
+    pl/sql-expression: 'not (:P50_ES1 is null or :P50_ES9 is null or :P50_ES15 is null or :P50_HS1 is null or :P50_HS5 is null)'
     always-execute: false
 
   error: 
-    error-message: The socrecard and your submission do not match!
+    error-message: The scorecard is incomplete. If you were unable to finish a course, please enter par + 4 to complete the submission.
     display-location: Inline with Field and in Notification
+    associated-item: P50_TOTAL # 9131437963384811
 
   server-side-condition: 
-    type: Never
+    type: Request != Value
+    value: RELOAD
 
 - # ====== Validation: Week format =============================
   id: 15533722903055466829
@@ -7701,12 +7456,79 @@ processes:
     pl/sql-code: null;
 
   execution: 
-    sequence: 40
+    sequence: 60
     point: Processing
     run-process: Once Per Page Visit (default)
 
   success-message: 
     success-message: Rounds saved.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
+
+- # ====== Process: Add Penalty Scores on empty  ===============
+  id: 21600182949342836
+  identification: 
+    name: 'Add Penalty Scores on empty '
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      /* 
+       * Loop though both rounds and if there are empty cells, full them up with the par of the hole + 4
+       */
+      for r in (
+        select r.*
+          from wmg_rounds r
+         where (r.id = :P50_H_ID or r.id = :P50_E_ID)
+         for update
+      )
+      loop
+      
+        for c in (
+          select *
+            from wmg_courses_v
+           where course_id = r.course_id
+        )
+        loop
+          update wmg_rounds rr
+             set rr.s1 = case when rr.s1 is not null then rr.s1 else c.h1 + 4 end
+               , rr.s2 = case when rr.s2 is not null then rr.s2 else c.h2 + 4 end
+               , rr.s3 = case when rr.s3 is not null then rr.s3 else c.h3 + 4 end
+               , rr.s4 = case when rr.s4 is not null then rr.s4 else c.h4 + 4 end
+               , rr.s5 = case when rr.s5 is not null then rr.s5 else c.h5 + 4 end
+               , rr.s6 = case when rr.s6 is not null then rr.s6 else c.h6 + 4 end
+               , rr.s7 = case when rr.s7 is not null then rr.s7 else c.h7 + 4 end
+               , rr.s8 = case when rr.s8 is not null then rr.s8 else c.h8 + 4 end
+               , rr.s9 = case when rr.s9 is not null then rr.s9 else c.h9 + 4 end
+               , rr.s10 = case when rr.s10 is not null then rr.s10 else c.h10 + 4 end
+               , rr.s11 = case when rr.s11 is not null then rr.s11 else c.h11 + 4 end
+               , rr.s12 = case when rr.s12 is not null then rr.s12 else c.h12 + 4 end
+               , rr.s13 = case when rr.s13 is not null then rr.s13 else c.h13 + 4 end
+               , rr.s14 = case when rr.s14 is not null then rr.s14 else c.h14 + 4 end
+               , rr.s15 = case when rr.s15 is not null then rr.s15 else c.h15 + 4 end
+               , rr.s16 = case when rr.s16 is not null then rr.s16 else c.h16 + 4 end
+               , rr.s17 = case when rr.s17 is not null then rr.s17 else c.h17 + 4 end
+               , rr.s18 = case when rr.s18 is not null then rr.s18 else c.h18 + 4 end
+            where rr.id = r.id
+              and rr.course_id = c.course_id;  -- course_id is redundant but nice as a safety meassure
+      
+        end loop;
+      
+      end loop;
+      
+
+  execution: 
+    sequence: 50
+    point: Processing
+    run-process: Once Per Page Visit (default)
 
   error: 
     display-location: Inline in Notification
@@ -7877,7 +7699,7 @@ processes:
     return-primary-key(s)-after-insert: true
 
   execution: 
-    sequence: 20
+    sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -7916,7 +7738,7 @@ processes:
     return-primary-key(s)-after-insert: true
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -8032,8 +7854,7 @@ branches:
         p50_e_id: '&P50_E_ID.'
 
   server-side-condition: 
-    type: Item is NULL
-    item: P50_ES18
+    type: Never
 
 - # ====== Branch: Return to Previous Page =====================
   id: 14528554953009012
@@ -8110,7 +7931,12 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:60:&SESSION.:SUCCESS:&DEBUG.:60::&success_msg=#SUCCESS_MSG#'
       page: 60 # View Weekly Results
+      request: SUCCESS
       clear-cache: 60
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,APPLY_CHANGES
 
