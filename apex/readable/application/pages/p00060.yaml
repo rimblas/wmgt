@@ -686,10 +686,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Most h1n Current Season =====================
+- # ====== Region: Most h1n Season &P60_TOURNAMENT. ============
   id: 24462985729664546600
   identification: 
-    title: Most h1n Current Season
+    title: Most h1n Season &P60_TOURNAMENT.
     type: Classic Report
 
   source: 
@@ -703,11 +703,11 @@ regions:
            , sum(r.score) hn1
         from wmg_rounds_unpivot_mv r
            , wmg_players_v p
-           , wmg_courses_v c
+           , wmg_courses c
       where r.player_id = p.id
-      and c.course_id = r.course_id
+      and c.id = r.course_id
       and r.score = 1
-       and r.week like ( select prefix_tournament || '%' from wmg_tournaments where current_flag = 'Y')
+      and r.week in ( select week from wmg_tournament_sessions where tournament_id = :P60_TOURNAMENT_ID)
       group by substr(r.week,1,3)
              , p.player_name
       order by 3 desc
