@@ -59,7 +59,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: Player # 46995262475564515187
     position: SUB_REGIONS
     start-new-layout: false
@@ -202,7 +202,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: Player # 46995262475564515187
     position: SUB_REGIONS
     start-new-layout: false
@@ -239,6 +239,56 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Push Notifications ==========================
+  id: 49805998829068417
+  identification: 
+    title: Push Notifications
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Player # 46995262475564515187
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':G_DISCORD_ID = :P7_DISCORD_ID'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Push Notifications' # 18634749735748301
 
   attributes: 
     settings: 
@@ -1243,6 +1293,39 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: ENABLE_PUSH_NOTIFICATONS ====================
+  id: 49806010124068418
+  identification: 
+    button-name: ENABLE_PUSH_NOTIFICATONS
+    label: 'Push Notifications: <span class="a-pwaPush--state"></span>'
+
+  layout: 
+    sequence: 10
+    region: Push Notifications # 49805998829068417
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:600:&SESSION.::&DEBUG.:::'
+      page: 600 # Push Notifications
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: CANCEL ======================================
   id: 46995265300623515189
   identification: 
@@ -1514,44 +1597,6 @@ dynamic-actions:
       event: Cancel Dialog # 46995265350698515189
       fire-when-event-result-is: True
       fire-on-initialization: false
-
-validations: 
-- # ====== Validation: Nickname Same a Name ====================
-  id: 38737259533129105
-  identification: 
-    name: Nickname Same a Name
-
-  execution: 
-    sequence: 10
-
-  validation: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: "upper(:P7_ACCOUNT) != nvl(upper(:P7_NAME), '~NA~')"
-    always-execute: false
-
-  error: 
-    error-message: Only use a nickname when you have one set on Discord
-    display-location: Inline with Field and in Notification
-    associated-item: P7_NAME # 46995263531680515188
-
-computations: 
-- # ====== Computation: P7_NAME ================================
-  id: 38737346193129106
-  identification: 
-    item-name: P7_NAME
-
-  execution: 
-    sequence: 10
-    point: After Submit
-
-  computation: 
-    type: Static Value
-
-  server-side-condition: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: "upper(:P7_ACCOUNT) = nvl(upper(:P7_NAME), '~NA~')"
 
 processes: 
 - # ====== Process: Initialize form Player =====================
