@@ -890,15 +890,19 @@ page-items:
   id: 56024166002032751659
   identification: 
     name: P532_EASY_COURSE_ID
-    type: Select List
+    type: Popup LOV
 
   label: 
     label: Easy Course
     alignment: Left
 
   settings: 
-    page-action-on-selection: None
-    allow-multi-selection: false
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
 
   layout: 
     sequence: 70
@@ -916,7 +920,7 @@ page-items:
     template: Optional - Floating # 46995171503553514398
     template-options: 
     - '#DEFAULT#'
-    height: 1
+    width: 30
 
   validation: 
     value-required: false
@@ -928,7 +932,7 @@ page-items:
            , id 
       from wmg_courses
       where course_mode = 'E'
-      order by 1
+      order by release_order, code
     display-extra-values: true
     display-null-value: true
     null-display-value: '- TBD -'
@@ -955,15 +959,19 @@ page-items:
   id: 56024166100119751660
   identification: 
     name: P532_HARD_COURSE_ID
-    type: Select List
+    type: Popup LOV
 
   label: 
     label: Hard Course
     alignment: Left
 
   settings: 
-    page-action-on-selection: None
-    allow-multi-selection: false
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
 
   layout: 
     sequence: 80
@@ -981,7 +989,7 @@ page-items:
     template: Optional - Floating # 46995171503553514398
     template-options: 
     - '#DEFAULT#'
-    height: 1
+    width: 30
 
   validation: 
     value-required: false
@@ -993,7 +1001,7 @@ page-items:
            , id 
       from wmg_courses
       where course_mode = 'H'
-      order by 1
+      order by release_order, code
     display-extra-values: true
     display-null-value: true
     null-display-value: '- TBD -'
@@ -2286,5 +2294,5 @@ processes:
 
   server-side-condition: 
     type: Request is contained in Value
-    value: CREATE,SAVE,DELETE
+    value: CREATE,SAVE,DELETE,CLOSE_WEEKEND
 

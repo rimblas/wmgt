@@ -1409,7 +1409,9 @@ regions:
       lazy-loading: false
 
     messages: 
-      when-no-data-found: '- No Current Tournament -'
+      when-no-data-found: |
+        - No Current Season -
+        <button type="button" class="t-Button t-Button--link" onclick="$('#BTN_NEW_SEASON').click()">Start a new season</button>
 
     break-formatting: 
       break-columns: No Break
@@ -1506,7 +1508,7 @@ regions:
     link: 
       target: 
         url: 'f?p=&APP_ID.:525:&SESSION.::&DEBUG.:525:P525_ID:#ID#'
-        page: 525 # Tournament Details
+        page: 525 # Tournament Season Details
         clear-cache: 525
         values: 
           p525_id: '#ID#'
@@ -1591,6 +1593,13 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select ID
+         from WMG_TOURNAMENTS
+        where CURRENT_FLAG = 'Y'
 
   server-cache: 
     caching: Disabled
@@ -2065,6 +2074,41 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: VIEW_SEASONS ================================
+  id: 20820992915502428
+  identification: 
+    button-name: VIEW_SEASONS
+    label: View Seasons
+
+  layout: 
+    sequence: 10
+    region: Season & Tournament Control # 56024163957746751639
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--mobileHideLabel
+    - t-Button--iconLeft
+    - t-Button--pillStart
+    icon: fa-calendar-user
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:530:&SESSION.::&DEBUG.:530::'
+      page: 530 # Sessions
+      clear-cache: 530
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: REGISTRATIONS ===============================
   id: 32752622686549217
   identification: 
@@ -2202,7 +2246,7 @@ buttons:
     label: New Season
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: Season & Tournament Control # 56024163957746751639
     position: EDIT
     start-new-layout: false
@@ -2216,14 +2260,16 @@ buttons:
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--mobileHideLabel
     - t-Button--iconRight
+    - t-Button--pillEnd
     icon: fa-plus
 
   behavior: 
     action: Redirect to Page in this Application
     target: 
       url: 'f?p=&APP_ID.:525:&SESSION.::&DEBUG.:525::'
-      page: 525 # Tournament Details
+      page: 525 # Tournament Season Details
       clear-cache: 525
 
     warn-on-unsaved-changes: Do Not Check
