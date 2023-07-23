@@ -24,7 +24,12 @@ navigation:
   warn-on-unsaved-changes: true
 
 security: 
-  authentication: Page Requires Authentication
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -56,9 +61,11 @@ regions:
     where-clause: |
       (player_id = :P10_PLAYER_ID or :P10_PLAYER_ID is null)
       and (round_id = :P10_ROUND_ID or :P10_ROUND_ID is null)
+      or (round_id = :P10_ROUND2_ID)
 
   order-by: 
-    type: None
+    type: Static Value
+    order-by-clause: 'decode(player_id, :P140_PLAYER2_ID, 2, 1)'
 
   layout: 
     sequence: 10
@@ -201,7 +208,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -263,7 +270,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -310,7 +317,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -687,7 +694,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -733,8 +740,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -765,8 +775,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -797,8 +810,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -829,8 +845,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -861,8 +880,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -893,8 +915,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -925,8 +950,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -957,8 +985,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -989,8 +1020,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1021,8 +1055,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1053,8 +1090,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1085,8 +1125,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1117,8 +1160,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1149,8 +1195,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1181,8 +1230,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1213,8 +1265,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1245,8 +1300,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1277,8 +1335,11 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      highlight-words: 1
+
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -1593,6 +1654,66 @@ regions:
       escape-special-characters: true
 
 page-items: 
+- # ====== Page Item: P10_PLAYER2_ID ===========================
+  id: 23850158082801618
+  identification: 
+    name: P10_PLAYER2_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: Player Round Details # 49408556648041526027
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P10_ROUND2_ID ============================
+  id: 23850270645801619
+  identification: 
+    name: P10_ROUND2_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: Player Round Details # 49408556648041526027
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P10_ROUND_ID =============================
   id: 57674067503599609
   identification: 
@@ -1603,7 +1724,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 20
+    sequence: 30
     region: Player Round Details # 49408556648041526027
     position: BODY
 

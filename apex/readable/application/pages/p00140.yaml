@@ -19,6 +19,45 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: false
 
+javascript: 
+  function-and-global-variable-declaration: |
+    function highlightWinner() {
+    
+      var winnerClass = "u-color-4";
+    
+      $("#userScores [data-course]").each(  // Select all the courses
+      function(idx, el) {
+          const course = el.dataset.course;
+    
+          var elements = $("[data-course='" + course + "']"); // Select all elements with a data-score attribute for a course
+    
+          // var elements = $('[data-score]'); // Select all elements with a data-score attribute
+          var smallestNumber = Infinity; // Initialize smallestNumber with a large value
+          var winnerElement = null; // Initialize winnerElement as null
+    
+          elements.each(function() {
+            var score = $(this).data('score');
+            if (score !== '') {
+              var number = parseFloat(score);
+              if (!isNaN(number) && number < smallestNumber) {
+                smallestNumber = number;
+                winnerElement = this; // Update the winnerElement
+              }
+            }
+          });
+    
+          elements.removeClass(winnerClass); // Remove the winnerClass from all elements
+          if (winnerElement !== null) {
+            $(winnerElement).addClass(winnerClass); // Add the winnerClass to the winnerElement
+          }
+    
+        })
+    
+        // hoist the winners to the td for better highlighting
+        $("a." + winnerClass).parents("td").addClass(winnerClass);
+    
+    }
+
 security: 
   authentication: Page Is Public
 
@@ -52,46 +91,42 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with players_best as (
-        select players_id, round_id, course_id, under_par
-        from (
-          select r.players_id, r.id round_id, r.course_id, coalesce(r.override_score, r.final_score) under_par
-               , row_number() over (partition by r.players_id, r.course_id order by coalesce(r.override_score, r.final_score)) rn
-           from wmg_rounds r
-          where r.players_id = :P140_PLAYER2_ID
-        )
-        where rn = 1
-      )
-      , courses_easy as (
-          select e.id easy_course_id
+      with courses_easy as (
+          select p.players_id
+               , e.id easy_course_id
                , e.code easy_course
                , e.name easy_name
                , p.under_par best_easy
                , p.round_id easy_round_id
                , release_order
           from wmg_courses e
-             , players_best p
+             , wmg_players_best_round_v p
           where e.course_mode = 'E'
             and p.course_id (+) = e.id
+            and p.players_id (+) = :P140_PLAYER2_ID
       )
       , courses_hard as (
-          select h.id hard_course_id
+          select p.players_id
+               , h.id hard_course_id
                , h.code hard_course
                , h.name hard_name
                , p.under_par best_hard
                , p.round_id hard_round_id
                , h.release_order
           from wmg_courses h
-             , players_best p
+             , wmg_players_best_round_v p
           where h.course_mode = 'H'
            and p.course_id (+) = h.id
+            and p.players_id (+) = :P140_PLAYER2_ID
       )
       , courses_pivot as (
-          select e.easy_course_id
+          select coalesce(e.players_id, h.players_id) player_id
+               , e.easy_course_id
                , e.easy_course
                , e.easy_name
                , e.best_easy
                , e.easy_round_id
+               -- , h.players_id
                , h.best_hard
                , h.hard_course_id
                , h.hard_round_id
@@ -103,13 +138,21 @@ regions:
           on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
       )
       select easy_name
+           , easy_course_id
+           , easy_course
+           , hard_course_id
+           , hard_course
            , best_easy
            , best_hard
            , easy_round_id
            , hard_round_id
-      from courses_pivot
+           , (select p2.round_id from wmg_players_best_round_v p2 where p2.players_id = :P140_PLAYER_ID and p2.course_id = cp.easy_course_id) p1_easy_round_id
+           , (select p2.round_id from wmg_players_best_round_v p2 where p2.players_id = :P140_PLAYER_ID and p2.course_id = cp.hard_course_id) p1_hard_round_id
+      from courses_pivot cp
       order by course_order
+      
     page-items-to-submit: 
+    - P140_PLAYER_ID
     - P140_PLAYER2_ID
 
   layout: 
@@ -190,6 +233,66 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: EASY_COURSE_ID ==============================
+    id: 19784125556340335
+    identification: 
+      column-name: EASY_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_ID ==============================
+    id: 19784233373340336
+    identification: 
+      column-name: HARD_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: P1_EASY_ROUND_ID ============================
+    id: 19784587562340339
+    identification: 
+      column-name: P1_EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: P1_HARD_ROUND_ID ============================
+    id: 19784658429340340
+    identification: 
+      column-name: P1_HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_NAME ===================================
     id: 57675458059599623
     identification: 
@@ -241,14 +344,16 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER2_ID.,#EASY_ROUND_ID#'
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID,P10_ROUND2_ID:&P140_PLAYER2_ID.,#EASY_ROUND_ID#,#P1_EASY_ROUND_ID#'
         page: 10 # Player Round Details
         clear-cache: 10
         values: 
           p10_player_id: '&P140_PLAYER2_ID.'
           p10_round_id: '#EASY_ROUND_ID#'
+          p10_round2_id: '#P1_EASY_ROUND_ID#'
 
       link-text: '#BEST_EASY#'
+      link-attributes: data-course="#EASY_COURSE#" data-score="#BEST_EASY#"
 
     sorting: 
       sortable: false
@@ -284,14 +389,16 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER2_ID.,#HARD_ROUND_ID#'
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID,P10_ROUND2_ID:&P140_PLAYER2_ID.,#HARD_ROUND_ID#,#P1_HARD_ROUND_ID#'
         page: 10 # Player Round Details
         clear-cache: 10
         values: 
           p10_player_id: '&P140_PLAYER2_ID.'
           p10_round_id: '#HARD_ROUND_ID#'
+          p10_round2_id: '#P1_HARD_ROUND_ID#'
 
       link-text: '#BEST_HARD#'
+      link-attributes: data-course="#HARD_COURSE#" data-score="#BEST_HARD#"
 
     sorting: 
       sortable: false
@@ -331,6 +438,36 @@ regions:
 
     layout: 
       sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 57677981399599648
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 57678098494599649
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -481,11 +618,17 @@ regions:
           on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
       )
       select easy_name
+           , easy_course_id
+           , easy_course
+           , hard_course_id
+           , hard_course
            , best_easy
            , best_hard
            , easy_round_id
            , hard_round_id
-      from courses_pivot
+           , (select p2.round_id from wmg_players_best_round_v p2 where p2.players_id = :P140_PLAYER2_ID and p2.course_id = cp.easy_course_id) p2_easy_round_id
+           , (select p2.round_id from wmg_players_best_round_v p2 where p2.players_id = :P140_PLAYER2_ID and p2.course_id = cp.hard_course_id) p2_hard_round_id
+      from courses_pivot cp
       order by course_order
     page-items-to-submit: 
     - P140_PLAYER_ID
@@ -514,6 +657,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: userScores
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -568,6 +712,96 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: HARD_COURSE =================================
+    id: 19780705227340301
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 25
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_ID ==============================
+    id: 19784705184340341
+    identification: 
+      column-name: EASY_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 35
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_ID ==============================
+    id: 19784885991340342
+    identification: 
+      column-name: HARD_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 45
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: P2_EASY_ROUND_ID ============================
+    id: 19784910975340343
+    identification: 
+      column-name: P2_EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 55
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: P2_HARD_ROUND_ID ============================
+    id: 19785011277340344
+    identification: 
+      column-name: P2_HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 65
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 57678108052599650
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 15
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_NAME ===================================
     id: 61204562476493623
     identification: 
@@ -619,14 +853,16 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER_ID.,#EASY_ROUND_ID#'
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID,P10_ROUND2_ID:&P140_PLAYER_ID.,#EASY_ROUND_ID#,#P2_EASY_ROUND_ID#'
         page: 10 # Player Round Details
         clear-cache: 10
         values: 
           p10_player_id: '&P140_PLAYER_ID.'
           p10_round_id: '#EASY_ROUND_ID#'
+          p10_round2_id: '#P2_EASY_ROUND_ID#'
 
       link-text: '#BEST_EASY#'
+      link-attributes: data-course="#EASY_COURSE#" data-score="#BEST_EASY#"
 
     sorting: 
       sortable: false
@@ -662,14 +898,16 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID:&P140_PLAYER_ID.,#HARD_ROUND_ID#'
+        url: 'f?p=&APP_ID.:10:&SESSION.::&DEBUG.:10:P10_PLAYER_ID,P10_ROUND_ID,P10_ROUND2_ID:&P140_PLAYER_ID.,#HARD_ROUND_ID#,#P2_HARD_ROUND_ID#'
         page: 10 # Player Round Details
         clear-cache: 10
         values: 
           p10_player_id: '&P140_PLAYER_ID.'
           p10_round_id: '#HARD_ROUND_ID#'
+          p10_round2_id: '#P2_HARD_ROUND_ID#'
 
       link-text: '#BEST_HARD#'
+      link-attributes: data-course="#HARD_COURSE#" data-score="#BEST_HARD#"
 
     sorting: 
       sortable: false
@@ -849,6 +1087,42 @@ page-items:
     restricted-characters: All characters can be saved.
 
 dynamic-actions: 
+- # ====== Dynamic Action: Highlight After Refresh_1 ===========
+  id: 19780898405340302
+  identification: 
+    name: Highlight After Refresh_1
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Best Scores # 61204151009493615
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 19780926926340303
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: highlightWinner()
+
+    execution: 
+      sequence: 10
+      event: Highlight After Refresh_1 # 19780898405340302
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item is not null
+      item: P140_PLAYER2_ID
+
 - # ====== Dynamic Action: Refresh Results =====================
   id: 57673844496599607
   identification: 
@@ -868,6 +1142,21 @@ dynamic-actions:
     type: Immediate
 
   actions: 
+  - # ====== Action: Refresh =====================================
+    id: 19785132377340345
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Compare Scores # 57675336189599622
+
+    execution: 
+      sequence: 20
+      event: Refresh Results # 57673844496599607
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
   - # ====== Action: Refresh =====================================
     id: 57673995923599608
     identification: 
@@ -902,6 +1191,21 @@ dynamic-actions:
     type: Immediate
 
   actions: 
+  - # ====== Action: Refresh =====================================
+    id: 19785213040340346
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Best Scores # 61204151009493615
+
+    execution: 
+      sequence: 50
+      event: Refresh Compare # 57676002746599629
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
   - # ====== Action: Refresh =====================================
     id: 57676194011599630
     identification: 
@@ -953,5 +1257,41 @@ dynamic-actions:
 
     client-side-condition: 
       type: Item is null
+      item: P140_PLAYER2_ID
+
+- # ====== Dynamic Action: Highlight After Refresh =============
+  id: 57677721427599646
+  identification: 
+    name: Highlight After Refresh
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Compare Scores # 57675336189599622
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 57677860172599647
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: highlightWinner()
+
+    execution: 
+      sequence: 10
+      event: Highlight After Refresh # 57677721427599646
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is not null
       item: P140_PLAYER2_ID
 

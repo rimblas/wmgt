@@ -53,6 +53,23 @@ css:
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    .HIO {
+        fill: var(--u-color-3);
+        background-color: var(--u-color-3);
+        --u-color-contrast: var(--u-color-3-contrast)!important;
+        stroke: var(--u-color-3);
+        color: var(--u-color-3-contrast);
+        font-weight: 700;
+    }
+    
+    .OVER {
+        fill: var(--u-color-7);
+        background-color: var(--u-color-7);
+        --u-color-contrast: var(--u-color-7-contrast)!important;
+        stroke: var(--u-color-7);
+        color: var(--u-color-7-contrast);
+    }
+    
     @media (min-width: 640px) {
     #statsRegion  .container {
         flex-direction: row;
@@ -1632,32 +1649,50 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select PLAYER_NAME,
-             COURSE_ID,
-             COURSE_MODE,
-             COURSE_CODE,
-             COURSE_NAME,
-             S1,
-             S2,
-             S3,
-             S4,
-             S5,
-             S6,
-             S7,
-             S8,
-             S9,
-             S10,
-             S11,
-             S12,
-             S13,
-             S14,
-             S15,
-             S16,
-             S17,
-             S18,
-             ROUND_STROKES,
-             UNDER_PAR
-        from WMG_ROUNDS_V
+      select player_name
+           , course_id
+           , course_mode
+           , course_code
+           , course_name
+           , s1
+           , case when s1 = 1 then 'HIO' when s1>h1 then 'OVER' end s1_status
+           , s2
+           , case when s2 = 1 then 'HIO' when s2>h2 then 'OVER' end s2_status
+           , s3
+           , case when s3 = 1 then 'HIO' when s3>h3 then 'OVER' end s3_status
+           , s4
+           , case when s4 = 1 then 'HIO' when s4>h4 then 'OVER' end s4_status
+           , s5
+           , case when s5 = 1 then 'HIO' when s5>h5 then 'OVER' end s5_status
+           , s6
+           , case when s6 = 1 then 'HIO' when s6>h6 then 'OVER' end s6_status
+           , s7
+           , case when s7 = 1 then 'HIO' when s7>h7 then 'OVER' end s7_status
+           , s8
+           , case when s8 = 1 then 'HIO' when s8>h8 then 'OVER' end s8_status
+           , s9
+           , case when s9 = 1 then 'HIO' when s9>h9 then 'OVER' end s9_status
+           , s10
+           , case when s10 = 1 then 'HIO' when s10>h10 then 'OVER' end s10_status
+           , s11
+           , case when s11 = 1 then 'HIO' when s11>h11 then 'OVER' end s11_status
+           , s12
+           , case when s12 = 1 then 'HIO' when s12>h12 then 'OVER' end s12_status
+           , s13
+           , case when s13 = 1 then 'HIO' when s13>h13 then 'OVER' end s13_status
+           , s14
+           , case when s14 = 1 then 'HIO' when s14>h14 then 'OVER' end s14_status
+           , s15
+           , case when s15 = 1 then 'HIO' when s15>h15 then 'OVER' end s15_status
+           , s16
+           , case when s16 = 1 then 'HIO' when s16>h16 then 'OVER' end s16_status
+           , s17
+           , case when s17 = 1 then 'HIO' when s17>h17 then 'OVER' end s17_status
+           , s18
+           , case when s18 = 1 then 'HIO' when s18>h18 then 'OVER' end s18_status
+           , round_strokes
+           , under_par
+        from wmg_rounds_v
         where week = :P110_WEEK
           and player_id = :P110_PLAYER_ID
       order by course_mode, course_code
@@ -1744,6 +1779,276 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: S1_STATUS ===================================
+    id: 49807481443068432
+    identification: 
+      column-name: S1_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 78
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S2_STATUS ===================================
+    id: 49807553399068433
+    identification: 
+      column-name: S2_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 88
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S3_STATUS ===================================
+    id: 49807608993068434
+    identification: 
+      column-name: S3_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 98
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S4_STATUS ===================================
+    id: 49807786214068435
+    identification: 
+      column-name: S4_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 108
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S5_STATUS ===================================
+    id: 49807820299068436
+    identification: 
+      column-name: S5_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 118
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S6_STATUS ===================================
+    id: 49807909939068437
+    identification: 
+      column-name: S6_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 128
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S7_STATUS ===================================
+    id: 49808020688068438
+    identification: 
+      column-name: S7_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 138
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S8_STATUS ===================================
+    id: 49808176066068439
+    identification: 
+      column-name: S8_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 148
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S9_STATUS ===================================
+    id: 49808231691068440
+    identification: 
+      column-name: S9_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 158
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S10_STATUS ==================================
+    id: 49808326266068441
+    identification: 
+      column-name: S10_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 168
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S11_STATUS ==================================
+    id: 49808480297068442
+    identification: 
+      column-name: S11_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 178
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S12_STATUS ==================================
+    id: 49808585452068443
+    identification: 
+      column-name: S12_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 188
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S13_STATUS ==================================
+    id: 49808604789068444
+    identification: 
+      column-name: S13_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 198
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S14_STATUS ==================================
+    id: 49808785184068445
+    identification: 
+      column-name: S14_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 208
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S15_STATUS ==================================
+    id: 49808833167068446
+    identification: 
+      column-name: S15_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 218
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S16_STATUS ==================================
+    id: 49808987700068447
+    identification: 
+      column-name: S16_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 228
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S17_STATUS ==================================
+    id: 49809044319068448
+    identification: 
+      column-name: S17_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 238
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: S18_STATUS ==================================
+    id: 49809148878068449
+    identification: 
+      column-name: S18_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 248
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: COURSE_MODE =================================
     id: 49314172660912588547
     identification: 
@@ -1888,7 +2193,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      highlight-words: 1
+      html-expression: <span class="#S1_STATUS#">#S1#</span>
 
     sorting: 
       sortable: false
@@ -1923,6 +2228,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S2_STATUS#">#S2#</span>
       highlight-words: 1
 
     sorting: 
@@ -1958,7 +2264,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      highlight-words: 1
+      html-expression: <span class="#S3_STATUS#">#S3#</span>
 
     sorting: 
       sortable: false
@@ -1993,6 +2299,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S4_STATUS#">#S4#</span>
       highlight-words: 1
 
     sorting: 
@@ -2028,7 +2335,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      highlight-words: 1
+      html-expression: <span class="#S5_STATUS#">#S5#</span>
 
     sorting: 
       sortable: false
@@ -2063,6 +2370,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S6_STATUS#">#S6#</span>
       highlight-words: 1
 
     sorting: 
@@ -2098,6 +2406,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S7_STATUS#">#S7#</span>
       highlight-words: 1
 
     sorting: 
@@ -2133,6 +2442,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S8_STATUS#">#S8#</span>
       highlight-words: 1
 
     sorting: 
@@ -2168,6 +2478,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S9_STATUS#">#S9#</span>
       highlight-words: 1
 
     sorting: 
@@ -2203,6 +2514,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S10_STATUS#">#S10#</span>
       highlight-words: 1
 
     sorting: 
@@ -2238,6 +2550,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S11_STATUS#">#S11#</span>
       highlight-words: 1
 
     sorting: 
@@ -2273,6 +2586,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S12_STATUS#">#S12#</span>
       highlight-words: 1
 
     sorting: 
@@ -2308,6 +2622,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S13_STATUS#">#S13#</span>
       highlight-words: 1
 
     sorting: 
@@ -2343,6 +2658,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S14_STATUS#">#S14#</span>
       highlight-words: 1
 
     sorting: 
@@ -2378,6 +2694,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S15_STATUS#">#S15#</span>
       highlight-words: 1
 
     sorting: 
@@ -2413,6 +2730,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
+      html-expression: <span class="#S16_STATUS#">#S16#</span>
       highlight-words: 1
 
     sorting: 
@@ -2448,7 +2766,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      highlight-words: 1
+      html-expression: <span class="#S17_STATUS#">#S17#</span>
 
     sorting: 
       sortable: false
@@ -2483,7 +2801,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      highlight-words: 1
+      html-expression: <span class="#S18_STATUS#">#S18#</span>
 
     sorting: 
       sortable: false
@@ -4409,6 +4727,40 @@ dynamic-actions:
       fire-on-initialization: false
       stop-execution-on-error: true
       wait-for-result: true
+
+- # ====== Dynamic Action: Hoist Classes afte Refresh ==========
+  id: 49809263938068450
+  identification: 
+    name: Hoist Classes afte Refresh
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Player Round Details # 98808650782335523961
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 20818268326502401
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $("span.HIO").removeClass().parents("td").addClass("HIO")
+        $("span.OVER").removeClass().parents("td").addClass("OVER")
+
+    execution: 
+      sequence: 10
+      event: Hoist Classes afte Refresh # 49809263938068450
+      fire-when-event-result-is: True
+      fire-on-initialization: true
 
 - # ====== Dynamic Action: Preview Hole ========================
   id: 21381631637469382607
