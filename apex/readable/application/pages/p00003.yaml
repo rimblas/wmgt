@@ -1360,6 +1360,66 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P3_RELEASE_DATE ==========================
+  id: 57677626423599645
+  identification: 
+    name: P3_RELEASE_DATE
+    type: Date Picker
+
+  label: 
+    label: Release Date
+    alignment: Left
+
+  settings: 
+    show-time: false
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: No
+    use-defaults: true
+
+  layout: 
+    sequence: 70
+    region: Course # 46995217613009514582
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46995172770404514399
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course # 46995217613009514582
+    column: RELEASE_DATE
+    data-type: DATE
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P3_ID ====================================
   id: 46995217849719514583
   identification: 
@@ -1431,7 +1491,7 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 20
+    maximum-length: 5
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1492,7 +1552,7 @@ page-items:
 
   validation: 
     value-required: true
-    maximum-length: 1020
+    maximum-length: 255
 
   advanced: 
     warn-on-unsaved-changes: Page Default

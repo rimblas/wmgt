@@ -672,6 +672,676 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Previous Season Winners =====================
+  id: 20818362047502402
+  identification: 
+    title: Previous Season Winners
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with all_weeks as (
+        select ts.id tournament_session_id, ts.round_num, ts.week, ts.session_date
+         from wmg_tournament_sessions ts
+        where ts.tournament_id in (  
+            select tournament_id
+          from wmg_tournament_sessions
+          order by session_date desc
+          fetch first 1 rows only
+        )
+      )
+      , all_tournament_players as (
+        select distinct p.player_id, w.tournament_session_id, w.round_num, w.week, w.session_date
+          from wmg_tournament_players p
+             , all_weeks w
+         where p.tournament_session_id in (
+            select aw.tournament_session_id
+             from all_weeks aw
+          )
+          and p.active_ind = 'Y'
+      )
+      , sessions_pivot as (
+          select player_id
+               , max(w1_points)        w1_points
+               , max(w1_week)          w1_week
+               , max(w1_discarded_points_flag)  w1_discard
+               , max(w2_points)        w2_points
+               , max(w2_week)          w2_week
+               , max(w2_discarded_points_flag)  w2_discard
+               , max(w3_points)        w3_points
+               , max(w3_week)          w3_week
+               , max(w3_discarded_points_flag)  w3_discard
+               , max(w4_points)        w4_points
+               , max(w4_week)          w4_week
+               , max(w4_discarded_points_flag)  w4_discard
+               , max(w5_points)        w5_points
+               , max(w5_week)          w5_week
+               , max(w5_discarded_points_flag)  w5_discard
+               , max(w6_points)        w6_points
+               , max(w6_week)          w6_week
+               , max(w6_discarded_points_flag)  w6_discard
+               , max(w7_points)        w7_points
+               , max(w7_week)          w7_week
+               , max(w7_discarded_points_flag)  w7_discard
+               , max(w8_points)        w8_points
+               , max(w8_week)          w8_week
+               , max(w8_discarded_points_flag)  w8_discard
+               , max(w9_points)        w9_points
+               , max(w9_week)          w9_week
+               , max(w9_discarded_points_flag)  w9_discard
+               , max(w10_points)       w10_points
+               , max(w10_week)         w10_week
+               , max(w10_discarded_points_flag) w10_discard
+               , max(w11_points)       w11_points
+               , max(w11_week)         w11_week
+               , max(w11_discarded_points_flag) w11_discard
+               , max(w12_points)       w12_points
+               , max(w12_week)         w12_week
+               , max(w12_discarded_points_flag) w12_discard
+          from (
+              select ap.player_id
+                   , coalesce(p.points, sp.points) points
+                   , p.discarded_points_flag
+                   , ap.round_num
+                   , coalesce(sp.week, ap.week) week
+                   , ap.session_date
+          --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+              from wmg_tournament_players p
+                 , all_tournament_players ap
+                 , wmg_tournament_session_points_v sp
+              where ap.player_id = p.player_id(+)
+                and ap.tournament_session_id = p.tournament_session_id (+)
+                and ap.week = sp.week (+)
+                and ap.player_id = sp.player_id (+)
+              order by ap.session_date
+          )
+          pivot (
+              any_value(round_num)    round_num
+            , any_value(week)         week
+            , any_value(session_date) session_date
+            , any_value(points)       points
+            , any_value(discarded_points_flag) discarded_points_flag
+            for round_num in (
+                1 as W1
+              , 2 as W2
+              , 3 as W3
+              , 4 as W4
+              , 5 as W5
+              , 6 as W6
+              , 7 as W7
+              , 8 as W8
+              , 9 as W9
+              , 10 as W10
+              , 11 as W11
+              , 12 as W12
+            )
+          )
+          group by player_id
+      )
+      , final as (
+      select rank() over (order by r.season_total desc) pos
+           , r.player_id
+           , r.player_name
+           , r.discord_id
+           , r.discord_avatar
+           , r.country_code
+           , r.country
+           , r.season_total
+           , r.rank_code
+           , r.rank_name
+           , r.rank_list_class
+        from (
+        select p.player_name
+             , p.country_code
+             , p.country
+             , p.rank_code
+             , p.rank_name
+             , p.rank_list_class
+             , p.discord_id
+             , p.discord_avatar
+             , decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
+             + decode(sp.w2_discard, 'Y', 0, nvl(sp.w2_points,0))
+             + decode(sp.w3_discard, 'Y', 0, nvl(sp.w3_points,0))
+             + decode(sp.w4_discard, 'Y', 0, nvl(sp.w4_points,0))
+             + decode(sp.w5_discard, 'Y', 0, nvl(sp.w5_points,0))
+             + decode(sp.w6_discard, 'Y', 0, nvl(sp.w6_points,0))
+             + decode(sp.w7_discard, 'Y', 0, nvl(sp.w7_points,0))
+             + decode(sp.w8_discard, 'Y', 0, nvl(sp.w8_points,0))
+             + decode(sp.w9_discard, 'Y', 0, nvl(sp.w9_points,0))
+             + decode(sp.w10_discard, 'Y', 0, nvl(sp.w10_points,0))
+             + decode(sp.w11_discard, 'Y', 0, nvl(sp.w11_points,0))
+             + decode(sp.w12_discard, 'Y', 0, nvl(sp.w12_points,0)) season_total
+           , sp.*
+        from sessions_pivot sp
+           , wmg_players_v p
+        where p.id = sp.player_id
+      ) r
+      )
+      , w_rank as (
+      select rank() over (partition by f.rank_code order by f.pos) rank_pos
+           , wmg_discord.avatar_link(f.discord_id, f.discord_avatar) avatar
+           , f.*
+      from final f
+      )
+      select p.*
+      from  w_rank p
+          , wmg_ranks r
+      where p.rank_code = r.code
+        and p.rank_pos <= 3
+        and r.active_ind = 'Y'
+      order by r.display_seq desc, p.season_total desc, nls_upper(p.player_name)
+      
+    page-items-to-submit: 
+    - P1_WEEK
+    - P1_TOURNAMENT_SESSION_ID
+    optimizer-hint: WITH_PLSQL
+
+  layout: 
+    sequence: 40
+    parent-region: '{Prev Season}' # 20820783867502426
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    - margin-left-none
+    - margin-right-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlightOff
+      - t-Report--verticalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+      repeat-heading-format: '<h5>Top #COLUMN_VALUE#s</h5>'
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: RANK_NAME ===================================
+    id: 20818477628502403
+    identification: 
+      column-name: RANK_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_POS ====================================
+    id: 20818545128502404
+    identification: 
+      column-name: RANK_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 20818643873502405
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '#'
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 20818760311502406
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 20818880251502407
+    identification: 
+      column-name: COUNTRY
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 20819052217502409
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 20819108666502410
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID:#PLAYER_ID#'
+        page: 120 # Player Profile
+        clear-cache: 120
+        values: 
+          p120_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 20820047309502419
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 20820152055502420
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SEASON_TOTAL ================================
+    id: 20820304103502422
+    identification: 
+      column-name: SEASON_TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Season Total
+      alignment: end
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 20820433246502423
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 20820571721502424
+    identification: 
+      column-name: DISCORD_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 140
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_AVATAR ==============================
+    id: 20820672008502425
+    identification: 
+      column-name: DISCORD_AVATAR
+      type: Hidden Column
+
+    layout: 
+      sequence: 150
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {Prev Season} ===============================
+  id: 20820783867502426
+  identification: 
+    title: '{Prev Season}'
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: '{col2}' # 11993448770685629
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+      l_tournament_session_id wmg_tournament_sessions.id%type;
+      l_round_num wmg_tournament_sessions.round_num%type;
+      l_completed_ind wmg_tournament_sessions.completed_ind%type;
+      begin
+      
+      if :G_CURRENT_SESSION_ID is not null then
+        return false;
+      end if;
+      
+      select id, round_num, completed_ind
+      into l_tournament_session_id, l_round_num, l_completed_ind
+      from wmg_tournament_sessions
+      order by session_date desc
+      fetch first 1 rows only;
+      
+      if l_round_num = 12 and l_completed_ind = 'Y' then
+        return true;
+      end if;
+      end;
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Season Champion Trophy ======================
+  id: 20820826961502427
+  identification: 
+    title: Season Champion Trophy
+    type: Static Content
+
+  source: 
+    html-code: '<img class="seasonTrophy" src="&BUCKET.S09_CHAMPION.gif" title="Champion Trophy: his.Dudeness S9 Champion">'
+
+  layout: 
+    sequence: 50
+    parent-region: '{Prev Season}' # 20820783867502426
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--showIcon
+    - t-Region--scrollBody
+    icon: fa-trophy
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Season Courses ==============================
   id: 32751428375549205
   identification: 
@@ -695,6 +1365,7 @@ regions:
                , s.hard_release_order
                , case when s.completed_ind = 'Y' then 'white_check_mark' else 'checkered_flag' end status
                , s.session_date
+               , s.completed_ind
           from wmg_tournament_sessions_v s
           where s.tournament_id in (
               select id
@@ -704,6 +1375,7 @@ regions:
       )
       , missing_easy as (
       select round_num
+           , easy_course_group
            , easy_course
            , easy_name
            , '' hard_course
@@ -713,11 +1385,11 @@ regions:
            , release_order
       from (
       select to_number(null) round_num
+           , e.course_group easy_course_group
            , e.code easy_course
            , tce.easy_course_code
            , e.name easy_name
-           , 'o' status
-           
+           , 'o' status     
            , 2 order_by
            , release_order
       from wmg_courses e
@@ -729,6 +1401,7 @@ regions:
       )
       , missing_hard as (
         select round_num
+             , hard_course_group
              , '' easy_course
              , '' easy_name
              , hard_course
@@ -738,6 +1411,7 @@ regions:
              , release_order
         from (
           select to_number(null) round_num
+               , h.course_group hard_course_group
                , h.code hard_course
                , h.name hard_name
                , tch.hard_course_code
@@ -757,13 +1431,13 @@ regions:
            , e.easy_name
            , h.hard_course
            , h.hard_name
-           , 'white_medium_square' status
+           , 'lock' status
            , 'Pending to be played' status_title
            , coalesce(e.order_by, h.order_by) order_by
            , coalesce(e.release_order, h.release_order) course_order     
       from missing_easy e
       full outer join missing_hard h
-      on substr(e.easy_course,1,2) = substr(h.hard_course,1,2)
+      on e.easy_course_group = h.hard_course_group
       union all
       select c.round_num
            , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
@@ -781,6 +1455,23 @@ regions:
            , 1 order_by
            , coalesce(c.easy_release_order, c.hard_release_order) course_order
         from tournament_courses c
+      union all -- Buffer Week
+      select next_round_num round_num
+           , '' url
+           , '-?-' easy_course
+           , 'TBD' easy_name
+           , '-?-' hard_course
+           , 'TBD' hard_name
+           , 'gift' status
+           , 'TBD' status_title
+           , 1 order_by
+           , 0 course_order     
+      from (
+       select nvl(max(c.round_num),0) + 1 next_round_num
+       from tournament_courses c
+      )
+      where next_round_num <= 12
+        and not exists (select 1 from tournament_courses where completed_ind = 'N') -- only add the TBD line when the current tournament is not finished
       order by order_by, round_num, course_order
       
 
@@ -899,7 +1590,11 @@ regions:
           <span class="t-Button-label"><span class="hidden-xs-down">Week </span>#ROUND_NUM# of 12</span>
         </a>
         {else/}
-        #ROUND_NUM#
+        {if ROUND_NUM/}
+        <div class="t-Button t-Button--icon t-Button--tiny">
+        <span class="hidden-xs-down">Week </span>#ROUND_NUM# of 12</span>
+        </div>
+        {endif/}
         {endif/}
 
     sorting: 
@@ -1227,7 +1922,7 @@ regions:
       
 
   layout: 
-    sequence: 50
+    sequence: 70
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -1542,6 +2237,60 @@ regions:
     security: 
       authorization-scheme: Tournament Admin # 55902033226819493948
       escape-special-characters: true
+
+- # ====== Region: {Player Profile Buttons3} ===================
+  id: 49807380987068431
+  identification: 
+    title: '{Player Profile Buttons3}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: '{col1}' # 36326139583635119
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-4
+    - col-sm-6
+    - col-xs-12
+
+  appearance: 
+    template: Buttons Container # 46995043489945514344
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--noPadding
+    - t-ButtonRegion--noUI
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_DISCORD_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: About the Discord Login =====================
   id: 56323839251197728
@@ -2195,7 +2944,7 @@ regions:
     optimizer-hint: WITH_PLSQL
 
   layout: 
-    sequence: 30
+    sequence: 60
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -2812,6 +3561,74 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: ENABLE_PUSH_NOTIFICATONS ====================
+  id: 19993600497556795
+  identification: 
+    button-name: ENABLE_PUSH_NOTIFICATONS
+    label: 'Push Notifications: <span class="a-pwaPush--state"></span>'
+
+  layout: 
+    sequence: 10
+    region: '{Player Profile Buttons3}' # 49807380987068431
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconLeft
+    icon: fa-send
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:600:&SESSION.::&DEBUG.:::'
+      page: 600 # Push Notifications
+
+    warn-on-unsaved-changes: Do Not Check
+
+  configuration: 
+    build-option: 'Feature: Push Notifications' # 18634749735748301
+
+- # ====== Button: REFRESH_COURSES =============================
+  id: 20821027718502429
+  identification: 
+    button-name: REFRESH_COURSES
+    label: Refresh Courses
+
+  layout: 
+    sequence: 10
+    region: '{col3}' # 13437440212291548
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-refresh
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
 - # ====== Button: EDIT ========================================
   id: 32755234177549243
   identification: 
@@ -3008,6 +3825,38 @@ buttons:
     - with
     - Discord"
 
+- # ====== Button: PUSH ========================================
+  id: 49806238128068420
+  identification: 
+    button-name: PUSH
+    label: Push
+
+  layout: 
+    sequence: 49
+    region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
 - # ====== Button: MY_ROUNDS ===================================
   id: 57673651285599605
   identification: 
@@ -3015,7 +3864,7 @@ buttons:
     label: My Rounds
 
   layout: 
-    sequence: 10
+    sequence: 30
     region: '{Player Profile Buttons2}' # 57673531577599604
     position: PREVIOUS
     start-new-layout: false
@@ -3158,6 +4007,95 @@ computations:
         and tp.tournament_session_id = :G_CURRENT_SESSION_ID
         and p.account_login = :APP_USER
         and tp.active_ind = 'Y'
+
+processes: 
+- # ====== Process: Refresh Courses ============================
+  id: 20821172561502430
+  identification: 
+    name: Refresh Courses
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      -- make the changes visible right away
+      apex_region.purge_cache (
+          p_page_id    => 1
+      );
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: REFRESH_COURSES # 20821027718502429
+
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
+- # ====== Process: Purge Regions ==============================
+  id: 39136754329390018
+  identification: 
+    name: Purge Regions
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      apex_region.purge_cache (
+          p_page_id    => 1
+      );
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+    run-process: Once Per Page Visit (default)
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
+- # ====== Process: New_1 ======================================
+  id: 49807243293068430
+  identification: 
+    name: New_1
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      BEGIN
+          apex_pwa.send_push_notification (
+              p_application_id => :APP_ID,
+              p_user_name      => :APP_USER,
+              p_title          => 'Your order has been shipped',
+              p_body           => 'Order #123456 will arrive within 3 days.' );
+      
+      BEGIN
+          apex_pwa.push_queue;
+      END;
+      
+      END;
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: PUSH # 49806238128068420
 
 branches: 
 - # ====== Branch: Go Match existing player to Discord account =

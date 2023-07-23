@@ -29,8 +29,17 @@ navigation:
 javascript: 
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+  - //cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js
+  - null
   function-and-global-variable-declaration: |
     var selectedRank,selectedRankClass;
+    function confetti_time() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
     function badgeMenuAction(btn, actionMenu, badge, player) {
      apex.server.process('BADGES'
         , {x01: actionMenu.label.split(' ')[0],
@@ -227,50 +236,49 @@ css:
     span.points {
         font-weight: 700;
     }
-    span.top {font-weight: bold;}
     td.top {
-        background-color: var(--u-color-1);
-        color: var(--u-color-1-contrast);
+        background-color: var(--rw-palette-ocean-120);
+        color: var(--rw-palette-ocean-10);
     }
     .p10 {
-        background-color: var(--u-color-2);
-        color: var(--u-color-2-contrast);
+        background-color: var(--rw-palette-ocean-110);
+        color: var(--rw-palette-ocean-10);
     }
     .p9 {
-        background-color: var(--u-color-3);
-        color: var(--u-color-3-contrast);
+        background-color: var(--rw-palette-ocean-100);
+        color: var(--rw-palette-ocean-10);
     }
     .p8 {
-        background-color: var(--u-color-4);
-        color: var(--u-color-4-contrast);
+        background-color: var(--rw-palette-ocean-90);
+        color: var(--rw-palette-ocean-10);
     }
     .p7 {
-        background-color: var(--u-color-5);
-        color: var(--u-color-5-contrast);
+        background-color: var(--rw-palette-ocean-80);
+        color: var(--rw-palette-ocean-30);
     }
     .p6 {
-        background-color: var(--u-color-6);
-        color: var(--u-color-6-contrast);
+        background-color: var(--rw-palette-ocean-70);
+        color: var(--rw-palette-ocean-140);
     }
     .p5 {
-        background-color: var(--u-color-13);
-        color: var(--u-color-13-contrast);
+        background-color: var(--rw-palette-ocean-60);
+        color: var(--rw-palette-ocean-140);
     }
     .p4 {
-        background-color: var(--u-color-14);
-        color: var(--u-color-14-contrast);
+        background-color: var(--rw-palette-ocean-50);
+        color: var(--rw-palette-ocean-140);
     }
     .p3 {
-        background-color: var(--u-color-15);
-        color: var(--u-color-15-contrast);
+        background-color: var(--rw-palette-ocean-40);
+        color: var(--rw-palette-ocean-140);
     }
     .points.p2 {
-        background-color: var(--u-color-16);
-        color: var(--u-color-16-contrast);
+        background-color: var(--rw-palette-ocean-30);
+        color: var(--rw-palette-ocean-140);
     }
     .points.p1 {
-        background-color: var(--u-color-17);
-        color: var(--u-color-17-contrast);
+        background-color: var(--rw-palette-ocean-20);
+        color: var(--rw-palette-ocean-140);
     }
     .points.p0 {
         color: red;
@@ -678,10 +686,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Most h1n Current Season =====================
+- # ====== Region: Most h1n Season &P60_TOURNAMENT. ============
   id: 24462985729664546600
   identification: 
-    title: Most h1n Current Season
+    title: Most h1n Season &P60_TOURNAMENT.
     type: Classic Report
 
   source: 
@@ -695,11 +703,11 @@ regions:
            , sum(r.score) hn1
         from wmg_rounds_unpivot_mv r
            , wmg_players_v p
-           , wmg_courses_v c
+           , wmg_courses c
       where r.player_id = p.id
-      and c.course_id = r.course_id
+      and c.id = r.course_id
       and r.score = 1
-       and r.week like ( select prefix_tournament || '%' from wmg_tournaments where current_flag = 'Y')
+      and r.week in ( select week from wmg_tournament_sessions where tournament_id = :P60_TOURNAMENT_ID)
       group by substr(r.week,1,3)
              , p.player_name
       order by 3 desc
@@ -2874,6 +2882,52 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: true
 
+- # ====== Dynamic Action: Celebrate with Confetti =============
+  id: 20605983648883943
+  identification: 
+    name: Celebrate with Confetti
+
+  execution: 
+    sequence: 120
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Request = Value
+    value: SUCCESS
+
+  comments: 
+    comments: |
+      New condition to celebrate the top 10:
+      select 1
+      from wmg_tournament_session_points_v
+      where week = :P50_WEEK
+        and player_id = :P50_PLAYERS_ID
+        and points <= 10
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 20606349410883951
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: confetti_time()
+
+    execution: 
+      sequence: 10
+      event: Celebrate with Confetti # 20605983648883943
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: '!apex.theme.mq("(prefers-reduced-motion)")'
+
 - # ====== Dynamic Action: Search as we type ===================
   id: 36327504110635133
   identification: 
@@ -3515,8 +3569,9 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:61:&SESSION.::&DEBUG.::P61_SELECTOR,P61_WEEK:&P60_SELECTOR.,&P60_WEEK.&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:61:&SESSION.:&REQUEST.:&DEBUG.::P61_SELECTOR,P61_WEEK:&P60_SELECTOR.,&P60_WEEK.&success_msg=#SUCCESS_MSG#'
       page: 61 # View Season Results
+      request: '&REQUEST.'
       values: 
         p61_selector: '&P60_SELECTOR.'
         p61_week: '&P60_WEEK.'

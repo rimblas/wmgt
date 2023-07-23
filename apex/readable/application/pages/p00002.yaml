@@ -67,25 +67,187 @@ help:
     <p>Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
 
 regions: 
-- # ====== Region: Courses =====================================
-  id: 46995225092964514588
+- # ====== Region: {Filters} ===================================
+  id: 21596831448342803
   identification: 
-    title: Courses
-    type: Interactive Report
+    title: '{Filters}'
+    type: Smart Filters
 
   source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      select course_ID id,
-             release_order,
-             CODE,
-             NAME,
-             COURSE_MODE
-           , course_par
-           , :BUCKET || code || '_FULL.jpg' icon
-        from WMG_COURSES_V
-      
+    filtered-region: '{Courses}' # 21598597575342820
+
+  layout: 
+    sequence: 20
+    parent-region: '{Header}' # 21597190190342806
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 10
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      more-filters-suggestion-chip: false
+      compact-numbers-threshold: 10000
+      show-total-row-count: Yes
+      total-row-count-label: Courses
+
+  facets: 
+  - # ====== Facet: P2_SEARCH ====================================
+    id: 21596948873342804
+    identification: 
+      name: P2_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      input-field: Top of Faceted Search Region
+
+    layout: 
+      sequence: 10
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Facet: P2_COURSE_MODE ===============================
+    id: 21597332502342808
+    identification: 
+      name: P2_COURSE_MODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Mode
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-volume-up
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:Easy;E,Hard;H'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  filters: 
+  - # ====== Filter: P2_SEARCH ===================================
+    id: 21596948873342804
+    identification: 
+      name: P2_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      collapsed-search-field: false
+
+    layout: 
+      sequence: 10
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Filter: P2_COURSE_MODE ==============================
+    id: 21597332502342808
+    identification: 
+      name: P2_COURSE_MODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Mode
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-volume-up
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:Easy;E,Hard;H'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+- # ====== Region: {All Courses} ===============================
+  id: 21597057640342805
+  identification: 
+    title: '{All Courses}'
+    type: Static Content
 
   layout: 
     sequence: 10
@@ -98,10 +260,17 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: None
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
     render-components: Above Content
 
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
   advanced: 
+    region-display-selector: false
     exclude-title-from-translation: false
 
   server-cache: 
@@ -111,404 +280,565 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
-    id: 46995225166116514588
-    link: 
-      link-column: Link to Custom Target
-      target: 
-        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:RP:P3_ID:\#ID#\'
-        page: 3 # Course
-        clear-cache: RP
-        values: 
-          p3_id: '#ID#'
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
-      link-icon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
-      authorization-scheme: Contribution Rights # 46995203801871514425
+- # ====== Region: {Header} ====================================
+  id: 21597190190342806
+  identification: 
+    title: '{Header}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: '{All Courses}' # 21597057640342805
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    - margin-bottom-sm
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Controls} ==================================
+  id: 21597223272342807
+  identification: 
+    title: '{Controls}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: '{Header}' # 21597190190342806
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Courses} ===================================
+  id: 21598597575342820
+  identification: 
+    title: '{Courses}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with course_stats as (
+        select tc.course_id, max(ts.session_date) last_played, count(*) played_count
+        from wmg_tournament_sessions ts
+           , wmg_tournament_courses tc
+        where tc.tournament_session_id = ts.id
+       group by tc.course_id
+      )
+      select c.course_id id
+           , c.release_order
+           , c.release_date
+           , c.code
+           , c.name
+           , c.course_mode
+           , c.course_par
+           , :BUCKET || c.code || '_FULL.jpg' icon
+           , s.last_played
+           , nvl(s.played_count, 0) played_count
+        from wmg_courses_v c
+           , course_stats s
+      where c.course_id = s.course_id (+)
+      
+
+  layout: 
+    sequence: 20
+    parent-region: '{All Courses}' # 21597057640342805
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
 
     pagination: 
-      type: Row Ranges X to Y
+      type: Row Ranges X to Y (with next and previous links)
       display-position: Bottom - Right
+      partial-page-refresh: true
 
     performance: 
       lazy-loading: false
 
-    messages: 
-      when-no-data-found: No data found.
-      when-more-data-found: 'The maximum row count for this report is #MAX_ROW_COUNT# rows.  Please apply a filter to reduce the number of records in your query.'
+    break-formatting: 
+      break-columns: No Break
 
-    search-bar: 
-      include-search-bar: true
-      search-field: true
-      finder-drop-down: true
-      reports-select-list: true
-      rows-per-page-selector: false
-
-    actions-menu: 
-      include-actions-menu: true
-      filter: true
-      select-columns: true
-      rows-per-page: true
-      sort: true
-      control-break: true
-      highlight: true
-      compute: true
-      aggregate: true
-      chart: true
-      group-by: true
-      pivot: true
-      flashback: true
-      save-report: true
-      save-public-report: false
-      reset: true
-      help: true
-      download: true
-      subscription: false
-
-    download: 
-      formats: 
-      - CSV
-      - HTML
-      - Excel
-      - PDF
-      send-as-email: true
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
 
     heading: 
-      fixed-to: Page
+      type: Custom Headings
 
-    icon-view: 
-      show: false
-
-    detail-view: 
-      show: false
-
-    saved-reports: 
-    - # ====== Saved Report: Primary Report ========================
-      id: 46995309848166515522
-      identification: 
-        name: Primary Report
-        alias: 469867890
-
-    columns: 
-    - # ====== Column: RELEASE_ORDER ===============================
-      id: 37925041136930010
-      identification: 
-        column-name: RELEASE_ORDER
-        type: Plain Text
-
-      heading: 
-        heading: '#'
-        alignment: center
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 10
-        column-alignment: end
-
-      accessibility: 
-        value-identifies-row: false
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: true
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
-
-    - # ====== Column: COURSE_PAR ==================================
-      id: 15143134301979735742
-      identification: 
-        column-name: COURSE_PAR
-        type: Plain Text
-
-      heading: 
-        heading: Par
-        alignment: center
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 60
-        column-alignment: end
-
-      accessibility: 
-        value-identifies-row: false
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: true
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
-
-    - # ====== Column: ICON ========================================
-      id: 42098138959420719031
-      identification: 
-        column-name: ICON
-        type: Plain Text
-
-      heading: 
-        heading: Icon
-        alignment: center
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 30
-        column-alignment: center
-
-      accessibility: 
-        value-identifies-row: false
-
-      column-formatting: 
-        html-expression: <img class="courseIcon" src="#ICON#" loading="lazy">
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: false
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
-
-      configuration: 
-        build-option: BUCKET_IMAGES # 42104784668155184248
-
-    - # ====== Column: ID ==========================================
-      id: 46995225536171514589
-      identification: 
-        column-name: ID
-        type: Hidden Column
-
-      heading: 
-        heading: ID
-
-      layout: 
-        sequence: 0
-
-      source: 
-        primary-key: false
-
-      security: 
-        escape-special-characters: true
-
-    - # ====== Column: CODE ========================================
-      id: 46995225947092514589
-      identification: 
-        column-name: CODE
-        type: Plain Text
-
-      heading: 
-        heading: Code
-        alignment: start
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 20
-        column-alignment: start
-
-      accessibility: 
-        value-identifies-row: false
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: true
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
-
-    - # ====== Column: NAME ========================================
-      id: 46995226354502514590
-      identification: 
-        column-name: NAME
-        type: Link
-
-      heading: 
-        heading: Name
-        alignment: start
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 40
-        column-alignment: start
-
-      accessibility: 
-        value-identifies-row: false
-
-      link: 
-        target: 
-          url: 'f?p=&APP_ID.:200:&SESSION.::&DEBUG.:RR,200:P200_COURSE_ID:\#ID#\'
-          page: 200 # Course Analysis
-          clear-cache: RR,200
-          values: 
-            p200_course_id: '#ID#'
-
-        link-text: '#NAME#'
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: true
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
-
-    - # ====== Column: COURSE_MODE =================================
-      id: 46995226754872514590
-      identification: 
-        column-name: COURSE_MODE
-        type: Plain Text
-
-      heading: 
-        heading: Mode
-        alignment: center
-
-      single-row-view: 
-        use-column-heading: true
-
-      layout: 
-        sequence: 50
-        column-alignment: center
-
-      accessibility: 
-        value-identifies-row: false
-
-      source: 
-        primary-key: false
-
-      column-filter: 
-        type: Default Based on Column Type
-
-      enable-users-to: 
-        hide: true
-        sort: true
-        filter: true
-        highlight: true
-        control-break: true
-        aggregate: true
-        compute: true
-        chart: true
-        group-by: true
-        pivot: true
-
-      security: 
-        escape-special-characters: true
+    download: 
+      csv-export-enabled: false
 
     printing: 
-      output: 
-        view-file-as: Attachment
+      enabled: false
 
-      page: 
-        size: Letter
-        orientation: Landscape
-        units: Inches
-        width: 11
-        height: 8.5
-        border-width: 0.5
-        border-color: '#666666'
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 21598636257342821
+    identification: 
+      column-name: ID
+      type: Link
 
-      page-header: 
-        font: Helvetica
-        font-weight: Normal
-        font-size: 12
-        font-color: '#000000'
-        alignment: center
-        page-header-text: Courses
+    heading: 
+      alignment: center
 
-      column-headings: 
-        font: Helvetica
-        font-weight: Bold
-        font-size: 10
-        font-color: '#000000'
-        background-color: '#EEEEEE'
+    layout: 
+      sequence: 10
+      column-alignment: center
 
-      columns: 
-        font: Helvetica
-        font-weight: Normal
-        font-size: 10
-        font-color: '#000000'
-        background-color: '#FFFFFF'
+    accessibility: 
+      value-identifies-row: false
 
-      page-footer: 
-        font: Helvetica
-        font-weight: Normal
-        font-size: 12
-        font-color: '#000000'
-        alignment: center
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:3:P3_COURSE_ID:#ID#'
+        page: 3 # Course
+        clear-cache: 3
+        values: 
+          p3_course_id: '#ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RELEASE_ORDER ===============================
+    id: 21598741427342822
+    identification: 
+      column-name: RELEASE_ORDER
+      type: Plain Text
+
+    heading: 
+      heading: Order
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      default-sequence: 1
+      direction: Ascending
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RELEASE_DATE ================================
+    id: 21598827353342823
+    identification: 
+      column-name: RELEASE_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Release Date
+      alignment: start
+
+    layout: 
+      sequence: 100
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CODE ========================================
+    id: 21598909323342824
+    identification: 
+      column-name: CODE
+      type: Plain Text
+
+    heading: 
+      heading: Code
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 21599059650342825
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 21599133084342826
+    identification: 
+      column-name: COURSE_MODE
+      type: Plain Text
+
+    heading: 
+      heading: Mode
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_PAR ==================================
+    id: 21599288541342827
+    identification: 
+      column-name: COURSE_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Course Par
+      alignment: end
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON ========================================
+    id: 21599348874342828
+    identification: 
+      column-name: ICON
+      type: Plain Text
+
+    heading: 
+      heading: Icon
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <img class="courseIcon" src="#ICON#" loading="lazy">
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: LAST_PLAYED =================================
+    id: 21599433042342829
+    identification: 
+      column-name: LAST_PLAYED
+      type: Plain Text
+
+    heading: 
+      heading: Last Played
+      alignment: start
+
+    layout: 
+      sequence: 110
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYED_COUNT ================================
+    id: 21599561556342830
+    identification: 
+      column-name: PLAYED_COUNT
+      type: Plain Text
+
+    heading: 
+      heading: No of Times Played
+      alignment: end
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DERIVED$01 ==================================
+    id: 21599624535342831
+    identification: 
+      column-name: DERIVED$01
+      type: Link
+
+    heading: 
+      heading: Analysis
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:200:&SESSION.::&DEBUG.:200:P200_COURSE_ID:#ID#'
+        page: 200 # Course Analysis
+        clear-cache: 200
+        values: 
+          p200_course_id: '#ID#'
+
+      link-text: How hard is it?
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    security: 
+      escape-special-characters: true
 
 buttons: 
 - # ====== Button: CREATE ======================================
@@ -519,13 +849,14 @@ buttons:
 
   layout: 
     sequence: 10
-    region: Courses # 46995225092964514588
-    position: RIGHT_OF_IR_SEARCH_BAR
+    region: '{Controls}' # 21597223272342807
+    position: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -548,10 +879,10 @@ buttons:
     authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
-- # ====== Dynamic Action: Edit Report - Dialog Closed =========
-  id: 46995227562287514590
+- # ====== Dynamic Action: Refresh on Close ====================
+  id: 21599762086342832
   identification: 
-    name: Edit Report - Dialog Closed
+    name: Refresh on Close
 
   execution: 
     sequence: 10
@@ -559,7 +890,7 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
-    region: Courses # 46995225092964514588
+    region: '{Courses}' # 21598597575342820
 
   execution: 
     event-scope: Static
@@ -567,17 +898,50 @@ dynamic-actions:
 
   actions: 
   - # ====== Action: Refresh =====================================
-    id: 46995228033228514590
+    id: 21599822219342833
     identification: 
       action: Refresh
 
     affected-elements: 
       selection-type: Region
-      region: Courses # 46995225092964514588
+      region: '{Courses}' # 21598597575342820
 
     execution: 
       sequence: 10
-      event: Edit Report - Dialog Closed # 46995227562287514590
+      event: Refresh on Close # 21599762086342832
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Create ===================
+  id: 21599996241342834
+  identification: 
+    name: Refresh on Create
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Button
+    button: CREATE # 46995227276864514590
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 21600011829342835
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Courses}' # 21598597575342820
+
+    execution: 
+      sequence: 10
+      event: Refresh on Create # 21599996241342834
       fire-when-event-result-is: True
       fire-on-initialization: false
 

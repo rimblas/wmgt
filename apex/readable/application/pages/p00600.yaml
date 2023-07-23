@@ -1,0 +1,308 @@
+---
+# ====== Page: Push Notifications ============================
+id: 600
+identification: 
+  name: Push Notifications
+  alias: PUSH-NOTIFICATIONS
+  title: Settings - Push Notifications
+  page-group: User Settings # 18634638190748296
+
+appearance: 
+  page-mode: Modal Dialog
+  dialog-template: Drawer # 46995004786863514327
+  template-options: 
+  - '#DEFAULT#'
+  - js-dialog-class-t-Drawer--pullOutEnd
+
+dialog: 
+  chained: false
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+javascript: 
+  execute-when-page-loads: |
+    apex.pwa.initPushSubscriptionPage();
+    
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: This page contains the settings for controlling push notification subscription for the current user.
+
+configuration: 
+  build-option: 'Feature: Push Notifications' # 18634749735748301
+
+regions: 
+- # ====== Region: Push Notifications Not Supported ============
+  id: 18636144979748314
+  identification: 
+    title: Push Notifications Not Supported
+    type: Static Content
+
+  source: 
+    html-code: Push notifications are not currently supported in your browser.
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46995035459709514340
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--wizard
+    - t-Alert--customIcons
+    - t-Alert--warning
+    - t-Alert--removeHeading js-removeLandmark
+    - t-Form--xlarge
+    css-classes: 
+    - a-pwaPush--subscriptionRegion--not-supported
+    icon: fa-bell-slash-o
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    custom-attributes: 
+    - 'style="display:none;"'
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Push Notifications ==========================
+  id: 18636498520748315
+  identification: 
+    title: Push Notifications
+    type: Static Content
+
+  source: 
+    html-code: Push notifications have to be enabled for each device you want to receive the notifications on. The first time you enable push notifications, you will have to grant permission to your browser. This setting can be changed at any time.
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46995035459709514340
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--wizard
+    - t-Alert--customIcons
+    - t-Alert--info
+    - t-Alert--removeHeading js-removeLandmark
+    - t-Form--xlarge
+    css-classes: 
+    - a-pwaPush--subscriptionRegion
+    icon: fa-bell-o
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P600_ENABLE_PUSH =========================
+  id: 18636975908748318
+  identification: 
+    name: P600_ENABLE_PUSH
+    type: Checkbox
+
+  label: 
+    label: Enable push notifications on this device
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 10
+    region: Push Notifications # 18636498520748315
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-sm
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: BACK ========================================
+  id: 18635752764748312
+  identification: 
+    button-name: BACK
+    label: Settings
+
+  layout: 
+    sequence: 10
+    region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+    css-classes: 
+    - t-Button--inlineLink
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:7:&APP_SESSION.::&DEBUG.:::'
+      page: 7 # Player
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Never
+
+dynamic-actions: 
+- # ====== Dynamic Action: Change P600_ENABLE_PUSH =============
+  id: 18637231056748319
+  identification: 
+    name: Change P600_ENABLE_PUSH
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P600_ENABLE_PUSH
+
+  client-side-condition: 
+    type: Item = Value
+    item: P600_ENABLE_PUSH
+    value: Y
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Subscribe to push notifications =============
+    id: 18637781912748320
+    identification: 
+      name: Subscribe to push notifications
+      action: Execute JavaScript Code
+
+    settings: 
+      code: apex.pwa.subscribePushNotifications();
+
+    execution: 
+      sequence: 10
+      event: Change P600_ENABLE_PUSH # 18637231056748319
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Unsubscribe from push notifications =========
+    id: 18638208261748322
+    identification: 
+      name: Unsubscribe from push notifications
+      action: Execute JavaScript Code
+
+    settings: 
+      code: apex.pwa.unsubscribePushNotifications();
+
+    execution: 
+      sequence: 10
+      event: Change P600_ENABLE_PUSH # 18637231056748319
+      fire-when-event-result-is: False
+      fire-on-initialization: false
+

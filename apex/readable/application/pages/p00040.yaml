@@ -147,7 +147,7 @@ regions:
 
   source: 
     html-code: |
-      The private room names will be/are <i>WMGT1</i>, <i>WMGT2</i>, etc... Rooms assignments will be posted 30 min before the 1st group is due to play.<br>
+      The private room names will be/are <i>WMGT1</i>, <i>WMGT2</i>, etc... Rooms assignments will be posted 1 hour before the 1st group is due to play.<br>
       Find your room and join a few minutes before so you can start your round precisely on time.<br>
       <br>
       🚨 <b>VERY IMPORTANT</b> 🚨 <br>
@@ -383,6 +383,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
@@ -568,6 +569,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
@@ -751,6 +753,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
@@ -934,6 +937,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
@@ -1117,6 +1121,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
@@ -1300,6 +1305,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
+          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
