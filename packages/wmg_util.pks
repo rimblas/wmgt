@@ -11,6 +11,8 @@ is
 e_not_current_tournament constant number := -20000;
 e_not_correct_session    constant number := -20001;
 
+g_must_be_current  boolean := true;
+
 
 type rec_keyval_type is record(
     key      varchar2(10)

@@ -565,17 +565,19 @@ begin
   -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   log('BEGIN', l_scope);
 
-  begin
-     -- is the tournament really the current tournament?
-     select id
-       into l_id
-       from wmg_tournaments
-      where id = p_tournament_id
-        and current_flag = 'Y';
-  exception
-    when no_data_found then
-      raise_application_error(e_not_current_tournament, 'Tournament (id ' || p_tournament_id || ') is not the current tournament');
-  end;
+  if g_must_be_current then -- make sure it's the current tournament. Only false for historical loads
+    begin
+       -- is the tournament really the current tournament?
+       select id
+         into l_id
+         from wmg_tournaments
+        where id = p_tournament_id
+          and current_flag = 'Y';
+    exception
+      when no_data_found then
+        raise_application_error(e_not_current_tournament, 'Tournament (id ' || p_tournament_id || ') is not the current tournament');
+    end;
+  end if;
        
   begin
      -- is the tournament session correct and part of the current tournament
@@ -799,7 +801,6 @@ begin
         select id
           from wmg_tournaments
          where id = p_tournament_id
-           and current_flag = 'Y'
       )
       , discard as (
         select floor( count(*)/3 ) drop_count
@@ -846,7 +847,6 @@ begin
         select id
           from wmg_tournaments
          where id = p_tournament_id
-           and current_flag = 'Y'
       )
       , discard as (
         select floor( count(*)/3 ) drop_count
@@ -1045,11 +1045,13 @@ begin
     , p_tournament_session_id => p_tournament_session_id
   );
 
-  log('.. promote players', l_scope);
-  promote_players(
-      p_tournament_id         => p_tournament_id
-    , p_tournament_session_id => p_tournament_session_id
-  );
+  if g_must_be_current then -- make sure it's the current tournament. Only false for historical loads
+    log('.. promote players', l_scope);
+    promote_players(
+        p_tournament_id         => p_tournament_id
+      , p_tournament_session_id => p_tournament_session_id
+    );
+  end if;
 
 
   log('.. close tournament session', l_scope);
