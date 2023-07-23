@@ -852,7 +852,6 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - js-showMaximizeButton
     - t-Region--scrollBody
     - margin-left-none
     - margin-right-none
@@ -1198,33 +1197,16 @@ regions:
       table-owner: Parsing Schema
 
     security: 
-      escape-special-characters: true
+      escape-special-characters: false
 
   - # ====== Column: DISCORD_ID ==================================
     id: 20820571721502424
     identification: 
       column-name: DISCORD_ID
-      type: Plain Text
-
-    heading: 
-      heading: Discord Id
-      alignment: end
+      type: Hidden Column
 
     layout: 
       sequence: 140
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1287,7 +1269,7 @@ regions:
       l_completed_ind wmg_tournament_sessions.completed_ind%type;
       begin
       
-      if :G_CURRENT_SESSION_ID is null then
+      if :G_CURRENT_SESSION_ID is not null then
         return false;
       end if;
       
@@ -3594,7 +3576,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3858,7 +3840,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
