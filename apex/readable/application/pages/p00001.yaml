@@ -389,7 +389,7 @@ regions:
              , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
              , case when ec.id is null then 'u-vh' else '' end tbd_class
              , to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00+00:00' session_date_utc_str
-             , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') session_date_utc
+             , case when s.session_date is null then null else to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') end session_date_utc
         from wmg_tournament_sessions_v s
            , wmg_courses ec
            , wmg_courses hc
@@ -3576,7 +3576,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3840,7 +3840,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
