@@ -2,6 +2,7 @@
 
 Application for running and analysising the weekly [Walkabout Mini Golf](https://www.mightycoconut.com/minigolf) VR game tournaments. 
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z5NO80A)
 
 [Live site on OCI](https://rimblas.com/wmgt)
 
