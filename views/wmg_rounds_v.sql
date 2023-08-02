@@ -113,6 +113,14 @@ select
     */
       coalesce(r.override_score, r.final_score) under_par
   , r.final_score
+  , case when
+      r.s1 is null or r.s2 is null or r.s3 is null or r.s4 is null or r.s5 is null or r.s6 is null or r.s7 is null or r.s8 is null or r.s9 is null or r.s10 is null or r.s11 is null or r.s12 is null or r.s13 is null or r.s14 is null or r.s15 is null or r.s16 is null or r.s17 is null or r.s18 is null
+      or r.override_score is not null
+    then
+     'N'
+    else
+     'Y'
+    end ok_for_stats_ind
   , case when r.override_score is null then '' else 'Y' end score_override_flag
   , r.override_reason
   , r.override_by
