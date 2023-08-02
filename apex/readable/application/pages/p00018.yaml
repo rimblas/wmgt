@@ -51,6 +51,55 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Must be a member legend} ===================
+  id: 28675517886250923
+  identification: 
+    title: '{Must be a member legend}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      YOU MUST BE A MEMBER OF THE OFFICIAL WMG DISCORD SERVER TO PARTICIPATE<br>
+      <br>
+      Join here <a href="https://discord.gg/wmg" target="_blank">discord.gg/wmg</a> now<br>
+
+  layout: 
+    sequence: 50
+    parent-region: Welcome &G_DISCORD.! # 59882845077489659
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Content Block # 46995069112127514354
+    template-options: 
+    - '#DEFAULT#'
+    - t-ContentBlock--h1
+    - t-Region--removeHeader js-removeLandmark
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Info} ======================================
   id: 47899094095970883
   identification: 
@@ -144,6 +193,54 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P18_WMG_DISCORD_MEMBER_IND ===============
+  id: 28675144966250919
+  identification: 
+    name: P18_WMG_DISCORD_MEMBER_IND
+    type: Checkbox
+
+  label: 
+    label: I'm a member of the official Walkabout Discord Server
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 40
+    region: '{Must be a member legend}' # 28675517886250923
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P18_MATCH_PLAYER_ID ======================
   id: 33349161895634945
   identification: 
@@ -184,7 +281,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 40
+    sequence: 60
     region: Welcome &G_DISCORD.! # 59882845077489659
     position: BODY
 
@@ -508,6 +605,60 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
+- # ====== Dynamic Action: Enable Setup when they Accept =======
+  id: 28675249590250920
+  identification: 
+    name: Enable Setup when they Accept
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P18_WMG_DISCORD_MEMBER_IND
+
+  client-side-condition: 
+    type: Item = Value
+    item: P18_WMG_DISCORD_MEMBER_IND
+    value: Y
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Enable ======================================
+    id: 28675352430250921
+    identification: 
+      action: Enable
+
+    affected-elements: 
+      selection-type: Button
+      button: SETUP # 32754198309549232
+
+    execution: 
+      sequence: 10
+      event: Enable Setup when they Accept # 28675249590250920
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: Disable =====================================
+    id: 28675455860250922
+    identification: 
+      action: Disable
+
+    affected-elements: 
+      selection-type: Button
+      button: SETUP # 32754198309549232
+
+    execution: 
+      sequence: 10
+      event: Enable Setup when they Accept # 28675249590250920
+      fire-when-event-result-is: False
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Match Player to Discord ID ==========
   id: 33350342074634976
   identification: 
