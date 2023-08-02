@@ -31,6 +31,17 @@ css:
       transition: .25s transform;
     }
     
+    /* CSS for screens less than 480px */
+    @media (max-width: 579px) {
+    #CODE, td[headers~="CODE"],
+    #PLAYED_COUNT, td[headers~="PLAYED_COUNT"],
+    #LAST_PLAYED, td[headers~="LAST_PLAYED"],
+    #RELEASE_DATE, td[headers~="RELEASE_DATE"],
+    #COURSE_PAR, td[headers~="COURSE_PAR"],
+    #COURSE_MODE, td[headers~="COURSE_MODE"] {display: none;}
+    }
+    
+    td[headers~="NAME"] h3 {font-size: 1.1rem; line-height: 1;}
 
 security: 
   authentication: Page Is Public
@@ -144,7 +155,7 @@ regions:
       show-label-for-current-facet: true
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     appearance: 
       icon: fa-volume-up
@@ -152,6 +163,53 @@ regions:
     list-of-values: 
       type: Static Values
       static-values: 'STATIC:Easy;E,Hard;H'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P2_CODE ======================================
+    id: 28674808869250916
+    identification: 
+      name: P2_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Code
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-id-card-o
+
+    list-of-values: 
+      type: Distinct Values
       include-null-option: false
 
     list-entries: 
@@ -172,7 +230,7 @@ regions:
       collapsible: false
 
     source: 
-      database-column: COURSE_MODE
+      database-column: CODE
       data-type: VARCHAR2
 
     multiple-values: 
@@ -212,7 +270,7 @@ regions:
       label: Course Mode
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     appearance: 
       icon: fa-volume-up
@@ -235,6 +293,47 @@ regions:
 
     source: 
       database-column: COURSE_MODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P2_CODE =====================================
+    id: 28674808869250916
+    identification: 
+      name: P2_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Course Code
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-id-card-o
+
+    list-of-values: 
+      type: Distinct Values
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: CODE
       data-type: VARCHAR2
 
     multiple-values: 
@@ -486,11 +585,11 @@ regions:
 
     link: 
       target: 
-        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:3:P3_COURSE_ID:#ID#'
+        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:3:P3_ID:#ID#'
         page: 3 # Course
         clear-cache: 3
         values: 
-          p3_course_id: '#ID#'
+          p3_id: '#ID#'
 
       link-text: '&EDIT_BUTTON.'
 
@@ -507,6 +606,7 @@ regions:
       table-owner: Parsing Schema
 
     security: 
+      authorization-scheme: Contribution Rights # 46995203801871514425
       escape-special-characters: true
 
   - # ====== Column: RELEASE_ORDER ===============================
@@ -559,6 +659,10 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - hidden-xs-down
 
     sorting: 
       sortable: true
@@ -624,6 +728,16 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      html-expression: |
+        <h3>#NAME#</h3>
+        <div class="hidden-xs-up">
+        Par: #COURSE_PAR#<br>
+        Release Date: #RELEASE_DATE#<br>
+        Played: #PLAYED_COUNT# times{if PLAYED_COUNT/}, last #LAST_PLAYED#{endif/}<br>
+        </div>
+        
+
     sorting: 
       sortable: true
 
@@ -656,6 +770,10 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      css-classes: 
+      - hidden-xs-down
+
     sorting: 
       sortable: true
 
@@ -687,6 +805,10 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - hidden-xs-down
 
     sorting: 
       sortable: true
@@ -755,6 +877,10 @@ regions:
     accessibility: 
       value-identifies-row: false
 
+    column-formatting: 
+      css-classes: 
+      - hidden-xs-down
+
     sorting: 
       sortable: true
 
@@ -786,6 +912,10 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    column-formatting: 
+      css-classes: 
+      - hidden-xs-down
 
     sorting: 
       sortable: true
@@ -857,7 +987,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
