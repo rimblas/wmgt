@@ -181,6 +181,69 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P525_START_DATE ==========================
+  id: 19785387753340347
+  identification: 
+    name: P525_START_DATE
+    type: Date Picker
+
+  label: 
+    label: Start Date
+    alignment: Left
+
+  settings: 
+    show-time: false
+    display-as: Popup
+    minimum-date: None
+    maximum-date: None
+    multiple-months: No
+    use-defaults: true
+
+  layout: 
+    sequence: 40
+    region: Tournament Details # 56152111455651047840
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46995172770404514399
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Tournament Details # 56152111455651047840
+    column: START_DATE
+    data-type: DATE
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Date the Season Stars, only displayed in between seasons before the first session is defined.
+
 - # ====== Page Item: P525_RESET_RANKS_IND =====================
   id: 36327130918635129
   identification: 
@@ -401,8 +464,8 @@ page-items:
     type: Text Field
 
   label: 
-    label: Prefix Tournament
-    alignment: Right
+    label: Prefix for Tournament
+    alignment: Left
 
   settings: 
     subtype: Text
@@ -412,7 +475,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 40
+    sequence: 50
     region: Tournament Details # 56152111455651047840
     position: BODY
     alignment: Left
@@ -454,6 +517,9 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+  help: 
+    help-text: 'Along with the "Prefix Session" the "Tournament Prefix" is used to build the week "name" being played. For example "S09" with a "W" will create weeks like: S09W01, S09W02, etc...'
+
 - # ====== Page Item: P525_PREFIX_SESSION ======================
   id: 56152113416649047842
   identification: 
@@ -461,7 +527,7 @@ page-items:
     type: Text Field
 
   label: 
-    label: Prefix Session
+    label: Prefix for Sessions
     alignment: Left
 
   settings: 
@@ -472,7 +538,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 50
+    sequence: 60
     region: Tournament Details # 56152111455651047840
     position: BODY
     alignment: Left
@@ -503,6 +569,10 @@ page-items:
     query-only: false
     primary-key: false
 
+  default: 
+    type: Static
+    static-value: W
+
   session-state: 
     storage: Per Request (Memory Only)
 
@@ -513,6 +583,9 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: 'Along with the "Prefix Session" the "Tournament Prefix" is used to build the week "name" being played. For example "S09" with a "W" will create weeks like: S09W01, S09W02, etc...'
 
 - # ====== Page Item: P525_CURRENT_FLAG ========================
   id: 56152113816175047842
@@ -768,7 +841,7 @@ page-items:
     send-on-page-submit: false
 
   layout: 
-    sequence: 50
+    sequence: 30
     region: Audit # 112168526085484000587
     position: BODY
     alignment: Left
@@ -783,17 +856,21 @@ page-items:
     template: Optional # 46995171305980514398
     template-options: 
     - '#DEFAULT#'
+    format-mask: 'DD-MON-YYYY HH:MIPM'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: Null
-    used: Only when current value in session state is null
+    form-region: Tournament Details # 56152111455651047840
+    column: CREATED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: true
+    primary-key: false
 
   session-state: 
     data-type: VARCHAR2
-    storage: Per Session (Persistent)
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -817,7 +894,7 @@ page-items:
     send-on-page-submit: false
 
   layout: 
-    sequence: 60
+    sequence: 10
     region: Audit # 112168526085484000587
     position: BODY
     alignment: Left
@@ -837,12 +914,15 @@ page-items:
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: Null
-    used: Only when current value in session state is null
+    form-region: Tournament Details # 56152111455651047840
+    column: CREATED_BY
+    data-type: VARCHAR2
+    query-only: true
+    primary-key: false
 
   session-state: 
     data-type: VARCHAR2
-    storage: Per Session (Persistent)
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -866,12 +946,12 @@ page-items:
     send-on-page-submit: false
 
   layout: 
-    sequence: 70
+    sequence: 40
     region: Audit # 112168526085484000587
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -881,17 +961,21 @@ page-items:
     template: Optional # 46995171305980514398
     template-options: 
     - '#DEFAULT#'
+    format-mask: 'DD-MON-YYYY HH:MIPM'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: Null
-    used: Only when current value in session state is null
+    form-region: Tournament Details # 56152111455651047840
+    column: UPDATED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: true
+    primary-key: false
 
   session-state: 
     data-type: VARCHAR2
-    storage: Per Session (Persistent)
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -915,12 +999,12 @@ page-items:
     send-on-page-submit: false
 
   layout: 
-    sequence: 80
+    sequence: 20
     region: Audit # 112168526085484000587
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -935,12 +1019,15 @@ page-items:
     warn-on-unsaved-changes: Page Default
 
   source: 
-    type: Null
-    used: Only when current value in session state is null
+    form-region: Tournament Details # 56152111455651047840
+    column: UPDATED_BY
+    data-type: VARCHAR2
+    query-only: true
+    primary-key: false
 
   session-state: 
     data-type: VARCHAR2
-    storage: Per Session (Persistent)
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted

@@ -622,6 +622,120 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: PREFIX_TOURNAMENT ===========================
+    id: 19785429628340348
+    identification: 
+      column-name: PREFIX_TOURNAMENT
+      type: Hidden Column
+
+    layout: 
+      sequence: 83
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PREFIX_SESSION ==============================
+    id: 19785571303340349
+    identification: 
+      column-name: PREFIX_SESSION
+      type: Hidden Column
+
+    layout: 
+      sequence: 93
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_ON ==================================
+    id: 19785656285340350
+    identification: 
+      column-name: CREATED_ON
+      type: Hidden Column
+
+    layout: 
+      sequence: 103
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CREATED_BY ==================================
+    id: 28673353578250901
+    identification: 
+      column-name: CREATED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 113
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UPDATED_BY ==================================
+    id: 28673496927250902
+    identification: 
+      column-name: UPDATED_BY
+      type: Hidden Column
+
+    layout: 
+      sequence: 123
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: START_DATE ==================================
+    id: 28673507799250903
+    identification: 
+      column-name: START_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Season Start Date
+      alignment: start
+
+    layout: 
+      sequence: 13
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1 from "WMG_TOURNAMENTS"
+        where "START_DATE" is not null
+        and "ID" = :P530_ID
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: ID ==========================================
     id: 56158018569714236686
     identification: 
@@ -726,7 +840,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 6
+      sequence: 23
       column-alignment: center
 
     accessibility: 
@@ -768,7 +882,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 7
+      sequence: 33
       column-alignment: center
 
     accessibility: 
@@ -803,7 +917,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 8
+      sequence: 53
       column-alignment: start
 
     accessibility: 
@@ -842,7 +956,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 9
+      sequence: 63
       column-alignment: start
 
     accessibility: 
@@ -881,7 +995,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 12
+      sequence: 73
       column-alignment: start
 
     accessibility: 
