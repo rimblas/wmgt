@@ -2073,7 +2073,7 @@ regions:
       where tp.tournament_session_id = :G_CURRENT_SESSION_ID
         and tp.active_ind = 'Y'
       order by tp.tournament_player_created desc
-      fetch first 20 rows only
+      
       
 
   layout: 
@@ -2084,7 +2084,7 @@ regions:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 6
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -2142,7 +2142,8 @@ regions:
       - t-Report--horizontalBorders
 
     pagination: 
-      type: No Pagination (Show All Rows)
+      type: Search Engine 1,2,3,4 (set based pagination)
+      display-position: Bottom - Right
       partial-page-refresh: true
 
     performance: 
@@ -2362,7 +2363,7 @@ regions:
 
     layout: 
       sequence: 10
-      column-alignment: start
+      column-alignment: center
 
     accessibility: 
       value-identifies-row: false
