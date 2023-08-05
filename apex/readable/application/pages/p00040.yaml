@@ -384,8 +384,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -570,8 +570,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -754,8 +754,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -938,8 +938,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -1122,8 +1122,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -1306,8 +1306,8 @@ regions:
               '<mark class="player">'
              end
           || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
-              case when :P40_TD_FLAG = 'Y' and :P40_SHOW_AVATARS_IND = 'Y' then wmg_discord.avatar_link(p_discord_id => p.discord_id) end ||
               ' <a href="' ||
                 apex_page.get_url(
                     p_page => 30
@@ -1941,7 +1941,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional # 46995171305980514398
     template-options: 
     - '#DEFAULT#'
 
@@ -1963,7 +1963,7 @@ page-items:
     storage: Per Session (Persistent)
 
   security: 
-    authorization-scheme: Administration Rights # 46995203575692514425
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.

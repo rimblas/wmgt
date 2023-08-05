@@ -384,12 +384,12 @@ regions:
     sql-query: |
       with next_session as (
         select s.session_date
-             , nvl(ec.name, 'TBD -') easy_course
-             , nvl(hc.name, 'TBD -') hard_course
+             , nvl(ec.name, '- TBD -') easy_course
+             , nvl(hc.name, '- TBD -') hard_course
              , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
              , case when ec.id is null then 'u-vh' else '' end tbd_class
              , to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00+00:00' session_date_utc_str
-             , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') session_date_utc
+             , case when s.session_date is null then null else to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || '00:00') end session_date_utc
         from wmg_tournament_sessions_v s
            , wmg_courses ec
            , wmg_courses hc
@@ -1342,6 +1342,151 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: About the next season =======================
+  id: 28673639639250904
+  identification: 
+    title: About the next season
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select start_date
+        from wmg_tournaments
+       where current_flag = 'Y'
+      
+
+  layout: 
+    sequence: 10
+    parent-region: '{Next Tournament Info}' # 9186482410315410
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46995035459709514340
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--noIcon
+    - t-Alert--info
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: |
+        - The next tournament courses have not been selected yet -<br>
+        Try again tomorrow...
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: START_DATE ==================================
+    id: 28674785974250915
+    identification: 
+      column-name: START_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Start Date
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmDay, fmMonth fmDD, YYYY
+
+    column-formatting: 
+      html-expression: |
+        The tournament is in between seasons and we are taking a much deserved break.<br>
+        The next season will <b>start</b> the weekend of <b>#START_DATE#</b>.<br>
+        Registrations will open at least 5 days before.
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Season Courses ==============================
   id: 32751428375549205
   identification: 
@@ -1363,7 +1508,7 @@ regions:
                , s.easy_release_order
                , s.hard_course_id
                , s.hard_release_order
-               , case when s.completed_ind = 'Y' then 'white_check_mark' else 'checkered_flag' end status
+               , case when s.completed_ind = 'Y' then 'white_check_mark' else 'golf' end status
                , s.session_date
                , s.completed_ind
           from wmg_tournament_sessions_v s
@@ -1389,8 +1534,8 @@ regions:
            , e.code easy_course
            , tce.easy_course_code
            , e.name easy_name
-           , 'o' status     
-           , 2 order_by
+           , case when e.release_order <= 8 then 'zzz' else 'lock' end status
+           , case when e.release_order <= 8 then 99 else 2 end order_by
            , release_order
       from wmg_courses e
          , tournament_courses tce
@@ -1415,8 +1560,8 @@ regions:
                , h.code hard_course
                , h.name hard_name
                , tch.hard_course_code
-               , 'o' status
-               , 2 order_by
+               , case when h.release_order <= 8 then 'zzz' else 'lock' end status     
+               , case when h.release_order <= 8 then 99 else 2 end order_by
                , h.release_order
           from wmg_courses h
              , tournament_courses tch
@@ -1431,8 +1576,10 @@ regions:
            , e.easy_name
            , h.hard_course
            , h.hard_name
-           , 'lock' status
-           , 'Pending to be played' status_title
+           , coalesce(e.status, h.status) status
+           , case 
+               when  coalesce(e.status, h.status) = 'lock' then 'Pending to be played'
+               else 'Not eligible' end status_title
            , coalesce(e.order_by, h.order_by) order_by
            , coalesce(e.release_order, h.release_order) course_order     
       from missing_easy e
@@ -1442,19 +1589,20 @@ regions:
       select c.round_num
            , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
            , nvl(c.easy_course_code, '-?-')
-           , c.easy_course_name
+           , nvl(c.easy_course_name, 'TBD') easy_course_name
            , nvl(c.hard_course_code, '-?-')
-           , c.hard_course_name
+           , nvl(c.hard_course_name, 'TBD') hard_course_code
            , c.status
            , decode(c.status
                 , 'white_medium_square', 'Pending to be played'
                 , 'white_check_mark', 'Already played'
-                , 'checkered_flag', 'Current tournament courses'
+                , 'golf', 'Current tournament courses'
                 , 'o', 'Not available', ''
                 ) status_title
            , 1 order_by
            , coalesce(c.easy_release_order, c.hard_release_order) course_order
         from tournament_courses c
+       where c.round_num is not null -- make sure at least a round is defined
       union all -- Buffer Week
       select next_round_num round_num
            , '' url
@@ -1504,7 +1652,7 @@ regions:
 
   server-cache: 
     caching: Enabled
-    cache-timeout: 12 hours
+    cache-timeout: 2 days
     depends-on-item(s): 
     - APP_REQUEST_DATA_HASH
 
@@ -1630,7 +1778,11 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
+      html-expression: |
+        {case EASY_NAME/}
+        {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
+        {otherwise/}<span class="tooltipImg" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg">#EASY_COURSE#</span>{endcase/}
+        
 
     sorting: 
       sortable: false
@@ -1665,7 +1817,10 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
+      html-expression: |
+        {case HARD_NAME/}
+        {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
+        {otherwise/}<span class="tooltipImg" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg">#HARD_COURSE#</span>{endcase/}
 
     sorting: 
       sortable: false
@@ -1918,7 +2073,7 @@ regions:
       where tp.tournament_session_id = :G_CURRENT_SESSION_ID
         and tp.active_ind = 'Y'
       order by tp.tournament_player_created desc
-      fetch first 20 rows only
+      
       
 
   layout: 
@@ -1929,7 +2084,7 @@ regions:
     start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 6
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -1987,7 +2142,8 @@ regions:
       - t-Report--horizontalBorders
 
     pagination: 
-      type: No Pagination (Show All Rows)
+      type: Search Engine 1,2,3,4 (set based pagination)
+      display-position: Bottom - Right
       partial-page-refresh: true
 
     performance: 
@@ -2207,7 +2363,7 @@ regions:
 
     layout: 
       sequence: 10
-      column-alignment: start
+      column-alignment: center
 
     accessibility: 
       value-identifies-row: false
@@ -2511,6 +2667,17 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
 
   server-cache: 
     caching: Disabled
@@ -2979,6 +3146,7 @@ regions:
       from wmg_tournament_sessions s
       where s.id = :G_CURRENT_SESSION_ID
         and s.rooms_open_flag is null
+        and s.round_num > 1
 
   server-cache: 
     caching: Cache By Session
@@ -3930,6 +4098,51 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
+- # ====== Dynamic Action: Show Tooltips =======================
+  id: 28674932410250917
+  identification: 
+    name: Show Tooltips
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Season Courses # 32751428375549205
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 28675002279250918
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $(".tooltipImg").tooltip({
+            content: function() {
+              // Get the description and image URL from the "title" and "data-img-url" attributes
+              var description = $(this).attr("title");
+              var imgUrl = $(this).data("img-url");
+        
+              // Create an HTML string to include the description and the image
+              var tooltipContent = "<div>" + description + "</div>";
+              tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
+        
+              return tooltipContent;
+            }
+        });
+
+    execution: 
+      sequence: 10
+      event: Show Tooltips # 28674932410250917
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Refresh after close =================
   id: 32755302364549244
   identification: 
