@@ -17,7 +17,7 @@ navigation-menu:
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
 
 css: 
   file-urls: 
@@ -54,11 +54,96 @@ help:
     
 
 regions: 
+- # ====== Region: {col2} ======================================
+  id: 28677891608250946
+  identification: 
+    title: '{col2}'
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {filters} ===================================
+  id: 28677998081250947
+  identification: 
+    title: '{filters}'
+    type: Static Content
+
+  source: 
+    html-code: <div id="selectedFacets"></div>
+
+  layout: 
+    sequence: 10
+    parent-region: '{col2}' # 28677891608250946
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Search} ====================================
   id: 43958007324790316
   identification: 
     title: '{Search}'
-    type: Smart Filters
+    type: Faceted Search
 
   source: 
     filtered-region: Players # 87882192386585391
@@ -71,7 +156,7 @@ regions:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 2
 
   appearance: 
     template: Blank with Attributes # 46995040627542514343
@@ -95,45 +180,47 @@ regions:
 
   attributes: 
     settings: 
-      more-filters-suggestion-chip: false
+      batch-facet-changes: false
       compact-numbers-threshold: 10000
+      show-current-facets: Selector
+      current-facets-selector: '#selectedFacets'
       show-total-row-count: No
+      show-charts: Dialog
+      display-chart-for-top-n-values: 10
 
   facets: 
-  - # ====== Facet: P6_SEARCH ====================================
-    id: 43958165030790317
+  - # ====== Facet: P6_SEARCH_FACET ==============================
+    id: 28677436889250942
     identification: 
-      name: P6_SEARCH
+      name: P6_SEARCH_FACET
       type: Search
 
     label: 
-      label: Search
+      label: Search Facet
 
     settings: 
       search-type: Row Search
-      input-field: Top of Faceted Search Region
+      input-field: External Page Item
+      external-page-item: P6_SEARCH
 
     layout: 
       sequence: 10
-
-    source: 
-      database-column(s): ACCOUNT,NAME,RANK_CODE,RANK_NAME,PREFERED_TZ,COUNTRY,COUNTRY_CODE
 
     security: 
       store-value-encrypted-in-session-state: true
 
   - # ====== Facet: P6_RANK_CODE =================================
-    id: 43958430193790320
+    id: 28677638654250944
     identification: 
       name: P6_RANK_CODE
       type: Checkbox Group
 
     label: 
-      label: Rank
+      label: Ranks
       show-label-for-current-facet: true
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     appearance: 
       icon: fa-star
@@ -145,17 +232,18 @@ regions:
 
     list-entries: 
       compute-counts: true
-      show-counts: true
+      show-counts: false
       zero-count-entries: Hide
-      sort-by-top-counts: true
       show-selected-first: false
+      maximum-displayed-entries: 7
       display-filter-initially: false
 
     actions-menu: 
-      filter: true
-      chart: false
+      filter: false
+      chart: true
 
     advanced: 
+      show-chart-initially: false
       display-toggling: false
       collapsible: false
 
@@ -171,20 +259,20 @@ regions:
       escape-special-characters: true
 
   - # ====== Facet: P6_COUNTRY_CODE ==============================
-    id: 43958505774790321
+    id: 28677718406250945
     identification: 
       name: P6_COUNTRY_CODE
       type: Checkbox Group
 
     label: 
-      label: Country
+      label: Countries
       show-label-for-current-facet: true
 
     layout: 
-      sequence: 30
+      sequence: 40
 
     appearance: 
-      icon: fa-flag
+      icon: fa-globe
 
     list-of-values: 
       type: Shared Component
@@ -196,14 +284,16 @@ regions:
       show-counts: true
       zero-count-entries: Hide
       sort-by-top-counts: true
-      show-selected-first: false
+      show-selected-first: true
+      maximum-displayed-entries: 7
       display-filter-initially: false
 
     actions-menu: 
       filter: true
-      chart: false
+      chart: true
 
     advanced: 
+      show-chart-initially: false
       display-toggling: false
       collapsible: false
 
@@ -218,15 +308,68 @@ regions:
       store-value-encrypted-in-session-state: true
       escape-special-characters: true
 
-  filters: 
-  - # ====== Filter: P6_SEARCH ===================================
-    id: 43958165030790317
+  - # ====== Facet: P6_SIGNED_UP_FLAG ============================
+    id: 36051224253175823
     identification: 
-      name: P6_SEARCH
+      name: P6_SIGNED_UP_FLAG
+      type: Checkbox Group
+
+    label: 
+      label: Signed Up?
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-file-signature
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:&P6_WEEK.;Y'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: false
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: SIGNED_UP_FLAG
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    server-side-condition: 
+      type: Item is NOT NULL
+      item: P6_WEEK
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  filters: 
+  - # ====== Filter: P6_SEARCH_FACET =============================
+    id: 28677436889250942
+    identification: 
+      name: P6_SEARCH_FACET
       type: Search
 
     label: 
-      label: Search
+      label: Search Facet
 
     settings: 
       search-type: Row Search
@@ -235,23 +378,20 @@ regions:
     layout: 
       sequence: 10
 
-    source: 
-      database-column(s): ACCOUNT,NAME,RANK_CODE,RANK_NAME,PREFERED_TZ,COUNTRY,COUNTRY_CODE
-
     security: 
       store-value-encrypted-in-session-state: true
 
   - # ====== Filter: P6_RANK_CODE ================================
-    id: 43958430193790320
+    id: 28677638654250944
     identification: 
       name: P6_RANK_CODE
       type: Checkbox Group
 
     label: 
-      label: Rank
+      label: Ranks
 
     layout: 
-      sequence: 20
+      sequence: 30
 
     appearance: 
       icon: fa-star
@@ -263,9 +403,8 @@ regions:
 
     list-entries: 
       compute-counts: true
-      show-counts: true
+      show-counts: false
       zero-count-entries: Hide
-      sort-by-top-counts: true
       show-selected-first: false
       client-side-filtering: false
 
@@ -284,19 +423,19 @@ regions:
       escape-special-characters: true
 
   - # ====== Filter: P6_COUNTRY_CODE =============================
-    id: 43958505774790321
+    id: 28677718406250945
     identification: 
       name: P6_COUNTRY_CODE
       type: Checkbox Group
 
     label: 
-      label: Country
+      label: Countries
 
     layout: 
-      sequence: 30
+      sequence: 40
 
     appearance: 
-      icon: fa-flag
+      icon: fa-globe
 
     list-of-values: 
       type: Shared Component
@@ -308,7 +447,7 @@ regions:
       show-counts: true
       zero-count-entries: Hide
       sort-by-top-counts: true
-      show-selected-first: false
+      show-selected-first: true
       client-side-filtering: false
 
     suggestions: 
@@ -325,6 +464,52 @@ regions:
       store-value-encrypted-in-session-state: true
       escape-special-characters: true
 
+  - # ====== Filter: P6_SIGNED_UP_FLAG ===========================
+    id: 36051224253175823
+    identification: 
+      name: P6_SIGNED_UP_FLAG
+      type: Checkbox Group
+
+    label: 
+      label: Signed Up?
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-file-signature
+
+    list-of-values: 
+      type: Static Values
+      static-values: 'STATIC:&P6_WEEK.;Y'
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: SIGNED_UP_FLAG
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    server-side-condition: 
+      type: Item is NOT NULL
+      item: P6_WEEK
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
 - # ====== Region: Players =====================================
   id: 87882192386585391
   identification: 
@@ -335,6 +520,18 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
+      with stats as (
+          select tp.player_id, max(ts.session_date) last_played
+            from wmg_tournament_players tp
+               , wmg_tournament_sessions ts
+          where tp.tournament_session_id = ts.id
+          group by tp.player_id
+      )
+      , current_tournament as (
+          select tp.player_id
+            from wmg_tournament_players tp
+           where tournament_session_id = :G_CURRENT_SESSION_ID 
+      )
       select ID,
              player_name,
              ACCOUNT,
@@ -351,12 +548,18 @@ regions:
            , case when discord_id is not null then
               wmg_discord.avatar_link(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar)
              else '' end discord_profile
+          , s.last_played
+          , decode(ct.player_id, null, '', 'Y') signed_up_flag
         from WMG_PLAYERS_V p
-      where id > 0
+           , stats s
+           , current_tournament ct
+      where p.id = s.player_id (+)
+        and p.id = ct.player_id (+)
+        and p.id > 0
 
   layout: 
-    sequence: 40
-    parent-region: '{Search}' # 43958007324790316
+    sequence: 20
+    parent-region: '{col2}' # 28677891608250946
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -381,6 +584,7 @@ regions:
     exclude-title-from-translation: false
 
   header-and-footer: 
+    header-text: <div id="selectedFacets"></div>
     footer-text: |
       <div class="pro-legend row margin-sm u-justify-content-space-around">
       <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
@@ -433,6 +637,74 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: LAST_PLAYED =================================
+    id: 28678069403250948
+    identification: 
+      column-name: LAST_PLAYED
+      type: Plain Text
+
+    heading: 
+      heading: Last Played
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Contribution Rights # 46995203801871514425
+      escape-special-characters: true
+
+  - # ====== Column: SIGNED_UP_FLAG ==============================
+    id: 36050914778175820
+    identification: 
+      column-name: SIGNED_UP_FLAG
+      type: Plain Text
+
+    heading: 
+      heading: Signed &P6_WEEK.?
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="fa cfa-check2_#SIGNED_UP_FLAG# cfa-1_5x" title="#SIGNED_UP_FLAG#"></i>
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: ID ==========================================
     id: 44153636791157943
     identification: 
@@ -460,6 +732,8 @@ regions:
       link-text: '&EDIT_BUTTON.'
 
     sorting: 
+      default-sequence: 1
+      direction: Ascending
       sortable: true
 
     export-/-printing: 
@@ -639,7 +913,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Prefered Tz
+      heading: Prefered TZ
       alignment: center
 
     layout: 
@@ -778,6 +1052,95 @@ regions:
     security: 
       escape-special-characters: false
 
+page-items: 
+- # ====== Page Item: P6_SEARCH ================================
+  id: 28677556347250943
+  identification: 
+    name: P6_SEARCH
+    type: Text Field
+
+  label: 
+    label: Search
+    alignment: Left
+
+  settings: 
+    subtype: Search
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 10
+    region: '{filters}' # 28677998081250947
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-search
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P6_WEEK ==================================
+  id: 36051082611175821
+  identification: 
+    name: P6_WEEK
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 30
+    region: '{col2}' # 28677891608250946
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: CREATE ======================================
   id: 46995271040797515193
@@ -880,4 +1243,21 @@ dynamic-actions:
       event: Tooltips after refresh # 43959320988790329
       fire-when-event-result-is: True
       fire-on-initialization: true
+
+computations: 
+- # ====== Computation: P6_WEEK ================================
+  id: 36051154407175822
+  identification: 
+    item-name: P6_WEEK
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select week
+      from wmg_tournament_sessions
+      where id = :G_CURRENT_SESSION_ID
 
