@@ -622,6 +622,40 @@
       type: Item is NOT NULL
       item: G_PLAYER_ID
 
+  - # ====== Entry: Push Notifications ===========================
+    id: 36581399806983118
+    label: 
+      label: Push Notifications
+
+    icon: 
+      image/icon-css-classes: fa-bell-o
+
+    layout: 
+      sequence: 87
+      parent-entry: '&APP_USER.' # 46995580931114516253
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:600:&SESSION.::&DEBUG.::::'
+        page: 600 # Push Notifications
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: <span class="a-pwaPush--state"></span>
+
+    server-side-condition: 
+      type: Item is NULL
+      item: G_PLAYER_ID
+
+    security: 
+      authorization-scheme: Contribution Rights # 46995203801871514425
+
   - # ====== Entry: Feedback =====================================
     id: 46995579108027516252
     label: 
