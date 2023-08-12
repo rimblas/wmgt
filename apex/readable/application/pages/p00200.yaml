@@ -105,6 +105,17 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">
+        <div style="display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+          <div style="width: 20px; height: 10px; background-color: #4c825c; margin-right: 5px;"></div>
+          <span>Regular</span>
+          <div style="width: 20px; height: 10px; background-color: #846a92; margin-left: 15px; margin-right: 5px;"></div>
+          <span>Never Aced (Unicorn)</span>
+        </div>
+      </div>
+
   security: 
     escape-special-characters: false
 
@@ -167,15 +178,40 @@ regions:
              select max(std_dev) max_std_dev
                from wmg_course_stats_v
           )
+          , missing_ace as (
+              select level h
+              from dual
+              connect by level <= 18
+              minus
+              select distinct h
+              from wmg_rounds_unpivot_mv
+              where course_id = :P200_COURSE_ID
+              and score = 1
+          )
           select s.course_id, s.course_code, s.h
                , case 
                    when s.std_dev = 0 then 0
                    else round(s.std_dev / std_scale.max_std_dev * 10,1)
                    end  value
-               , case when s.h = :P200_H then '#437c94' else '#4c825c' end color
+               , case when s.h = :P200_H then
+                   case when ma.h = s.h then 
+                     c.selected_highlight
+                   else
+                     c.selected
+                   end
+                 else
+                   case when ma.h = s.h then 
+                    c.regular_highlight
+                   else
+                    c.regular
+                   end
+                 end color
           from  wmg_course_stats_v s
-             , std_scale
+              , std_scale
+              , missing_ace ma
+              , wmg_bar_chart_colors c
           where s.course_id = :P200_COURSE_ID
+            and s.h = ma.h (+)
           order by s.h
         page-items-to-submit: 
         - P200_COURSE_ID.P200_H
@@ -213,11 +249,40 @@ regions:
         location: Local Database
         type: SQL Query
         sql-query: |
-          select course_id, course_code, h, score_avg
-               , case when h = :P200_H then '#437c94' else '#4c825c' end color
-          from  wmg_course_stats_v
-          where course_id = :P200_COURSE_ID
-          order by h
+          with missing_ace as (
+              select level h
+              from dual
+              connect by level <= 18
+              minus
+              select distinct h
+              from wmg_rounds_unpivot_mv
+              where course_id = :P200_COURSE_ID
+              and score = 1
+          )
+          select s.course_id
+               , s.course_code
+               , s.h
+               , s.score_avg
+              --  , case when h = :P200_H then '#437c94' else '#4c825c' end color
+               , case when s.h = :P200_H then
+                   case when ma.h = s.h then 
+                     c.selected_highlight
+                   else
+                     c.selected
+                   end
+                 else
+                   case when ma.h = s.h then 
+                    c.regular_highlight
+                   else
+                    c.regular
+                   end
+                 end color
+          from  wmg_course_stats_v s
+              , missing_ace ma
+              , wmg_bar_chart_colors c
+          where s.course_id = :P200_COURSE_ID
+            and s.h = ma.h (+)
+          order by s.h
         page-items-to-submit: 
         - P200_COURSE_ID
         - P200_H
@@ -2234,10 +2299,10 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: New =================================
+- # ====== Dynamic Action: Show by Score Avg ===================
   id: 8986907306642629
   identification: 
-    name: New
+    name: Show by Score Avg
 
   execution: 
     sequence: 20
@@ -2262,7 +2327,7 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: New # 8986907306642629
+      event: Show by Score Avg # 8986907306642629
       fire-when-event-result-is: True
       fire-on-initialization: false
 
