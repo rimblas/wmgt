@@ -74,6 +74,144 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Rules Agreement} ===========================
+  id: 28678223595250950
+  identification: 
+    title: '{Rules Agreement}'
+    type: Static Content
+
+  layout: 
+    sequence: 30
+    parent-region: Select the time you want to play # 57216328769048707947
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 9
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {View Rules} ================================
+  id: 36049143202175802
+  identification: 
+    title: '{View Rules}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      <div class="u-textCenter">
+      You must be familiar with the rules before you signup. <br>
+      <br>
+      Rules are rules, whether <i>you've read them or not</i>. So better take a look.
+      </div>
+
+  layout: 
+    sequence: 10
+    parent-region: '{Rules Agreement}' # 28678223595250950
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Agreement} =================================
+  id: 36049275554175803
+  identification: 
+    title: '{Agreement}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{Rules Agreement}' # 28678223595250950
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_REGISTRATION_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Registration ================================
   id: 24744259667333395558
   identification: 
@@ -589,6 +727,54 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P30_RULES_AGREEMENT_IND ==================
+  id: 28678174312250949
+  identification: 
+    name: P30_RULES_AGREEMENT_IND
+    type: Checkbox
+
+  label: 
+    label: Yes, I read and understand the tournament rules
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 10
+    region: '{Agreement}' # 36049275554175803
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P30_SLOT =================================
   id: 43959270230790328
   identification: 
@@ -982,6 +1168,44 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: VIEW_RULES ==================================
+  id: 36049054129175801
+  identification: 
+    button-name: VIEW_RULES
+    label: View Rules
+
+  layout: 
+    sequence: 10
+    region: '{View Rules}' # 36049143202175802
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+    - t-Button--stretch
+    - t-Button--padTop
+    - t-Button--padBottom
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::P20_NOTE_TYPE:RULES'
+      page: 20 # About/Rules
+      values: 
+        p20_note_type: RULES
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: UNREGISTER ==================================
   id: 2325269888549905533
   identification: 
@@ -1320,6 +1544,60 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Enable/Disable Signup on Rules Agreem
+  id: 36049355171175804
+  identification: 
+    name: Enable/Disable Signup on Rules Agreement
+
+  execution: 
+    sequence: 90
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P30_RULES_AGREEMENT_IND
+
+  client-side-condition: 
+    type: Item = Value
+    item: P30_RULES_AGREEMENT_IND
+    value: Y
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Enable ======================================
+    id: 36049435985175805
+    identification: 
+      action: Enable
+
+    affected-elements: 
+      selection-type: Button
+      button: SIGNUP # 53005782911872846339
+
+    execution: 
+      sequence: 10
+      event: Enable/Disable Signup on Rules Agreement # 36049355171175804
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: Disable =====================================
+    id: 36049592219175806
+    identification: 
+      action: Disable
+
+    affected-elements: 
+      selection-type: Button
+      button: SIGNUP # 53005782911872846339
+
+    execution: 
+      sequence: 10
+      event: Enable/Disable Signup on Rules Agreement # 36049355171175804
+      fire-when-event-result-is: False
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Refresh Slots =======================
   id: 2325269960351905534
   identification: 
@@ -1566,7 +1844,7 @@ processes:
     value: Y
 
   security: 
-    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
 
 - # ====== Process: init =======================================
   id: 2325270958132905544
@@ -1671,6 +1949,22 @@ processes:
           , :P30_ACTIVE_IND
         );
       
+      if :REQUEST = 'SIGNUP' and :G_REGISTRATION_ID is null then
+        begin
+          select tp.id
+            into :G_REGISTRATION_ID
+          from wmg_tournament_players tp
+             , wmg_players p
+          where tp.player_id = p.id
+            and tp.tournament_session_id = :G_CURRENT_SESSION_ID
+            and p.account_login = :APP_USER
+            and tp.active_ind = 'Y';
+         exception
+          when no_data_found then
+            -- this should not happen but lets protect
+            :G_REGISTRATION_ID := null;
+         end;
+      end if;
 
   execution: 
     sequence: 10
