@@ -15,6 +15,9 @@ is
 gc_scope_prefix constant VARCHAR2(31) := lower($$PLSQL_UNIT) || '.';
 subtype scope_t is varchar2(128);
 
+c_issue_noshow     constant wmg_tournament_players.issue_code%type := 'NOSHOW';
+c_issue_noscore    constant wmg_tournament_players.issue_code%type := 'NOSCORE';
+c_issue_infraction constant wmg_tournament_players.issue_code%type := 'INFRACTION';
 
 /**
  * Log either via logger or apex.debug
@@ -1256,55 +1259,47 @@ end score_entry_verification;
  * @author Jorge Rimblas
  * @created August 11, 2023
  * @param p_player_id
- * @param p_action: noshow, noscore, vialoation
+ * @param p_issue_code: NOSHOW, NOSCORE, INFRACTION
  * @param p_operation: (S)et | (C)lear
  * @return
  */
 procedure set_verification_issue(
-   p_player_id in wmg_players.id%type
- , p_action    in varchar2 default null
- , p_operation in varchar2 default null  -- (S)et | (C)lear
- , p_from_ajax in boolean default true
+   p_player_id  in wmg_players.id%type
+ , p_issue_code in varchar2 default null
+ , p_operation  in varchar2 default null  -- (S)et | (C)lear
+ , p_from_ajax  in boolean default true
 )
 is
   l_scope  scope_t := gc_scope_prefix || 'set_verification_issue';
 
-  l_action    varchar2(10);
-  l_operation varchar2(1);  -- (S)et | (C)lear
+  l_issue_code wmg_tournament_players.issue_code%type;
+  l_operation  varchar2(1);  -- (S)et | (C)lear
 begin
   -- logger.append_param(l_params, 'p_player_id', p_player_id);
-  -- logger.append_param(l_params, 'p_action', p_action);
+  -- logger.append_param(l_params, 'p_issue_code', p_issue_code);
   -- logger.append_param(l_params, 'p_operation', p_operation);
   log('BEGIN', l_scope);
-  log('.. p_player_id:' || p_player_id, l_scope);
-  log('.. p_action:' || p_action, l_scope);
-  log('.. p_operation:' || p_operation, l_scope);
+  log('.. p_player_id:'  || p_player_id, l_scope);
+  log('.. p_issue_code:' || p_issue_code, l_scope);
+  log('.. p_operation:'  || p_operation, l_scope);
 
-  if p_action is null then
-    l_action := 'noshow';  -- the default action value
+  if p_issue_code is null then
+    l_issue_code := c_issue_noshow;  -- the default issue value
     l_operation := 'S';    -- if we had no value we're always setting
   else
-    l_action := p_action;
+    l_issue_code := p_issue_code;
     l_operation := p_operation;
   end if;
 
-  log('.. l_action:' || l_action, l_scope);
+  log('.. l_issue_code:' || l_issue_code, l_scope);
   log('.. l_operation:' || l_operation, l_scope);
 
   -- toggle the verification
   update wmg_tournament_players
-   set no_show_flag = case
-                         when l_operation = 'C' then null
-                         when l_action = 'noshow' then 'Y' else null
-                      end
-      , no_scores_flag = case
-                         when l_operation = 'C' then null
-                         when l_action = 'noscore' then 'Y' else null
-                      end
-      , violation_flag = case
-                         when l_operation = 'C' then null
-                         when l_action = 'violation' then 'Y' else null
-                      end
+   set issue_code = case
+                      when l_operation = 'C' then null
+                      else l_issue_code
+                    end
      , verified_score_flag = case when l_operation = 'C' then null else 'Y' end
      , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
      , verified_on         = case when l_operation = 'C' then null else current_timestamp end
@@ -1312,9 +1307,9 @@ begin
         case when l_operation = 'C' then null 
          else 
              case 
-             when l_action = 'noshow' then 'No show'
-             when l_action = 'noscore' then 'Score not entered on time'
-             when l_action = 'violation' then 'Infraction'
+             when l_issue_code = c_issue_noshow then 'No show'
+             when l_issue_code = c_issue_noscore then 'Score not entered on time'
+             when l_issue_code = c_issue_infraction then 'Infraction'
              else null
              end
         end
@@ -1391,7 +1386,6 @@ begin
          , p.verified_note
          , p.verified_by
          , p.verified_on
-         , p.no_show_flag
       from wmg_tournament_results_v r
          , wmg_tournament_player_v p
      where p.week = r.week (+)
@@ -1400,9 +1394,7 @@ begin
        and p.time_slot = p_time_slot
        and p.active_ind = 'Y'            -- still registed
        and p.verified_score_flag is null -- not verified yet
-       and p.no_show_flag is null        -- not flagged as a no show
-       and p.no_scores_flag is null      -- not flagged as missing scores
-       and p.violation_flag is null      -- not flagged with a validation
+       and p.issue_code is null          -- no issues raised
        and r.total_scorecard is null     -- No scores entered
   )
   loop
@@ -1443,9 +1435,7 @@ begin
          , verified_on = current_timestamp
          , verified_note = 'No show or No Score'
          , verified_score_flag = 'Y'
-         , no_show_flag = 'Y'
-         , no_scores_flag = null
-         , violation_flag = null
+         , issue_code = c_issue_noshow
      where id = p.tournament_player_id;
 
   end loop;

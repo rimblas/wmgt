@@ -79,10 +79,10 @@ procedure score_entry_verification(
 );
 
 procedure set_verification_issue(
-   p_player_id in wmg_players.id%type
- , p_action    in varchar2 default null
- , p_operation in varchar2 default null  -- (S)et | (C)lear
- , p_from_ajax in boolean default true
+   p_player_id  in wmg_players.id%type
+ , p_issue_code in varchar2 default null
+ , p_operation  in varchar2 default null  -- (S)et | (C)lear
+ , p_from_ajax  in boolean default true
 );
 
 

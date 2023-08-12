@@ -127,7 +127,7 @@ regions:
     - P532_EASY_COURSE_ID
 
   layout: 
-    sequence: 90
+    sequence: 100
     parent-region: Tournament Sessions # 56158045789158236792
     position: BODY
     start-new-layout: false
@@ -373,7 +373,7 @@ regions:
     - P532_HARD_COURSE_ID
 
   layout: 
-    sequence: 100
+    sequence: 110
     parent-region: Tournament Sessions # 56158045789158236792
     position: BODY
     start-new-layout: false
@@ -810,7 +810,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 130
+    sequence: 140
     region: Tournament Sessions # 56158045789158236792
     position: BODY
 
@@ -905,7 +905,7 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 70
+    sequence: 80
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -974,7 +974,7 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 80
+    sequence: 90
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1124,14 +1124,14 @@ page-items:
 
   label: 
     label: Round Num
-    alignment: Right
+    alignment: Left
 
   settings: 
     number-alignment: End
     virtual-keyboard: Text
 
   layout: 
-    sequence: 40
+    sequence: 50
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1192,7 +1192,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 60
+    sequence: 70
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1252,7 +1252,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 50
+    sequence: 60
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1313,7 +1313,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 110
+    sequence: 120
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1374,7 +1374,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 120
+    sequence: 130
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -1573,6 +1573,47 @@ buttons:
     type: Item = Value
     item: P532_COMPLETED_IND
     value: N
+
+- # ====== Button: VIEW_ISSUES =================================
+  id: 25632249552764306
+  identification: 
+    button-name: VIEW_ISSUES
+    label: View Issues
+
+  layout: 
+    sequence: 40
+    region: Tournament Sessions # 56158045789158236792
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: 10
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    - t-Button--gapTop
+    icon: fa-warning
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:535:&SESSION.::&DEBUG.:535:P535_TOURNAMENT_SESSION_ID:&P532_ID.'
+      page: 535 # Tournament Issues
+      clear-cache: 535
+      values: 
+        p535_tournament_session_id: '&P532_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P532_ID
 
 - # ====== Button: CANCEL ======================================
   id: 56158058401851236800

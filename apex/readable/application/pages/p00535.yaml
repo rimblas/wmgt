@@ -1,0 +1,575 @@
+---
+# ====== Page: Tournament Issues =============================
+id: 535
+identification: 
+  name: Tournament Issues
+  alias: TOURNAMENT-ISSUES
+  title: Tournament Issues
+
+appearance: 
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+  - ui-dialog--stretch
+
+dialog: 
+  chained: false
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+
+security: 
+  authorization-scheme: Tournament Admin # 55902033226819493948
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Tournament Issues ===========================
+  id: 48063503660716020
+  identification: 
+    title: Tournament Issues
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select p.week
+      , p.player_name, p.verified_note
+      , i.icon
+      , i.name
+      , i.description
+      , (select count(*) from wmg_tournament_player_v pp where pp.player_id = p.player_id and pp.issue_code = i.code and pp.tournament_id = p.tournament_id) total
+      from wmg_tournament_player_v p
+         , wmg_issues i
+      where p.issue_code = i.code
+        and p.issue_code = nvl(:P535_ISSUE_CODE, p.issue_code)
+        and (
+            (p.tournament_session_id = :P535_TOURNAMENT_SESSION_ID and nvl(:P535_FULL_SEASON_FLAG, 'N') = 'N')
+          or (:P535_FULL_SEASON_FLAG = 'Y' and p.tournament_session_id  in (
+              select id from wmg_tournament_sessions where tournament_id in (select tournament_id from wmg_tournament_sessions where id = :P535_TOURNAMENT_SESSION_ID)
+           ))
+        )
+      order by i.display_seq, p.player_name, p.week
+    page-items-to-submit: 
+    - P535_TOURNAMENT_SESSION_ID
+    - P535_ISSUE_CODE
+    - P535_FULL_SEASON_FLAG
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: true
+      link-text: Download
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: WEEK ========================================
+    id: 25632824911764312
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL =======================================
+    id: 25633028840764314
+    identification: 
+      column-name: TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Total this Season
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 25652288033887594
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Issue
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON ========================================
+    id: 25652601157887595
+    identification: 
+      column-name: ICON
+      type: Plain Text
+
+    heading: 
+      heading: Icon
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="#ICON#" title="#DESCRIPTION#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 25653034329887596
+    identification: 
+      column-name: DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_NOTE ===============================
+    id: 25653452584887596
+    identification: 
+      column-name: VERIFIED_NOTE
+      type: Plain Text
+
+    heading: 
+      heading: Verified Note
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 25653883695887597
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
+- # ====== Page Item: P535_TOURNAMENT_SESSION_ID ===============
+  id: 25632375153764307
+  identification: 
+    name: P535_TOURNAMENT_SESSION_ID
+    type: Popup LOV
+
+  label: 
+    label: Tournament Week
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: false
+
+  layout: 
+    sequence: 10
+    region: Tournament Issues # 48063503660716020
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: WMG_TOURNAMENT_SESSIONS.WEEK # 41752287626172732
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Item
+    item: G_CURRENT_SESSION_ID
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P535_FULL_SEASON_FLAG ====================
+  id: 25632727613764311
+  identification: 
+    name: P535_FULL_SEASON_FLAG
+    type: Switch
+
+  label: 
+    label: 'View Full Season '
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 20
+    region: Tournament Issues # 48063503660716020
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: 10
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P535_ISSUE_CODE ==========================
+  id: 51286280698651900
+  identification: 
+    name: P535_ISSUE_CODE
+    type: Radio Group
+
+  label: 
+    label: Issues
+    alignment: Left
+
+  settings: 
+    number-of-columns: 4
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 30
+    region: Tournament Issues # 48063503660716020
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select name d, code r
+      from wmg_issues
+      order by display_seq
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- All -'
+
+  advanced: 
+    warn-on-unsaved-changes: Ignore
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Issues ======================
+  id: 25632561236764309
+  identification: 
+    name: Refresh Issues
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P535_TOURNAMENT_SESSION_ID
+    - P535_ISSUE_CODE
+    - P535_FULL_SEASON_FLAG
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 25632619399764310
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Tournament Issues # 48063503660716020
+
+    execution: 
+      sequence: 10
+      event: Refresh Issues # 25632561236764309
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+

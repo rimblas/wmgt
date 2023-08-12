@@ -18,9 +18,8 @@ create table wmg_tournament_players (
     verified_by                    varchar2(60),
     verified_on                    timestamp with local time zone,
     verified_note                  varchar2(200),
-    no_show_flag                   varchar2(1)
-    no_scores_flag                 varchar2(1)
-    violation_flag                 varchar2(1)
+    issue_code                     varchar2(1) constraint wmg_tournament_pla_issue_fk 
+references wmg_issues(code)
     active_ind                     varchar2(1) constraint wmg_tournament_players_ck_active check (active_ind in ('Y', 'N')) not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
@@ -38,7 +37,7 @@ comment on column wmg_tournament_players.points is 'Points scored by a player on
 comment on column wmg_tournament_players.points_override is 'Override for regular points. Applied at the time of closing.';
 comment on column wmg_tournament_players.discarded_points_flag is 'Indicates these points have been discarded as 1 out of every 3 sessions gets points discarded';
 comment on column wmg_tournament_players.verified_score_flag is 'Indicates these scorecard submission has been verified';
-comment on column wmg_tournament_players.no_show_flag is 'Flag players that do not show up';
+comment on column wmg_tournament_players.issue_code is 'Flag players issues: no scores, no show, infraction';
 comment on column wmg_tournament_players.no_scores_flag is 'Played played but did not submit scores';
 comment on column wmg_tournament_players.violation_flag is 'Played violated the rules';
 

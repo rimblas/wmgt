@@ -19,6 +19,10 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+
 security: 
   authorization-scheme: Tournament Admin # 55902033226819493948
   authentication: Page Requires Authentication
@@ -38,6 +42,259 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Issues ======================================
+  id: 22411515589828432
+  identification: 
+    title: Issues
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select p.player_name, p.verified_note
+      , i.icon
+      , i.name
+      , i.description
+      from wmg_tournament_player_v p
+         , wmg_issues i
+      where p.issue_code = i.code
+        and p.issue_code = nvl(:P500_ISSUE_CODE, p.issue_code)
+        and p.tournament_session_id in (
+         select id 
+           from wmg_tournament_sessions
+           where TOURNAMENT_ID in (
+               select ID
+                 from WMG_TOURNAMENTS
+                where CURRENT_FLAG = 'Y'
+           )
+            and (
+                completed_ind = 'N'
+              or (completed_ind = 'Y' and completed_on > current_timestamp - 1)
+            )
+          order by decode(completed_ind, 'N', 1, 2)
+          fetch first 1 rows only
+      )
+      order by i.display_seq, p.player_name
+    page-items-to-submit: 
+    - P500_ISSUE_CODE
+
+  layout: 
+    sequence: 30
+    parent-region: Current  Session # 56178155412404412208
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: true
+      link-text: Download
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_NAME =================================
+    id: 22411697820828433
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAME ========================================
+    id: 22412022075828437
+    identification: 
+      column-name: NAME
+      type: Plain Text
+
+    heading: 
+      heading: Issue
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ICON ========================================
+    id: 22412179336828438
+    identification: 
+      column-name: ICON
+      type: Plain Text
+
+    heading: 
+      heading: Icon
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="#ICON#" title="#DESCRIPTION#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 22412252099828439
+    identification: 
+      column-name: DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VERIFIED_NOTE ===============================
+    id: 22412839445828445
+    identification: 
+      column-name: VERIFIED_NOTE
+      type: Plain Text
+
+    heading: 
+      heading: Verified Note
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Signups =====================================
   id: 32752353856549214
   identification: 
@@ -385,11 +642,11 @@ regions:
       
 
   layout: 
-    sequence: 30
+    sequence: 40
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -671,7 +928,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Total Score
+      heading: Total <br>Score
       alignment: center
 
     layout: 
@@ -809,7 +1066,7 @@ regions:
       
 
   layout: 
-    sequence: 40
+    sequence: 50
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -1095,7 +1352,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Total Score
+      heading: Total<br>Score
       alignment: center
 
     layout: 
@@ -2038,6 +2295,67 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P500_ISSUE_CODE ==========================
+  id: 25631994381764303
+  identification: 
+    name: P500_ISSUE_CODE
+    type: Radio Group
+
+  label: 
+    label: Issues
+    alignment: Left
+
+  settings: 
+    number-of-columns: 4
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 10
+    region: Issues # 22411515589828432
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select name d, code r
+      from wmg_issues
+      order by display_seq
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- All -'
+
+  advanced: 
+    warn-on-unsaved-changes: Ignore
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: POP_WMG_TOURNAMENT_SESSIONS =================
   id: 20127465655175550
@@ -2106,6 +2424,38 @@ buttons:
       url: 'f?p=&APP_ID.:530:&SESSION.::&DEBUG.:530::'
       page: 530 # Sessions
       clear-cache: 530
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: VIEW_ISSUES =================================
+  id: 25632923112764313
+  identification: 
+    button-name: VIEW_ISSUES
+    label: View Issues
+
+  layout: 
+    sequence: 20
+    region: Issues # 22411515589828432
+    position: COPY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:535:&SESSION.::&DEBUG.:535::'
+      page: 535 # Tournament Issues
+      clear-cache: 535
 
     warn-on-unsaved-changes: Do Not Check
 
@@ -2341,6 +2691,40 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Refresh on Dialog Close # 16731015484921837
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Issues ======================
+  id: 25632080554764304
+  identification: 
+    name: Refresh Issues
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P500_ISSUE_CODE
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 25632119318764305
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Issues # 22411515589828432
+
+    execution: 
+      sequence: 10
+      event: Refresh Issues # 25632080554764304
       fire-when-event-result-is: True
       fire-on-initialization: false
 

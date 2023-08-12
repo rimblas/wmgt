@@ -23,16 +23,16 @@ javascript:
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   function-and-global-variable-declaration: |
-    function hasSetting(attr) {
+    function hasIssue(issueCode) {
      var btn$ = $("button.is-active.js-menuButton").siblings(".wmg-action");
-     return btn$.data(attr) === "Y";
+     return btn$.data('issue') === issueCode;
     }
     
-    function verifyMenuAction(btn, actionMenu, action, operation) {
+    function verifyMenuAction(btn, actionMenu, issueCode, operation) {
          playerID = btn.dataset.id;
          apex.server.process('SET_VERIFY_ISSUE'
         , {x01: playerID,
-           x02: action,
+           x02: issueCode,
            x03: operation,
            pageItems: '#P75_WEEK'
           }
@@ -45,10 +45,13 @@ javascript:
                 if (pData.success) {
                   $cell.find(".wmg-action button").addClass("t_button--primary"); //.append('<i class="em ' + actionMenu.icon + '" aria-role="presentation" aria-label="' + actionMenu.icon + '"></i>');
                   
-                  apex.message.showPageSuccess( action + " added!" );
+                  apex.message.showPageSuccess( issueCode.toLowerCase() + " added!" );
                   apex.region('verifyRegion').refresh();
-                  if (action === "violation") {
+                  if (issueCode === "INFRACTION") {
                       $s("P75_NEW_FLAG", "E");
+                  }
+                  else {
+                      $s("P75_NEW_FLAG", "");
                   }
     
     
@@ -63,7 +66,7 @@ javascript:
     
     }
   execute-when-page-loads: |
-    var menu$ = $("<div id='no_show_list_menu'></div>");
+    var menu$ = $("<div id='issue_list_menu'></div>");
     $("body").append(menu$);
     wmgt.theme.init();   
     menu$.menu({
@@ -76,11 +79,11 @@ javascript:
           action: function(menu, btn) {
             // console.log("Adding", button$.data("id"));
             // console.log(this);
-            verifyMenuAction(btn, this, 'noshow', 'S');
+            verifyMenuAction(btn, this, 'NOSHOW', 'S');
             
           },
           hide: function () {
-              return hasSetting('noshow');
+              return hasIssue('NOSHOW');
           }
         },
         {
@@ -90,11 +93,11 @@ javascript:
           action: function(menu, btn) {
             // console.log("Adding", button$.data("id"));
             // console.log(this);
-            verifyMenuAction(btn, this, 'noscore', 'S');
+            verifyMenuAction(btn, this, 'NOSCORE', 'S');
             
           },
           hide: function () {
-              return hasSetting('noscore');
+              return hasIssue('NOSCORE');
           }
         },
         {
@@ -104,11 +107,11 @@ javascript:
           action: function(menu, btn) {
             // console.log("Adding", button$.data("id"));
             // console.log(this);
-            verifyMenuAction(btn, this, 'violation', 'S');
+            verifyMenuAction(btn, this, 'INFRACTION', 'S');
             
           },
           hide: function () {
-              return hasSetting('violation');
+              return hasIssue('INFRACTION');
           }
         },
       ]
@@ -214,27 +217,20 @@ regions:
              , p.verified_note
              , p.verified_by
              , p.verified_on
-             , p.no_show_flag
-             , p.no_scores_flag
-             , p.violation_flag
+             , p.issue_code
              , case 
-                when p.no_show_flag = 'Y' then 'No Show'
-                when p.no_scores_flag = 'Y' then 'No Scores'
-                when p.violation_flag = 'Y' then 'Infraction'
-                else 'No Show'
+                   when p.issue_code is null then 'No show'
+                   else i.name
                 end action_label
-             , case 
-                when p.no_show_flag = 'Y' then 'em-ghost'
-                when p.no_scores_flag = 'Y' then 'em-turkey'
-                when p.violation_flag = 'Y' then 'em-red_circle'
-                else ''
-                end action_icon
-              , case when p.no_show_flag || p.no_scores_flag || p.violation_flag is not null then 't-Button--primary' else '' end action_selected
+             , i.icon action_icon
+             , case when p.issue_code is not null then 't-Button--primary' else '' end action_selected
           from wmg_tournament_results_v r
              , wmg_tournament_player_v p
+             , wmg_issues i
          where p.week = r.week (+)
            and p.player_id = r.player_id (+)
            and p.week = :P75_WEEK
+           and p.issue_code = i.code (+)
            and p.active_ind = 'Y'
            and (:P75_SLOT is null or :P75_SLOT = p.time_slot)
            and (:P75_ROOM is null or to_number(:P75_ROOM default null on conversion error) = p.room_no)
@@ -264,9 +260,7 @@ regions:
            , verified_note
            , verified_by
            , verified_on
-           , no_show_flag
-           , no_scores_flag
-           , violation_flag
+           , issue_code
            , '' actions
            , action_selected
            , action_label
@@ -311,15 +305,13 @@ regions:
                 , s.verified_note
                 , s.verified_by
                 , s.verified_on
-                , s.no_show_flag
-                , s.no_scores_flag
-                , s.violation_flag
+                , s.issue_code
                 , s.action_label
                 , s.action_selected
                 , s.action_icon
             from scorecards s
       )
-      where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and no_show_flag = 'Y'))
+      where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and issue_code = 'NOSHOW'))
         and (:P75_DIFF_ONLY_FLAG = 'N' or (verification_class = 'N' or :P75_SHOW_NO_SHOWS_FLAG = 'Y' ))
         and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
         and (( :P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
@@ -659,36 +651,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: NO_SCORES_FLAG ==============================
-    id: 22410574708828422
-    identification: 
-      column-name: NO_SCORES_FLAG
-      type: Hidden Column
-
-    layout: 
-      sequence: 240
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: VIOLATION_FLAG ==============================
-    id: 22410632624828423
-    identification: 
-      column-name: VIOLATION_FLAG
-      type: Hidden Column
-
-    layout: 
-      sequence: 250
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: ACTIONS =====================================
     id: 22410746748828424
     identification: 
@@ -710,16 +672,14 @@ regions:
       html-expression: |
         <div class="wmg-no-show-actions">
             <button type="button"  class="t-Button t-Button--tiny t-Button--pillStart #ACTION_SELECTED# wmg-action" aria-label="#ACTION_LABEL#" title="#ACTION_LABEL#"
-               data-noshow="#NO_SHOW_FLAG#"
-               data-noscore="#NO_SCORES_FLAG#"
-               data-violation="#VIOLATION_FLAG#"
+               data-issue="#ISSUE_CODE#"
                data-id="#TOURNAMENT_PLAYER_ID#">
                 <i class="t-Icon em #ACTION_ICON# " aria-role="presentation" aria-label=""></i>
                 #ACTION_LABEL#
             </button>
             <button type="button" class="t-Button t-Button--tiny t-Button--pillEnd t-Button--icon #ACTION_SELECTED# js-menuButton" 
                data-id="#TOURNAMENT_PLAYER_ID#"
-               data-menu="no_show_list_menu">
+               data-menu="issue_list_menu">
                 <span aria-hidden="true" class="t-Icon t-Icon--left fa fa-chevron-down">
             </button>
         </div>
@@ -778,6 +738,21 @@ regions:
 
     layout: 
       sequence: 330
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_CODE ==================================
+    id: 22411438393828431
+    identification: 
+      column-name: ISSUE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 340
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1149,26 +1124,6 @@ regions:
 
     security: 
       escape-special-characters: true
-
-  - # ====== Column: NO_SHOW_FLAG ================================
-    id: 46932932793678607
-    identification: 
-      column-name: NO_SHOW_FLAG
-      type: Hidden Column
-
-    layout: 
-      sequence: 230
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-    comments: 
-      comments: |
-        Previous:
-        <span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="noshow fa NA_#NO_SHOW_FLAG#" title="Player did not show"></span>
 
   - # ====== Column: ROUND_CREATED_ON ============================
     id: 49532418866520845
@@ -1662,10 +1617,10 @@ page-items:
   advanced: 
     initialization-javascript-function: wmgt.theme.weekLovTemplate
 
-- # ====== Page Item: P75_ACTION ===============================
+- # ====== Page Item: P75_ISSUE_CODE ===========================
   id: 22411151774828428
   identification: 
-    name: P75_ACTION
+    name: P75_ISSUE_CODE
     type: Hidden
 
   settings: 
@@ -2036,6 +1991,10 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: X
 
   session-state: 
     data-type: VARCHAR2
@@ -2852,10 +2811,10 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Toggle Action =======================
+- # ====== Dynamic Action: Toggle Issue ========================
   id: 46933024822678608
   identification: 
-    name: Toggle Action
+    name: Toggle Issue
 
   execution: 
     sequence: 40
@@ -2870,25 +2829,25 @@ dynamic-actions:
     type: Immediate
 
   actions: 
-  - # ====== Action: Get Action ==================================
+  - # ====== Action: Get Issue ===================================
     id: 22411291040828429
     identification: 
-      name: Get Action
+      name: Get Issue
       action: Set Value
 
     settings: 
       set-type: JavaScript Expression
-      javascript-expression: this.triggeringElement.dataset.noshow == "Y" && "nowshow" || this.triggeringElement.dataset.noscore == "Y" && "nowscore" || this.triggeringElement.dataset.violation == "Y" && "violation" || ""
+      javascript-expression: this.triggeringElement.dataset.issue || ""
       suppress-change-event: false
 
     affected-elements: 
       selection-type: Item(s)
       item(s): 
-      - P75_ACTION
+      - P75_ISSUE_CODE
 
     execution: 
       sequence: 30
-      event: Toggle Action # 46933024822678608
+      event: Toggle Issue # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -2912,7 +2871,7 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Toggle Action # 46933024822678608
+      event: Toggle Issue # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -2932,7 +2891,7 @@ dynamic-actions:
 
     execution: 
       sequence: 40
-      event: Toggle Action # 46933024822678608
+      event: Toggle Issue # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2945,30 +2904,22 @@ dynamic-actions:
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
         declare
-          l_action    varchar2(10);
+          l_issue_code wmg_tournament_players.issue_code%type;
           l_operation varchar2(1);  -- (S)et | (C)lear
         begin
-          if :P75_ACTION is null then
-            l_action := 'noshow';
+          if :P75_ISSUE_CODE is null then
+            l_issue_code := 'NOSHOW';
             l_operation := 'S';
           else
-            l_action := :P75_ACTION;
+            l_issue_code := :P75_ISSUE_CODE;
             l_operation := 'C';
           end if;
         
           -- toggle the verification
           update wmg_tournament_players
-           set no_show_flag = case
+           set issue_code = case
                                  when l_operation = 'C' then null
-                                 when l_action = 'noshow' then 'Y' else null
-                              end
-              , no_scores_flag = case
-                                 when l_operation = 'C' then null
-                                 when l_action = 'noscore' then 'Y' else null
-                              end
-              , violation_flag = case
-                                 when l_operation = 'C' then null
-                                 when l_action = 'violation' then 'Y' else null
+                                 else l_issue_code
                               end
              , verified_score_flag = case when l_operation = 'C' then null else 'Y' end
              , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
@@ -2977,9 +2928,9 @@ dynamic-actions:
                 case when l_operation = 'C' then null 
                  else 
                      case 
-                     when l_action = 'noshow' then 'No show'
-                     when l_action = 'noscore' then 'Score not entered on time'
-                     when l_action = 'violation' then 'Infraction'
+                     when l_issue_code = 'NOSHOW' then 'No show'
+                     when l_issue_code = 'NOSCORE' then 'Score not entered on time'
+                     when l_issue_code = 'INFRACTION' then 'Infraction'
                      else null
                      end
                 end
@@ -2987,11 +2938,11 @@ dynamic-actions:
         end;
       items-to-submit: 
       - P75_ID
-      - P75_ACTION
+      - P75_ISSUE_CODE
 
     execution: 
       sequence: 50
-      event: Toggle Action # 46933024822678608
+      event: Toggle Issue # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -3008,7 +2959,7 @@ dynamic-actions:
 
     execution: 
       sequence: 60
-      event: Toggle Action # 46933024822678608
+      event: Toggle Issue # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -3206,10 +3157,10 @@ processes:
     language: PL/SQL
     pl/sql-code: |
       wmg_util.set_verification_issue(
-         p_player_id => apex_application.g_x01
-       , p_action    => apex_application.g_x02
-       , p_operation => apex_application.g_x03
-       , p_from_ajax => true
+         p_player_id  => apex_application.g_x01
+       , p_issue_code => apex_application.g_x02
+       , p_operation  => apex_application.g_x03
+       , p_from_ajax  => true
       );
 
   execution: 
