@@ -535,7 +535,8 @@ page-items:
     alignment: Left
 
   settings: 
-    use-defaults: true
+    use-defaults: false
+    on-value: Y
 
   layout: 
     sequence: 90
@@ -1058,6 +1059,27 @@ dynamic-actions:
       event: Cancel Dialog # 57635061949207048
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+computations: 
+- # ====== Computation: P135_DISCARDED_POINTS_FLAG =============
+  id: 36049787717175808
+  identification: 
+    item-name: P135_DISCARDED_POINTS_FLAG
+
+  execution: 
+    sequence: 10
+    point: After Submit
+
+  computation: 
+    type: Static Value
+
+  server-side-condition: 
+    type: Item = Value
+    item: P135_DISCARDED_POINTS_FLAG
+    value: N
+
+  comments: 
+    comments: P135_DISCARDED_POINTS_FLAG should be Y or NULL
 
 processes: 
 - # ====== Process: Initialize form Maintain Player Tournament D
