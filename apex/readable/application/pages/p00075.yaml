@@ -22,9 +22,102 @@ navigation:
 javascript: 
   file-urls: 
   - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
+  function-and-global-variable-declaration: |
+    function hasSetting(attr) {
+     var btn$ = $("button.is-active.js-menuButton").siblings(".wmg-action");
+     return btn$.data(attr) === "Y";
+    }
+    
+    function verifyMenuAction(btn, actionMenu, action, operation) {
+         playerID = btn.dataset.id;
+         apex.server.process('SET_VERIFY_ISSUE'
+        , {x01: playerID,
+           x02: action,
+           x03: operation,
+           pageItems: '#P75_WEEK'
+          }
+        , {
+            beforeSend: function(btn) {
+              $(btn).parents("tr").find("[headers='ACTIONS']").append('<span aria-hidden="true" class="fa fa-spinner fa-anim-spin"></span>');
+            },
+            success: function( pData ) {
+                var $cell = $(btn).parents("tr").find("[headers='ACTIONS']");
+                if (pData.success) {
+                  $cell.find(".wmg-action button").addClass("t_button--primary"); //.append('<i class="em ' + actionMenu.icon + '" aria-role="presentation" aria-label="' + actionMenu.icon + '"></i>');
+                  
+                  apex.message.showPageSuccess( action + " added!" );
+                  apex.region('verifyRegion').refresh();
+                  if (action === "violation") {
+                      $s("P75_NEW_FLAG", "E");
+                  }
+    
+    
+                }
+                else {
+                    $cell.find("i." + actionMenu.icon).remove();
+                }            
+                $cell.find(".fa-spinner").remove();
+            }
+        }
+     );
+    
+    }
+  execute-when-page-loads: |
+    var menu$ = $("<div id='no_show_list_menu'></div>");
+    $("body").append(menu$);
+    wmgt.theme.init();   
+    menu$.menu({
+      iconType: "em",
+      items: [
+        {
+          type: "action",
+          label: "No show",
+          icon: "em-ghost",
+          action: function(menu, btn) {
+            // console.log("Adding", button$.data("id"));
+            // console.log(this);
+            verifyMenuAction(btn, this, 'noshow', 'S');
+            
+          },
+          hide: function () {
+              return hasSetting('noshow');
+          }
+        },
+        {
+          type: "action",
+          label: "No scores",
+          icon: "em-turkey",
+          action: function(menu, btn) {
+            // console.log("Adding", button$.data("id"));
+            // console.log(this);
+            verifyMenuAction(btn, this, 'noscore', 'S');
+            
+          },
+          hide: function () {
+              return hasSetting('noscore');
+          }
+        },
+        {
+          type: "action",
+          label: "Rule Violation",
+          icon: "em-red_circle",
+          action: function(menu, btn) {
+            // console.log("Adding", button$.data("id"));
+            // console.log(this);
+            verifyMenuAction(btn, this, 'violation', 'S');
+            
+          },
+          hide: function () {
+              return hasSetting('violation');
+          }
+        },
+      ]
+    });
+    
 
 css: 
   file-urls: 
+  - //emoji-css.afeld.me/emoji.css
   - '#APP_FILES#css/week-lov#MIN#.css'
   inline: |
     .noshow, .verification, .roomVerification {cursor:pointer;}
@@ -55,6 +148,17 @@ css:
     #roomTabs td[headers^="ROOM_NO"] {padding-inline-start: 0;}
     #roomTabs th[id^="ROOM_NO"] {display: none;}
     #roomTabs {background-color: lightgray;}
+    
+    .wmg-no-show-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .wmg-action i.em {
+        height: 16px;
+        width: 16px;
+    }
 
 security: 
   authorization-scheme: Contribution Rights # 46995203801871514425
@@ -111,6 +215,21 @@ regions:
              , p.verified_by
              , p.verified_on
              , p.no_show_flag
+             , p.no_scores_flag
+             , p.violation_flag
+             , case 
+                when p.no_show_flag = 'Y' then 'No Show'
+                when p.no_scores_flag = 'Y' then 'No Scores'
+                when p.violation_flag = 'Y' then 'Infraction'
+                else 'No Show'
+                end action_label
+             , case 
+                when p.no_show_flag = 'Y' then 'em-ghost'
+                when p.no_scores_flag = 'Y' then 'em-turkey'
+                when p.violation_flag = 'Y' then 'em-red_circle'
+                else ''
+                end action_icon
+              , case when p.no_show_flag || p.no_scores_flag || p.violation_flag is not null then 't-Button--primary' else '' end action_selected
           from wmg_tournament_results_v r
              , wmg_tournament_player_v p
          where p.week = r.week (+)
@@ -146,6 +265,12 @@ regions:
            , verified_by
            , verified_on
            , no_show_flag
+           , no_scores_flag
+           , violation_flag
+           , '' actions
+           , action_selected
+           , action_label
+           , action_icon
       from  (
           select s.pos
                , s.time_slot
@@ -187,6 +312,11 @@ regions:
                 , s.verified_by
                 , s.verified_on
                 , s.no_show_flag
+                , s.no_scores_flag
+                , s.violation_flag
+                , s.action_label
+                , s.action_selected
+                , s.action_icon
             from scorecards s
       )
       where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and no_show_flag = 'Y'))
@@ -206,7 +336,7 @@ regions:
     - P75_ROOM
 
   layout: 
-    sequence: 139
+    sequence: 149
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -341,7 +471,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Submitted<br>Easy Score
+      heading: Easy
       alignment: center
 
     layout: 
@@ -376,7 +506,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Submitted<br>Hard Score
+      heading: Hard
       alignment: center
 
     layout: 
@@ -529,6 +659,132 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: NO_SCORES_FLAG ==============================
+    id: 22410574708828422
+    identification: 
+      column-name: NO_SCORES_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VIOLATION_FLAG ==============================
+    id: 22410632624828423
+    identification: 
+      column-name: VIOLATION_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACTIONS =====================================
+    id: 22410746748828424
+    identification: 
+      column-name: ACTIONS
+      type: Plain Text
+
+    heading: 
+      heading: Actions
+      alignment: center
+
+    layout: 
+      sequence: 260
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <div class="wmg-no-show-actions">
+            <button type="button"  class="t-Button t-Button--tiny t-Button--pillStart #ACTION_SELECTED# wmg-action" aria-label="#ACTION_LABEL#" title="#ACTION_LABEL#"
+               data-noshow="#NO_SHOW_FLAG#"
+               data-noscore="#NO_SCORES_FLAG#"
+               data-violation="#VIOLATION_FLAG#"
+               data-id="#TOURNAMENT_PLAYER_ID#">
+                <i class="t-Icon em #ACTION_ICON# " aria-role="presentation" aria-label=""></i>
+                #ACTION_LABEL#
+            </button>
+            <button type="button" class="t-Button t-Button--tiny t-Button--pillEnd t-Button--icon #ACTION_SELECTED# js-menuButton" 
+               data-id="#TOURNAMENT_PLAYER_ID#"
+               data-menu="no_show_list_menu">
+                <span aria-hidden="true" class="t-Icon t-Icon--left fa fa-chevron-down">
+            </button>
+        </div>
+        
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACTION_LABEL ================================
+    id: 22410880845828425
+    identification: 
+      column-name: ACTION_LABEL
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACTION_ICON =================================
+    id: 22410968447828426
+    identification: 
+      column-name: ACTION_ICON
+      type: Hidden Column
+
+    layout: 
+      sequence: 320
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACTION_SELECTED =============================
+    id: 22411010136828427
+    identification: 
+      column-name: ACTION_SELECTED
+      type: Hidden Column
+
+    layout: 
+      sequence: 330
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: PLAYER_RANK =================================
     id: 38738673678129119
     identification: 
@@ -633,7 +889,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Easy Scorecard
+      heading: Easy<br>Sum
       alignment: center
 
     layout: 
@@ -670,7 +926,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Hard Scorecard
+      heading: Hard<br>Sum
       alignment: center
 
     layout: 
@@ -737,7 +993,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 260
+      sequence: 300
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -756,7 +1012,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 250
+      sequence: 290
       column-alignment: center
 
     accessibility: 
@@ -791,7 +1047,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 240
+      sequence: 280
       column-alignment: center
 
     accessibility: 
@@ -873,7 +1129,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 270
+      sequence: 310
       column-alignment: start
 
     accessibility: 
@@ -898,36 +1154,21 @@ regions:
     id: 46932932793678607
     identification: 
       column-name: NO_SHOW_FLAG
-      type: Plain Text
-
-    heading: 
-      heading: No Show?
-      alignment: center
+      type: Hidden Column
 
     layout: 
       sequence: 230
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: <span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="noshow fa NA_#NO_SHOW_FLAG#" title="Player did not show"></span>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
 
     security: 
       escape-special-characters: true
+
+    comments: 
+      comments: |
+        Previous:
+        <span aria-hidden="true" data-id="#TOURNAMENT_PLAYER_ID#" class="noshow fa NA_#NO_SHOW_FLAG#" title="Player did not show"></span>
 
   - # ====== Column: ROUND_CREATED_ON ============================
     id: 49532418866520845
@@ -971,7 +1212,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 149
+    sequence: 159
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1035,7 +1276,7 @@ regions:
     - P75_SLOT
 
   layout: 
-    sequence: 129
+    sequence: 139
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1421,6 +1662,36 @@ page-items:
   advanced: 
     initialization-javascript-function: wmgt.theme.weekLovTemplate
 
+- # ====== Page Item: P75_ACTION ===============================
+  id: 22411151774828428
+  identification: 
+    name: P75_ACTION
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 69
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P75_SLOT =================================
   id: 39135948061390010
   identification: 
@@ -1436,7 +1707,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 89
+    sequence: 99
     region: No Parent
     position: BODY
     alignment: Left
@@ -1499,7 +1770,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 99
+    sequence: 109
     region: No Parent
     position: BODY
     alignment: Left
@@ -1645,7 +1916,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 109
+    sequence: 119
     region: No Parent
     position: BODY
     alignment: Left
@@ -1755,7 +2026,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 69
+    sequence: 79
     region: No Parent
     position: BODY
 
@@ -1906,7 +2177,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 79
+    sequence: 89
     region: No Parent
     position: BODY
     alignment: Left
@@ -2004,7 +2275,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 119
+    sequence: 129
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -2581,10 +2852,10 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Toggle No Shows =====================
+- # ====== Dynamic Action: Toggle Action =======================
   id: 46933024822678608
   identification: 
-    name: Toggle No Shows
+    name: Toggle Action
 
   execution: 
     sequence: 40
@@ -2592,29 +2863,36 @@ dynamic-actions:
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
-    jquery-selector: .noshow
+    jquery-selector: .wmg-action
 
   execution: 
     event-scope: Dynamic
     type: Immediate
 
   actions: 
-  - # ====== Action: Remove Class ================================
-    id: 46933172669678609
+  - # ====== Action: Get Action ==================================
+    id: 22411291040828429
     identification: 
-      action: Remove Class
+      name: Get Action
+      action: Set Value
 
     settings: 
-      class: NA_ NA_Y
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.noshow == "Y" && "nowshow" || this.triggeringElement.dataset.noscore == "Y" && "nowscore" || this.triggeringElement.dataset.violation == "Y" && "violation" || ""
+      suppress-change-event: false
 
     affected-elements: 
-      selection-type: Triggering Element
+      selection-type: Item(s)
+      item(s): 
+      - P75_ACTION
 
     execution: 
-      sequence: 10
-      event: Toggle No Shows # 46933024822678608
+      sequence: 30
+      event: Toggle Action # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
 
   - # ====== Action: Get player ID ===============================
     id: 46933267690678610
@@ -2634,7 +2912,7 @@ dynamic-actions:
 
     execution: 
       sequence: 20
-      event: Toggle No Shows # 46933024822678608
+      event: Toggle Action # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -2646,14 +2924,15 @@ dynamic-actions:
       action: Add Class
 
     settings: 
-      class: fa-square-selected-o fa-anim-spin
+      class: fa fa-spinner fa-anim-spin
 
     affected-elements: 
-      selection-type: Triggering Element
+      selection-type: JavaScript Expression
+      javascript-expression: $(this.triggeringElement).find(".t-Icon")
 
     execution: 
-      sequence: 30
-      event: Toggle No Shows # 46933024822678608
+      sequence: 40
+      event: Toggle Action # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2665,24 +2944,54 @@ dynamic-actions:
     settings: 
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
-        -- toggle the verification
-        update wmg_tournament_players
-           set no_show_flag = case
-                                       when no_show_flag is null then 'Y'
-                                       when no_show_flag = 'Y' then null
-                                    end
-             , verified_score_flag = case when no_show_flag is null then 'Y' else null end
-             , verified_note = case when no_show_flag is null then 'No show' else null end
-             , verified_by = case when no_show_flag is null then sys_context('APEX$SESSION','APP_USER') else null end
-             , verified_on = case when no_show_flag is null then current_timestamp else null end
-        where id = :P75_ID;
+        declare
+          l_action    varchar2(10);
+          l_operation varchar2(1);  -- (S)et | (C)lear
+        begin
+          if :P75_ACTION is null then
+            l_action := 'noshow';
+            l_operation := 'S';
+          else
+            l_action := :P75_ACTION;
+            l_operation := 'C';
+          end if;
         
+          -- toggle the verification
+          update wmg_tournament_players
+           set no_show_flag = case
+                                 when l_operation = 'C' then null
+                                 when l_action = 'noshow' then 'Y' else null
+                              end
+              , no_scores_flag = case
+                                 when l_operation = 'C' then null
+                                 when l_action = 'noscore' then 'Y' else null
+                              end
+              , violation_flag = case
+                                 when l_operation = 'C' then null
+                                 when l_action = 'violation' then 'Y' else null
+                              end
+             , verified_score_flag = case when l_operation = 'C' then null else 'Y' end
+             , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
+             , verified_on         = case when l_operation = 'C' then null else current_timestamp end
+             , verified_note       = 
+                case when l_operation = 'C' then null 
+                 else 
+                     case 
+                     when l_action = 'noshow' then 'No show'
+                     when l_action = 'noscore' then 'Score not entered on time'
+                     when l_action = 'violation' then 'Infraction'
+                     else null
+                     end
+                end
+            where id = :P75_ID;
+        end;
       items-to-submit: 
       - P75_ID
+      - P75_ACTION
 
     execution: 
-      sequence: 40
-      event: Toggle No Shows # 46933024822678608
+      sequence: 50
+      event: Toggle Action # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
       stop-execution-on-error: true
@@ -2698,8 +3007,8 @@ dynamic-actions:
       region: Verify Results # 11998064850694896
 
     execution: 
-      sequence: 50
-      event: Toggle No Shows # 46933024822678608
+      sequence: 60
+      event: Toggle Action # 46933024822678608
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2885,6 +3194,29 @@ computations:
     item: P75_WEEK
 
 processes: 
+- # ====== Process: SET_VERIFY_ISSUE ===========================
+  id: 22411302424828430
+  identification: 
+    name: SET_VERIFY_ISSUE
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      wmg_util.set_verification_issue(
+         p_player_id => apex_application.g_x01
+       , p_action    => apex_application.g_x02
+       , p_operation => apex_application.g_x03
+       , p_from_ajax => true
+      );
+
+  execution: 
+    sequence: 10
+    point: Ajax Callback
+    run-process: Once Per Page Visit (default)
+
 - # ====== Process: Refresh MV =================================
   id: 45125498558399130
   identification: 
