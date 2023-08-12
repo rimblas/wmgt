@@ -78,6 +78,26 @@ procedure score_entry_verification(
  , p_remove    in boolean default false
 );
 
+procedure set_verification_issue(
+   p_player_id in wmg_players.id%type
+ , p_action    in varchar2 default null
+ , p_operation in varchar2 default null  -- (S)et | (C)lear
+ , p_from_ajax in boolean default true
+);
+
+
+--------------------------------------------------------------------------------
+procedure close_time_slot_time_entry (
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+  , p_time_slot             in wmg_tournament_players.time_slot%type
+);
+
+
+procedure submit_close_scoring_jobs(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+);
+
+
 procedure unavailable_application (p_message in varchar2 default null);
 
 end wmg_util;

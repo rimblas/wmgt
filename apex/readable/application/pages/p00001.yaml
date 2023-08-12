@@ -3103,6 +3103,7 @@ regions:
       , wmg_ranks r
       where p.rank_code = r.code
         and p.rank_pos <= 3
+        and r.active_ind = 'Y'
       order by r.display_seq desc, p.rank_pos, p.pos, nls_upper(p.player_name)
       
     page-items-to-submit: 
@@ -3744,7 +3745,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3753,7 +3754,7 @@ buttons:
     - '#DEFAULT#'
     - t-Button--tiny
     - t-Button--iconLeft
-    icon: fa-send
+    icon: fa-bell-o
 
   behavior: 
     action: Redirect to Page in this Application
@@ -4008,7 +4009,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -4022,8 +4023,11 @@ buttons:
     execute-validations: true
     warn-on-unsaved-changes: Do Not Check
 
+  security: 
+    authorization-scheme: Administration Rights # 46995203575692514425
+
   configuration: 
-    build-option: Commented Out # 46995003406591514325
+    build-option: 'Feature: Push Notifications' # 18634749735748301
 
 - # ====== Button: MY_ROUNDS ===================================
   id: 57673651285599605
@@ -4288,10 +4292,10 @@ processes:
     pl/sql-code: |
       BEGIN
           apex_pwa.send_push_notification (
-              p_application_id => :APP_ID,
-              p_user_name      => :APP_USER,
-              p_title          => 'Your order has been shipped',
-              p_body           => 'Order #123456 will arrive within 3 days.' );
+              p_application_id => :APP_ID
+            , p_user_name      => 'rimblas  (discord)' -- :APP_USER,
+            , p_title          => 'Your room has been assigned'
+            , p_body           => 'Your tournament room is set' );
       
       BEGIN
           apex_pwa.push_queue;

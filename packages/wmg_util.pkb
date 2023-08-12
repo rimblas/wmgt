@@ -642,7 +642,7 @@ begin
   )
   when matched then
     update
-       set points = p.points;
+       set tp.points = nvl(tp.points_override, p.points);  -- if there's a points override, keep it.
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
 
@@ -990,7 +990,6 @@ end promote_players;
 
 
 
-
 /**
  * Given a tournament ID perform the necessary steps to close the week
  *  1. Validate the tournamet and session are correct
@@ -1068,6 +1067,8 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end close_tournament_session;
+
+
 
 
 
@@ -1239,6 +1240,381 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end score_entry_verification;
+
+
+
+
+/**
+ * Given a player action (noshow, noscore, vialoation), (S)et | (C)lear according 
+ * to the operation
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 11, 2023
+ * @param p_player_id
+ * @param p_action: noshow, noscore, vialoation
+ * @param p_operation: (S)et | (C)lear
+ * @return
+ */
+procedure set_verification_issue(
+   p_player_id in wmg_players.id%type
+ , p_action    in varchar2 default null
+ , p_operation in varchar2 default null  -- (S)et | (C)lear
+ , p_from_ajax in boolean default true
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'set_verification_issue';
+
+  l_action    varchar2(10);
+  l_operation varchar2(1);  -- (S)et | (C)lear
+begin
+  -- logger.append_param(l_params, 'p_player_id', p_player_id);
+  -- logger.append_param(l_params, 'p_action', p_action);
+  -- logger.append_param(l_params, 'p_operation', p_operation);
+  log('BEGIN', l_scope);
+  log('.. p_player_id:' || p_player_id, l_scope);
+  log('.. p_action:' || p_action, l_scope);
+  log('.. p_operation:' || p_operation, l_scope);
+
+  if p_action is null then
+    l_action := 'noshow';  -- the default action value
+    l_operation := 'S';    -- if we had no value we're always setting
+  else
+    l_action := p_action;
+    l_operation := p_operation;
+  end if;
+
+  log('.. l_action:' || l_action, l_scope);
+  log('.. l_operation:' || l_operation, l_scope);
+
+  -- toggle the verification
+  update wmg_tournament_players
+   set no_show_flag = case
+                         when l_operation = 'C' then null
+                         when l_action = 'noshow' then 'Y' else null
+                      end
+      , no_scores_flag = case
+                         when l_operation = 'C' then null
+                         when l_action = 'noscore' then 'Y' else null
+                      end
+      , violation_flag = case
+                         when l_operation = 'C' then null
+                         when l_action = 'violation' then 'Y' else null
+                      end
+     , verified_score_flag = case when l_operation = 'C' then null else 'Y' end
+     , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
+     , verified_on         = case when l_operation = 'C' then null else current_timestamp end
+     , verified_note       = 
+        case when l_operation = 'C' then null 
+         else 
+             case 
+             when l_action = 'noshow' then 'No show'
+             when l_action = 'noscore' then 'Score not entered on time'
+             when l_action = 'violation' then 'Infraction'
+             else null
+             end
+        end
+    where id = p_player_id;
+
+  log('.. rows:' || SQL%ROWCOUNT, l_scope);
+
+  if p_from_ajax then
+    apex_json.open_object; -- {
+      apex_json.write('success', true);
+    apex_json.close_object; -- }
+  end if;
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      if p_from_ajax then
+        apex_json.open_object; -- {
+          apex_json.write('success', false);
+          apex_json.write('error', sqlerrm);
+        apex_json.close_object; -- }
+      else
+        raise;
+      end if;
+end set_verification_issue;
+
+
+
+/**
+ * Given a tournament ID, Tournament session and Time Slot
+ * close out the ability to enter scores by setting the "verified" flag on
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 6, 2023
+ * @param p_tournament_id
+ * @param p_tournament_session_id
+ * @param p_time_slot
+ * @return
+ */
+procedure close_time_slot_time_entry (
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+  , p_time_slot             in wmg_tournament_players.time_slot%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'close_time_slot_time_entry';
+begin
+  -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
+  -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  log('BEGIN', l_scope);
+
+  log('.. loop throough pending time entries', l_scope);
+  for p in (
+    select p.week
+         , p.player_id
+         , p.tournament_player_id
+         , p.player_name
+         , p.time_slot
+         , p.room_no
+         , r.total_score
+         , r.round_created_on
+         , r.easy_scorecard
+         , r.hard_scorecard
+         , r.total_scorecard
+         -- , r.round_created_on
+         , p.verified_score_flag
+         , p.verified_note
+         , p.verified_by
+         , p.verified_on
+         , p.no_show_flag
+      from wmg_tournament_results_v r
+         , wmg_tournament_player_v p
+     where p.week = r.week (+)
+       and p.player_id = r.player_id (+)
+       and p.tournament_session_id = p_tournament_session_id
+       and p.time_slot = p_time_slot
+       and p.active_ind = 'Y'            -- still registed
+       and p.verified_score_flag is null -- not verified yet
+       and p.no_show_flag is null        -- not flagged as a no show
+       and p.no_scores_flag is null      -- not flagged as missing scores
+       and p.violation_flag is null      -- not flagged with a validation
+       and r.total_scorecard is null     -- No scores entered
+  )
+  loop
+
+
+    /*  WE DO NOT WANT SCORE AT THIS TIME
+    -- if p.round_created_on is null then
+
+      -- add empty rounds because there was no round created
+      insert into wmg_rounds(week, course_id, players_id, room_name
+         , override_score
+         , override_reason
+         , override_by
+         , override_on
+        )
+      select p.week
+           , c.course_id
+           , p.player_id
+           , 'WMGT' || p.room_no
+           , 36 override_score
+           , 'Scored not entered on time' override_reason
+           , 'SYSTEM' override_by
+           , current_timestamp override_on
+        from wmg_tournament_courses c
+       where c.tournament_session_id = p_tournament_session_id
+       order by c.course_no;
+
+    -- end if;
+    */
+
+    /*
+        No automatic points yet
+         , points = -1           -- this will make the -1 visual before the tournament closes
+         , points_override = -1  -- this will maintain the -1 when the tournament closes
+    */
+    update wmg_tournament_players
+       set verified_by = 'SYSTEM'
+         , verified_on = current_timestamp
+         , verified_note = 'No show or No Score'
+         , verified_score_flag = 'Y'
+         , no_show_flag = 'Y'
+         , no_scores_flag = null
+         , violation_flag = null
+     where id = p.tournament_player_id;
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end close_time_slot_time_entry;
+
+
+
+
+
+/**
+ * Create a Job `WMGT_CLOSE_SCORING` that will be called on-demand
+ * at the time rooms are defined and open
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 6, 2023
+ * @param x_result_status
+ * @return
+ */
+procedure create_close_scoring_job(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+  , p_slot_number           in wmg_tournament_players.time_slot%type
+  , p_time_slot             in wmg_tournament_players.time_slot%type
+  , p_job_run               in timestamp with time zone
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'create_close_scoring_job';
+
+  l_job_name  varchar2(100);
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+/*
+PROCEDURE create_job(
+  job_name                IN VARCHAR2,
+  job_type                 IN VARCHAR2,
+  job_action              IN VARCHAR2,
+  number_of_arguments     IN PLS_INTEGER              DEFAULT 0,
+  start_date              IN TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  event_condition         IN VARCHAR2                 DEFAULT NULL,
+  queue_spec              IN VARCHAR2,
+  end_date                IN TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  job_class               IN VARCHAR2              DEFAULT '$SCHED_DEFAULT$',
+  enabled                 IN BOOLEAN                  DEFAULT FALSE,
+  auto_drop               IN BOOLEAN                  DEFAULT TRUE,
+  comments                IN VARCHAR2                 DEFAULT NULL,
+  credential_name         IN VARCHAR2                 DEFAULT NULL,
+  destination_name        IN VARCHAR2                 DEFAULT NULL);
+*/
+
+  l_job_name := 'WMGT_CLOSE_SCORING_' || p_tournament_session_id || '_' || p_slot_number;
+  log('.. scheduling ' || l_job_name, l_scope);
+
+  sys.dbms_scheduler.create_job (
+      job_name        => l_job_name
+    , job_type        => 'STORED_PROCEDURE'
+    , job_action      => 'wmg_util.close_time_slot_time_entry'
+    , number_of_arguments => 2
+    , start_date      => p_job_run
+    , enabled         => false
+    , auto_drop       => true
+    , comments        => 'Job that closes scoring 4 hoours after the time_slot begins'
+  );
+  
+  sys.dbms_scheduler.set_job_argument_value (
+     job_name          => l_job_name
+   , argument_position => 1
+   , argument_value    => p_tournament_session_id
+  );
+
+  sys.dbms_scheduler.set_job_argument_value (
+      job_name          => l_job_name
+    , argument_position => 2
+    , argument_value    => p_time_slot
+  );
+
+  -- sys.dbms_scheduler.run_job(job_name => l_job_name, use_current_session => false);
+  sys.dbms_scheduler.enable(name => l_job_name);
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unexpected error', l_scope);
+      raise;
+end create_close_scoring_job;
+
+
+
+
+
+/**
+ * Create a Job `WMGT_CLOSE_SCORING` that will be called on-demand
+ * at the time rooms are defined and open
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 6, 2023
+ * @param x_result_status
+ * @return
+ */
+procedure submit_close_scoring_jobs(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'submit_close_scoring_jobs';
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  for slots in (
+    with slots_n as (
+        select level n
+         from dual
+         connect by level <= 6
+        )
+    , slots as (
+        select slot || ':00' d, slot t
+        from (
+            select lpad( (n-1)*4,2,0) slot
+            from slots_n
+        )
+    )
+    , ts as (
+        select s.session_date
+        from wmg_tournament_sessions s
+       where id = p_tournament_session_id
+    )
+    select t
+         , slots.t || ':00' time_slot
+         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
+         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') + INTERVAL '4' HOUR job_run
+    from ts
+       , slots
+    order by t
+  )
+  loop
+    create_close_scoring_job(
+        p_tournament_session_id => p_tournament_session_id
+      , p_slot_number => slots.t
+      , p_time_slot   => slots.time_slot
+      , p_job_run     => slots.job_run
+    );
+  end loop;
+  
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      raise;
+end submit_close_scoring_jobs;
+
+
+
 
 
 
