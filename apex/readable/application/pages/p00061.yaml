@@ -371,7 +371,7 @@ regions:
       where (:P61_ONLY_ME_IND = 'N' 
         or (me.me_player_id = -1 or (f.pos between greatest((me.my_pos - 4),1) and (me.my_pos + 4)))
         )
-        and f.season_total > 0
+      --  and f.season_total > 0
       order by f.season_total desc, nls_upper(f.player_name)
       
       
