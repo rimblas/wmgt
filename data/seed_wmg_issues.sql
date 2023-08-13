@@ -15,14 +15,16 @@ begin
     "icon": "em em-ghost",
     "description": "No show",
     "active_ind": "Y",
+    "points": null,
     "seq": 10
   },
   {
     "code": "NOSCORE",
     "name": "No Scores",
-    "icon": "em em-turkey",
+    "icon": "em em-x",
     "description": "Score not entered on time",
     "active_ind": "Y",
+    "points": -1,
     "seq": 20
   },
   {
@@ -31,6 +33,7 @@ begin
     "icon": "em em-red_circle",
     "description": "Infraction",
     "active_ind": "Y",
+    "points": 0,
     "seq": 30
   },
 ]
@@ -44,6 +47,7 @@ begin
       name varchar2(4000) path '$.name',
       description varchar2(4000) path '$.description',
       icon varchar2(4000) path '$.icon',
+      points number path '$.points',
       active_ind varchar2(1) path '$.active_ind',
       seq number path '$.seq'
     )
@@ -68,6 +72,7 @@ begin
           dest.name = data.name,
           dest.icon = data.icon,
           dest.description = data.description,
+          dest.tournament_points_override = data.points,
           dest.active_ind = data.active_ind,
           dest.display_seq = data.seq
     when not matched then
@@ -76,6 +81,7 @@ begin
         name,
         description,
         icon,
+        tournament_points_override,
         display_seq,
         active_ind,
         created_on,
@@ -85,6 +91,7 @@ begin
         data.name,
         data.description,
         data.icon,
+        data.points,
         data.seq,
         data.active_ind,
         sysdate,

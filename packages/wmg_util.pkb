@@ -1247,6 +1247,7 @@ end score_entry_verification;
 
 
 
+
 /**
  * Given a player action (noshow, noscore, vialoation), (S)et | (C)lear according 
  * to the operation
@@ -1273,6 +1274,7 @@ is
   l_scope  scope_t := gc_scope_prefix || 'set_verification_issue';
 
   l_issue_code wmg_tournament_players.issue_code%type;
+  l_issue_rec wmg_issues%rowtype;
   l_operation  varchar2(1);  -- (S)et | (C)lear
 begin
   -- logger.append_param(l_params, 'p_player_id', p_player_id);
@@ -1294,6 +1296,11 @@ begin
   log('.. l_issue_code:' || l_issue_code, l_scope);
   log('.. l_operation:' || l_operation, l_scope);
 
+  select *
+    into l_issue_rec
+    from wmg_issues
+   where code = l_issue_code;
+
   -- toggle the verification
   update wmg_tournament_players
    set issue_code = case
@@ -1304,14 +1311,14 @@ begin
      , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
      , verified_on         = case when l_operation = 'C' then null else current_timestamp end
      , verified_note       = 
-        case when l_operation = 'C' then null 
-         else 
              case 
-             when l_issue_code = c_issue_noshow then 'No show'
-             when l_issue_code = c_issue_noscore then 'Score not entered on time'
-             when l_issue_code = c_issue_infraction then 'Infraction'
-             else null
+          when l_operation = 'C' then null 
+          else l_issue_rec.description
              end
+      , points_override = 
+        case 
+          when l_operation = 'C' then null 
+          else l_issue_rec.tournament_points_override
         end
     where id = p_player_id;
 

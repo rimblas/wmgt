@@ -9,6 +9,7 @@ create table wmg_issues (
   , name          varchar2(32)  not null
   , icon          varchar2(200)
   , description   varchar2(200)
+  , tournament_points_override number
   , active_ind    varchar2(1)   not null
   , created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null
   , created_on                     timestamp with local time zone default on null current_timestamp not null
@@ -27,6 +28,7 @@ comment on table wmg_issues is 'List of wmg_issues';
 comment on column wmg_issues.id is 'Primary Key ID';
 comment on column wmg_issues.display_seq is 'Order for displaying the lines';
 comment on column wmg_issues.active_ind is 'Is the record enabled Y/N?';
+comment on column wmg_issues.tournament_points_override is 'If set, this issue will override tournament points when the tournament closes';
 comment on column wmg_issues.created_by is 'User that created this record';
 comment on column wmg_issues.created_on is 'Date the record was first created';
 comment on column wmg_issues.updated_by is 'User that last modified this record';
