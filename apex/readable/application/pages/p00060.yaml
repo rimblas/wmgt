@@ -79,11 +79,16 @@ javascript:
       return badge_json.hasOwnProperty(badge);
     }
     
+    function hasIssue(btn$) {
+      let issue = btn$.data("issue");
+      return !!issue;
+    }
+    
     function addBadge(btn$, badge) {
       let badge_json = btn$.data("badges");
       badge_json[badge] = 'true';
-      console.log(badge_json);
-      console.log(JSON.stringify(badge_json));
+    //  console.log(badge_json);
+    //  console.log(JSON.stringify(badge_json));
     //  btn$.data("badges", JSON.stringify(badge_json));
       btn$.data("badges", badge_json);
     }
@@ -106,7 +111,7 @@ javascript:
           },
           hide: function () {
               var btn$ = $("button.is-active.js-menuButton");
-              return hasBadge(btn$, 'DIAMOND');
+              return hasBadge(btn$, 'DIAMOND') || hasIssue(btn$);
           }
         },
         {
@@ -115,6 +120,10 @@ javascript:
           icon: "em-duck",
           action: function(menu, btn) {
             badgeMenuAction(btn, this, 'DUCK', btn.dataset.id);
+          },
+          hide: function () {
+              var btn$ = $("button.is-active.js-menuButton");
+              return hasIssue(btn$);
           }
         },
         {
@@ -123,6 +132,10 @@ javascript:
           icon: "em-beetle",
           action: function(menu, btn) {
             badgeMenuAction(btn, this, 'BEETLE', btn.dataset.id);
+          },
+          hide: function () {
+              var btn$ = $("button.is-active.js-menuButton");
+              return hasIssue(btn$);
           }
         },
         {
@@ -154,8 +167,25 @@ javascript:
             link = button$.attr("data-link").replace(/\\u(\d\d\d\d)/g, function(m,d) {
               return String.fromCharCode(parseInt(d, 16));
             });
-            console.log({link});
+            // console.log({link});
             apex.navigation.redirect(link);
+          },
+          hide: function () {
+              var btn$ = $("button.is-active.js-menuButton");
+              return hasIssue(btn$);
+          }
+        },
+        {
+          type: "action",
+          label: "Not eligible",
+          icon: "fa fa-times",
+          action: function(menu, btn) {
+            // nothing to do
+            
+          },
+          hide: function () {
+              var btn$ = $("button.is-active.js-menuButton");
+              return !hasIssue(btn$);
           }
         }
       ]
@@ -479,6 +509,9 @@ regions:
 
   header-and-footer: 
     header-text: <br><br><br>
+
+  server-side-condition: 
+    type: Never
 
   security: 
     authorization-scheme: Contribution Rights # 46995203801871514425
@@ -1587,7 +1620,11 @@ regions:
                , sum(case when score = 1 then 1 else 0 end) hn1_count
             from wmg_rounds_unpivot_mv u
                , wmg_tournament_sessions ts
+               , wmg_tournament_players tp
            where ts.week = u.week
+             and ts.id = tp.tournament_session_id
+             and tp.player_id = u.player_id
+             and tp.issue_code is null  -- only players with no issues are eligible
              and u.week = :P60_WEEK
              and ts.completed_ind = 'N'  -- only live results
            having sum(case when par <= 0 then 1 else 0 end) = 36
@@ -1598,8 +1635,12 @@ regions:
             from (
             select u.course_id || ':' || u.h h, u.score, any_value(u.player_id) player_id
               from wmg_rounds_unpivot_mv u
+                 , wmg_tournament_players tp
                  , wmg_tournament_sessions ts
              where ts.week = u.week
+               and ts.id = tp.tournament_session_id
+               and tp.player_id = u.player_id
+               and tp.issue_code is null  -- only players with no issues are eligible
                and u.week = :P60_WEEK
                and ts.completed_ind = 'N' -- only live results
                and u.score = 1
@@ -1655,13 +1696,15 @@ regions:
              end
           || decode(coconut.under_par, 36, 'em-coconut' || decode(cactus.player_id, null, '', ' '), '') 
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) 
-          || ' ' || other_badges badges
+          || ' ' || badges.other_badges || ' ' || replace(i.icon, 'em ', '') badges
            , nvl(badges.badge_json, '{}') badge_json
            , apex_page.get_url(p_page => '65', p_items => 'P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID', p_values=> sp.tournament_session_id || ','||sp.player_id) edit_badges_link
       --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
+           , p.issue_code
       from wmg_tournament_session_points_v sp
       , wmg_tournament_players p
+      , wmg_issues i
       , wmg_players_v pp
       , coconut
       , cactus
@@ -1674,11 +1717,11 @@ regions:
         and sp.player_id = badges.player_id (+)
         and sp.player_id = p.player_id (+)
         and sp.tournament_session_id = p.tournament_session_id (+)
+        and p.issue_code = i.code (+)
         and (:P60_ONLY_ME_IND = 'N' 
           or (me.player_id = -1 or (sp.pos between greatest((me.pos - 2),1) and (me.pos + 3)))
         )
       order by coalesce(p.points, sp.points) desc, sp.pos, nls_upper(sp.player_name)
-      
     page-items-to-submit: 
     - P60_WEEK
     - P60_TOURNAMENT_SESSION_ID
@@ -1844,6 +1887,21 @@ regions:
     security: 
       escape-special-characters: false
 
+  - # ====== Column: ISSUE_CODE ==================================
+    id: 36052635355175837
+    identification: 
+      column-name: ISSUE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: BADGES ======================================
     id: 36324511178635103
     identification: 
@@ -1902,7 +1960,9 @@ regions:
     column-formatting: 
       html-expression: |
         <button type="button" class="t-Button t-Button--icon t-Button--noLabel t-Button--tiny t-Button--stretch js-menuButton" data-menu="badge_list_menu" aria-label="Badges" title="Badges" data-id="#PLAYER_ID#" data-title="Badges" aria-haspopup="menu" 
-        data-link="#EDIT_BADGES_LINK#" data-badges=#BADGE_JSON#>
+        data-link="#EDIT_BADGES_LINK#" 
+        data-issue="#ISSUE_CODE#"
+        data-badges=#BADGE_JSON#>
         <span aria-hidden="true" class="fa fa-badges"></span>
         <span aria-hidden="true" class="fa fa-chevron-down"></span>
         </button>

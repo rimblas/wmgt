@@ -104,7 +104,7 @@ regions:
       , d.easy
       , d.hard
       , tp.total_score
-      , badges.other_badges
+      , nvl(p.issue_code, badges.other_badges) other_badges
       from (
       select week
       , player_id
@@ -206,9 +206,12 @@ regions:
         )
       ) d 
       , wmg_tournament_session_points_v tp
+      , wmg_tournament_players p
       , badges
       where tp.week = d.week
         and tp.player_id = d.player_id
+        and tp.player_id = p.player_id
+        and tp.tournament_session_id = p.tournament_session_id
         and tp.tournament_session_id = badges.tournament_session_id (+)
         and tp.player_id = badges.player_id (+)
       order by tp.pos, tp.points, tp.player_name
