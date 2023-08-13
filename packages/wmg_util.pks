@@ -85,6 +85,9 @@ procedure set_verification_issue(
  , p_from_ajax  in boolean default true
 );
 
+procedure verify_players_room(
+   p_tournament_player_id  in wmg_tournament_players.id%type
+);
 
 --------------------------------------------------------------------------------
 procedure close_time_slot_time_entry (

@@ -1311,10 +1311,10 @@ begin
      , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
      , verified_on         = case when l_operation = 'C' then null else current_timestamp end
      , verified_note       = 
-             case 
+        case 
           when l_operation = 'C' then null 
           else l_issue_rec.description
-             end
+        end
       , points_override = 
         case 
           when l_operation = 'C' then null 
@@ -1345,6 +1345,87 @@ begin
         raise;
       end if;
 end set_verification_issue;
+
+
+
+
+
+/**
+ * Given a player verify the room if all the other players have been verified
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 13, 2023
+ * @param p_tournament_player_id
+ * @return
+ */
+procedure verify_players_room(
+   p_tournament_player_id  in wmg_tournament_players.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'verify_players_room';
+
+  l_tournament_session_id wmg_tournament_sessions.id%type;
+  l_verified_score_flag   wmg_tournament_rooms.verified_score_flag%type;
+  l_time_slot wmg_tournament_rooms.time_slot%type;
+  l_room_no   wmg_tournament_rooms.room_no%type;
+begin
+  -- logger.append_param(l_params, 'p_player_id', p_player_id);
+  -- logger.append_param(l_params, 'p_issue_code', p_issue_code);
+  -- logger.append_param(l_params, 'p_operation', p_operation);
+  log('BEGIN', l_scope);
+  log('.. p_tournament_player_id:'  || p_tournament_player_id, l_scope);
+
+  <<room_status>>
+  begin
+    -- If all the rows match their verification then l_verified_score_flag will have the value
+    -- usually Y
+    -- But if there are too_many_rows, we see if there's at least one E(rror)
+    select distinct tournament_session_id, verified_score_flag, time_slot, room_no
+      into l_tournament_session_id, l_verified_score_flag, l_time_slot, l_room_no
+    from wmg_tournament_players
+    where (tournament_session_id, time_slot, room_no) in (
+        select tournament_session_id, time_slot, room_no
+          from wmg_tournament_players
+         where id = p_tournament_player_id
+    );
+
+  exception
+  when TOO_MANY_ROWS then
+    l_verified_score_flag := null;
+
+    -- if there's at least one E on the room keep the room with an E
+    select case when count(*) > 0 then 'E' else null end
+      into l_verified_score_flag
+      from wmg_tournament_players
+      where (tournament_session_id, time_slot, room_no) in (
+          select tournament_session_id, time_slot, room_no
+            from wmg_tournament_players
+           where id = p_tournament_player_id
+      )
+       and verified_score_flag = 'E';
+
+  end room_status;
+
+  update wmg_tournament_rooms
+     set verified_score_flag = l_verified_score_flag
+   where tournament_session_id = l_tournament_session_id
+     and time_slot = l_time_slot
+     and room_no = l_room_no;
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end verify_players_room;
+
+
 
 
 

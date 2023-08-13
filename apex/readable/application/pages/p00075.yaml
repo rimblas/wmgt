@@ -89,7 +89,7 @@ javascript:
         {
           type: "action",
           label: "No scores",
-          icon: "em-turkey",
+          icon: "em-x",
           action: function(menu, btn) {
             // console.log("Adding", button$.data("id"));
             // console.log(this);
@@ -219,7 +219,7 @@ regions:
              , p.verified_on
              , p.issue_code
              , case 
-                   when p.issue_code is null then 'No show'
+                   when p.issue_code is null then 'No show?'
                    else i.name
                 end action_label
              , i.icon action_icon
@@ -328,7 +328,7 @@ regions:
     - P75_ROOM
 
   layout: 
-    sequence: 149
+    sequence: 159
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1167,7 +1167,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 159
+    sequence: 169
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1231,7 +1231,7 @@ regions:
     - P75_SLOT
 
   layout: 
-    sequence: 139
+    sequence: 149
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1627,6 +1627,36 @@ page-items:
     value-protected: false
 
   layout: 
+    sequence: 79
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_MV_REFRESHED =========================
+  id: 36052477776175835
+  identification: 
+    name: P75_MV_REFRESHED
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
     sequence: 69
     region: No Parent
     position: BODY
@@ -1662,7 +1692,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 99
+    sequence: 109
     region: No Parent
     position: BODY
     alignment: Left
@@ -1725,7 +1755,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 109
+    sequence: 119
     region: No Parent
     position: BODY
     alignment: Left
@@ -1871,7 +1901,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 119
+    sequence: 129
     region: No Parent
     position: BODY
     alignment: Left
@@ -1981,7 +2011,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 79
+    sequence: 89
     region: No Parent
     position: BODY
 
@@ -2136,7 +2166,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 89
+    sequence: 99
     region: No Parent
     position: BODY
     alignment: Left
@@ -2234,7 +2264,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 129
+    sequence: 139
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -2245,7 +2275,7 @@ buttons:
     column-css-classes: 
     - col-xxs-6
     - col-sm-4
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -2322,6 +2352,48 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Refresh MV ==========================
+  id: 36051941736175830
+  identification: 
+    name: Refresh MV
+
+  execution: 
+    sequence: 120
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  client-side-condition: 
+    type: Item is null
+    item: P75_MV_REFRESHED
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Refresh wmg_rounds_unpivot_mv ===============
+    id: 36052070340175831
+    identification: 
+      name: Refresh wmg_rounds_unpivot_mv
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        dbms_mview.refresh('wmg_rounds_unpivot_mv');
+        :P75_MV_REFRESHED := 'Y';
+      items-to-return: 
+      - P75_MV_REFRESHED
+      suppress-change-event: false
+
+    execution: 
+      sequence: 10
+      event: Refresh MV # 36051941736175830
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: false
+
 - # ====== Dynamic Action: Toggle Player Verification ==========
   id: 41136182668776010
   identification: 
@@ -2372,12 +2444,6 @@ dynamic-actions:
     settings: 
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
-        declare
-         l_tournament_session_id wmg_tournament_sessions.id%type;
-         l_verified_score_flag   wmg_tournament_rooms.verified_score_flag%type;
-         l_time_slot wmg_tournament_rooms.time_slot%type;
-         l_room_no   wmg_tournament_rooms.room_no%type;
-        begin
         -- toggle the verification
         update wmg_tournament_players
            set verified_score_flag = case
@@ -2391,40 +2457,8 @@ dynamic-actions:
         where id = :P75_ID
         returning verified_score_flag into :P75_NEW_FLAG;
         
-        begin
-            select distinct tournament_session_id, verified_score_flag, time_slot, room_no
-              into l_tournament_session_id, l_verified_score_flag, l_time_slot, l_room_no
-            from wmg_tournament_players
-            where (tournament_session_id, time_slot, room_no) in (
-                select tournament_session_id, time_slot, room_no
-                  from wmg_tournament_players
-                 where id = :P75_ID
-            );
-        exception
-        when TOO_MANY_ROWS then
-          l_verified_score_flag := null;
         
-          -- if there's at least one E on the room keep the room with an E
-          select case when count(*) > 0 then 'E' else null end
-            into l_verified_score_flag
-            from wmg_tournament_players
-            where (tournament_session_id, time_slot, room_no) in (
-                select tournament_session_id, time_slot, room_no
-                  from wmg_tournament_players
-                 where id = :P75_ID
-            )
-             and verified_score_flag = 'E';
-        
-        end;
-        
-        update wmg_tournament_rooms
-           set verified_score_flag = l_verified_score_flag
-         where tournament_session_id = l_tournament_session_id
-           and time_slot = l_time_slot
-           and room_no = l_room_no;
-        
-        end;
-        
+        wmg_util.verify_players_room(p_tournament_player_id => :P75_ID);
       items-to-submit: 
       - P75_ID
       items-to-return: 
@@ -2853,6 +2887,21 @@ dynamic-actions:
       stop-execution-on-error: true
       wait-for-result: true
 
+  - # ====== Action: Refresh =====================================
+    id: 38210254820520001
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 48741676080254422
+
+    execution: 
+      sequence: 70
+      event: Toggle Issue # 46933024822678608
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
   - # ====== Action: Get player ID ===============================
     id: 46933267690678610
     identification: 
@@ -2904,10 +2953,11 @@ dynamic-actions:
       language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
       pl/sql-code: |
         declare
+        
           l_issue_code wmg_tournament_players.issue_code%type;
           l_operation varchar2(1);  -- (S)et | (C)lear
         begin
-          if :P75_ISSUE_CODE is null then
+          if :P75_ISSUE_CODE is null then -- when theres no issue_code we default to No Show
             l_issue_code := 'NOSHOW';
             l_operation := 'S';
           else
@@ -2921,6 +2971,9 @@ dynamic-actions:
                                  when l_operation = 'C' then null
                                  else l_issue_code
                               end
+             , points_override = case
+                                 when l_operation = 'C' then null
+                               end
              , verified_score_flag = case when l_operation = 'C' then null else 'Y' end
              , verified_by         = case when l_operation = 'C' then null else sys_context('APEX$SESSION','APP_USER') end
              , verified_on         = case when l_operation = 'C' then null else current_timestamp end
@@ -2935,6 +2988,10 @@ dynamic-actions:
                      end
                 end
             where id = :P75_ID;
+        
+          -- Check if the room is all verified
+          wmg_util.verify_players_room(p_tournament_player_id => :P75_ID);
+        
         end;
       items-to-submit: 
       - P75_ID
@@ -3166,22 +3223,5 @@ processes:
   execution: 
     sequence: 10
     point: Ajax Callback
-    run-process: Once Per Page Visit (default)
-
-- # ====== Process: Refresh MV =================================
-  id: 45125498558399130
-  identification: 
-    name: Refresh MV
-    type: Execute Code
-    execution-chain: None
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
-
-  execution: 
-    sequence: 20
-    point: Before Header
     run-process: Once Per Page Visit (default)
 
