@@ -844,18 +844,19 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-- # ====== Page Item: P135_NO_SHOW_FLAG ========================
+- # ====== Page Item: P135_ISSUE_CODE ==========================
   id: 57629003863207035
   identification: 
-    name: P135_NO_SHOW_FLAG
-    type: Switch
+    name: P135_ISSUE_CODE
+    type: Select List
 
   label: 
-    label: No Show ?
+    label: Issue
     alignment: Left
 
   settings: 
-    use-defaults: true
+    page-action-on-selection: None
+    allow-multi-selection: false
 
   layout: 
     sequence: 70
@@ -873,22 +874,36 @@ page-items:
     template: Optional - Floating # 46995171503553514398
     template-options: 
     - '#DEFAULT#'
+    height: 1
 
   validation: 
     value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select name d, code r
+      from wmg_issues
+      order by display_seq
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- none -'
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
     form-region: Maintain Player Tournament Details # 57621134010206990
-    column: NO_SHOW_FLAG
+    column: ISSUE_CODE
     data-type: VARCHAR2
     query-only: false
     primary-key: false
 
   session-state: 
     storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
 
   security: 
     session-state-protection: Unrestricted

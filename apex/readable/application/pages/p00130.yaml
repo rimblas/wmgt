@@ -52,24 +52,27 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select CODE,
-             ROUND_NUM,
-             SESSION_DATE,
-             WEEK,
-             TOURNAMENT_PLAYER_ID,
-             TIME_SLOT,
-             ROOM_NO,
-             POINTS,
-             DISCARDED_POINTS_FLAG,
-             NO_SHOW_FLAG,
-             VERIFIED_SCORE_FLAG,
-             VERIFIED_NOTE,
-             VERIFIED_BY,
-             VERIFIED_ON,
-             PLAYER_ID,
-             PLAYER_NAME
-        from WMG_TOURNAMENT_PLAYER_V
-       where player_id = :P130_PLAYER_ID
+      select p.CODE,
+             p.ROUND_NUM,
+             p.SESSION_DATE,
+             p.WEEK,
+             p.TOURNAMENT_PLAYER_ID,
+             p.TIME_SLOT,
+             p.ROOM_NO,
+             p.POINTS,
+             p.DISCARDED_POINTS_FLAG,
+             i.name issue,
+             p.ISSUE_CODE,
+             p.VERIFIED_SCORE_FLAG,
+             p.VERIFIED_NOTE,
+             p.VERIFIED_BY,
+             p.VERIFIED_ON,
+             p.PLAYER_ID,
+             p.PLAYER_NAME
+        from WMG_TOURNAMENT_PLAYER_V p
+           , wmg_issues i
+       where p.issue_code = i.code (+)
+        and  p.player_id = :P130_PLAYER_ID
 
   layout: 
     sequence: 20
@@ -614,6 +617,116 @@ regions:
     enable-users-to: 
       sort: false
 
+  - # ====== Column: ISSUE_CODE ==================================
+    id: 36052782601175838
+    identification: 
+      column-name: ISSUE_CODE
+      type: Text Field
+
+    heading: 
+      heading: Issue Code
+      alignment: start
+
+    settings: 
+      trim-spaces: Leading and Trailing
+      text-case: NO CHANGE
+
+    layout: 
+      sequence: 170
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+      maximum-length: 10
+
+    source: 
+      type: Database Column
+      database-column: ISSUE_CODE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: ISSUE =======================================
+    id: 36052824692175839
+    identification: 
+      column-name: ISSUE
+      type: Text Field
+
+    heading: 
+      heading: Issue
+      alignment: start
+
+    settings: 
+      trim-spaces: Leading and Trailing
+      text-case: NO CHANGE
+
+    layout: 
+      sequence: 160
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+      maximum-length: 32
+
+    source: 
+      type: Database Column
+      database-column: ISSUE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
   - # ====== Column: CODE ========================================
     id: 55136824742510008
     identification: 
@@ -668,59 +781,6 @@ regions:
       control-break/aggregate: true
       hide: true
 
-  - # ====== Column: NO_SHOW_FLAG ================================
-    id: 55139045977510030
-    identification: 
-      column-name: NO_SHOW_FLAG
-      type: Switch
-
-    heading: 
-      heading: No Show ?
-      alignment: center
-
-    settings: 
-      use-defaults: true
-
-    layout: 
-      sequence: 160
-      column-alignment: center
-      stretch: Use Report Setting
-
-    accessibility: 
-      value-identifies-row: false
-
-    validation: 
-      value-required: false
-
-    source: 
-      type: Database Column
-      database-column: NO_SHOW_FLAG
-      data-type: VARCHAR2
-      query-only: false
-      primary-key: false
-
-    default: 
-      duplicate-copies-existing-value: true
-
-    column-filter: 
-      enabled: true
-      performance-impacting-operators: 
-      - Contains
-      - Starts With
-      - Case Insensitive
-      - Regular Expression
-      text-case: Mixed
-      lov-type: Distinct Column
-      exact-match: true
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    enable-users-to: 
-      sort: true
-      control-break/aggregate: true
-      hide: true
-
   - # ====== Column: VERIFIED_SCORE_FLAG =========================
     id: 55139127715510031
     identification: 
@@ -735,7 +795,7 @@ regions:
       use-defaults: true
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: center
       stretch: Use Report Setting
 
@@ -791,7 +851,7 @@ regions:
       trim-spaces: Leading and Trailing
 
     layout: 
-      sequence: 180
+      sequence: 190
       column-alignment: start
       stretch: Use Report Setting
 
@@ -847,7 +907,7 @@ regions:
       based-on: Item Value
 
     layout: 
-      sequence: 190
+      sequence: 200
       column-alignment: start
       stretch: Use Report Setting
 
@@ -901,7 +961,7 @@ regions:
       based-on: Item Value
 
     layout: 
-      sequence: 200
+      sequence: 210
       column-alignment: start
       stretch: Use Report Setting
 
