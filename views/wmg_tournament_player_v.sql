@@ -43,6 +43,7 @@ select t.id                              tournament_id
      , p.id                              player_id
      , nvl(p.player_name, '-error-')     player_name
      , p.account                         account
+     , p.prefered_tz
      , p.country_code                    country_code
      , p.country                         country
      , p.rank_code

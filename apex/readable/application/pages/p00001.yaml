@@ -59,6 +59,8 @@ javascript:
     $(".discAttention").addClass("fa-anim-vertical-shake");
     }, 9500);
     
+    $( ".your-tzRoomTime" ).append( $(".tzRoomTime").eq(0).text() );
+    
 
 css: 
   file-urls: 
@@ -180,6 +182,7 @@ css:
         --ut-report-cell-padding-x:.4rem;
     }
     
+    
     /* https://github.com/mrfratello/SyoTimer */
     .syotimer {
       text-align: center;
@@ -206,6 +209,34 @@ css:
     .syotimer-cell__unit {
       font-size: 12px;
     }
+    
+    /* Your Room CSS */
+    .room h2 {font-weight: bold;}
+    mark.player {display: block;}
+    td#ROOM_NO {
+      border-bottom: 1px solid;
+      font-size: 1.1em;
+      font-weight: 800;
+      padding: 0 0 5px 0px;
+    }
+    .t-Report-colHead {display: none;}
+    
+    #timeLegend {outline: 1px solid red;}
+    #timeLegend table { width: 100%;}
+    .tzClass {padding-left: .4rem;}
+    
+    .-wm-discord-link {
+        margin-right: 1em;
+    }
+    td[headers^="PLAYERS"] .-wm-rank-new:before  {
+      position: relative;
+      right: 0;
+      top: -4px;
+    }
+    td[headers^="PLAYERS"] a + .-wm-rank-new:before  {
+      top: 4px;
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -2608,6 +2639,252 @@ regions:
     performance: 
       lazy-loading: false
 
+- # ====== Region: Your Assigned Room ==========================
+  id: 7095453182086161115
+  identification: 
+    title: Your Assigned Room
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with my_room as (
+      select p.tournament_session_id, p.time_slot, p.room_no
+           , nvl(p.prefered_tz, sessiontimezone) tz
+      from wmg_tournament_player_v p
+      where p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.player_id = :G_PLAYER_ID
+      )
+      select room_no
+           , players
+           , to_char(local_tz, 'fmDy, fmMonth fmDD') 
+            || ' ' 
+            || case when tz like 'US/%' or tz like 'America%' then
+                 ltrim(to_char(local_tz, 'HH:MI PM'), '0')
+               else 
+                 to_char(local_tz, 'HH24:MI')
+               end
+            || ' ' || tz at_local_time
+      from (
+      select p.tournament_player_id
+           , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+           , case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || wmg_discord.avatar_link(p_discord_id => p.discord_id)
+          || apex_escape.html(p.player_name)
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
+           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || p.time_slot) at time zone r.tz local_tz
+           , r.tz
+      from wmg_tournament_player_v p
+         , wmg_tournament_sessions s
+         , my_room r
+      where s.id =  p.tournament_session_id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = r.tournament_session_id
+        and p.time_slot = r.time_slot
+        and p.room_no = r.room_no
+        and s.rooms_open_flag = 'Y'
+      )
+      order by tournament_player_id
+      
+
+  layout: 
+    sequence: 10
+    parent-region: '{col2}' # 11993448770685629
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - u-justify-content-center
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - room
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-8
+    - col-md-6
+    - col-lg-5
+    - col-xl-5
+    - col-xxl-4
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--showIcon
+    - t-Region--accent1
+    - t-Region--scrollBody
+    - margin-top-none
+    icon: fa fa-bell-o fa-anim-horizontal-shake
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: |
+      When:<br>
+      <span class="your-tzRoomTime"></span><br>
+      Code:
+      
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players p
+         , wmg_tournament_sessions s
+      where p.tournament_session_id = s.id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.player_id = :G_PLAYER_ID
+        and s.rooms_open_flag = 'Y'
+        and to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || p.time_slot) > systimestamp - NUMTODSINTERVAL(2, 'MINUTE')
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+      before-row: <hr>
+      column-break-format: 'WMGT #ROOM_NO#'
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: AT_LOCAL_TIME ===============================
+    id: 36052381413175834
+    identification: 
+      column-name: AT_LOCAL_TIME
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ROOM_NO =====================================
+    id: 38220690640578496
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 38221017534578498
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        #PLAYERS#
+        <span class="tzRoomTime u-vh">#AT_LOCAL_TIME#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
 - # ====== Region: About the next courses ======================
   id: 24744261336878395575
   identification: 
@@ -3918,6 +4195,39 @@ buttons:
   server-side-condition: 
     type: Item is NULL
     item: G_PLAYER_ID
+
+- # ====== Button: VIEW_ALL_ROOMS ==============================
+  id: 38210461609520003
+  identification: 
+    button-name: VIEW_ALL_ROOMS
+    label: View All Rooms
+
+  layout: 
+    sequence: 10
+    region: Your Assigned Room # 7095453182086161115
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - tooltip
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:::'
+      page: 40 # Room Selections & Assignments
+
+    warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: VIEW_ALL ====================================
   id: 39560576099969828
