@@ -56,3 +56,24 @@
     type: Item is NULL
     item: G_CURRENT_SESSION_ID
 
+- # ====== Application Computation: G_PLAYER_ID ================
+  id: 38238154652319070
+  identification: 
+    item-name: G_PLAYER_ID
+
+  execution: 
+    sequence: 10
+    point: Before Header
+
+  computation: 
+    type: Static Value
+    static-value: 24
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":APP_USER like 'rimblas%'"
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
