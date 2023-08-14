@@ -1647,36 +1647,6 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-- # ====== Page Item: P75_MV_REFRESHED =========================
-  id: 36052477776175835
-  identification: 
-    name: P75_MV_REFRESHED
-    type: Hidden
-
-  settings: 
-    value-protected: false
-
-  layout: 
-    sequence: 69
-    region: No Parent
-    position: BODY
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    type: Null
-    used: Only when current value in session state is null
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
 - # ====== Page Item: P75_SLOT =================================
   id: 39135948061390010
   identification: 
@@ -2351,48 +2321,6 @@ dynamic-actions:
       event: Refresh Data # 11991347459685608
       fire-when-event-result-is: True
       fire-on-initialization: false
-
-- # ====== Dynamic Action: Refresh MV ==========================
-  id: 36051941736175830
-  identification: 
-    name: Refresh MV
-
-  execution: 
-    sequence: 120
-
-  when: 
-    event: EVENT.EVENT.BROWSER.READY
-
-  client-side-condition: 
-    type: Item is null
-    item: P75_MV_REFRESHED
-
-  execution: 
-    event-scope: Static
-
-  actions: 
-  - # ====== Action: Refresh wmg_rounds_unpivot_mv ===============
-    id: 36052070340175831
-    identification: 
-      name: Refresh wmg_rounds_unpivot_mv
-      action: Execute Server-side Code
-
-    settings: 
-      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
-      pl/sql-code: |
-        dbms_mview.refresh('wmg_rounds_unpivot_mv');
-        :P75_MV_REFRESHED := 'Y';
-      items-to-return: 
-      - P75_MV_REFRESHED
-      suppress-change-event: false
-
-    execution: 
-      sequence: 10
-      event: Refresh MV # 36051941736175830
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-      stop-execution-on-error: true
-      wait-for-result: false
 
 - # ====== Dynamic Action: Toggle Player Verification ==========
   id: 41136182668776010

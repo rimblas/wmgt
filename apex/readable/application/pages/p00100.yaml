@@ -7749,20 +7749,3 @@ processes:
   error: 
     display-location: Inline in Notification
 
-- # ====== Process: Refresh MV =================================
-  id: 56024167287378751672
-  identification: 
-    name: Refresh MV
-    type: Execute Code
-    execution-chain: None
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
-
-  execution: 
-    sequence: 10
-    point: Before Regions
-    run-process: Once Per Page Visit (default)
-

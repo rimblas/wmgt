@@ -7578,6 +7578,45 @@ processes:
     type: Request is contained in Value
     value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
 
+- # ====== Process: Sync MV ====================================
+  id: 36052960626175840
+  identification: 
+    name: Sync MV
+    type: Execution Chain
+    execution-chain: None
+
+  settings: 
+    execute-in-background: true
+    serialize-executions: false
+    temporary-file-handling: Ignore
+
+  execution: 
+    sequence: 70
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN,SAVE,DELETE,APPLY_CHANGES_RESULT
+
+- # ====== Process: Sync  wmg_rounds_unpivot_mv ================
+  id: 36053032048175841
+  identification: 
+    name: Sync  wmg_rounds_unpivot_mv
+    type: Execute Code
+    execution-chain: Sync MV # 36052960626175840
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
+
+  execution: 
+    sequence: 10
+
 - # ====== Process: Initialize form Round - Hard ===============
   id: 15532716800835442102
   identification: 
