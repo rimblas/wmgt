@@ -426,6 +426,7 @@ regions:
            , wmg_courses hc
         where s.easy_course_id = ec.id (+)
           and s.hard_course_id = hc.id (+)
+          and s.completed_ind = 'N'
           and s.tournament_id in (
             select id
               from wmg_tournaments

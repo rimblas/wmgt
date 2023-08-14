@@ -48,8 +48,7 @@
            where current_flag = 'Y'
       )
       and s.session_date+1 >= trunc(current_timestamp)
-      and s.completed_ind = 'N'
-      order by s.session_date desc
+      order by decode(s.completed_ind, 'N', 1, 2), s.session_date desc
       fetch first 1 rows only
 
   server-side-condition: 
