@@ -70,12 +70,14 @@ regions:
                               and p.application_id = :APP_ID) page_name,
           userid_lc     user_id,
           time_stamp    timestamp,
+          time_stamp    timestamp_date,
           elap          elapsed,
           step_id       page,
           decode(page_mode,'P','Partial','D','Full',page_mode) page_mode,
           component_name,
           num_rows,
           ir_search,
+          ip_address,
           sqlerrm  error
       from apex_activity_log l
       where flow_id = :app_id
@@ -186,6 +188,95 @@ regions:
         alias: 469869345
 
     columns: 
+    - # ====== Column: TIMESTAMP_DATE ==============================
+      id: 36051390758175824
+      identification: 
+        column-name: TIMESTAMP_DATE
+        type: Plain Text
+
+      heading: 
+        heading: Timestamp Date
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 20
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: 'DD-MON-YYYY HH:MIPM'
+
+      source: 
+        primary-key: false
+
+      column-filter: 
+        type: Default Based on Column Type
+        date-ranges: All
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
+    - # ====== Column: IP_ADDRESS ==================================
+      id: 36051456005175825
+      identification: 
+        column-name: IP_ADDRESS
+        type: Plain Text
+
+      heading: 
+        heading: IP Address
+        alignment: start
+
+      single-row-view: 
+        use-column-heading: true
+
+      layout: 
+        sequence: 30
+        column-alignment: start
+
+      accessibility: 
+        value-identifies-row: false
+
+      appearance: 
+        format-mask: '&APP_DATE_TIME_FORMAT.'
+
+      source: 
+        primary-key: false
+
+      column-filter: 
+        type: Default Based on Column Type
+
+      enable-users-to: 
+        hide: true
+        sort: true
+        filter: true
+        highlight: true
+        control-break: true
+        aggregate: true
+        compute: true
+        chart: true
+        group-by: true
+        pivot: true
+
+      security: 
+        escape-special-characters: true
+
     - # ====== Column: PAGE_NAME ===================================
       id: 46995448129988515950
       identification: 
