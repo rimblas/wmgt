@@ -719,7 +719,11 @@ begin
          , sum(case when score = 1 then 1 else 0 end) hn1_count
       from wmg_rounds_unpivot_mv u
          , wmg_tournament_sessions ts
+         , wmg_tournament_players tp
      where ts.week = u.week
+       and ts.id = tp.tournament_session_id
+       and tp.player_id = u.player_id
+       and tp.issue_code is null  -- only players with no issues are eligible
        and ts.id = p_tournament_session_id
      having sum(case when par <= 0 and score is not null then 1 else 0 end) = 36
      group by u.week, u.player_id
@@ -730,7 +734,11 @@ begin
       select u.course_id || ':' || u.h h, u.score, any_value(u.player_id) player_id
         from wmg_rounds_unpivot_mv u
            , wmg_tournament_sessions ts
+           , wmg_tournament_players tp
        where ts.week = u.week
+         and ts.id = tp.tournament_session_id
+         and tp.player_id = u.player_id
+         and tp.issue_code is null  -- only players with no issues are eligible
          and ts.id = p_tournament_session_id
          and u.score = 1
       having count(*) = 1
@@ -1451,11 +1459,26 @@ procedure close_time_slot_time_entry (
 )
 is
   l_scope  scope_t := gc_scope_prefix || 'close_time_slot_time_entry';
+  l_issue_rec wmg_issues%rowtype;
+
 begin
   -- logger.append_param(l_params, 'p_tournament_id', p_tournament_id);
   -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   log('BEGIN', l_scope);
 
+  begin
+      select *
+        into l_issue_rec
+        from wmg_issues
+       where code = c_issue_noshow;
+  exception 
+    -- protect against errors in case the issue is gone
+    when no_data_found then
+      l_issue_rec.code := c_issue_noshow;
+      l_issue_rec.description := 'No show or No Score';
+  end;
+
+      
   log('.. loop throough pending time entries', l_scope);
   for p in (
     select p.week
@@ -1521,10 +1544,13 @@ begin
     update wmg_tournament_players
        set verified_by = 'SYSTEM'
          , verified_on = current_timestamp
-         , verified_note = 'No show or No Score'
+         , verified_note = l_issue_rec.description
          , verified_score_flag = 'Y'
-         , issue_code = c_issue_noshow
+         , issue_code = l_issue_rec.code
+         , points_override = l_issue_rec.tournament_points_override
      where id = p.tournament_player_id;
+
+    verify_players_room(p_tournament_player_id => p.tournament_player_id );
 
   end loop;
 
