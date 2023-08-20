@@ -102,7 +102,7 @@ css:
         display: inline-block;
         float: right;
     }
-    
+    .tooltipImg .legend {var(--ut-te)}
     
     #optionsRegion .t-HeroRegion-title {display: none;}
     [headers="PLAYERS"] {vertical-align: baseline;}
@@ -186,7 +186,7 @@ css:
     /* https://github.com/mrfratello/SyoTimer */
     .syotimer {
       text-align: center;
-      margin: 1.5em 0;
+      margin: 1.2em 0 1em 0;
     }
     .syotimer__head {
         font-size: 1em;
@@ -204,7 +204,7 @@ css:
       height: 2em;
       line-height: 2em;
     
-      margin: 0 0 5px;
+      margin: 0;
     }
     .syotimer-cell__unit {
       font-size: 12px;
@@ -1534,8 +1534,10 @@ regions:
                , s.week
                , s.easy_course_code
                , s.easy_course_name
+               , to_char(apex_markdown.to_html(e.factoids, p_embedded_html_mode => 'PRESERVE')) easy_factoids
                , s.hard_course_code
                , s.hard_course_name
+               , to_char(apex_markdown.to_html(h.factoids, p_embedded_html_mode => 'PRESERVE')) hard_factoids
                , s.easy_course_id
                , s.easy_release_order
                , s.hard_course_id
@@ -1544,11 +1546,15 @@ regions:
                , s.session_date
                , s.completed_ind
           from wmg_tournament_sessions_v s
+             , wmg_courses e
+             , wmg_courses h
           where s.tournament_id in (
               select id
                 from wmg_tournaments
                where current_flag = 'Y'
           )
+            and s.easy_course_id = e.id (+)
+            and s.hard_course_id = h.id (+)
       )
       , missing_easy as (
       select round_num
@@ -1560,6 +1566,8 @@ regions:
            , status
            , order_by
            , release_order
+           , factoids easy_factoids
+           , '' hard_factoids
       from (
       select to_number(null) round_num
            , e.course_group easy_course_group
@@ -1568,7 +1576,8 @@ regions:
            , e.name easy_name
            , case when e.release_order <= 8 then 'zzz' else 'lock' end status
            , case when e.release_order <= 8 then 99 else 2 end order_by
-           , release_order
+           , e.release_order
+           , e.factoids
       from wmg_courses e
          , tournament_courses tce
       where e.course_mode = 'E'
@@ -1586,6 +1595,8 @@ regions:
              , status
              , order_by
              , release_order
+             , '' easy_factoids
+             , factoids hard_factoids
         from (
           select to_number(null) round_num
                , h.course_group hard_course_group
@@ -1595,6 +1606,7 @@ regions:
                , case when h.release_order <= 8 then 'zzz' else 'lock' end status     
                , case when h.release_order <= 8 then 99 else 2 end order_by
                , h.release_order
+               , h.factoids
           from wmg_courses h
              , tournament_courses tch
           where h.course_mode = 'H'
@@ -1606,24 +1618,28 @@ regions:
            , '' url
            , e.easy_course
            , e.easy_name
+           , e.easy_factoids
            , h.hard_course
            , h.hard_name
+           , h.hard_factoids
            , coalesce(e.status, h.status) status
            , case 
                when  coalesce(e.status, h.status) = 'lock' then 'Pending to be played'
                else 'Not eligible' end status_title
            , coalesce(e.order_by, h.order_by) order_by
-           , coalesce(e.release_order, h.release_order) course_order     
+           , coalesce(e.release_order, h.release_order) course_order
       from missing_easy e
       full outer join missing_hard h
       on e.easy_course_group = h.hard_course_group
       union all
       select c.round_num
            , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
-           , nvl(c.easy_course_code, '-?-')
-           , nvl(c.easy_course_name, 'TBD') easy_course_name
-           , nvl(c.hard_course_code, '-?-')
-           , nvl(c.hard_course_name, 'TBD') hard_course_code
+           , nvl(c.easy_course_code, '-?-') easy_course_code
+           , nvl(c.easy_course_name, 'TBD') easy_name
+           , c.easy_factoids
+           , nvl(c.hard_course_code, '-?-') hard_course_code
+           , nvl(c.hard_course_name, 'TBD') hard_name
+           , c.hard_factoids
            , c.status
            , decode(c.status
                 , 'white_medium_square', 'Pending to be played'
@@ -1640,8 +1656,10 @@ regions:
            , '' url
            , '-?-' easy_course
            , 'TBD' easy_name
+           , '' easy_factoids
            , '-?-' hard_course
            , 'TBD' hard_name
+           , '' hard_factoids
            , 'gift' status
            , 'TBD' status_title
            , 1 order_by
@@ -1813,7 +1831,7 @@ regions:
       html-expression: |
         {case EASY_NAME/}
         {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
-        {otherwise/}<span class="tooltipImg" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg">#EASY_COURSE#</span>{endcase/}
+        {otherwise/}<span class="tooltipImg" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">#EASY_COURSE#</span>{endcase/}
         
 
     sorting: 
@@ -1852,7 +1870,7 @@ regions:
       html-expression: |
         {case HARD_NAME/}
         {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
-        {otherwise/}<span class="tooltipImg" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg">#HARD_COURSE#</span>{endcase/}
+        {otherwise/}<span class="tooltipImg" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">#HARD_COURSE#</span>{endcase/}
 
     sorting: 
       sortable: false
@@ -1927,6 +1945,36 @@ regions:
 
     layout: 
       sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_FACTOIDS ===============================
+    id: 36053983018175850
+    identification: 
+      column-name: EASY_FACTOIDS
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_FACTOIDS ===============================
+    id: 39068436534021501
+    identification: 
+      column-name: HARD_FACTOIDS
+      type: Hidden Column
+
+    layout: 
+      sequence: 120
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -4218,6 +4266,7 @@ buttons:
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--small
     css-classes: 
     - tooltip
     icon: fa-chevron-right
@@ -4442,11 +4491,15 @@ dynamic-actions:
             content: function() {
               // Get the description and image URL from the "title" and "data-img-url" attributes
               var description = $(this).attr("title");
+              var fact = $(this).data("fact");
               var imgUrl = $(this).data("img-url");
         
               // Create an HTML string to include the description and the image
               var tooltipContent = "<div>" + description + "</div>";
               tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
+              if (fact) {
+                  tooltipContent += "<div class='legend u-color-6-text'>" + fact + "</div>";
+              }
         
               return tooltipContent;
             }

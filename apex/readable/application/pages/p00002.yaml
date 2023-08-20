@@ -34,6 +34,7 @@ css:
     /* CSS for screens less than 480px */
     @media (max-width: 579px) {
     #CODE, td[headers~="CODE"],
+    #NAME, td[headers~="NAME"],
     #PLAYED_COUNT, td[headers~="PLAYED_COUNT"],
     #LAST_PLAYED, td[headers~="LAST_PLAYED"],
     #RELEASE_DATE, td[headers~="RELEASE_DATE"],
@@ -42,6 +43,11 @@ css:
     }
     
     td[headers~="NAME"] h3 {font-size: 1.1rem; line-height: 1;}
+    
+    .legend {
+    max-width: 300px;
+    border-top: 1px solid var(--ck-color-base-text);
+    }
 
 security: 
   authentication: Page Is Public
@@ -488,6 +494,8 @@ regions:
            , c.release_date
            , c.code
            , c.name
+           , c.name course_name
+           , apex_markdown.to_html(c.factoids, p_embedded_html_mode => 'PRESERVE') factoids
            , c.course_mode
            , c.course_par
            , :BUCKET || c.code || '_FULL.jpg' icon
@@ -653,7 +661,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: start
 
     accessibility: 
@@ -721,7 +729,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 60
+      sequence: 70
       column-alignment: start
 
     accessibility: 
@@ -730,11 +738,7 @@ regions:
     column-formatting: 
       html-expression: |
         <h3>#NAME#</h3>
-        <div class="hidden-xs-up">
-        Par: #COURSE_PAR#<br>
-        Release Date: #RELEASE_DATE#<br>
-        Played: #PLAYED_COUNT# times{if PLAYED_COUNT/}, last #LAST_PLAYED#{endif/}<br>
-        </div>
+        {if FACTOIDS/}<div class="legend">#FACTOIDS#</div>{endif/}
         
 
     sorting: 
@@ -750,7 +754,7 @@ regions:
       table-owner: Parsing Schema
 
     security: 
-      escape-special-characters: true
+      escape-special-characters: false
 
   - # ====== Column: COURSE_MODE =================================
     id: 21599133084342826
@@ -763,7 +767,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 90
       column-alignment: center
 
     accessibility: 
@@ -799,7 +803,7 @@ regions:
       alignment: end
 
     layout: 
-      sequence: 90
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -842,7 +846,18 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <img class="courseIcon" src="#ICON#" loading="lazy">
+      html-expression: |
+        <div class="hidden-xs-up">
+        <h3>#COURSE_NAME#</h3>
+        </div>
+        <img class="courseIcon" src="#ICON#" loading="lazy">
+        <div class="hidden-xs-up">
+        Par: #COURSE_PAR#<br>
+        Release Date: #RELEASE_DATE#<br>
+        Played: #PLAYED_COUNT# times{if PLAYED_COUNT/}, last #LAST_PLAYED#{endif/}<br>
+        </div>
+        {if FACTOIDS/}<div class="hidden-xs-up legend">#FACTOIDS#</div>{endif/}
+        
 
     sorting: 
       sortable: false
@@ -857,7 +872,7 @@ regions:
       table-owner: Parsing Schema
 
     security: 
-      escape-special-characters: true
+      escape-special-characters: false
 
   - # ====== Column: LAST_PLAYED =================================
     id: 21599433042342829
@@ -870,7 +885,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: start
 
     accessibility: 
@@ -906,7 +921,7 @@ regions:
       alignment: end
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -942,7 +957,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: center
 
     accessibility: 
@@ -966,6 +981,36 @@ regions:
 
     advanced: 
       compute-sum: false
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: FACTOIDS ====================================
+    id: 39068542529021502
+    identification: 
+      column-name: FACTOIDS
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: COURSE_NAME =================================
+    id: 39068616846021503
+    identification: 
+      column-name: COURSE_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
 
     security: 
       escape-special-characters: true
