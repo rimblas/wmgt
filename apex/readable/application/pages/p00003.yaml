@@ -55,10 +55,10 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: Course Round ================================
+- # ====== Region: Leaderboard Course Round ====================
   id: 46934495371678622
   identification: 
-    title: Course Round
+    title: Leaderboard Course Round
     type: Classic Report
 
   source: 
@@ -1273,6 +1273,59 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P3_FACTOIDS ==============================
+  id: 36053177748175842
+  identification: 
+    name: P3_FACTOIDS
+    type: Markdown Editor
+
+  label: 
+    label: Factoids
+    alignment: Left
+
+  settings: 
+    toolbar: Simple
+    syntax-highlighting: true
+
+  layout: 
+    sequence: 80
+    region: Course # 46995217613009514582
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course # 46995217613009514582
+    column: FACTOIDS
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P3_RELEASE_ORDER =========================
   id: 37925249381930012
   identification: 
@@ -1341,7 +1394,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Course Round # 46934495371678622
+    region: Leaderboard Course Round # 46934495371678622
     position: BODY
 
   advanced: 
@@ -2800,7 +2853,7 @@ buttons:
 
   layout: 
     sequence: 10
-    region: Course Round # 46934495371678622
+    region: Leaderboard Course Round # 46934495371678622
     position: CREATE
     start-new-layout: false
     start-new-row: true
