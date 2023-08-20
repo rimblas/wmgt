@@ -5,6 +5,7 @@ create table wmg_courses (
     code                           varchar2(5 char)
                                    constraint courses_code_unq unique,
     name                           varchar2(255 char) not null,
+    factoids                       varchar2(4000 char),
     course_mode                    varchar2(1 char) constraint courses_course_mode_ck
                                    check (course_mode in ('E','H')),
     release_order                  number not null,
@@ -15,6 +16,10 @@ create table wmg_courses (
     updated_by                     varchar2(60 char)
 )
 ;
+
+comment on table wmg_courses is 'Master List of available courses';
+
+comment on column wmg_courses.factoids is 'Juicy tidbits of information';
 
 create or replace trigger wmg_courses_bu
     before update 

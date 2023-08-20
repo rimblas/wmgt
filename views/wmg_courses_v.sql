@@ -24,6 +24,7 @@ select
     c.name                                       name,
     c.code || ' - ' || c.name prepared_name,
     c.course_mode                                course_mode,
+    c.factoids,
     cs.id                                  course_stroke_id,
     cs.h1,
     cs.h2,
