@@ -4,21 +4,24 @@ with rounds as (
     select r.week
          , r.player_id
          , r.easy, r.hard, r.total_score
+         , r.easy_round_id, r.hard_round_id
          , rank() over (partition by r.week order by r.total_score) pos
          , count(*) over (partition by r.week) player_count
     from (
         select week, player_id, easy, hard, nvl(easy + hard, 99) total_score
-        from (
+             , easy_round_id, hard_round_id
+       from (
           select r.week
                , r.player_id
                , r.under_par
                , c.course_mode
+               , r.round_id
             from wmg_rounds_v r
                , wmg_courses c
           where r.course_id = c.id
           )
          pivot (
-             sum(under_par) for course_mode in (
+             sum(under_par), any_value(round_id) round_id for course_mode in (
               'E' EASY, 'H' HARD
              )
           )
@@ -31,6 +34,7 @@ with rounds as (
        , p.player_name, p.country_code
        , p.rank_code
        , r.easy, r.hard
+       , r.easy_round_id, r.hard_round_id
        , r.total_score, r.pos
        , player_count
   from rounds r
@@ -55,6 +59,7 @@ select ts.id tournament_session_id
      , r.week, r.player_id, r.player_name, r.country_code
      , r.rank_code
      , r.easy, r.hard, r.total_score
+     , r.easy_round_id, r.hard_round_id
      , r.pos
      , r.percent_rank
      , decode(r.total_score, 99, 0, wmg_util.score_points(r.pos, r.percent_rank, r.player_count)) points

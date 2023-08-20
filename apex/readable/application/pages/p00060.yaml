@@ -1676,6 +1676,7 @@ regions:
            , pp.player_name
            , sp.easy
            , sp.hard
+           , sp.easy_round_id, sp.hard_round_id
            , sp.total_score
            , coalesce(p.points, sp.points) points
            , case when sp.pos <= 10 then 'top' else 'p' || to_char(coalesce(p.points, sp.points)) end
@@ -1999,6 +2000,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: EASY_ROUND_ID ===============================
+    id: 39069562829021512
+    identification: 
+      column-name: EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ROUND_ID ===============================
+    id: 39069672182021513
+    identification: 
+      column-name: HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EDIT_BADGES_LINK ============================
     id: 41137852955776027
     identification: 
@@ -2163,7 +2194,7 @@ regions:
     id: 56024167382698751673
     identification: 
       column-name: EASY
-      type: Plain Text
+      type: Link
 
     heading: 
       heading: Easy
@@ -2175,6 +2206,17 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.:COMPARE:&DEBUG.:10:P10_ROUND_ID:#EASY_ROUND_ID#'
+        page: 10 # Player Round Details
+        request: COMPARE
+        clear-cache: 10
+        values: 
+          p10_round_id: '#EASY_ROUND_ID#'
+
+      link-text: '#EASY#'
 
     sorting: 
       sortable: false
@@ -2195,7 +2237,7 @@ regions:
     id: 56024167489932751674
     identification: 
       column-name: HARD
-      type: Plain Text
+      type: Link
 
     heading: 
       heading: Hard
@@ -2207,6 +2249,17 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.:COMPARE:&DEBUG.:10:P10_ROUND_ID:#HARD_ROUND_ID#'
+        page: 10 # Player Round Details
+        request: COMPARE
+        clear-cache: 10
+        values: 
+          p10_round_id: '#HARD_ROUND_ID#'
+
+      link-text: '#HARD#'
 
     sorting: 
       sortable: false
@@ -3689,6 +3742,20 @@ dynamic-actions:
     authorization-scheme: Contribution Rights # 46995203801871514425
 
   actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 39069799926021514
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: console.log(this.data);
+
+    execution: 
+      sequence: 10
+      event: Refresh on Close # 41138341573776032
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
   - # ====== Action: Refresh =====================================
     id: 41138419360776033
     identification: 
@@ -3699,10 +3766,14 @@ dynamic-actions:
       region: Week Results (&P60_WEEK.) # 108304671264572297709
 
     execution: 
-      sequence: 10
+      sequence: 20
       event: Refresh on Close # 41138341573776032
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+    client-side-condition: 
+      type: JavaScript expression
+      javascript-expression: this.data.dialogPageId != 10
 
 - # ====== Dynamic Action: Rank Selectors ======================
   id: 49530602545520827

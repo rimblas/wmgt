@@ -46,6 +46,51 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: {Comparison} ================================
+  id: 39070110695021518
+  identification: 
+    title: '{Comparison}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Player Round Details # 49408556648041526027
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Request = Value
+    value: COMPARE
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Player Round Details ========================
   id: 49408556648041526027
   identification: 
@@ -59,13 +104,19 @@ regions:
     table-name: WMG_ROUNDS_V
     include-rowid-column: false
     where-clause: |
-      (player_id = :P10_PLAYER_ID or :P10_PLAYER_ID is null)
-      and (round_id = :P10_ROUND_ID or :P10_ROUND_ID is null)
-      or (round_id = :P10_ROUND2_ID)
+      (player_id = :P10_PLAYER_ID or :P10_PLAYER_ID is null or :P10_PLAYER2_ID is null)
+      and (
+              (round_id = :P10_ROUND_ID)
+           or (round_id = :P10_ROUND2_ID)
+           or (round_id = :P10_ROUND_COMP_ID)
+      )
+      
+    page-items-to-submit: 
+    - P10_ROUND_COMP_ID
 
   order-by: 
     type: Static Value
-    order-by-clause: 'decode(player_id, :P140_PLAYER2_ID, 2, 1)'
+    order-by-clause: 'decode(player_id, :P140_PLAYER2_ID, 2, :P10_ROUND_COMP_ID, 2,1)'
 
   layout: 
     sequence: 10
@@ -1714,6 +1765,88 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P10_ROUND_COMP_ID ========================
+  id: 39069821236021515
+  identification: 
+    name: P10_ROUND_COMP_ID
+    type: Popup LOV
+
+  label: 
+    label: Compare with
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{Comparison}' # 39070110695021518
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select  r.player_name || ' ' || r.under_par d, r.round_id r
+      from wmg_rounds_v r
+      where (week, course_id) in (
+      select p.week, r.course_id
+      from wmg_tournament_session_points_v p
+         , wmg_rounds r
+      where p.easy_round_id = r.id
+        and p.easy_round_id = :P10_ROUND_ID
+      union all
+      select p.week, r.course_id
+      from wmg_tournament_session_points_v p
+         , wmg_rounds r
+      where p.hard_round_id = r.id
+        and p.hard_round_id = :P10_ROUND_ID
+      )
+      and r.round_id != :P10_ROUND_ID
+      order by r.under_par, r.player_name
+      
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P10_ROUND_ID =============================
   id: 57674067503599609
   identification: 
@@ -1773,4 +1906,39 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Results =====================
+  id: 39069978687021516
+  identification: 
+    name: Refresh Results
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P10_ROUND_COMP_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 39070064781021517
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Player Round Details # 49408556648041526027
+
+    execution: 
+      sequence: 10
+      event: Refresh Results # 39069978687021516
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
