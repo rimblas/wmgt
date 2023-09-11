@@ -2199,6 +2199,10 @@ processes:
       apex_region.purge_cache (
           p_page_id    => 1
       );
+      
+      -- Commit before calculating unicorns
+      commit;
+      
 
   execution: 
     sequence: 30
@@ -2206,10 +2210,41 @@ processes:
     run-process: Once Per Page Visit (default)
 
   success-message: 
-    success-message: Weekend successfully closed out and points recorded
+    success-message: Weekend successfully closed out and points recorded.
 
   error: 
     error-message: There were issues closing out the weekend.
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: CLOSE_WEEKEND # 16730497793921831
+
+- # ====== Process: Award Unicorns =============================
+  id: 44379925341120419
+  identification: 
+    name: Award Unicorns
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |2
+       wmg_util.add_unicorns (
+         p_tournament_session_id => :P532_ID
+      );
+      
+
+  execution: 
+    sequence: 40
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Unicorns calculated
+
+  error: 
+    error-message: The weekend closed, but there were issues calculating unicorns.
     display-location: Inline in Notification
 
   server-side-condition: 
@@ -2326,7 +2361,7 @@ processes:
     - REQUEST
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 

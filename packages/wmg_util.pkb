@@ -1721,6 +1721,132 @@ end submit_close_scoring_jobs;
 
 
 
+/**
+ * Up to the given tournament_session, find the new unicorns
+ * Unicorn: Something rare and unique. In this case a unicorn is a 
+ * unique Hole in One made after 5 times a tournament was played
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 31, 2023
+ * @param x_result_status
+ * @return
+ */
+procedure add_unicorns(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'add_unicorns';
+  l_attepts number;
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  for u in (
+  with course_play_count as (
+        select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+        from wmg_tournament_courses c
+           , wmg_tournament_sessions s
+        where s.id = c.tournament_session_id
+          and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+        group by c.course_id
+  )
+  , courses_played as (
+      select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+      from wmg_courses_v  c
+         , course_play_count cc
+      where c.course_id = cc.course_id
+        and cc.play_count >= 5
+  )
+  select uni.course_name
+       , uni.course_id
+       , uni.play_count
+       , uni.h
+       , uni.week
+       , (select u.player_id
+        from wmg_rounds_unpivot_mv u
+       where u.course_id = uni.course_id
+         and u.h = uni.h
+         and u.week <= uni.week
+         and u.player_id != 0 -- skip system records
+         and u.score = 1) ace_by_player_id
+      /*
+        -- for debuging
+       , (select listagg(u.week || ' - ' || p.player_name, ',') player_name
+        from wmg_rounds_unpivot_mv u
+           , wmg_players_v p
+       where u.player_id = p.id
+         and u.course_id = uni.course_id
+         and u.h = uni.h
+         and u.week <= uni.week
+         and u.score = 1) ace_by
+        */
+  from (
+      select u.course_id, cp.course_name, cp.play_count, u.h
+           , max(u.week) week
+        from wmg_rounds_unpivot_mv u
+           , courses_played cp
+        where u.score = 1
+          and u.course_id = cp.course_id
+          and u.player_id != 0 -- skip system records
+          and cp.play_count >= 5
+          and u.week in (select ts.week from wmg_tournament_sessions ts where ts.session_date <= cp.session_date)
+          and (u.course_id, u.h) not in (select course_id, h from wmg_player_unicorns) -- eliminate previous unicorns
+        group by u.course_id, cp.course_name, cp.play_count, u.h
+       having count(*) = 1
+  ) uni
+  order by uni.course_name, uni.h
+  )
+  loop
+
+    -- count the number of attempts at the hole before the unicorn
+    select count(*) attempts
+      into l_attepts
+     from wmg_rounds_unpivot_mv a
+     where a.course_id = u.course_id
+       and a.h = u.h
+       and a.week in (
+          select ts.week                       -- collect all the weeks before the unicorn and including
+            from wmg_tournament_sessions ts 
+           where ts.session_date <= (          -- get all the sessions before that
+             select wts.session_date           -- date the unicorn was achived
+               from wmg_tournament_sessions wts 
+              where wts.week = u.week
+           )
+         );
+
+    insert into wmg_player_unicorns (
+       course_id
+     , player_id
+     , h
+     , attempt_count
+     , score_tournament_session_id
+     , award_tournament_session_id
+    )
+    select u.course_id
+       , u.ace_by_player_id
+       , u.h
+       , l_attepts
+       , ts.id                    score_tournament_session_id
+       , p_tournament_session_id  award_tournament_session_id
+     from wmg_tournament_sessions ts
+     where ts.week = u.week;
+
+    log('Added ' || SQL%ROWCOUNT, l_scope);
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end add_unicorns;
+
+
 
 
 procedure unavailable_application (p_message in varchar2 default null)
