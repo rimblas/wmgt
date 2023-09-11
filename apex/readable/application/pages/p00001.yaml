@@ -60,7 +60,12 @@ javascript:
     }, 9500);
     
     $( ".your-tzRoomTime" ).append( $(".tzRoomTime").eq(0).text() );
-    
+    // display google button
+    $("#R47630258423476981333").mouseenter(function(event) {
+      if (event.metaKey) {
+        $(".google-style").css("display", "block");
+      }
+    });
 
 css: 
   file-urls: 
@@ -72,6 +77,20 @@ css:
     .t-Login-logo {
         background-color: whitesmoke;
     }
+    .google-style {
+        --a-button-background-color: var(--rw-palette-blue-100);
+        --a-button-text-color: var(--rw-palette-green-0);
+        --a-button-hover-background-color: var(--rw-palette-blue-110);
+        --a-button-hover-text-color: var(--a-button-text-color);
+        --a-button-hover-border-color: var(--a-button-hover-background-color);
+        --a-button-active-background-color: var(--rw-palette-blue-120);
+        --a-button-active-text-color: var(--a-button-hover-text-color);
+        --a-button-active-border-color: var(--a-button-active-background-color);
+        --a-button-focus-background-color: var(--a-button-hover-background-color);
+        --a-button-focus-text-color: var(--a-button-hover-text-color);
+        --a-button-focus-border-color: var(--a-button-focus-background-color);
+    }
+    
     .discord-style {
         --a-button-background-color: #5865F2;
         border-radius: 0;
@@ -236,6 +255,8 @@ css:
     td[headers^="PLAYERS"] a + .-wm-rank-new:before  {
       top: 4px;
     }
+    
+    #leadersByRankRegion td h5 {margin-top: 10px;}
     
 
 security: 
@@ -866,7 +887,6 @@ regions:
       order by r.display_seq desc, p.season_total desc, nls_upper(p.player_name)
       
     page-items-to-submit: 
-    - P1_WEEK
     - P1_TOURNAMENT_SESSION_ID
     optimizer-hint: WITH_PLSQL
 
@@ -2132,6 +2152,531 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: Top 10 Overall ==============================
+  id: 39072416686021541
+  identification: 
+    title: Top 10 Overall
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with ts as (
+          select ts.id tournament_session_id
+          from wmg_tournament_sessions ts
+          where id = :G_CURRENT_SESSION_ID
+      )
+      select p.*
+      from (
+      select p.tournament_session_id
+           , p.pos
+           , p.player_id
+           , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
+           , pp.country_code
+           , pp.country
+           , pp.player_name
+           , p.easy
+           , p.hard
+           , p.total_score
+           , case when p.total_score <= -50 then 'fa-anim-flash' else '' end big_fifty
+           , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
+           , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+           , pp.rank_code
+           , pp.rank_name
+           , pp.rank_list_class
+          , rank() over (partition by p.rank_code order by p.pos) rank_pos
+      from wmg_tournament_session_points_v p
+         , ts
+         , wmg_players_v pp
+      where p.tournament_session_id = ts.tournament_session_id
+        and p.player_id = pp.id
+      ) p
+      where p.pos <= 10
+      order by p.pos, nls_upper(p.player_name)
+      
+      
+    page-items-to-submit: 
+    - P1_WEEK
+    - P1_TOURNAMENT_SESSION_ID
+    optimizer-hint: WITH_PLSQL
+
+  layout: 
+    sequence: 90
+    parent-region: Current Top Leaderboard (&P1_WEEK.) # 44379379359120413
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--accent2
+    - t-Region--noBorder
+    - js-headingLevel-3
+    - t-Region--scrollBody
+    - margin-top-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--horizontalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: RANK_NAME ===================================
+    id: 39072570205021542
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_POS ====================================
+    id: 39072652891021543
+    identification: 
+      column-name: RANK_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 39072775677021544
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '#'
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 39072806392021545
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 39072972638021546
+    identification: 
+      column-name: COUNTRY
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 39073092903021547
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: User is Authenticated (not public)
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 39073189879021548
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 39073240602021549
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_TOURNAMENT_SESSION_ID,P110_PLAYER_ID:#TOURNAMENT_SESSION_ID#,#PLAYER_ID#'
+        page: 110 # Player Round Details
+        clear-cache: 110
+        values: 
+          p110_tournament_session_id: '#TOURNAMENT_SESSION_ID#'
+          p110_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 39073389119021550
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 43226660410087601
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 43226729164087602
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="{if BIG_FIFTY/}#BIG_FIFTY#{endif/} u-bold">#TOTAL_SCORE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SELECTED_PLAYER =============================
+    id: 43227054499087605
+    identification: 
+      column-name: SELECTED_PLAYER
+      type: Hidden Column
+
+    layout: 
+      sequence: 140
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TROPHY ======================================
+    id: 43227156596087606
+    identification: 
+      column-name: TROPHY
+      type: Hidden Column
+
+    layout: 
+      sequence: 150
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 43227365687087608
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 170
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 43227427100087609
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_SESSION_ID =======================
+    id: 43227588436087610
+    identification: 
+      column-name: TOURNAMENT_SESSION_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BIG_FIFTY ===================================
+    id: 43227835062087613
+    identification: 
+      column-name: BIG_FIFTY
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Most recent registrations ===================
   id: 39559725575969820
   identification: 
@@ -2157,7 +2702,7 @@ regions:
       
 
   layout: 
-    sequence: 70
+    sequence: 80
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -2473,6 +3018,608 @@ regions:
     security: 
       authorization-scheme: Tournament Admin # 55902033226819493948
       escape-special-characters: true
+
+- # ====== Region: Top By Rank =================================
+  id: 43230986003087644
+  identification: 
+    title: Top By Rank
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with ts as (
+          select ts.id tournament_session_id
+          from wmg_tournament_sessions ts
+          where id = :G_CURRENT_SESSION_ID
+      )
+      select p.*
+      from (
+      select p.tournament_session_id
+           , p.pos
+           , p.player_id
+           , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
+           , pp.country_code
+           , pp.country
+           , pp.player_name
+           , p.easy
+           , p.hard
+           , p.total_score
+           , case when p.total_score <= -50 then 'fa-anim-flash' else '' end big_fifty
+           , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
+           , case when p.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+           , pp.rank_code
+           , pp.rank_name
+           , pp.rank_list_class
+          , rank() over (partition by p.rank_code order by p.pos) rank_pos
+      from wmg_tournament_session_points_v p
+         , ts
+         , wmg_players_v pp
+      where p.tournament_session_id = ts.tournament_session_id
+        and p.player_id = pp.id
+      ) p
+      , wmg_ranks r
+      where p.rank_code = r.code
+        and p.rank_pos <= 3
+        and r.active_ind = 'Y'
+      order by r.display_seq desc, p.rank_pos, p.pos, nls_upper(p.player_name)
+      
+    page-items-to-submit: 
+    - P1_WEEK
+    - P1_TOURNAMENT_SESSION_ID
+    optimizer-hint: WITH_PLSQL
+
+  layout: 
+    sequence: 100
+    parent-region: Current Top Leaderboard (&P1_WEEK.) # 44379379359120413
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--accent1
+    - t-Region--noBorder
+    - js-headingLevel-3
+    - t-Region--scrollBody
+    - margin-top-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: leadersByRankRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlightOff
+      - t-Report--horizontalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+      repeat-heading-format: '<h5>Top #COLUMN_VALUE#s</h5>'
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: RANK_NAME ===================================
+    id: 43231053445087645
+    identification: 
+      column-name: RANK_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Rank
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_POS ====================================
+    id: 43231157639087646
+    identification: 
+      column-name: RANK_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 43231265857087647
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '#'
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#SELECTED_PLAYER#">#POS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 43231389881087648
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 43231433300087649
+    identification: 
+      column-name: COUNTRY
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 43231563699087650
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: User is Authenticated (not public)
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 44378150978120401
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 44378287969120402
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_TOURNAMENT_SESSION_ID,P110_PLAYER_ID:#TOURNAMENT_SESSION_ID#,#PLAYER_ID#'
+        page: 110 # Player Round Details
+        clear-cache: 110
+        values: 
+          p110_tournament_session_id: '#TOURNAMENT_SESSION_ID#'
+          p110_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 44378319022120403
+    identification: 
+      column-name: EASY
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 44378478523120404
+    identification: 
+      column-name: HARD
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 44378560625120405
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="{if BIG_FIFTY/}#BIG_FIFTY#{endif/} u-bold">#TOTAL_SCORE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SELECTED_PLAYER =============================
+    id: 44378686117120406
+    identification: 
+      column-name: SELECTED_PLAYER
+      type: Hidden Column
+
+    layout: 
+      sequence: 120
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TROPHY ======================================
+    id: 44378722744120407
+    identification: 
+      column-name: TROPHY
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 44378866985120408
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 140
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 44378980221120409
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 150
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_SESSION_ID =======================
+    id: 44379038762120410
+    identification: 
+      column-name: TOURNAMENT_SESSION_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 160
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BIG_FIFTY ===================================
+    id: 44379192224120411
+    identification: 
+      column-name: BIG_FIFTY
+      type: Hidden Column
+
+    layout: 
+      sequence: 170
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Current Top Leaderboard (&P1_WEEK.) =========
+  id: 44379379359120413
+  identification: 
+    title: Current Top Leaderboard (&P1_WEEK.)
+    type: Static Content
+
+  layout: 
+    sequence: 110
+    parent-region: '{col2}' # 11993448770685629
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--showIcon
+    - t-Region--scrollBody
+    icon: fa-trophy
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.id = :G_CURRENT_SESSION_ID
+        and s.rooms_open_flag is not null
+        and s.completed_ind = 'N'
+        and s.round_num >= 1
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: {Player Profile Buttons3} ===================
   id: 49807380987068431
@@ -2962,7 +4109,7 @@ regions:
             from wmg_tournaments
            where current_flag = 'Y'
       )
-      and session_date+1.2 > trunc(sysdate)
+      and session_date+1.01 >= sysdate
       order by session_date desc
       fetch first 1 rows only
 
@@ -3375,6 +4522,13 @@ regions:
               from wmg_tournament_sessions s
               where s.id = :G_CURRENT_SESSION_ID
           )
+          union all
+          (select ts.id tournament_session_id
+          from wmg_tournament_sessions ts
+          where :G_CURRENT_SESSION_ID is null
+          order by ts.session_date desc
+          fetch first 1 rows only
+          )
       )
       , badges as (
        select p.tournament_session_id, p.player_id
@@ -3433,7 +4587,6 @@ regions:
       order by r.display_seq desc, p.rank_pos, p.pos, nls_upper(p.player_name)
       
     page-items-to-submit: 
-    - P1_WEEK
     - P1_TOURNAMENT_SESSION_ID
     optimizer-hint: WITH_PLSQL
 
@@ -3474,6 +4627,10 @@ regions:
       where s.id = :G_CURRENT_SESSION_ID
         and s.rooms_open_flag is null
         and s.round_num > 1
+      union 
+      select 1
+      from dual
+      where :G_CURRENT_SESSION_ID is null
 
   server-cache: 
     caching: Cache By Session
@@ -4025,6 +5182,37 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P1_WEEK ==================================
+  id: 43227652543087611
+  identification: 
+    name: P1_WEEK
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 10
+    region: Top 10 Overall # 39072416686021541
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P1_MESSAGE_FLAG ==========================
   id: 49804755463068405
   identification: 
@@ -4311,6 +5499,82 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: LOGIN_GOOGLE ================================
+  id: 43196664769467523
+  identification: 
+    button-name: LOGIN_GOOGLE
+    label: Sign In with Google
+
+  layout: 
+    sequence: 15
+    region: Player's Login # 47630258423476981333
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    css-classes: 
+    - google-style
+    icon: fa-google
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:1000:&SESSION.:APEX_AUTHENTICATION=google:&DEBUG.:::'
+      page: 1000 # auth
+      request: APEX_AUTHENTICATION=google
+
+    warn-on-unsaved-changes: Do Not Check
+
+  advanced: 
+    custom-attributes: 
+    - 'style="display:none;"'
+
+- # ====== Button: VIEW_RESULTS ================================
+  id: 43227751716087612
+  identification: 
+    button-name: VIEW_RESULTS
+    label: View All Results
+
+  layout: 
+    sequence: 20
+    region: Current Top Leaderboard (&P1_WEEK.) # 44379379359120413
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+    css-classes: 
+    - tooltip
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:60:&SESSION.::&DEBUG.::P60_TOURNAMENT_SESSION_ID,P60_WEEK:&G_CURRENT_SESSION_ID.,&P1_WEEK.'
+      page: 60 # View Weekly Results
+      values: 
+        p60_tournament_session_id: '&G_CURRENT_SESSION_ID.'
+        p60_week: '&P1_WEEK.'
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: LOGIN_DISCORD ===============================
   id: 44329117063512116
   identification: 
@@ -4462,6 +5726,38 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
+- # ====== Dynamic Action: Turn-on Tooltips ====================
+  id: 23850337986801620
+  identification: 
+    name: Turn-on Tooltips
+
+  execution: 
+    sequence: 40
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Most recent registrations # 39559725575969820
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 23850408731801621
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(this.triggeringElement).find(".tooltip").tooltip()
+
+    execution: 
+      sequence: 10
+      event: Turn-on Tooltips # 23850337986801620
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Show Tooltips =======================
   id: 28674932410250917
   identification: 
@@ -4541,6 +5837,43 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Refresh after close # 32755302364549244
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Admin Login Click ===================
+  id: 39071673625021533
+  identification: 
+    name: Admin Login Click
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: '#socialSigning_heading'
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: this.browserEvent.metaKey
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Submit Page =================================
+    id: 39071776605021534
+    identification: 
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: ADMIN_LOGIN
+      show-processing: false
+
+    execution: 
+      sequence: 10
+      event: Admin Login Click # 39071673625021533
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -4762,6 +6095,25 @@ branches:
 
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+- # ====== Branch: Admin Login Redirect ========================
+  id: 39071845258021535
+  identification: 
+    name: Admin Login Redirect
+
+  execution: 
+    sequence: 10
+    point: After Submit
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:9999:&SESSION.::&DEBUG.:::'
+      page: 9999 # Login Page
+
+  server-side-condition: 
+    type: Request = Value
+    value: ADMIN_LOGIN
 
 - # ====== Branch: Go Read messages ============================
   id: 49804647993068404
