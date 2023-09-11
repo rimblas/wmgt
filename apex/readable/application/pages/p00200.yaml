@@ -1172,14 +1172,14 @@ regions:
     - P200_GOALS_IND
 
   layout: 
-    sequence: 55
-    parent-region: No Parent
+    sequence: 20
+    parent-region: '{col3}' # 39068753937021504
     position: BODY
     start-new-layout: false
-    start-new-row: false
-    column: 10
+    start-new-row: true
+    column: Automatic
     new-column: true
-    column-span: 3
+    column-span: Automatic
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -1195,7 +1195,7 @@ regions:
 
   advanced: 
     static-id: topPlayersRegion
-    region-display-selector: true
+    region-display-selector: false
     exclude-title-from-translation: false
 
   header-and-footer: 
@@ -1206,6 +1206,1070 @@ regions:
       • The <b>Leaderboard</b> score is a curated score put together by someone with intimate knowledge of the game using their understanding of what's possible. 
       This score would often be the all-time high on the leaderboards.<br>
       </div>
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_NAME =================================
+    id: 16130200227878836
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: WEEK ========================================
+    id: 16723625677921813
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: UNDER_PAR ===================================
+    id: 16727543815921802
+    identification: 
+      column-name: UNDER_PAR
+      type: Plain Text
+
+    heading: 
+      heading: Score
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if !PLAYER_NAME/}<b>{endif/}
+        #UNDER_PAR#
+        {if !PLAYER_NAME/}</b>{endif/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Unicorn Aces ================================
+  id: 36053270117175843
+  identification: 
+    title: Unicorn Aces
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |2
+       with course_play_count as (
+              select course_id, count(*) play_count
+              from wmg_tournament_courses
+              group by course_id
+      )
+      , courses_played as (
+          select c.course_id, c.name course_name, cc.play_count
+          from wmg_courses_v  c
+             , course_play_count cc
+          where c.course_id = cc.course_id
+            and (:P200_ALL_COURSES_IND = 'Y' or c.course_id = :P200_COURSE_ID)
+      )
+      select cp.course_name, to_number(null) course_id, cp.play_count, to_number(null) h, 'Course is not eligible yet' ace_by
+           , '' on_week, to_date(null) score_session_date
+           , '' award_week, to_date(null) award_session_date
+           , to_number(null) attempt_count
+           , to_number(1) course_release_order, null course_mode
+      from  courses_played cp
+      where cp.play_count < 5
+        and :P200_ALL_COURSES_IND = 'N'
+      union all
+      select u.course_name, u.course_id, cp.play_count, u.h, u.player_name
+           , u.score_week, u.score_session_date
+           , u.award_week, u.award_session_date
+           , u.attempt_count
+           , u.course_release_order, u.course_mode
+      from wmg_player_unicorns_v u
+      join courses_played cp on cp.course_id = u.course_id
+      where (:P200_ALL_COURSES_IND = 'Y' or u.course_id = :P200_COURSE_ID)
+      order by course_release_order, course_mode, h, ace_by
+    page-items-to-submit: 
+    - P200_COURSE_ID
+    - P200_ALL_COURSES_IND
+
+  layout: 
+    sequence: 80
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 9
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--showIcon
+    - t-Region--scrollBody
+    icon: em em-unicorn_face
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: unicornAces
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 25
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: No Unicorn Aces
+
+    break-formatting: 
+      break-columns: First and Second Columns
+      style: Default Break Formatting
+      before-row: 'Course Played:'
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAY_COUNT ==================================
+    id: 36053519030175846
+    identification: 
+      column-name: PLAY_COUNT
+      type: Plain Text
+
+    heading: 
+      heading: This course has been played
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '#PLAY_COUNT# time{case PLAY_COUNT/}{when 1/}{otherwise/}s{endcase/}'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: H ===========================================
+    id: 36053655827175847
+    identification: 
+      column-name: H
+      type: Plain Text
+
+    heading: 
+      heading: 'Hole #'
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if P200_ALL_COURSES_IND/}
+        <a href='javascript:$s("P200_COURSE_ID", #COURSE_ID#),$s("P200_H", #H#); apex.event.trigger("#PREVIEW_BTN", "click")'>#H#</a>
+        {else/}
+        <a href='javascript:$s("P200_H", #H#); apex.event.trigger("#PREVIEW_BTN", "click")'>#H#</a>
+        {endif/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACE_BY ======================================
+    id: 36053780363175848
+    identification: 
+      column-name: ACE_BY
+      type: Plain Text
+
+    heading: 
+      heading: Ace By
+      alignment: start
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_NAME =================================
+    id: 39069264742021509
+    identification: 
+      column-name: COURSE_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Item = Value
+      item: P200_ALL_COURSES_IND
+      value: Y
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_ID ===================================
+    id: 39069428685021511
+    identification: 
+      column-name: COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ON_WEEK =====================================
+    id: 44379460481120414
+    identification: 
+      column-name: ON_WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Scored<br> On Week
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+    comments: 
+      comments: <div class="tooltip" title="#SCORE_SESSION_DATE#">#ON_WEEK#</div>
+
+  - # ====== Column: ATTEMPT_COUNT ===============================
+    id: 44379565205120415
+    identification: 
+      column-name: ATTEMPT_COUNT
+      type: Plain Text
+
+    heading: 
+      heading: Previous<br>Attempts
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: 999G999G999G999G999G999G990
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SCORE_SESSION_DATE ==========================
+    id: 44379664749120416
+    identification: 
+      column-name: SCORE_SESSION_DATE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AWARD_WEEK ==================================
+    id: 44379708518120417
+    identification: 
+      column-name: AWARD_WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Awarded<br>on Week
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AWARD_SESSION_DATE ==========================
+    id: 44379896449120418
+    identification: 
+      column-name: AWARD_SESSION_DATE
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_RELEASE_ORDER ========================
+    id: 44381171906120431
+    identification: 
+      column-name: COURSE_RELEASE_ORDER
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_MODE =================================
+    id: 44381291897120432
+    identification: 
+      column-name: COURSE_MODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 120
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {col3} ======================================
+  id: 39068753937021504
+  identification: 
+    title: '{col3}'
+    type: Static Content
+
+  layout: 
+    sequence: 70
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: 10
+    new-column: true
+    column-span: 3
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {col1} ======================================
+  id: 39068875165021505
+  identification: 
+    title: '{col1}'
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {col2} ======================================
+  id: 39069391717021510
+  identification: 
+    title: '{col2}'
+    type: Static Content
+
+  layout: 
+    sequence: 60
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: All Courses by Difficulty (by &P200_FORMULA.)
+  id: 43227934303087614
+  identification: 
+    title: All Courses by Difficulty (by &P200_FORMULA.)
+    type: Chart
+
+  layout: 
+    sequence: 100
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: allCoursesChart
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 43228098324087615
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Yes
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: false
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: false
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 43228132642087616
+      identification: 
+        name: Series 1
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with std_scale as (
+             select max(std_dev) max_std_dev
+               from wmg_course_stats_v
+          )
+          select course_id, course_name, course_code label, difficulty value
+          , course_name || '<br>Difficulty ' || round(difficulty) tooltip
+          , case when course_id = :P200_COURSE_ID then 'gold' else '#437c94' end color
+          from ( 
+              select c.id course_id, c.name course_name, c.code course_code
+          --         , sum(s.score_avg) difficulty
+               , sum(
+          /*
+                   case 
+                   when s.std_dev = 0 then 0
+                   else round(s.std_dev / std_scale.max_std_dev * 10,1)
+                   end)  difficulty
+          */
+                 case :P200_FORMULA
+                   when 'SCORE' then
+                     s.score_avg
+                   when 'STDDEV' then
+                      case 
+                        when s.std_dev = 0 then 0
+                        else round(s.std_dev / std_scale.max_std_dev * 10,1)
+                      end
+                  when 'HYBRID' then
+                    sqrt( s.score_avg * (
+                        case 
+                        when s.std_dev = 0 then 0
+                        else round(s.std_dev / std_scale.max_std_dev * 10,1)
+                      end
+                    ))
+                  end
+                ) difficulty
+              from  wmg_course_stats_v s
+                  , wmg_courses c
+                  , std_scale
+              where c.id = s.course_id (+)
+              group by c.id, c.name, c.code
+          )
+          order by difficulty nulls first, course_code
+          
+        page-items-to-submit: 
+        - P200_COURSE_ID
+        - P200_FORMULA
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+        custom-tooltip: TOOLTIP
+
+      appearance: 
+        color: '&COLOR.'
+        assigned-to-y2-axis: false
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:$s("P200_COURSE_ID", "#COURSE_ID#")'
+
+      label: 
+        show: true
+        position: Automatic
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 43228260028087617
+      identification: 
+        name: x
+        show-axis: true
+        title: Courses
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 43228391267087618
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+- # ====== Region: {options} ===================================
+  id: 43228410746087619
+  identification: 
+    title: '{options}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Potential Unicorns ==========================
+  id: 44380031221120420
+  identification: 
+    title: Potential Unicorns
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |2
+        with course_play_count as (
+              select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+              from wmg_tournament_courses c
+                 , wmg_tournament_sessions s
+              where s.id = c.tournament_session_id
+                and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = :G_CURRENT_SESSION_ID)
+                and c.course_id = :P200_COURSE_ID
+              group by c.course_id
+        )
+        , courses_played as (
+            select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+            from wmg_courses_v  c
+               , course_play_count cc
+            where c.course_id = cc.course_id
+              and cc.play_count >= 1
+        )
+        select uni.course_name
+             , uni.course_id
+             , uni.play_count
+             , uni.h
+             , uni.week
+              -- for debuging
+             , (select listagg(p.player_name, ',') player_name
+              from wmg_rounds_unpivot_mv u
+                 , wmg_players_v p
+             where u.player_id = p.id
+               and u.course_id = uni.course_id
+               and u.h = uni.h
+               and u.week <= uni.week
+               and u.score = 1) ace_by
+        from (
+            select u.course_id, cp.course_name, cp.play_count, u.h
+                 , max(u.week) week
+              from wmg_rounds_unpivot_mv u
+                 , courses_played cp
+              where u.score = 1
+                and u.course_id = cp.course_id
+                and cp.play_count >= 5
+                and u.week in (select ts.week from wmg_tournament_sessions ts where ts.session_date <= cp.session_date)
+                and (u.course_id, u.h) not in (select course_id, h from wmg_player_unicorns) -- eliminate previous unicorns
+              group by u.course_id, cp.course_name, cp.play_count, u.h
+             having count(*) = 1
+        ) uni
+        order by uni.course_name, uni.h
+      
+    page-items-to-submit: 
+    - P200_COURSE_ID
+
+  layout: 
+    sequence: 10
+    parent-region: Unicorn Aces # 36053270117175843
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: futureUnicornAces
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |2
+       with course_play_count as (
+              select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+              from wmg_tournament_courses c
+                 , wmg_tournament_sessions s
+              where s.id = c.tournament_session_id
+                and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = :G_CURRENT_SESSION_ID)
+                and c.course_id = :P200_COURSE_ID
+              group by c.course_id
+        )
+        , courses_played as (
+            select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+            from wmg_courses_v  c
+               , course_play_count cc
+            where c.course_id = cc.course_id
+              and cc.play_count >= 5
+        )
+      select 1
+      from courses_played
 
   server-cache: 
     caching: Disabled

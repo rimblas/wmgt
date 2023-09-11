@@ -519,16 +519,39 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with player as (
-       select b.code, listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
+      with tournament_sessions as (
+          select id tournament_session_id
+            from wmg_tournament_sessions
+           where tournament_id = :P120_TOURNAMENT_ID
+      )
+      , player_uni as (
+       select player_id, sum(n) n  -- make sure we always get a row
+       from (
+           select to_number(:P120_PLAYER_ID) player_id, 0 n from dual -- add a zero count row
+           union all 
+            select u.player_id, count(*) n 
+              from wmg_player_unicorns u
+             where u.player_id (+) = :P120_PLAYER_ID
+               and (:P120_TOURNAMENT_ID is null 
+                or u.score_tournament_session_id in (
+                      select tournament_session_id
+                      from tournament_sessions
+                )
+              )
+              group by u.player_id
+         )
+        group by player_id
+      )
+      , player as (
+       select b.code
+            , listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
         from wmg_player_badges p
            , wmg_badge_types b
         where b.code = p.badge_type_code 
           and (:P120_TOURNAMENT_ID is null 
             or p.tournament_session_id in (
-                  select id
-                  from wmg_tournament_sessions
-                  where tournament_id = :P120_TOURNAMENT_ID
+                  select tournament_session_id
+                  from tournament_sessions
             )
           )
           and p.player_id (+) = :P120_PLAYER_ID
@@ -537,11 +560,18 @@ regions:
       select b.name
            , b.icon_class
            , b.description
-           , player.all_badges
+           , case b.code
+                   when 'UNICORN' then
+                  decode(u.n, 0, '', (select listagg(replace(b.icon_class, 'em em', 'em'), ' ') from dual connect by level <= u.n) )
+              else
+                 player.all_badges
+              end all_badges
         from wmg_badge_types b
            , player
+           , player_uni u
        where b.active_ind = 'Y'
          and b.code = player.code (+)
+      --   and u.player_id (+) = :P120_PLAYER_ID
       order by b.display_seq
       
     page-items-to-submit: 

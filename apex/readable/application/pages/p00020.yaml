@@ -113,7 +113,12 @@ regions:
              NOTES
         from WMG_NOTES
       where (:P20_NOTE_TYPE is null or :P20_NOTE_TYPE = note_type)
-      order by case note_type when 'ABOUT' then 1 when 'RULES' then 2 else 3 end, DISPLAY_SEQ
+      order by case note_type 
+        when 'ABOUT' then 1 
+        when 'RULES' then 2
+        when 'UNICORN' then 99 
+         else 3 end
+         , DISPLAY_SEQ
 
   layout: 
     sequence: 10
