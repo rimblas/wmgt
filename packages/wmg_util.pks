@@ -38,6 +38,9 @@ procedure set_param(
 );
 
 --------------------------------------------------------------------------------
+function extract_hole_from_file(p_filename in varchar2) return number;
+
+--------------------------------------------------------------------------------
 procedure assign_rooms(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );

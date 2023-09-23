@@ -181,6 +181,62 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P13_BATCH_UPLOAD =========================
+  id: 44381474037120434
+  identification: 
+    name: P13_BATCH_UPLOAD
+    type: File Browse...
+
+  label: 
+    label: Batch Upload
+    alignment: Left
+
+  settings: 
+    display-as: Block Dropzone
+    dropzone-description: Select one or multiple filed with format CCC_NNN.jpg
+    storage-type: Table APEX_APPLICATION_TEMP_FILES
+    purge-file-at: End of Session
+    allow-multiple-files: true
+
+  layout: 
+    sequence: 60
+    region: Preview Uploads # 20730474893316858533
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P13_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P13_ID ===================================
   id: 20730475180265858533
   identification: 
@@ -313,7 +369,7 @@ page-items:
     height: 1
 
   validation: 
-    value-required: true
+    value-required: false
 
   list-of-values: 
     type: SQL Query
@@ -417,6 +473,10 @@ page-items:
 
   session-state: 
     storage: Per Request (Memory Only)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P13_ID
 
   security: 
     session-state-protection: Unrestricted
@@ -712,6 +772,40 @@ page-items:
     help-text: Use when the image of another whole can be referenced as a substitute.
 
 buttons: 
+- # ====== Button: CREATE_AGAIN ================================
+  id: 39071432174021531
+  identification: 
+    button-name: CREATE_AGAIN
+    label: Add Preview & Add Again
+
+  layout: 
+    sequence: 50
+    region: Buttons # 20730484396667858542
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-plus
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL INSERT action
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P13_ID
+
 - # ====== Button: CANCEL ======================================
   id: 20730484819002858542
   identification: 
@@ -849,6 +943,70 @@ buttons:
     item: P13_ID
 
 dynamic-actions: 
+- # ====== Dynamic Action: Guess Hole from File Name ===========
+  id: 39071290549021529
+  identification: 
+    name: Guess Hole from File Name
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P13_BATCH_UPLOAD
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: apex.item("P13_BATCH_UPLOAD").value.length === 1
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 39071376749021530
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        try {
+        var base = $v("P13_BATCH_UPLOAD").split("_")[1];
+        var holeStr = base.split(".")[0];
+        var hole = parseInt(holeStr);
+        }
+        catch (e) {
+            
+        }
+        // console.log(base, hole);
+        $s("P13_HOLE", hole);
+
+    execution: 
+      sequence: 10
+      event: Guess Hole from File Name # 39071290549021529
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Disable =====================================
+    id: 44381351789120433
+    identification: 
+      action: Disable
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P13_SAME_AS_ID
+      - P13_HOLE
+
+    execution: 
+      sequence: 10
+      event: Guess Hole from File Name # 39071290549021529
+      fire-when-event-result-is: False
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Cancel Dialog =======================
   id: 20730484897009858542
   identification: 
@@ -936,6 +1094,51 @@ dynamic-actions:
       fire-on-initialization: true
 
 processes: 
+- # ====== Process: Process Multiple Upload ====================
+  id: 44381540223120435
+  identification: 
+    name: Process Multiple Upload
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      insert into wmg_course_previews (
+          course_id
+        , hole
+        , image_preview
+        , mimetype
+        , filename
+        , image_last_update
+      )
+      select :P13_COURSE_ID course_id
+           , wmg_util.extract_hole_from_file(f.filename)
+           , f.blob_content
+           , f.mime_type
+           , f.filename
+           , f.created_on
+        from apex_application_temp_files f
+       where f.name in (
+       	select column_value 
+             from table(
+                 apex_string.split(:P13_BATCH_UPLOAD, ':')
+             )
+        );
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: CREATE,CREATE_AGAIN
+
 - # ====== Process: Initialize form Preview Uploads ============
   id: 20730487339179858544
   identification: 
@@ -964,12 +1167,16 @@ processes:
     return-primary-key(s)-after-insert: true
 
   execution: 
-    sequence: 20
+    sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
 
   error: 
     display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is NOT contained in Value
+    value: CREATE,CREATE_AGAIN
 
 - # ====== Process: Close Dialog ===============================
   id: 20730488206884858544
@@ -979,7 +1186,7 @@ processes:
     execution-chain: None
 
   execution: 
-    sequence: 30
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -1013,4 +1220,26 @@ processes:
   server-side-condition: 
     type: Item is NOT NULL
     item: P13_SAME_AS_ID
+
+branches: 
+- # ====== Branch: Go To Page 13: Add Again ====================
+  id: 39071536696021532
+  identification: 
+    name: 'Go To Page 13: Add Again'
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:13:&SESSION.::&DEBUG.:13:P13_COURSE_ID:&P13_COURSE_ID.&success_msg=#SUCCESS_MSG#'
+      page: 13 # Preview Uploads
+      clear-cache: 13
+      values: 
+        p13_course_id: '&P13_COURSE_ID.'
+
+  server-side-condition: 
+    when-button-pressed: CREATE_AGAIN # 39071432174021531
 

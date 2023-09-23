@@ -192,6 +192,24 @@ end set_param;
 
 
 ------------------------------------------------------------------------------
+function extract_hole_from_file(p_filename in varchar2) 
+  return number
+is
+  l_scope  scope_t := gc_scope_prefix || 'extract_hole_from_file';
+  f apex_t_varchar2;
+begin
+  -- log('START', l_scope);
+  f :=  apex_string.split(p_filename, '.');
+  return to_number(apex_string.split(f(1), '_')(2) default null on conversion error);
+exception 
+when others then 
+  return p_filename;
+end extract_hole_from_file;
+
+
+
+
+------------------------------------------------------------------------------
 /**
  * Given a tournament session create random room assignments
  * We ideally want rooms of 4, never have a room of 1 and avoid rooms of 2
