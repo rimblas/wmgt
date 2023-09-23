@@ -357,6 +357,38 @@ css:
     #weekResults2 td[headers="PLAYER_NAME"] {
         line-height: 36px;
     }
+    
+    .courseIcon {
+    width: 240px;
+    height: 240px;
+    }
+    
+    .nextCourses .courseLink {
+            box-shadow: var(--ut-cardlist-box-shadow,var(--ut-component-box-shadow));
+    }
+    .nextCourses .course {
+        transition: transform .2s ease;
+    }
+    .nextCourses .course:hover {
+        transform: translateY(-0.5rem);
+    }
+    .nextCourses .course a {
+        color: var(--ut-component-text-title-color);
+    }
+    
+    
+    .nextCourses {text-align: center;}
+    .nextCourses .name {font-weight: 700; font-size: 1.1em;}
+    .nextCourses .info.TBD {display: none;}
+    
+    #nextTournamentBrief .nextCourses .when {text-align: start;}
+    #nextTournamentBrief .nextCourses .who {text-align: center;}
+    #nextTournamentBrief .nextCourses .what {text-align: end;}
+    @media (max-width: 1024px) {
+     #nextTournamentBrief .nextCourses .when {text-align: center;}
+     #nextTournamentBrief .nextCourses .what {text-align: center;}
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -395,432 +427,6 @@ help:
     the same opportunity.
 
 regions: 
-- # ====== Region: Alt Week Results ============================
-  id: 36049825957175809
-  identification: 
-    title: Alt Week Results
-    type: Classic Report
-
-  source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      with rounds as (
-          select r.week
-               , r.player_id
-               , r.easy, r.hard, r.total_score
-               , rank() over (partition by r.week order by r.total_score) pos
-               , count(*) over (partition by r.week) player_count
-          from (
-              select week, player_id, easy, hard, easy + hard total_score
-              from (
-                select r.week
-                     , r.player_id
-                     , r.under_par
-                     , c.course_mode
-                  from wmg_rounds_v r
-                     , wmg_courses c
-                where r.course_id = c.id
-                )
-               pivot (
-                   sum(under_par) for course_mode in (
-                    'E' EASY, 'H' HARD
-                   )
-                )
-            ) r
-          where r.total_score is not null
-      )
-      , results as (
-        select p.tournament_session_id
-             , p.week
-             , r.player_id
-             , p.player_name, p.country_code
-             , p.rank_code
-             , r.easy, r.hard
-             , r.total_score, r.pos
-             , player_count
-        from rounds r
-           , wmg_tournament_player_v p
-        where p.week = r.week
-         and p.player_id = r.player_id
-         and p.active_ind = 'Y'
-      )
-      , rank_split as (
-        select r.*
-             , 0 percent_rank
-          from results r
-         where r.pos <= 10
-        union all 
-        /* We need the percent_rank to only consider the players after the top 10 */
-        select r.*
-             , percent_rank() over (partition by r.tournament_session_id order by r.total_score nulls first ) percent_rank
-          from results r
-         where r.pos > 10
-      )
-      select r.*
-           , case when r.pos <= 10 then 'top' else 'p' || to_char(r.points) end
-           || case when r.points <= 0 then ' missing tooltip' end
-           || case when r.pos <= 3 then ' podium podium' || r.pos  end point_class
-      from (
-      select r.week
-           -- , r.player_id
-           , r.player_name
-           , r.easy, r.hard, r.total_score
-           , r.pos
-           , r.percent_rank
-           , decode(r.total_score, 99, 0, wmg_util.score_points(r.pos, r.percent_rank, r.player_count)) points
-           -- , wmg_util.score_points(r.pos, r.percent_rank, r.player_count) points
-       from rank_split r
-          , wmg_tournament_sessions ts
-      where ts.id = r.tournament_session_id
-        and ts.week = r.week
-        and ts.id = :P60_TOURNAMENT_SESSION_ID
-      ) r
-      order by r.week, r.pos, r.player_name
-      
-    page-items-to-submit: 
-    - P60_TOURNAMENT_SESSION_ID
-
-  layout: 
-    sequence: 30
-    parent-region: '{col1}' # 36324460593635102
-    position: BODY
-    start-new-layout: false
-    start-new-row: false
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Standard # 46995101107768514367
-    template-options: 
-    - '#DEFAULT#'
-    - t-Region--scrollBody
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: weekResults2
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  header-and-footer: 
-    header-text: <br><br><br>
-
-  server-side-condition: 
-    type: Never
-
-  security: 
-    authorization-scheme: Contribution Rights # 46995203801871514425
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    layout: 
-      number-of-rows-type: Static Value
-      number-of-rows: 250
-
-    appearance: 
-      template-type: Theme
-      template: Standard # 46995138939704514382
-      template-options: 
-      - '#DEFAULT#'
-      - t-Report--altRowsDefault
-      - t-Report--rowHighlight
-
-    pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
-    performance: 
-      lazy-loading: false
-
-    break-formatting: 
-      break-columns: No Break
-
-    advanced: 
-      strip-html: false
-      sort-nulls: Last
-
-    heading: 
-      type: Custom Headings
-
-    download: 
-      csv-export-enabled: true
-      link-text: Download
-
-    printing: 
-      enabled: false
-
-  columns: 
-  - # ====== Column: WEEK ========================================
-    id: 36049948639175810
-    identification: 
-      column-name: WEEK
-      type: Hidden Column
-
-    layout: 
-      sequence: 20
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PLAYER_NAME =================================
-    id: 36050047107175811
-    identification: 
-      column-name: PLAYER_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Player Name
-      alignment: start
-
-    layout: 
-      sequence: 40
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: EASY ========================================
-    id: 36050129573175812
-    identification: 
-      column-name: EASY
-      type: Plain Text
-
-    heading: 
-      heading: Easy
-      alignment: end
-
-    layout: 
-      sequence: 50
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HARD ========================================
-    id: 36050257770175813
-    identification: 
-      column-name: HARD
-      type: Plain Text
-
-    heading: 
-      heading: Hard
-      alignment: end
-
-    layout: 
-      sequence: 60
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: TOTAL_SCORE =================================
-    id: 36050335698175814
-    identification: 
-      column-name: TOTAL_SCORE
-      type: Plain Text
-
-    heading: 
-      heading: Total
-      alignment: end
-
-    layout: 
-      sequence: 70
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: POS =========================================
-    id: 36050435577175815
-    identification: 
-      column-name: POS
-      type: Plain Text
-
-    heading: 
-      heading: Pos
-      alignment: end
-
-    layout: 
-      sequence: 10
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PERCENT_RANK ================================
-    id: 36050582501175816
-    identification: 
-      column-name: PERCENT_RANK
-      type: Plain Text
-
-    heading: 
-      heading: Percent Rank
-      alignment: end
-
-    layout: 
-      sequence: 90
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    appearance: 
-      format-mask: 999G999G999G999G990D0000
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: POINTS ======================================
-    id: 36050674197175817
-    identification: 
-      column-name: POINTS
-      type: Plain Text
-
-    heading: 
-      heading: Points
-      alignment: end
-
-    layout: 
-      sequence: 80
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: '<span class="points #POINT_CLASS#">#POINTS#</span>'
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: POINT_CLASS =================================
-    id: 36050823990175819
-    identification: 
-      column-name: POINT_CLASS
-      type: Hidden Column
-
-    layout: 
-      sequence: 100
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
 - # ====== Region: {col1} ======================================
   id: 36324460593635102
   identification: 
@@ -833,6 +439,47 @@ regions:
     position: BODY
     start-new-layout: false
     start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {col2} ======================================
+  id: 44899432802786407
+  identification: 
+    title: '{col2}'
+    type: Static Content
+
+  layout: 
+    sequence: 35
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -915,8 +562,6 @@ regions:
   server-cache: 
     caching: Enabled
     cache-timeout: 2 weeks
-    depends-on-item(s): 
-    - APP_REQUEST_DATA_HASH
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1562,6 +1207,552 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: {About week &P60_WEEK.} =====================
+  id: 24790742868226858754
+  identification: 
+    title: '{About week &P60_WEEK.}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select s.session_date
+           , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
+           , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.easy_course_id), 'TBD') easy_record
+           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.easy_course_id) easy_stats_url
+           , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
+           , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
+           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
+           , case when ec.id is null then 'u-vh' else '' end tbd_class
+      from wmg_tournament_sessions_v s
+         , wmg_courses ec
+         , wmg_courses hc
+      where s.easy_course_id = ec.id (+)
+        and s.hard_course_id = hc.id (+)
+        and s.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+      
+
+  layout: 
+    sequence: 10
+    parent-region: '{col2}' # 44899432802786407
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Alert # 46995035459709514340
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--noIcon
+    - t-Alert--info
+    - t-Alert--accessibleHeading
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 10
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: |
+        - The next tournament courses have not been selected yet -<br>
+        Try again tomorrow...
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: EASY_RECORD =================================
+    id: 44899554263786408
+    identification: 
+      column-name: EASY_RECORD
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_RECORD =================================
+    id: 44899655346786409
+    identification: 
+      column-name: HARD_RECORD
+      type: Hidden Column
+
+    layout: 
+      sequence: 100
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SESSION_DATE ================================
+    id: 46481837069463212
+    identification: 
+      column-name: SESSION_DATE
+      type: Plain Text
+
+    heading: 
+      heading: Session Date
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: fmDay, fmMonth fmDD, YYYY
+
+    column-formatting: 
+      html-expression: |
+        <div class="row">
+        <div class="col">
+          <b>Season: </b>&P60_TOURNAMENT.<br>
+          <b>Week: </b>&P60_WEEK. - #SESSION_DATE#<br>
+          <b>Players: </b>&P60_TOTAL_PLAYERS. <i>(Played/Signup)</i><br>
+          <br>
+        </div>
+        </div>
+        <div class="row nextCourses">
+            <div class="col course easy">
+                <a href="#EASY_STATS_URL#">
+                    <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
+                <div class="score #TBD_CLASS#">WMGT Record #EASY_RECORD#</div>
+                <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#EASY_COURSE_CODE#_FULL.jpg" loading="lazy">
+                <div class="info #EASY_RECORD# #TBD_CLASS#">How hard is #EASY_COURSE_CODE#?</div>
+                </a>
+            </div>
+            <div class="col course hard">
+                <a href="#HARD_STATS_URL#">
+                    <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
+                <div class="score #TBD_CLASS#">WMGT Record #HARD_RECORD#</div>
+                <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#HARD_COURSE_CODE#_FULL.jpg" loading="lazy">
+                <div class="info #HARD_RECORD# #TBD_CLASS#">How hard is #HARD_COURSE_CODE#?</div>
+                </a>
+            </div>
+        </div>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_CODE ============================
+    id: 46482296907463213
+    identification: 
+      column-name: EASY_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 46482685513463214
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_STATS_URL ==============================
+    id: 46483400562463215
+    identification: 
+      column-name: EASY_STATS_URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_CODE ============================
+    id: 46483898530463216
+    identification: 
+      column-name: HARD_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 46484293343463216
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_STATS_URL ==============================
+    id: 46485031785463218
+    identification: 
+      column-name: HARD_STATS_URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TBD_CLASS ===================================
+    id: 46485409535463218
+    identification: 
+      column-name: TBD_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 120
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Highlights ==================================
+  id: 49360696889693070005
+  identification: 
+    title: Highlights
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with players_with_aces as (
+            select c.id course_id, c.course_mode, r.player_id
+              from wmg_rounds_unpivot_mv r
+                 , wmg_courses c
+             where r.course_id = c.id
+               and r.week = :P60_WEEK
+               and r.score = 1
+      )
+      select 'Best score ' || decode(course_mode, 'E', 'Easy', 'Hard') result, listagg(player_name, ', ') who, total
+      from (
+            select r.*, rank() over (partition by course_mode order by r.total) rn
+            from (
+            select course_mode, player_id, player_name, sum(under_par) total
+              from wmg_rounds_v
+              where week = :P60_WEEK 
+             group by course_mode, player_id, player_name
+            ) r
+            order by course_mode, rn, r.player_name
+      )
+      where rn = 1
+      group by  course_mode, total
+      union all
+      select result, listagg(who, ', ') who, total
+      from (
+          select result, who, total, rank() over (order by total desc) rn
+          from (
+          select '<i class="em em-large_blue_diamond" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
+              || 'Player(s) with most Aces' result
+               , r.player_name who
+               , sum(decode(s1, 1, 1, 0)
+                   + decode(s2, 1, 1, 0)
+                   + decode(s3, 1, 1, 0)
+                   + decode(s4, 1, 1, 0)
+                   + decode(s5, 1, 1, 0)
+                   + decode(s6, 1, 1, 0)
+                   + decode(s7, 1, 1, 0)
+                   + decode(s8, 1, 1, 0)
+                   + decode(s9, 1, 1, 0)
+                   + decode(s10, 1, 1, 0)
+                   + decode(s11, 1, 1, 0)
+                   + decode(s12, 1, 1, 0)
+                   + decode(s13, 1, 1, 0)
+                   + decode(s14, 1, 1, 0)
+                   + decode(s15, 1, 1, 0)
+                   + decode(s16, 1, 1, 0)
+                   + decode(s17, 1, 1, 0)
+                   + decode(s18, 1, 1, 0)
+                ) total
+            from wmg_rounds_v r
+           where r.week = :P60_WEEK
+          group by r.player_name
+          ) aces
+          order by aces.who
+      )
+      where rn = 1
+      group by  result, total
+      
+      
+    page-items-to-submit: 
+    - P60_WEEK
+
+  layout: 
+    sequence: 10
+    parent-region: '{About week &P60_WEEK.}' # 24790742868226858754
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    - margin-top-lg
+    - margin-left-md
+    - margin-right-md
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: RESULT ======================================
+    id: 46525810349481477
+    identification: 
+      column-name: RESULT
+      type: Plain Text
+
+    heading: 
+      heading: Highlight
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: WHO =========================================
+    id: 46526272965481480
+    identification: 
+      column-name: WHO
+      type: Plain Text
+
+    heading: 
+      heading: Who
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL =======================================
+    id: 46526501639481539
+    identification: 
+      column-name: TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: {items} =====================================
   id: 106632178401810217449
   identification: 
@@ -1661,6 +1852,16 @@ regions:
           and b.selectable_ind = 'Y'
         group by p.tournament_session_id, p.player_id
       )
+      , unicorns as (
+       select u.score_tournament_session_id tournament_session_id, u.player_id
+              -- need to expand by the badge_count, because people can habe multiple-badges
+            , listagg( replace(b.icon_class, 'em em', 'em'), ' ')  within group ( order by b.display_seq) unicorn_badges
+        from wmg_player_unicorns u
+           , wmg_badge_types b
+        where u.score_tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+          and b.code = 'UNICORN'
+        group by u.score_tournament_session_id, u.player_id
+      )
       , me as (
           select nvl(max(player_id),-1) player_id, nvl(max(pos),0) pos
             from wmg_tournament_session_points_v
@@ -1697,11 +1898,13 @@ regions:
              end
           || decode(coconut.under_par, 36, 'em-coconut' || decode(cactus.player_id, null, '', ' '), '') 
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) 
-          || ' ' || badges.other_badges || ' ' || replace(i.icon, 'em ', '') badges
+          || ' ' || badges.other_badges || ' ' || unicorns.unicorn_badges badges
            , nvl(badges.badge_json, '{}') badge_json
            , apex_page.get_url(p_page => '65', p_items => 'P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID', p_values=> sp.tournament_session_id || ','||sp.player_id) edit_badges_link
       --     , apex_util.prepare_url('f?=' || :APP_ID || ':65:' || :APP_SESSION || ':::P65_TOURNAMENT_SESSION_ID,P65_PLAYER_ID,'|| p.tournament_session_id || ','||p.player_id) edit_badges_link
            , '' badges_menu
+           , i.icon issue_icon
+           , i.description issue_description
            , p.issue_code
       from wmg_tournament_session_points_v sp
       , wmg_tournament_players p
@@ -1710,12 +1913,14 @@ regions:
       , coconut
       , cactus
       , badges
+      , unicorns
       , me
       where sp.week = :P60_WEEK
         and sp.player_id = pp.id
         and sp.player_id = coconut.player_id (+)
         and sp.player_id = cactus.player_id (+)
         and sp.player_id = badges.player_id (+)
+        and sp.player_id = unicorns.player_id (+)
         and sp.player_id = p.player_id (+)
         and sp.tournament_session_id = p.tournament_session_id (+)
         and p.issue_code = i.code (+)
@@ -1925,6 +2130,9 @@ regions:
         {loop " " BADGES/}
         <i class="badge em &APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM." title=""></i>
         {endloop/}
+        {if ISSUE_CODE/}
+        <i class="tooltip #ISSUE_ICON#" aria-role="presentation" aria-label="#ISSUE_CODE#" title="#ISSUE_DESCRIPTION#"></i>
+        {endif/}
 
     sorting: 
       sortable: false
@@ -2023,6 +2231,36 @@ regions:
 
     layout: 
       sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_ICON ==================================
+    id: 39070684775021523
+    identification: 
+      column-name: ISSUE_ICON
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_DESCRIPTION ===========================
+    id: 39070737765021524
+    identification: 
+      column-name: ISSUE_DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 280
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2473,7 +2711,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 45
+    sequence: 55
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -3074,10 +3312,16 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select count(*)
-        from wmg_tournament_players 
-       where tournament_session_id = :P60_TOURNAMENT_SESSION_ID
-         and active_ind = 'Y'
+      select nvl2(players, players || '/', '') || total players
+      from (
+      select count(*) total, sum(decode(pp.player_id, null, 0, 1)) players
+        from wmg_tournament_players p
+        left join wmg_tournament_session_points_v pp 
+          on pp.tournament_session_id = p.tournament_session_id
+          and pp.player_id = p.player_id
+       where p.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+         and p.active_ind = 'Y'
+       )
     used: Always, replacing any existing value in session state
 
   session-state: 

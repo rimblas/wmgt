@@ -2228,6 +2228,7 @@ regions:
     landmark-type: Template Default
 
   advanced: 
+    static-id: topOverallRegion
     region-display-selector: false
     exclude-title-from-translation: false
 
@@ -4303,7 +4304,7 @@ regions:
             <div class="col course easy">
                 <a href="#EASY_STATS_URL#">
                     <div class="name">#EASY_COURSE_CODE# - #EASY_COURSE#</div>
-                <div class="score #TBD_CLASS#">Best Score #EASY_RECORD#</div>
+                <div class="score #TBD_CLASS#">WMGT Record #EASY_RECORD#</div>
                 <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#EASY_COURSE_CODE#_FULL.jpg" loading="lazy">
                 <div class="info #EASY_RECORD# #TBD_CLASS#">How hard is #EASY_COURSE_CODE#?</div>
                 </a>
@@ -4311,7 +4312,7 @@ regions:
             <div class="col course hard">
                 <a href="#HARD_STATS_URL#">
                     <div class="name">#HARD_COURSE_CODE# - #HARD_COURSE#</div>
-                <div class="score #TBD_CLASS#">Best Score #HARD_RECORD#</div>
+                <div class="score #TBD_CLASS#">WMGT Record #HARD_RECORD#</div>
                 <img class="courseIcon #TBD_CLASS#" src="&BUCKET.#HARD_COURSE_CODE#_FULL.jpg" loading="lazy">
                 <div class="info #HARD_RECORD# #TBD_CLASS#">How hard is #HARD_COURSE_CODE#?</div>
                 </a>
@@ -5874,6 +5875,36 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Admin Login Click # 39071673625021533
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Highlight Player ====================
+  id: 44899215379786405
+  identification: 
+    name: Highlight Player
+
+  execution: 
+    sequence: 50
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  execution: 
+    event-scope: Static
+
+  actions: 
+  - # ====== Action: Highlight Player ============================
+    id: 44899331870786406
+    identification: 
+      name: Highlight Player
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $("td[headers*='POS'] .mark").parents("tr").addClass("mark")
+
+    execution: 
+      sequence: 10
+      event: Highlight Player # 44899215379786405
       fire-when-event-result-is: True
       fire-on-initialization: false
 

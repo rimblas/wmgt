@@ -156,7 +156,7 @@ regions:
     - P140_PLAYER2_ID
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: '{col2}' # 57676372236599632
     position: BODY
     start-new-layout: false
@@ -1086,6 +1086,48 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+buttons: 
+- # ====== Button: WHAT_IF =====================================
+  id: 41458682287102035
+  identification: 
+    button-name: WHAT_IF
+    label: Try What If Scenarios
+
+  layout: 
+    sequence: 20
+    region: '{col2}' # 57676372236599632
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text # 46995173980623514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--stretch
+    icon: fa-table-edit
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_WHAT_IF,P9_COURSE_ID:Y,&P200_COURSE_ID.'
+      page: 9 # Round
+      clear-cache: 9
+      values: 
+        p9_what_if: Y
+        p9_course_id: '&P200_COURSE_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
 dynamic-actions: 
 - # ====== Dynamic Action: Highlight After Refresh_1 ===========

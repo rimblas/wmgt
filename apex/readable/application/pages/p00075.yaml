@@ -2322,6 +2322,42 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Toggle  Score Cell Verification =====
+  id: 39072253497021539
+  identification: 
+    name: Toggle  Score Cell Verification
+
+  execution: 
+    sequence: 120
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: jQuery Selector
+    jquery-selector: td[headers$=SCORECARD]
+
+  execution: 
+    event-scope: Dynamic
+    static-container-(jquery-selector): '#verifyRegion'
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Add Class ===================================
+    id: 39072311205021540
+    identification: 
+      action: Add Class
+
+    settings: 
+      class: u-color-4
+
+    affected-elements: 
+      selection-type: Triggering Element
+
+    execution: 
+      sequence: 10
+      event: Toggle  Score Cell Verification # 39072253497021539
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Toggle Player Verification ==========
   id: 41136182668776010
   identification: 

@@ -66,10 +66,6 @@ css:
     .hide_nav_next .t-Form-itemText--post {display: none;}
     .hide_nav_pre .t-Form-itemText--pre {display: none;}
     
-    #weekResults {
-        --ut-report-cell-padding-y: .35rem;
-        --ut-report-cell-alt-background-color: #dadada;
-    }
     #raceRegion {
         --ut-report-cell-padding-y: .35rem;
     }
@@ -97,6 +93,11 @@ css:
     
     .p0 {
         color: red;
+    }
+    
+    #PLAYER_NAME, #SEASON_TOTAL {
+        color: var(--ut-component-text-default-color);
+        font-weight: 700;
     }
     
     td[headers="SEASON_TOTAL"] {
@@ -183,6 +184,1550 @@ help:
     the same opportunity.
 
 regions: 
+- # ====== Region: Top 10 finishers (&P61_TOURNAMENT.) =========
+  id: 44899738735786410
+  identification: 
+    title: Top 10 finishers (&P61_TOURNAMENT.)
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with all_weeks as (
+        select ts.id tournament_session_id, ts.round_num, ts.week, ts.session_date
+         from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+      )
+      , all_tournament_players as (
+        select distinct p.player_id, w.tournament_session_id, w.round_num, w.week, w.session_date, p.points
+            , p.discarded_points_flag
+          from wmg_tournament_players p
+             , all_weeks w
+         where p.tournament_session_id in (
+            select aw.tournament_session_id
+             from all_weeks aw
+          )
+          and p.discarded_points_flag is null
+          and p.active_ind = 'Y'
+      )
+      , sessions_pivot as (
+          select player_id
+               , max(w1_pos)           w1_pos
+               , max(w1_points)        w1_points
+               , max(w1_point_class)   w1_point_class
+               , max(w1_discarded_points_flag)   w1_discard
+               , max(w2_pos)           w2_pos
+               , max(w2_points)        w2_points
+               , max(w2_point_class)   w2_point_class
+               , max(w2_discarded_points_flag)   w2_discard
+               , max(w3_pos)           w3_pos
+               , max(w3_points)        w3_points
+               , max(w3_point_class)   w3_point_class
+               , max(w3_discarded_points_flag)   w3_discard
+               , max(w4_pos)           w4_pos
+               , max(w4_points)        w4_points
+               , max(w4_point_class)   w4_point_class
+               , max(w4_discarded_points_flag)   w4_discard
+               , max(w5_pos)           w5_pos
+               , max(w5_points)        w5_points
+               , max(w5_point_class)   w5_point_class
+               , max(w5_discarded_points_flag)   w5_discard
+               , max(w6_pos)           w6_pos
+               , max(w6_points)        w6_points
+               , max(w6_point_class)   w6_point_class
+               , max(w6_discarded_points_flag)   w6_discard
+               , max(w7_pos)           w7_pos
+               , max(w7_points)        w7_points
+               , max(w7_point_class)   w7_point_class
+               , max(w7_discarded_points_flag)   w7_discard
+               , max(w8_pos)           w8_pos
+               , max(w8_points)        w8_points
+               , max(w8_point_class)   w8_point_class
+               , max(w8_discarded_points_flag)   w8_discard
+               , max(w9_pos)           w9_pos
+               , max(w9_points)        w9_points
+               , max(w9_point_class)   w9_point_class
+               , max(w9_discarded_points_flag)   w9_discard
+               , max(w10_pos)          w10_pos
+               , max(w10_points)       w10_points
+               , max(w10_point_class)  w10_point_class
+               , max(w10_discarded_points_flag)  w10_discard
+               , max(w11_pos)          w11_pos
+               , max(w11_points)       w11_points
+               , max(w11_point_class)  w11_point_class
+               , max(w11_discarded_points_flag)  w11_discard
+               , max(w12_pos)          w12_pos
+               , max(w12_points)       w12_points
+               , max(w12_point_class)  w12_point_class
+               , max(w12_discarded_points_flag)  w12_discard
+         from (
+              select p.player_id
+                   , p.round_num
+                   , sp.pos
+                   , case 
+               when sp.pos = 1 then 'em-first_place_medal '
+               when sp.pos = 2 then 'em-second_place_medal '
+               when sp.pos = 3 then 'em-third_place_medal '
+               when sp.pos <= 10 then 'em-star'
+               end || ' tooltip ' 
+              || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
+                   , coalesce(p.points, sp.points) points
+                   , p.discarded_points_flag
+           from all_tournament_players p
+              , wmg_tournament_session_points_v sp
+          where p.tournament_session_id = sp.tournament_session_id
+            and p.player_id = sp.player_id
+            and sp.pos <= 10
+        )
+        pivot (
+              any_value(round_num)    round_num
+            , any_value(pos)          pos
+            , any_value(points)       points
+            , any_value(point_class) point_class
+            , any_value(discarded_points_flag) discarded_points_flag
+            for round_num in (
+                1 as W1
+              , 2 as W2
+              , 3 as W3
+              , 4 as W4
+              , 5 as W5
+              , 6 as W6
+              , 7 as W7
+              , 8 as W8
+              , 9 as W9
+              , 10 as W10
+              , 11 as W11
+              , 12 as W12
+            )
+          )
+          group by player_id
+      )
+      select rank() over (order by f.season_total desc) pos
+           , f.*
+      from (
+      	select p.player_name
+      	   , p.country_code
+      	   , p.country
+      	   , p.rank_code
+      	   , p.rank_name
+      	   , p.rank_list_class
+      	   , decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
+      	   + decode(sp.w2_discard, 'Y', 0, nvl(sp.w2_points,0))
+      	   + decode(sp.w3_discard, 'Y', 0, nvl(sp.w3_points,0))
+      	   + decode(sp.w4_discard, 'Y', 0, nvl(sp.w4_points,0))
+      	   + decode(sp.w5_discard, 'Y', 0, nvl(sp.w5_points,0))
+      	   + decode(sp.w6_discard, 'Y', 0, nvl(sp.w6_points,0))
+      	   + decode(sp.w7_discard, 'Y', 0, nvl(sp.w7_points,0))
+      	   + decode(sp.w8_discard, 'Y', 0, nvl(sp.w8_points,0))
+      	   + decode(sp.w9_discard, 'Y', 0, nvl(sp.w9_points,0))
+      	   + decode(sp.w10_discard, 'Y', 0, nvl(sp.w10_points,0))
+      	   + decode(sp.w11_discard, 'Y', 0, nvl(sp.w11_points,0))
+      	   + decode(sp.w12_discard, 'Y', 0, nvl(sp.w12_points,0)) season_total
+      	 , sp.*
+      	from sessions_pivot sp
+      	 , wmg_players_v p
+      	where p.id = sp.player_id
+      ) f
+      where f.season_total > 0
+      order by f.season_total desc, nls_upper(f.player_name)
+      
+    page-items-to-submit: 
+    - P61_TOURNAMENT_ID
+
+  layout: 
+    sequence: 45
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - js-showMaximizeButton
+    - t-Region--showIcon
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: topRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players
+      where tournament_session_id in (
+          select id
+          from wmg_tournament_sessions
+          where week = :P61_WEEK
+      )
+      union
+        select 1
+          from wmg_tournaments
+         where current_flag = 'Y'
+           and id in (
+          select tournament_id
+            from wmg_tournament_sessions
+          where week = :P61_WEEK
+      )
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--verticalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y of Z (no pagination)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: PL/SQL Function Body
+      pl/sql-function-body: |
+        declare 
+          l_headings varchar2(32767);
+        begin
+        
+        select listagg('W' || round_num ||'<br>'|| to_char(session_date, 'MM/DD'), ':') within group (order by session_date)
+        into l_headings
+        from (
+            select ts.tournament_id
+                 , ts.round_num
+                 , ts.week
+                 , ts.session_date
+            from wmg_tournament_sessions ts
+            where ts.tournament_id = :P61_TOURNAMENT_ID
+        );
+        
+          return  'Edit:#:<i class="fa fa-flag-o"></i>:Player:' || l_headings;
+        end;
+         
+        
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 44899819922786411
+    identification: 
+      column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:130:&SESSION.::&DEBUG.::P130_PLAYER_ID:#PLAYER_ID#'
+        page: 130 # Player Tournament Details
+        values: 
+          p130_player_id: '#PLAYER_ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Tournament Admin # 55902033226819493948
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 44900110699786414
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: <i class="fa fa-flag-o"></i>
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 44900298423786415
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID,P120_TOURNAMENT_ID:#PLAYER_ID#,&P61_TOURNAMENT_ID.'
+        page: 120 # Player Profile
+        clear-cache: 120
+        values: 
+          p120_player_id: '#PLAYER_ID#'
+          p120_tournament_id: '&P61_TOURNAMENT_ID.'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SEASON_TOTAL ================================
+    id: 44900368474786416
+    identification: 
+      column-name: SEASON_TOTAL
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_POINTS ===================================
+    id: 44900415853786417
+    identification: 
+      column-name: W1_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W1 Points
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W1_POINT_CLASS# discard#W1_DISCARD#" title="#W1_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_POINTS ===================================
+    id: 44900594729786418
+    identification: 
+      column-name: W2_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W2 Points
+      alignment: center
+
+    layout: 
+      sequence: 70
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W2_POINT_CLASS# discard#W2_DISCARD#" title="#W2_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 2
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_POINTS ===================================
+    id: 44900688145786419
+    identification: 
+      column-name: W3_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W3 Points
+      alignment: center
+
+    layout: 
+      sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W3_POINT_CLASS# discard#W3_DISCARD#" title="#W3_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 3
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_POINTS ===================================
+    id: 44900742300786420
+    identification: 
+      column-name: W4_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W4 Points
+      alignment: center
+
+    layout: 
+      sequence: 90
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W4_POINT_CLASS# discard#W4_DISCARD#" title="#W4_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 4
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_POINTS ===================================
+    id: 44900819712786421
+    identification: 
+      column-name: W5_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W5 Points
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W5_POINT_CLASS# discard#W5_DISCARD#" title="#W5_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 5
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_POINTS ===================================
+    id: 44900962914786422
+    identification: 
+      column-name: W6_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W6 Points
+      alignment: center
+
+    layout: 
+      sequence: 110
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W6_POINT_CLASS# discard#W6_DISCARD#" title="#W6_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 6
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_POINTS ===================================
+    id: 44901080878786423
+    identification: 
+      column-name: W7_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W7 Points
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="em #W7_POINT_CLASS# discard#W7_DISCARD#" title="#W7_POS#"></span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 7
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_POINTS ===================================
+    id: 44901185748786424
+    identification: 
+      column-name: W8_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W8 Points
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W8_WEEK# discard#W8_DISCARD#">#W8_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 8
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_POINTS ===================================
+    id: 44901262289786425
+    identification: 
+      column-name: W9_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W9 Points
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W9_WEEK# discard#W9_DISCARD#">#W9_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 9
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_POINTS ==================================
+    id: 44901307390786426
+    identification: 
+      column-name: W10_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W10 Points
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W10_WEEK# discard#W10_DISCARD#">#W10_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 10
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_POINTS ==================================
+    id: 44901457160786427
+    identification: 
+      column-name: W11_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W11 Points
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W11_WEEK# discard#W11_DISCARD#">#W11_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 11
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_POINTS ==================================
+    id: 44901598769786428
+    identification: 
+      column-name: W12_POINTS
+      type: Plain Text
+
+    heading: 
+      heading: W12 Points
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#W12_WEEK# discard#W12_DISCARD#">#W12_POINTS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: Rows returned
+      sql-query: |
+        select 1
+        from wmg_tournament_sessions ts
+        where ts.tournament_id = :P61_TOURNAMENT_ID
+        and ts.round_num = 12
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_DISCARD ==================================
+    id: 44901629833786429
+    identification: 
+      column-name: W1_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_DISCARD ==================================
+    id: 44901730933786430
+    identification: 
+      column-name: W2_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_DISCARD ==================================
+    id: 44901869307786431
+    identification: 
+      column-name: W3_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_DISCARD ==================================
+    id: 44901958790786432
+    identification: 
+      column-name: W4_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 220
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_DISCARD ==================================
+    id: 44902046700786433
+    identification: 
+      column-name: W5_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 230
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_DISCARD ==================================
+    id: 44902140498786434
+    identification: 
+      column-name: W6_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_DISCARD ==================================
+    id: 44902260885786435
+    identification: 
+      column-name: W7_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_DISCARD ==================================
+    id: 44902398840786436
+    identification: 
+      column-name: W8_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_DISCARD ==================================
+    id: 44902450569786437
+    identification: 
+      column-name: W9_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_DISCARD =================================
+    id: 44902559193786438
+    identification: 
+      column-name: W10_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 280
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_DISCARD =================================
+    id: 44902641165786439
+    identification: 
+      column-name: W11_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 290
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_DISCARD =================================
+    id: 44902775800786440
+    identification: 
+      column-name: W12_DISCARD
+      type: Hidden Column
+
+    layout: 
+      sequence: 300
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 46625082363602704
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 310
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_NAME ===================================
+    id: 46625123229602705
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 320
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 46625253581602706
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 330
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 46625357685602707
+    identification: 
+      column-name: COUNTRY
+      type: Hidden Column
+
+    layout: 
+      sequence: 340
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_POS ======================================
+    id: 46625442748602708
+    identification: 
+      column-name: W1_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 350
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W1_POINT_CLASS ==============================
+    id: 46625540465602709
+    identification: 
+      column-name: W1_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 360
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_POS ======================================
+    id: 46625616586602710
+    identification: 
+      column-name: W2_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 370
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W2_POINT_CLASS ==============================
+    id: 46625794320602711
+    identification: 
+      column-name: W2_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 380
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_POS ======================================
+    id: 46625872930602712
+    identification: 
+      column-name: W3_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 390
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W3_POINT_CLASS ==============================
+    id: 46625930969602713
+    identification: 
+      column-name: W3_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 400
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_POS ======================================
+    id: 46626032886602714
+    identification: 
+      column-name: W4_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 410
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W4_POINT_CLASS ==============================
+    id: 46626115892602715
+    identification: 
+      column-name: W4_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 420
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_POS ======================================
+    id: 46626235414602716
+    identification: 
+      column-name: W5_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 430
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W5_POINT_CLASS ==============================
+    id: 46626323735602717
+    identification: 
+      column-name: W5_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 440
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_POS ======================================
+    id: 46626496862602718
+    identification: 
+      column-name: W6_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 450
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W6_POINT_CLASS ==============================
+    id: 46626533226602719
+    identification: 
+      column-name: W6_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 460
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_POS ======================================
+    id: 46626629728602720
+    identification: 
+      column-name: W7_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 470
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W7_POINT_CLASS ==============================
+    id: 46626755745602721
+    identification: 
+      column-name: W7_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 480
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_POS ======================================
+    id: 46626845762602722
+    identification: 
+      column-name: W8_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 490
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W8_POINT_CLASS ==============================
+    id: 46626967364602723
+    identification: 
+      column-name: W8_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 500
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_POS ======================================
+    id: 46627042963602724
+    identification: 
+      column-name: W9_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 510
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W9_POINT_CLASS ==============================
+    id: 46627122872602725
+    identification: 
+      column-name: W9_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 520
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_POS =====================================
+    id: 46627256627602726
+    identification: 
+      column-name: W10_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 530
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W10_POINT_CLASS =============================
+    id: 46627347407602727
+    identification: 
+      column-name: W10_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 540
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_POS =====================================
+    id: 46627476739602728
+    identification: 
+      column-name: W11_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 550
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W11_POINT_CLASS =============================
+    id: 46627516018602729
+    identification: 
+      column-name: W11_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 560
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_POS =====================================
+    id: 46627695631602730
+    identification: 
+      column-name: W12_POS
+      type: Hidden Column
+
+    layout: 
+      sequence: 570
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: W12_POINT_CLASS =============================
+    id: 46627771604602731
+    identification: 
+      column-name: W12_POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 580
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 46628630104602740
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '#'
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Season Race (&P61_TOURNAMENT.) ==============
   id: 60866510953427100
   identification: 
@@ -408,9 +1953,6 @@ regions:
     static-id: raceRegion
     region-display-selector: false
     exclude-title-from-translation: false
-
-  header-and-footer: 
-    header-text: '"RANK_LEGEND_SEARCH"'
 
   server-side-condition: 
     type: Rows returned
@@ -2113,6 +3655,9 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  header-and-footer: 
+    footer-text: '"RANK_LEGEND_SEARCH"'
+
   server-cache: 
     caching: Disabled
 
@@ -2131,7 +3676,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 45
+    sequence: 55
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -2168,6 +3713,40 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P61_SHOW_REPORT ==========================
+  id: 46627878591602732
+  identification: 
+    name: P61_SHOW_REPORT
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 160
+    region: '{items}' # 106680515790002094521
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: SEASON
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P61_SELECTOR =============================
   id: 48368222302877254
   identification: 
@@ -2971,6 +4550,94 @@ dynamic-actions:
       type: JavaScript expression
       javascript-expression: '!apex.theme.mq("(prefers-reduced-motion)")'
 
+- # ====== Dynamic Action: Refresh on Change ===================
+  id: 46627997042602733
+  identification: 
+    name: Refresh on Change
+
+  execution: 
+    sequence: 130
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P61_SHOW_REPORT
+
+  client-side-condition: 
+    type: Item = Value
+    item: P61_SHOW_REPORT
+    value: SEASON
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Show Season =================================
+    id: 46628253355602736
+    identification: 
+      name: Show Season
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: Season Race (&P61_TOURNAMENT.) # 60866510953427100
+
+    execution: 
+      sequence: 20
+      event: Refresh on Change # 46627997042602733
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: Hide Season =================================
+    id: 46628394717602737
+    identification: 
+      name: Hide Season
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Season Race (&P61_TOURNAMENT.) # 60866510953427100
+
+    execution: 
+      sequence: 20
+      event: Refresh on Change # 46627997042602733
+      fire-when-event-result-is: False
+      fire-on-initialization: true
+
+  - # ====== Action: Hide Top 10 =================================
+    id: 46628443086602738
+    identification: 
+      name: Hide Top 10
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: Top 10 finishers (&P61_TOURNAMENT.) # 44899738735786410
+
+    execution: 
+      sequence: 30
+      event: Refresh on Change # 46627997042602733
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+  - # ====== Action: Show Top 10 =================================
+    id: 46628529787602739
+    identification: 
+      name: Show Top 10
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: Top 10 finishers (&P61_TOURNAMENT.) # 44899738735786410
+
+    execution: 
+      sequence: 10
+      event: Refresh on Change # 46627997042602733
+      fire-when-event-result-is: False
+      fire-on-initialization: true
+
 - # ====== Dynamic Action: Hoist Week Classes to TD ============
   id: 48381526313877327
   identification: 
@@ -3356,9 +5023,17 @@ dynamic-actions:
       code: |
         selectedRank = this.triggeringElement.value // get the rank code
         selectedRankClass = $(this.triggeringElement).parents(".wm-search-item").find("div").attr("class").split(" ")[0]; // get the class
+        
+        if (selectedRank === "TOP") {
+            $s("P61_SHOW_REPORT", "TOP");
+        }
+        else {
+            $s("P61_SHOW_REPORT", "SEASON");
+        }
+        
         if (selectedRank === "ALL") {
           selectedRank = "";
-          selectedRankClass = "";
+          selectedRankClass = "";  
           $("#raceRegion").removeClass("search-on");
           apex.item("P61_SEARCH").enable();
         }

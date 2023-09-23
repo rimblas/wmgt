@@ -148,7 +148,7 @@ css:
     .removeQueue {cursor: pointer;}
 
 security: 
-  authorization-scheme: Contribution Rights # 46995203801871514425
+  authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -792,6 +792,10 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
+
   server-cache: 
     caching: Disabled
 
@@ -1296,6 +1300,36 @@ page-items:
   help: 
     help-text: Verification Score submitted by the player
 
+- # ====== Page Item: P9_WHAT_IF ===============================
+  id: 39070950042021526
+  identification: 
+    name: P9_WHAT_IF
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 130
+    region: Round # 46995274814383515488
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P9_H =====================================
   id: 24450902607196936261
   identification: 
@@ -1387,6 +1421,7 @@ page-items:
     column-css-classes: 
     - col-md-6
     - col-sm-4
+    - col-lg-4
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
@@ -1412,7 +1447,8 @@ page-items:
           )
       )
       or (:P9_WEEK = 'S00W00' and :P9_PLAYERS_ID = 0)
-      order by case course_mode when 'E' then 1 else 2 end
+      or (:P9_WHAT_IF = 'Y')
+      order by case when :P9_WHAT_IF = 'Y' then release_order when course_mode = 'E' then 1 else 2 end
     display-extra-values: true
     display-null-value: false
 
@@ -1432,9 +1468,14 @@ page-items:
     primary-key: false
 
   default: 
-    type: Expression
+    type: Function Body
     language: PL/SQL
-    pl/sql-expression: apex_util.get_preference('ROUND_COURSE_ID')
+    pl/sql-function-body: |
+      if :P9_WHAT_IF is null then
+        return apex_util.get_preference('ROUND_COURSE_ID');
+      else
+        return :P9_COURSE_ID;
+      end if;
 
   session-state: 
     storage: Per Request (Memory Only)
@@ -1522,6 +1563,10 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
 
   read-only: 
     type: Item is NOT NULL
@@ -1653,6 +1698,10 @@ page-items:
 
   session-state: 
     storage: Per Request (Memory Only)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
 
   security: 
     session-state-protection: Unrestricted
@@ -2890,6 +2939,10 @@ page-items:
 
   session-state: 
     storage: Per Request (Memory Only)
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
 
   read-only: 
     type: Item is NOT NULL
@@ -4295,7 +4348,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Icon # 46995173311788514399
@@ -4312,6 +4365,10 @@ buttons:
       clear-cache: 7
 
     warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
 
 - # ====== Button: CREATE_AGAIN ================================
   id: 47628898091382783378
@@ -4497,6 +4554,10 @@ dynamic-actions:
 
   execution: 
     event-scope: Static
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P9_WHAT_IF
 
   actions: 
   - # ====== Action: United Codes List Extension =================
@@ -5203,6 +5264,29 @@ branches:
   server-side-condition: 
     type: Request = Value
     value: RELOAD
+
+- # ====== Branch: Prevent Processing for What If Scenarios ====
+  id: 39071017255021527
+  identification: 
+    name: Prevent Processing for What If Scenarios
+
+  execution: 
+    sequence: 20
+    point: After Submit
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:9:&SESSION.::&DEBUG.:9:P9_WHAT_IF,P9_COURSE_ID:Y,&P9_COURSE_ID.'
+      page: 9 # Round
+      clear-cache: 9
+      values: 
+        p9_what_if: Y
+        p9_course_id: '&P9_COURSE_ID.'
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_WHAT_IF
 
 - # ====== Branch: Add Again ===================================
   id: 47628898168383783379

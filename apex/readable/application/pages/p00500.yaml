@@ -1808,11 +1808,12 @@ regions:
              CLOSE_REGISTRATION_ON,
              COMPLETED_IND,
              COMPLETED_ON
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
       --       CREATED_ON,
       --       CREATED_BY,
       --       UPDATED_ON,
       --       UPDATED_BY
-        from wmg_tournament_sessions_v
+        from wmg_tournament_sessions_v s
        where TOURNAMENT_ID in (
            select ID
              from WMG_TOURNAMENTS
@@ -2208,7 +2209,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 56
+      sequence: 66
       column-alignment: center
 
     accessibility: 
@@ -2243,8 +2244,40 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 66
+      sequence: 76
       column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 38210515312520004
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 56
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -2522,6 +2555,38 @@ buttons:
       url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:40::'
       page: 40 # Room Selections & Assignments
       clear-cache: 40
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: BADGE_MAINTENANCE ===========================
+  id: 39070295645021519
+  identification: 
+    button-name: BADGE_MAINTENANCE
+    label: Badge Maintenance
+
+  layout: 
+    sequence: 30
+    region: '{col1}' # 48744215735254448
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:550:&SESSION.::&DEBUG.:::'
+      page: 550 # Badges
 
     warn-on-unsaved-changes: Do Not Check
 
