@@ -12,6 +12,7 @@
       select p.*
            , case when tp.active_ind = 'Y' then
               'Signup for ' || tp.week || ' at ' || tp.time_slot
+            || case when tp.room_no is not null then ' | Room WMGT' || tp.room_no end
              else '' end signup
       from wmg_players_v p
          , wmg_tournament_player_v tp

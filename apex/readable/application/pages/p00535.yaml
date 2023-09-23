@@ -72,7 +72,7 @@ regions:
               select id from wmg_tournament_sessions where tournament_id in (select tournament_id from wmg_tournament_sessions where id = :P535_TOURNAMENT_SESSION_ID)
            ))
         )
-      order by i.display_seq, p.player_name, p.week
+      order by decode(:P535_FULL_SEASON_FLAG, 'Y', total, null) desc, i.display_seq, p.player_name, p.week
     page-items-to-submit: 
     - P535_TOURNAMENT_SESSION_ID
     - P535_ISSUE_CODE

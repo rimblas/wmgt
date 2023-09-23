@@ -32,15 +32,23 @@
     name: RANK_LEGEND_SEARCH
 
   source: 
-    type: HTML Text
-    html-code: |
-      <div class="pro-legend row margin-sm u-justify-content-space-around">
+    type: Function Body returning VARCHAR2
+    language: PL/SQL
+    pl/sql-function-body: |
+      return '<div class="pro-legend row margin-sm u-justify-content-space-around">
       
       <div class="wm-search-item">
         <input type="radio" id="f01_ALL" value="ALL" checked name="f01" class="wm-search"> 
         <label for="f01_ALL"><div class="fa fa-users margin-right-sm" title="All Players"> All Players</div></label>
-      </div>
-      <div class="wm-search-item">
+      </div>'
+      ||  case when :APP_PAGE_ID = 61 then
+      '<div class="wm-search-item">
+        <input type="radio" id="f01_TOP" value="TOP" name="f01" class="wm-search"> 
+        <label for="f01_TOP"><div class="fa-trophy fa margin-right-sm" title="Top Finishes"> Top Finishes</div></label>
+      </div>'
+      end
+      || 
+      '<div class="wm-search-item">
         <input type="radio" id="f01_PRO" value="PRO" name="f01" class="wm-search"> 
         <label for="f01_PRO"><div class="-wm-rank-pro fa margin-right-sm" title="Pro"> Pro players</div></label>
       </div>
@@ -57,7 +65,7 @@
         <label for="f01_NEW"><div class="-wm-rank-new fa margin-right-sm" title="New player!"> New players!</div></label>
       </div>
       
-      </div>
+      </div>';
 
 - # ====== Shortcut: CLEAR_BUTTON ==============================
   id: 48045102356359420375

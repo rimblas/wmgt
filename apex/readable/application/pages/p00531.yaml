@@ -1,19 +1,16 @@
 ---
-# ====== Page: Wmg Tournaments ===============================
+# ====== Page: Tournament Dashboards =========================
 id: 531
 identification: 
-  name: Wmg Tournaments
-  alias: WMG-TOURNAMENTS
-  title: Wmg Tournaments
+  name: Tournament Dashboards
+  alias: TOURNAMENT-DASHBOARDS
+  title: Tournament Dashboards
 
 appearance: 
-  page-mode: Modal Dialog
-  dialog-template: Theme Default
+  page-mode: Normal
+  page-template: Theme Default
   template-options: 
   - '#DEFAULT#'
-
-dialog: 
-  chained: false
 
 navigation-menu: 
   override-user-interface-level: false
@@ -40,21 +37,14 @@ server-cache:
   caching: Disabled
 
 regions: 
-- # ====== Region: Wmg Tournaments =============================
-  id: 56157992710998236489
+- # ====== Region: Players By Season ===========================
+  id: 38211094428520009
   identification: 
-    title: Wmg Tournaments
-    type: Form
-
-  source: 
-    location: Local Database
-    type: Table / View
-    table-owner: Parsing Schema
-    table-name: WMG_TOURNAMENTS
-    include-rowid-column: false
+    title: Players By Season
+    type: Chart
 
   layout: 
-    sequence: 10
+    sequence: 9
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -64,9 +54,10 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
+    - t-Region--scrollBody
     render-components: Above Content
 
   accessibility: 
@@ -77,50 +68,8 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    edit: 
-      enabled: true
-      allowed-operations: 
-      - Add Row
-      - Update Row
-      - Delete Row
-      lost-update-type: Row Values
-
-- # ====== Region: Buttons =====================================
-  id: 56158003459146236496
-  identification: 
-    title: Buttons
-    type: Static Content
-
-  layout: 
-    sequence: 20
-    parent-region: No Parent
-    position: REGION_POSITION_03
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Buttons Container # 46995043489945514344
-    template-options: 
-    - '#DEFAULT#'
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
+  security: 
+    escape-special-characters: true
 
   server-cache: 
     caching: Disabled
@@ -129,1069 +78,547 @@ regions:
     customizable: Not Customizable By End Users
 
   attributes: 
+    id: 38211136509520010
+    chart: 
+      type: Range
+
+    appearance: 
+      orientation: Vertical
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: false
+
     settings: 
-      output-as: Text (escape special characters)
-      show-line-breaks: true
+      zoom-and-scroll: No
 
-page-items: 
-- # ====== Page Item: P531_ID ==================================
-  id: 56157993119572236489
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: false
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 38211236552520011
+      identification: 
+        name: Series 1
+        type: Bar Range
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select prefix_tournament, min(players) min_players, max(players) max_players
+          from (
+              select p.prefix_tournament, p.round_num, count(*) players
+              from wmg_tournament_player_v p
+              group by p.prefix_tournament, p.round_num
+          )
+          group by prefix_tournament
+          order by 1
+          
+
+      column-mapping: 
+        label: PREFIX_TOURNAMENT
+        low: MIN_PLAYERS
+        high: MAX_PLAYERS
+
+      label: 
+        show: false
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 38211318414520012
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 38211473985520013
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Players By Season ===========================
+  id: 38211564119520014
   identification: 
-    name: P531_ID
-    type: Hidden
-
-  settings: 
-    value-protected: true
+    title: Players By Season
+    type: Chart
 
   layout: 
-    sequence: 10
-    region: Wmg Tournaments # 56157992710998236489
+    sequence: 19
+    parent-region: No Parent
     position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: ID
-    data-type: NUMBER
-    query-only: false
-    primary-key: true
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
+    region-display-selector: false
+    exclude-title-from-translation: false
 
   security: 
-    session-state-protection: Checksum Required - Session Level
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
+    escape-special-characters: true
 
-- # ====== Page Item: P531_CODE ================================
-  id: 56157993424837236490
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 38211636013520015
+    chart: 
+      type: Box Plot
+
+    appearance: 
+      orientation: Vertical
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 38211779104520016
+      identification: 
+        name: Series 1
+        type: Box Plot
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select prefix_tournament, 0 opening, min_players, max_players, all_players
+          from (
+              select prefix_tournament, min(players) min_players, max(players) max_players, sum(players) all_players
+          from (
+              select p.prefix_tournament, p.round_num, count(*) players
+              from wmg_tournament_player_v p
+              group by p.prefix_tournament, p.round_num
+          )
+          group by prefix_tournament
+          )
+          order by 1
+          
+
+      column-mapping: 
+        label: PREFIX_TOURNAMENT
+        value: ALL_PLAYERS
+        low: MIN_PLAYERS
+        high: MAX_PLAYERS
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        type: Automatic
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: false
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 38211832872520017
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 38211989535520018
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Chart 2 =====================================
+  id: 45285339868969826
   identification: 
-    name: P531_CODE
-    type: Text Field
-
-  label: 
-    label: Code
-    alignment: Right
-
-  settings: 
-    subtype: Text
-    trim-spaces: None
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    title: Chart 2
+    type: Chart
 
   layout: 
-    sequence: 20
-    region: Wmg Tournaments # 56157992710998236489
+    sequence: 29
+    parent-region: No Parent
     position: BODY
-    alignment: Left
     start-new-layout: false
     start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
-    label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    width: 32
+    - t-Region--scrollBody
+    render-components: Above Content
 
-  validation: 
-    value-required: true
-    maximum-length: 80
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: CODE
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
+    region-display-selector: false
+    exclude-title-from-translation: false
 
   security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
+    escape-special-characters: false
 
-- # ====== Page Item: P531_NAME ================================
-  id: 56157993826832236490
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 45285726328969827
+    chart: 
+      type: Pie
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    settings: 
+      pie-selection-effect: Highlight
+
+    value: 
+      pie-chart-other-threshold: 0
+      format-scaling: Automatic
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 45286232020969828
+      identification: 
+        name: Series 1
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select 'Label 1' label, 30 value from sys.dual
+          union all
+          select 'Label 2' label, 20 value from sys.dual
+          union all
+          select 'Label 3' label, 34 value from sys.dual
+          union all
+          select 'Label 4' label, 6  value from sys.dual
+          union all
+          select 'Label 5' label, 10 value from sys.dual
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      label: 
+        show: true
+        position: Automatic
+        display-as: Label
+
+      performance: 
+        maximum-rows-to-process: 20
+
+- # ====== Region: Chart 3 =====================================
+  id: 45286825947969829
   identification: 
-    name: P531_NAME
-    type: Textarea
-
-  label: 
-    label: Name
-    alignment: Right
-
-  settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
+    title: Chart 3
+    type: Chart
 
   layout: 
-    sequence: 30
-    region: Wmg Tournaments # 56157992710998236489
+    sequence: 39
+    parent-region: No Parent
     position: BODY
-    alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
-    label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    width: 60
-    height: 4
+    - t-Region--scrollBody
+    render-components: Above Content
 
-  validation: 
-    value-required: true
-    maximum-length: 240
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
 
   advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: NAME
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
+    region-display-selector: false
+    exclude-title-from-translation: false
 
   security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
+    escape-special-characters: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 45287263385969829
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Series 1 ====================================
+      id: 45288962924969832
+      identification: 
+        name: Series 1
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select 'Label 1' label, 30 value from sys.dual
+          union all
+          select 'Label 2' label, 20 value from sys.dual
+          union all
+          select 'Label 3' label, 34 value from sys.dual
+          union all
+          select 'Label 4' label, 6  value from sys.dual
+          union all
+          select 'Label 5' label, 10 value from sys.dual
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: false
+
+      performance: 
+        maximum-rows-to-process: 20
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 45287743097969830
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 45288367839969831
+      identification: 
+        name: y
+        show-axis: true
 
-- # ====== Page Item: P531_PREFIX_TOURNAMENT ===================
-  id: 56157994302094236491
-  identification: 
-    name: P531_PREFIX_TOURNAMENT
-    type: Text Field
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
 
-  label: 
-    label: Prefix Tournament
-    alignment: Right
+      appearance: 
+        position: Automatic
 
-  settings: 
-    subtype: Text
-    trim-spaces: None
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+      major-ticks: 
+        show: Automatic
 
-  layout: 
-    sequence: 40
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
+      minor-ticks: 
 
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: false
-    maximum-length: 40
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: PREFIX_TOURNAMENT
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_PREFIX_SESSION ======================
-  id: 56157994681842236491
-  identification: 
-    name: P531_PREFIX_SESSION
-    type: Text Field
-
-  label: 
-    label: Prefix Session
-    alignment: Right
-
-  settings: 
-    subtype: Text
-    trim-spaces: None
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
-
-  layout: 
-    sequence: 50
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: false
-    maximum-length: 40
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: PREFIX_SESSION
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_CURRENT_FLAG ========================
-  id: 56157995029455236491
-  identification: 
-    name: P531_CURRENT_FLAG
-    type: Text Field
-
-  label: 
-    label: Current Flag
-    alignment: Right
-
-  settings: 
-    subtype: Text
-    trim-spaces: None
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
-
-  layout: 
-    sequence: 60
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: false
-    maximum-length: 4
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: CURRENT_FLAG
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_ACTIVE_IND ==========================
-  id: 56157995484164236491
-  identification: 
-    name: P531_ACTIVE_IND
-    type: Text Field
-
-  label: 
-    label: Active?
-    alignment: Right
-
-  settings: 
-    subtype: Text
-    trim-spaces: None
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
-
-  layout: 
-    sequence: 70
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Required - Floating # 46995172770404514399
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: true
-    maximum-length: 4
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: ACTIVE_IND
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  default: 
-    type: Static
-    static-value: Y
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-  help: 
-    help-text: Indicates if this row is active or inactive.
-
-- # ====== Page Item: P531_URL =================================
-  id: 56157996393286236492
-  identification: 
-    name: P531_URL
-    type: Textarea
-
-  label: 
-    label: Url
-    alignment: Right
-
-  settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
-
-  layout: 
-    sequence: 80
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 60
-    height: 4
-
-  validation: 
-    value-required: false
-    maximum-length: 4000
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: URL
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_NOTES ===============================
-  id: 56157996759781236492
-  identification: 
-    name: P531_NOTES
-    type: Textarea
-
-  label: 
-    label: Notes
-    alignment: Right
-
-  settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
-
-  layout: 
-    sequence: 90
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 60
-    height: 4
-
-  validation: 
-    value-required: false
-    maximum-length: 4000
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: NOTES
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_CREATED_ON ==========================
-  id: 56157997170610236492
-  identification: 
-    name: P531_CREATED_ON
-    type: Date Picker
-
-  label: 
-    label: Created On
-    alignment: Right
-
-  settings: 
-    show-time: false
-    display-as: Popup
-    minimum-date: None
-    maximum-date: None
-    multiple-months: No
-    use-defaults: true
-
-  layout: 
-    sequence: 100
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Required - Floating # 46995172770404514399
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: true
-    maximum-length: 255
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: CREATED_ON
-    data-type: TIMESTAMP WITH LOCAL TIME ZONE
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_CREATED_BY ==========================
-  id: 56157997935705236493
-  identification: 
-    name: P531_CREATED_BY
-    type: Textarea
-
-  label: 
-    label: Created By
-    alignment: Right
-
-  settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
-
-  layout: 
-    sequence: 110
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Required - Floating # 46995172770404514399
-    template-options: 
-    - '#DEFAULT#'
-    width: 60
-    height: 4
-
-  validation: 
-    value-required: true
-    maximum-length: 240
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: CREATED_BY
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_UPDATED_ON ==========================
-  id: 56157998348621236493
-  identification: 
-    name: P531_UPDATED_ON
-    type: Date Picker
-
-  label: 
-    label: Updated On
-    alignment: Right
-
-  settings: 
-    show-time: false
-    display-as: Popup
-    minimum-date: None
-    maximum-date: None
-    multiple-months: No
-    use-defaults: true
-
-  layout: 
-    sequence: 120
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 32
-
-  validation: 
-    value-required: false
-    maximum-length: 255
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: UPDATED_ON
-    data-type: TIMESTAMP WITH LOCAL TIME ZONE
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-- # ====== Page Item: P531_UPDATED_BY ==========================
-  id: 56157999196070236493
-  identification: 
-    name: P531_UPDATED_BY
-    type: Textarea
-
-  label: 
-    label: Updated By
-    alignment: Right
-
-  settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
-
-  layout: 
-    sequence: 130
-    region: Wmg Tournaments # 56157992710998236489
-    position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 60
-    height: 4
-
-  validation: 
-    value-required: false
-    maximum-length: 240
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    form-region: Wmg Tournaments # 56157992710998236489
-    column: UPDATED_BY
-    data-type: VARCHAR2
-    query-only: false
-    primary-key: false
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Request (Memory Only)
-
-  quick-picks: 
-    show-quick-picks: false
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
-buttons: 
-- # ====== Button: CANCEL ======================================
-  id: 56158003840367236496
-  identification: 
-    button-name: CANCEL
-    label: Cancel
-
-  layout: 
-    sequence: 10
-    region: Buttons # 56158003459146236496
-    position: CLOSE
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: false
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Defined by Dynamic Action
-    execute-validations: true
-
-- # ====== Button: DELETE ======================================
-  id: 56158005241964236497
-  identification: 
-    button-name: DELETE
-    label: Delete
-
-  layout: 
-    sequence: 20
-    region: Buttons # 56158003459146236496
-    position: DELETE
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: false
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--danger
-    - t-Button--simple
-
-  behavior: 
-    action: Submit Page
-    execute-validations: false
-    warn-on-unsaved-changes: Do Not Check
-    database-action: SQL DELETE action
-
-  confirmation: 
-    message: '&APP_TEXT$DELETE_MSG!RAW.'
-    style: Danger
-
-  server-side-condition: 
-    type: Item is NOT NULL
-    item: P531_ID
-
-- # ====== Button: SAVE ========================================
-  id: 56158005715612236498
-  identification: 
-    button-name: SAVE
-    label: Apply Changes
-
-  layout: 
-    sequence: 30
-    region: Buttons # 56158003459146236496
-    position: NEXT
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: true
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Submit Page
-    execute-validations: true
-    warn-on-unsaved-changes: Do Not Check
-    database-action: SQL UPDATE action
-
-  server-side-condition: 
-    type: Item is NOT NULL
-    item: P531_ID
-
-- # ====== Button: CREATE ======================================
-  id: 56158006024919236498
-  identification: 
-    button-name: CREATE
-    label: Create
-
-  layout: 
-    sequence: 40
-    region: Buttons # 56158003459146236496
-    position: NEXT
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: true
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Submit Page
-    execute-validations: true
-    warn-on-unsaved-changes: Do Not Check
-    database-action: SQL INSERT action
-
-  server-side-condition: 
-    type: Item is NULL
-    item: P531_ID
-
-dynamic-actions: 
-- # ====== Dynamic Action: Cancel Dialog =======================
-  id: 56158003932423236496
-  identification: 
-    name: Cancel Dialog
-
-  execution: 
-    sequence: 10
-
-  when: 
-    event: EVENT.EVENT.BROWSER.CLICK
-    selection-type: Button
-    button: CANCEL # 56158003840367236496
-
-  execution: 
-    event-scope: Static
-    type: Immediate
-
-  actions: 
-  - # ====== Action: Cancel Dialog ===============================
-    id: 56158004815959236497
-    identification: 
-      action: Cancel Dialog
-
-    execution: 
-      sequence: 10
-      event: Cancel Dialog # 56158003932423236496
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-validations: 
-- # ====== Validation: P531_CREATED_ON must be timestamp =======
-  id: 56157997653469236493
-  identification: 
-    name: P531_CREATED_ON must be timestamp
-
-  execution: 
-    sequence: 90
-
-  validation: 
-    type: Item is a valid timestamp
-    item: P531_CREATED_ON
-    always-execute: false
-
-  error: 
-    error-message: '#LABEL# must be a valid timestamp.'
-    display-location: Inline with Field and in Notification
-    associated-item: P531_CREATED_ON # 56157997170610236492
-
-- # ====== Validation: P531_UPDATED_ON must be timestamp =======
-  id: 56157998832580236493
-  identification: 
-    name: P531_UPDATED_ON must be timestamp
-
-  execution: 
-    sequence: 110
-
-  validation: 
-    type: Item is a valid timestamp
-    item: P531_UPDATED_ON
-    always-execute: false
-
-  error: 
-    error-message: '#LABEL# must be a valid timestamp.'
-    display-location: Inline with Field and in Notification
-    associated-item: P531_UPDATED_ON # 56157998348621236493
-
-processes: 
-- # ====== Process: Initialize form Wmg Tournaments ============
-  id: 56158006503647236498
-  identification: 
-    name: Initialize form Wmg Tournaments
-    type: Form - Initialization
-    execution-chain: None
-    form-region: Wmg Tournaments # 56157992710998236489
-
-  execution: 
-    sequence: 10
-    point: Before Header
-    run-process: Once Per Page Visit (default)
-
-- # ====== Process: Process form Wmg Tournaments ===============
-  id: 56158006882924236498
-  identification: 
-    name: Process form Wmg Tournaments
-    type: Form - Automatic Row Processing (DML)
-    execution-chain: None
-    form-region: Wmg Tournaments # 56157992710998236489
-
-  settings: 
-    target-type: Region Source
-    prevent-lost-updates: true
-    lock-row: Yes
-    return-primary-key(s)-after-insert: true
-
-  execution: 
-    sequence: 10
-    point: Processing
-    run-process: Once Per Page Visit (default)
-
-  error: 
-    display-location: Inline in Notification
-
-- # ====== Process: Close Dialog ===============================
-  id: 56158007236377236499
-  identification: 
-    name: Close Dialog
-    type: Close Dialog
-    execution-chain: None
-
-  execution: 
-    sequence: 50
-    point: Processing
-    run-process: Once Per Page Visit (default)
-
-  error: 
-    display-location: Inline in Notification
-
-  server-side-condition: 
-    when-button-pressed: SAVE # 56158005715612236498
-
-branches: 
-- # ====== Branch: Redirect to new =============================
-  id: 56158007982079236503
-  identification: 
-    name: Redirect to new
-
-  execution: 
-    sequence: 10
-    point: After Processing
-
-  behavior: 
-    type: Page or URL (Redirect)
-    target: 
-      url: 'f?p=&APP_ID.:530:&APP_SESSION.::&DEBUG.:RP:P530_ID:&P531_ID.&success_msg=#SUCCESS_MSG#'
-      page: 530 # Sessions
-      clear-cache: RP
-      values: 
-        p530_id: '&P531_ID.'
-
-  server-side-condition: 
-    when-button-pressed: CREATE # 56158006024919236498
-
-- # ====== Branch: Redirect to all =============================
-  id: 56158008351243236503
-  identification: 
-    name: Redirect to all
-
-  execution: 
-    sequence: 20
-    point: After Processing
-
-  behavior: 
-    type: Page or URL (Redirect)
-    target: 
-      url: 'f?p=&APP_ID.:530:&APP_SESSION.::&DEBUG.:RP,530::&success_msg=#SUCCESS_MSG#'
-      page: 530 # Sessions
-      clear-cache: RP,530
-
-  server-side-condition: 
-    when-button-pressed: DELETE # 56158005241964236497
+      tick-label: 
+        show: true
 

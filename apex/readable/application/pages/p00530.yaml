@@ -1097,11 +1097,12 @@ regions:
              CLOSE_REGISTRATION_ON,
              COMPLETED_IND,
              COMPLETED_ON
+           , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
       --       CREATED_ON,
       --       CREATED_BY,
       --       UPDATED_ON,
       --       UPDATED_BY
-        from wmg_tournament_sessions_v
+        from wmg_tournament_sessions_v s
        where "TOURNAMENT_ID" = :P530_ID
        order by ROUND_NUM
     page-items-to-submit: 
@@ -1189,6 +1190,38 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: PLAYERS =====================================
+    id: 38210669502520005
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: end
+
+    layout: 
+      sequence: 56
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_COURSE_ID ==============================
     id: 56024166527308751665
     identification: 
@@ -1489,7 +1522,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 56
+      sequence: 66
       column-alignment: center
 
     accessibility: 
@@ -1524,7 +1557,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 66
+      sequence: 76
       column-alignment: start
 
     accessibility: 
@@ -1685,6 +1718,39 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: CHART =======================================
+  id: 38210848972520007
+  identification: 
+    button-name: CHART
+    label: Charts
+
+  layout: 
+    sequence: 10
+    region: Tournament # 56158017979760236685
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--noUI
+    - t-Button--iconLeft
+    icon: fa-area-chart
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:531:&SESSION.::&DEBUG.:::'
+      page: 531 # Tournament Dashboards
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: RESET =======================================
   id: 56158010761844236508
   identification: 
@@ -1749,7 +1815,7 @@ buttons:
     action: Redirect to Page in this Application
     target: 
       url: 'f?p=&APP_ID.:531:&APP_SESSION.::&DEBUG.:RP,531::'
-      page: 531 # Wmg Tournaments
+      page: 531 # Tournament Dashboards
       clear-cache: RP,531
 
     warn-on-unsaved-changes: Do Not Check
