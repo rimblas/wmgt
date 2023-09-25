@@ -145,7 +145,9 @@ css:
     .search-on #RANK_POS,
     .search-on td[headers="RANK_POS"] {display:table-cell;}
     
-    
+    .em-keycap_ten {
+        filter: hue-rotate(180deg);
+    }
 
 security: 
   authentication: Page Is Public
@@ -269,7 +271,7 @@ regions:
                when sp.pos = 1 then 'em-first_place_medal '
                when sp.pos = 2 then 'em-second_place_medal '
                when sp.pos = 3 then 'em-third_place_medal '
-               when sp.pos <= 10 then 'em-star'
+               when sp.pos <= 10 then 'em-keycap_ten' -- 'em-star'
                end || ' tooltip ' 
               || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
                    , coalesce(p.points, sp.points) points
@@ -899,7 +901,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#W8_WEEK# discard#W8_DISCARD#">#W8_POINTS#</span>
+      html-expression: '<span class="em #W8_POINT_CLASS# discard#W8_DISCARD#" title="#W8_POS#"></span>'
 
     sorting: 
       sortable: false
@@ -942,7 +944,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#W9_WEEK# discard#W9_DISCARD#">#W9_POINTS#</span>
+      html-expression: '<span class="em #W9_POINT_CLASS# discard#W9_DISCARD#" title="#W9_POS#"></span>'
 
     sorting: 
       sortable: false
@@ -985,7 +987,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#W10_WEEK# discard#W10_DISCARD#">#W10_POINTS#</span>
+      html-expression: '<span class="em #W10_POINT_CLASS# discard#W10_DISCARD#" title="#W10_POS#"></span>'
 
     sorting: 
       sortable: false
@@ -1028,7 +1030,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#W11_WEEK# discard#W11_DISCARD#">#W11_POINTS#</span>
+      html-expression: '<span class="em #W11_POINT_CLASS# discard#W11_DISCARD#" title="#W11_POS#"></span>'
 
     sorting: 
       sortable: false
@@ -1071,7 +1073,7 @@ regions:
       value-identifies-row: false
 
     column-formatting: 
-      html-expression: <span class="#W12_WEEK# discard#W12_DISCARD#">#W12_POINTS#</span>
+      html-expression: '<span class="em #W12_POINT_CLASS# discard#W12_DISCARD#" title="#W12_POS#"></span>'
 
     sorting: 
       sortable: false
