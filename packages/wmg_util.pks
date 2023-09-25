@@ -49,6 +49,11 @@ procedure reset_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );
 
+procedure notify_room_assignments(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+);
+
+
 procedure possible_player_match (
     p_discord_account in wmg_players.account%type
   , p_discord_name    in wmg_players.name%type

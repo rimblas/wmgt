@@ -19,6 +19,7 @@ select t.id                              tournament_id
      , ts.week                           week
      , ts.open_registration_on           open_registration_on
      , ts.close_registration_on          close_registration_on
+     , ts.rooms_open_flag                rooms_open_flag
      , ts.completed_ind                  completed_ind
      , ts.completed_on                   completed_on
      , ts.created_on                     tournament_session_created
@@ -43,6 +44,7 @@ select t.id                              tournament_id
      , p.id                              player_id
      , nvl(p.player_name, '-error-')     player_name
      , p.account                         account
+     , p.account_login                   account_login
      , p.prefered_tz
      , p.country_code                    country_code
      , p.country                         country
