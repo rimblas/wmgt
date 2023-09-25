@@ -1919,6 +1919,36 @@ page-items:
     value-protected: true
 
   layout: 
+    sequence: 110
+    region: '{Player & Round Details}' # 40825883820734223932
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_TOURNAMENT_PLAYER_ID =================
+  id: 46628872741602742
+  identification: 
+    name: P50_TOURNAMENT_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
     sequence: 100
     region: '{Player & Round Details}' # 40825883820734223932
     position: BODY
@@ -7015,6 +7045,45 @@ buttons:
     type: Item is NOT NULL
     item: P50_PREV_PAGE_ID
 
+- # ====== Button: APPLY_CHANGES_VERIFY ========================
+  id: 46628973779602743
+  identification: 
+    button-name: APPLY_CHANGES_VERIFY
+    label: Round Verified
+
+  layout: 
+    sequence: 10
+    region: '{Buttons}' # 42098139219682719033
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--success
+    - t-Button--iconRight
+    icon: fa-badge-check
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+    database-action: SQL UPDATE action
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: "nvl(:P50_VERIFIED_FLAG, 'x') != 'Y'"
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Button: VERIFIED ====================================
   id: 46933856448678616
   identification: 
@@ -7091,7 +7160,7 @@ buttons:
     label: Save Round
 
   layout: 
-    sequence: 10
+    sequence: 20
     region: '{Buttons}' # 42098139219682719033
     position: NEXT
     start-new-layout: false
@@ -7609,6 +7678,56 @@ processes:
   execution: 
     sequence: 10
 
+- # ====== Process: Verify Scorecard ===========================
+  id: 46628720352602741
+  identification: 
+    name: Verify Scorecard
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      
+      -- toggle the verification
+      /*
+         set verified_score_flag = case
+                                     when verified_score_flag is null then 'Y'
+                                     when verified_score_flag = 'Y' then 'E'
+                                     when verified_score_flag = 'E' then null
+                                  end
+      */
+      update wmg_tournament_players
+         set verified_score_flag = 'Y'
+           , verified_by = sys_context('APEX$SESSION','APP_USER')
+           , verified_on = current_timestamp
+           , verified_note = null
+      where id = :P50_TOURNAMENT_PLAYER_ID
+        and verified_score_flag is null;
+      -- returning verified_score_flag into :P75_NEW_FLAG;
+      
+      
+      wmg_util.verify_players_room(p_tournament_player_id => :P50_TOURNAMENT_PLAYER_ID);
+
+  execution: 
+    sequence: 80
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Scorecard Verified
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request = Value
+    value: APPLY_CHANGES_VERIFY
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Process: Initialize form Round - Hard ===============
   id: 15532716800835442102
   identification: 
@@ -7688,8 +7807,10 @@ processes:
                -- get the room assingment
                select 'WMGT' || room_no
                     , decode(verified_score_flag, 'Y', 'Y', null)
+                    , id
                  into :P50_ROOM_NAME
                     , :P50_VERIFIED_FLAG
+                    , :P50_TOURNAMENT_PLAYER_ID
                  from wmg_tournament_players
                 where tournament_session_id = :G_CURRENT_SESSION_ID
                   and player_id = :P50_PLAYERS_ID;
@@ -7903,30 +8024,6 @@ branches:
       For testing:
       union
       select 1 from dual where :G_PLAYER_ID = 24
-
-- # ====== Branch: Ask For Scorecards ==========================
-  id: 12528212034550019
-  identification: 
-    name: Ask For Scorecards
-
-  execution: 
-    sequence: 20
-    point: After Processing
-
-  behavior: 
-    type: Page or URL (Redirect)
-    target: 
-      url: 'f?p=&APP_ID.:50:&SESSION.:ASK_SCORE:&DEBUG.:50:P50_ENTER_SCORECARD_FLAG,P50_H_ID,P50_E_ID:&P50_ENTER_SCORECARD_FLAG.,&P50_H_ID.,&P50_E_ID.&success_msg=#SUCCESS_MSG#'
-      page: 50 # Enter Rounds
-      request: ASK_SCORE
-      clear-cache: 50
-      values: 
-        p50_enter_scorecard_flag: '&P50_ENTER_SCORECARD_FLAG.'
-        p50_h_id: '&P50_H_ID.'
-        p50_e_id: '&P50_E_ID.'
-
-  server-side-condition: 
-    type: Never
 
 - # ====== Branch: Return to Previous Page =====================
   id: 14528554953009012
