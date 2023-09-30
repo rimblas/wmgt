@@ -6018,6 +6018,7 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
+      /*
       BEGIN
           apex_pwa.send_push_notification (
               p_application_id => :APP_ID
@@ -6025,11 +6026,11 @@ processes:
             , p_title          => 'Your room has been assigned'
             , p_body           => 'Your tournament room is set' );
       
-      BEGIN
           apex_pwa.push_queue;
-      END;
       
       END;
+      */
+      wmg_util.notify_room_assignments(p_tournament_session_id => :G_CURRENT_SESSION_ID);
 
   execution: 
     sequence: 10
