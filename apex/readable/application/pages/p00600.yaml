@@ -25,9 +25,19 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
+  function-and-global-variable-declaration: |
+    function allowPushTest() {
+      var state = $(".a-pwaPush--state").text();
+      if (state === "On") {
+        $("#BTN_TEST_BUTTON").show();
+      }
+      else {
+        $("#BTN_TEST_BUTTON").hide();
+      }
+    }
   execute-when-page-loads: |
     apex.pwa.initPushSubscriptionPage();
-    
+    setTimeout(allowPushTest, 600);
 
 security: 
   authentication: Page Requires Authentication
@@ -161,6 +171,56 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: What ========================================
+  id: 46629136044602745
+  identification: 
+    title: What
+    type: Static Content
+
+  source: 
+    html-code: |
+      You will be notified of important information pertaining the tournament.<br>
+      Currently, expect to be notified of your room assignment and players assigned to your room.
+      
+      <span class="a-pwaPush--state u-vh"></span>
+
+  layout: 
+    sequence: 10
+    parent-region: Push Notifications # 18636498520748315
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    - margin-top-lg
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 page-items: 
 - # ====== Page Item: P600_ENABLE_PUSH =========================
   id: 18636975908748318
@@ -251,6 +311,43 @@ buttons:
   server-side-condition: 
     type: Never
 
+- # ====== Button: TEST_PUSH ===================================
+  id: 46629283931602746
+  identification: 
+    button-name: TEST_PUSH
+    label: Test Notifications
+
+  layout: 
+    sequence: 10
+    region: What # 46629136044602745
+    position: CHANGE
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    css-classes: 
+    - a-pwaPush--subscriptionRegion
+    - a-pwaPush--available
+    icon: fa-bell
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  advanced: 
+    static-id: BTN_TEST_BUTTON
+    custom-attributes: 
+    - 'style="display:none;"'
+
 dynamic-actions: 
 - # ====== Dynamic Action: Change P600_ENABLE_PUSH =============
   id: 18637231056748319
@@ -305,4 +402,56 @@ dynamic-actions:
       event: Change P600_ENABLE_PUSH # 18637231056748319
       fire-when-event-result-is: False
       fire-on-initialization: false
+
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 46629583788602749
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $("#BTN_TEST_BUTTON").show();
+
+    execution: 
+      sequence: 20
+      event: Change P600_ENABLE_PUSH # 18637231056748319
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+processes: 
+- # ====== Process: Test Push Notifications ====================
+  id: 47622212530527564
+  identification: 
+    name: Test Push Notifications
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      BEGIN
+          apex_pwa.send_push_notification (
+              p_application_id => :APP_ID
+            , p_user_name      => :APP_USER
+            , p_title          => 'Yay!'
+            , p_body           => 'Look, it''s a notification' );
+      
+          apex_pwa.push_queue;
+      
+      END;
+      
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Test notification sent!
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: TEST_PUSH # 46629283931602746
 
