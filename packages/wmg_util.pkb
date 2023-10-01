@@ -1116,7 +1116,7 @@ begin
 
   /*
    *    SEMI-PRO status can be achieved by the following:
-   *    (1x) Top 15  -or- (3x) Top 20 with 9 pts.
+   *    (1x) Top 20  -or- (3x) Top 20 with 9 pts.
    */
 
   log('.. Advance to SEMI-PRO', l_scope);
@@ -1126,7 +1126,7 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 15
+       and p.pos <= 20
        and p.rank_code not in ('PRO', 'SEMI')
    );
   
