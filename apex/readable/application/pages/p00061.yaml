@@ -95,17 +95,19 @@ css:
         color: red;
     }
     
-    #PLAYER_NAME, #SEASON_TOTAL {
+    #PLAYER_NAME, #SEASON_TOTAL, #FULL_TOTAL {
         color: var(--ut-component-text-default-color);
         font-weight: 700;
     }
     
-    td[headers="SEASON_TOTAL"] {
+    td[headers="SEASON_TOTAL"],
+    td[headers="FULL_TOTAL"] {
         font-weight: bold;
         background-color: var(--u-color-3);
         color: var(--u-color-3-contrast);
     }
     tr.mark td[headers="SEASON_TOTAL"],
+    tr.mark td[headers="FULL_TOTAL"],
     tr.mark .&P61_WEEK. {
         background-color: #ff0;
         color: #000;
@@ -305,7 +307,7 @@ regions:
           )
           group by player_id
       )
-      select rank() over (order by f.season_total desc) pos
+      select rank() over (order by f.full_total desc) pos
            , f.*
       from (
       	select p.player_name
@@ -314,25 +316,25 @@ regions:
       	   , p.rank_code
       	   , p.rank_name
       	   , p.rank_list_class
-      	   , decode(sp.w1_discard, 'Y', 0, nvl(sp.w1_points,0))
-      	   + decode(sp.w2_discard, 'Y', 0, nvl(sp.w2_points,0))
-      	   + decode(sp.w3_discard, 'Y', 0, nvl(sp.w3_points,0))
-      	   + decode(sp.w4_discard, 'Y', 0, nvl(sp.w4_points,0))
-      	   + decode(sp.w5_discard, 'Y', 0, nvl(sp.w5_points,0))
-      	   + decode(sp.w6_discard, 'Y', 0, nvl(sp.w6_points,0))
-      	   + decode(sp.w7_discard, 'Y', 0, nvl(sp.w7_points,0))
-      	   + decode(sp.w8_discard, 'Y', 0, nvl(sp.w8_points,0))
-      	   + decode(sp.w9_discard, 'Y', 0, nvl(sp.w9_points,0))
-      	   + decode(sp.w10_discard, 'Y', 0, nvl(sp.w10_points,0))
-      	   + decode(sp.w11_discard, 'Y', 0, nvl(sp.w11_points,0))
-      	   + decode(sp.w12_discard, 'Y', 0, nvl(sp.w12_points,0)) season_total
+      	   , nvl(sp.w1_points,0)
+      	   + nvl(sp.w2_points,0)
+      	   + nvl(sp.w3_points,0)
+      	   + nvl(sp.w4_points,0)
+      	   + nvl(sp.w5_points,0)
+      	   + nvl(sp.w6_points,0)
+      	   + nvl(sp.w7_points,0)
+      	   + nvl(sp.w8_points,0)
+      	   + nvl(sp.w9_points,0)
+      	   + nvl(sp.w10_points,0)
+      	   + nvl(sp.w11_points,0)
+      	   + nvl(sp.w12_points,0) full_total
       	 , sp.*
       	from sessions_pivot sp
       	 , wmg_players_v p
       	where p.id = sp.player_id
       ) f
-      where f.season_total > 0
-      order by f.season_total desc, nls_upper(f.player_name)
+      where f.full_total > 0
+      order by f.full_total desc, nls_upper(f.player_name)
       
     page-items-to-submit: 
     - P61_TOURNAMENT_ID
@@ -443,7 +445,7 @@ regions:
             where ts.tournament_id = :P61_TOURNAMENT_ID
         );
         
-          return  'Edit:#:<i class="fa fa-flag-o"></i>:Player:' || l_headings;
+          return  'Edit:#:<i class="fa fa-flag-o"></i>:Player:Total<br>Points:' || l_headings;
         end;
          
         
@@ -575,21 +577,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: SEASON_TOTAL ================================
-    id: 44900368474786416
-    identification: 
-      column-name: SEASON_TOTAL
-      type: Hidden Column
-
-    layout: 
-      sequence: 180
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: W1_POINTS ===================================
     id: 44900415853786417
     identification: 
@@ -601,7 +588,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 70
       column-alignment: center
 
     accessibility: 
@@ -636,7 +623,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 70
+      sequence: 80
       column-alignment: center
 
     accessibility: 
@@ -679,7 +666,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 90
       column-alignment: center
 
     accessibility: 
@@ -722,7 +709,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -765,7 +752,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -808,7 +795,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -851,7 +838,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -894,7 +881,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -937,7 +924,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -980,7 +967,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: end
 
     accessibility: 
@@ -1023,7 +1010,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: end
 
     accessibility: 
@@ -1066,7 +1053,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: end
 
     accessibility: 
@@ -1728,6 +1715,39 @@ regions:
       table-owner: Parsing Schema
 
     security: 
+      escape-special-characters: true
+
+  - # ====== Column: FULL_TOTAL ==================================
+    id: 46629036880602744
+    identification: 
+      column-name: FULL_TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Full Total
+      alignment: center
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Contribution Rights # 46995203801871514425
       escape-special-characters: true
 
 - # ====== Region: Season Race (&P61_TOURNAMENT.) ==============
