@@ -1033,6 +1033,28 @@ begin
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
 
+  log('.. Un-Discard penalty points', l_scope);
+  -- Negative points, -1 will always be sticky and cannot be discarded
+  -- find discarded negative numbers and bring them back
+
+  update wmg_tournament_players
+     set discarded_points_flag = null
+   where id in (
+      with curr_tournament as (
+        select id
+          from wmg_tournaments
+         where id = p_tournament_id
+      )
+      select p.id tournament_player_id
+          from wmg_tournament_sessions ts
+             , wmg_tournament_players p
+             , curr_tournament
+          where ts.id = p.tournament_session_id
+            and ts.tournament_id = curr_tournament.id
+            and p.points < 0  -- find discarded negative numbers and bring them back
+            and p.discarded_points_flag = 'Y'
+    );
+
   log('END', l_scope);
 
 end discard_points;
