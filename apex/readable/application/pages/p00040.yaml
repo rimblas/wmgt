@@ -383,7 +383,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||
@@ -569,7 +569,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||
@@ -753,7 +753,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||
@@ -937,7 +937,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||
@@ -1121,7 +1121,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||
@@ -1305,7 +1305,7 @@ regions:
            , case when p.player_id = :G_PLAYER_ID then
               '<mark class="player">'
              end
-          || case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
           || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
               ' <a href="' ||

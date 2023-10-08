@@ -1,0 +1,1811 @@
+---
+# ====== Page: All Tournament Rounds =========================
+id: 150
+identification: 
+  name: All Tournament Rounds
+  alias: ALL-TOURNAMENT-ROUNDS
+  title: All Tournament Rounds
+
+appearance: 
+  page-mode: Normal
+  page-template: Left Side Column # 46995007703516514328
+  template-options: 
+  - '#DEFAULT#'
+  - js-pageStickyMobileHeader
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+css: 
+  file-urls: 
+  - //emoji-css.afeld.me/emoji.css
+  inline: |
+    @media only screen and (max-width: 899px) {
+      .a-IRR-table td {
+        padding: 2px 4px;
+      }
+    }
+    
+    @media (max-width: 640px) {
+    
+        :root {
+            --ut-report-cell-padding-y:.2rem;
+            --ut-report-cell-padding-x:.4rem;
+    
+        }
+    
+        td.t-Report-cell[headers="PLAYER_NAME"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 128px;
+            white-space: nowrap;
+       }
+    
+    }
+    
+    
+    td.t-Report-cell[headers="PLAYER_NAME"] {
+      white-space: nowrap;
+    }
+    
+    .w {
+        display: inline-block;
+        float: right;
+    }
+    
+
+security: 
+  authentication: Page Is Public
+
+advanced: 
+  enable-meta-tags: false
+
+security: 
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+help: 
+  help-text: |
+    <p>To find data enter a search term into the search dialog, or click on the column headings to limit the records returned.</p>
+    
+    <p>You can perform numerous functions by clicking the <strong>Actions</strong> button. This includes selecting the columns that are displayed / hidden and their display sequence, plus numerous data and format functions.  You can also define additional views of the data using the chart, group by, and pivot options.</p>
+    
+    <p>If you want to save your customizations select report, or click download to unload the data. Enter you email address and time frame under subscription to be sent the data on a regular basis.<p>
+    
+    <p>For additional information click Help at the bottom of the Actions menu.</p> 
+    
+    <p>Click the <strong>Reset</strong> button to reset the interactive report back to the default settings.</p>
+
+regions: 
+- # ====== Region: Facets ======================================
+  id: 24422635632050758645
+  identification: 
+    title: Facets
+    type: Faceted Search
+
+  source: 
+    filtered-region: Weekly Results # 108352564477205647628
+
+  layout: 
+    sequence: 29
+    parent-region: No Parent
+    position: REGION_POSITION_02
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      batch-facet-changes: false
+      compact-numbers-threshold: 10000
+      show-current-facets: Selector
+      current-facets-selector: '#currentFacets'
+      show-total-row-count: No
+      show-charts: Dialog
+      display-chart-for-top-n-values: 10
+
+  facets: 
+  - # ====== Facet: P150_RANK_CODE ===============================
+    id: 47949772294518501
+    identification: 
+      name: P150_RANK_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Rank
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 50
+
+    appearance: 
+      icon: fa-star
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: RANK_BY_CODE # 44163758348233130
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: true
+
+    advanced: 
+      show-chart-initially: false
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: RANK_CODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_TOTAL_SCORE =============================
+    id: 47949887964518502
+    identification: 
+      name: P150_TOTAL_SCORE
+      type: Range
+
+    label: 
+      label: Total Score
+      show-label-for-current-facet: true
+
+    settings: 
+      select-multiple: false
+      manual-entry: false
+
+    layout: 
+      sequence: 60
+
+    appearance: 
+      icon: fa-table-edit
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: TOTAL_SCORE
+      data-type: NUMBER
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Facet: P150_EASY_COURSE_ID ==========================
+    id: 47950744427518511
+    identification: 
+      name: P150_EASY_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Easy Course
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 80
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: true
+      initially-displayed: false
+      collapsible: false
+
+    source: 
+      database-column: EASY_COURSE_ID
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_HARD_COURSE_ID ==========================
+    id: 47950870832518512
+    identification: 
+      name: P150_HARD_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Hard Course
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 90
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: true
+      initially-displayed: false
+      collapsible: false
+
+    source: 
+      database-column: HARD_COURSE_ID
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_COUNTRY_CODE ============================
+    id: 57076268395657370
+    identification: 
+      name: P150_COUNTRY_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Country
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 70
+
+    appearance: 
+      icon: fa-flag-o
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COUNTRY # 11320651331623902
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      maximum-displayed-entries: 7
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: true
+
+    advanced: 
+      show-chart-initially: false
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COUNTRY_CODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_SEARCH ==================================
+    id: 24422666551383758784
+    identification: 
+      name: P150_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      input-field: Top of Faceted Search Region
+
+    layout: 
+      sequence: 10
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Facet: P150_WEEK ====================================
+    id: 24422666666077758785
+    identification: 
+      name: P150_WEEK
+      type: Checkbox Group
+
+    label: 
+      label: Week
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-calendar
+
+    list-of-values: 
+      type: SQL Query
+      sql-query: |
+        select week d, week r
+        from wmg_tournament_sessions
+        order by session_date desc
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: true
+      maximum-displayed-entries: 3
+      display-filter-initially: false
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: WEEK
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    default: 
+      type: SQL Query
+      sql-query: 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_COURSE_ID ===============================
+    id: 24422666846192758786
+    identification: 
+      name: P150_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Course
+      show-label-for-current-facet: false
+
+    layout: 
+      sequence: 40
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: true
+      maximum-displayed-entries: 7
+      display-filter-initially: true
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: COURSE_ID
+      data-type: NUMBER
+
+    multiple-values: 
+      type: No
+
+    server-side-condition: 
+      type: Never
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Facet: P150_PLAYER_ID ===============================
+    id: 24422667180956758790
+    identification: 
+      name: P150_PLAYER_ID
+      type: Checkbox Group
+
+    label: 
+      label: Player
+      show-label-for-current-facet: true
+
+    layout: 
+      sequence: 30
+
+    appearance: 
+      icon: fa-user
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Disable
+      sort-by-top-counts: true
+      show-selected-first: true
+      maximum-displayed-entries: 5
+      display-filter-initially: true
+
+    actions-menu: 
+      filter: true
+      chart: false
+
+    advanced: 
+      display-toggling: false
+      collapsible: false
+
+    source: 
+      database-column: PLAYER_ID
+      data-type: NUMBER
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  filters: 
+  - # ====== Filter: P150_RANK_CODE ==============================
+    id: 47949772294518501
+    identification: 
+      name: P150_RANK_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Rank
+
+    layout: 
+      sequence: 50
+
+    appearance: 
+      icon: fa-star
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: RANK_BY_CODE # 44163758348233130
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: RANK_CODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_TOTAL_SCORE ============================
+    id: 47949887964518502
+    identification: 
+      name: P150_TOTAL_SCORE
+      type: Range
+
+    label: 
+      label: Total Score
+
+    settings: 
+      select-multiple: false
+      manual-entry: false
+
+    layout: 
+      sequence: 60
+
+    appearance: 
+      icon: fa-table-edit
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: TOTAL_SCORE
+      data-type: NUMBER
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Filter: P150_EASY_COURSE_ID =========================
+    id: 47950744427518511
+    identification: 
+      name: P150_EASY_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Easy Course
+
+    layout: 
+      sequence: 80
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: EASY_COURSE_ID
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_HARD_COURSE_ID =========================
+    id: 47950870832518512
+    identification: 
+      name: P150_HARD_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Hard Course
+
+    layout: 
+      sequence: 90
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: HARD_COURSE_ID
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_COUNTRY_CODE ===========================
+    id: 57076268395657370
+    identification: 
+      name: P150_COUNTRY_CODE
+      type: Checkbox Group
+
+    label: 
+      label: Country
+
+    layout: 
+      sequence: 70
+
+    appearance: 
+      icon: fa-flag-o
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COUNTRY # 11320651331623902
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: true
+      show-selected-first: false
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: COUNTRY_CODE
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_SEARCH =================================
+    id: 24422666551383758784
+    identification: 
+      name: P150_SEARCH
+      type: Search
+
+    label: 
+      label: Search
+
+    settings: 
+      search-type: Row Search
+      collapsed-search-field: false
+
+    layout: 
+      sequence: 10
+
+    security: 
+      store-value-encrypted-in-session-state: true
+
+  - # ====== Filter: P150_WEEK ===================================
+    id: 24422666666077758785
+    identification: 
+      name: P150_WEEK
+      type: Checkbox Group
+
+    label: 
+      label: Week
+
+    layout: 
+      sequence: 20
+
+    appearance: 
+      icon: fa-calendar
+
+    list-of-values: 
+      type: SQL Query
+      sql-query: |
+        select week d, week r
+        from wmg_tournament_sessions
+        order by session_date desc
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: true
+      client-side-filtering: false
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: WEEK
+      data-type: VARCHAR2
+
+    multiple-values: 
+      type: No
+
+    default: 
+      type: SQL Query
+      sql-query: 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_COURSE_ID ==============================
+    id: 24422666846192758786
+    identification: 
+      name: P150_COURSE_ID
+      type: Checkbox Group
+
+    label: 
+      label: Course
+
+    layout: 
+      sequence: 40
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: COURSES # 46995231723178514881
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Hide
+      sort-by-top-counts: false
+      show-selected-first: true
+      client-side-filtering: true
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: COURSE_ID
+      data-type: NUMBER
+
+    multiple-values: 
+      type: No
+
+    server-side-condition: 
+      type: Never
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+  - # ====== Filter: P150_PLAYER_ID ==============================
+    id: 24422667180956758790
+    identification: 
+      name: P150_PLAYER_ID
+      type: Checkbox Group
+
+    label: 
+      label: Player
+
+    layout: 
+      sequence: 30
+
+    appearance: 
+      icon: fa-user
+
+    list-of-values: 
+      type: Shared Component
+      list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+      include-null-option: false
+
+    list-entries: 
+      compute-counts: true
+      show-counts: true
+      zero-count-entries: Disable
+      sort-by-top-counts: true
+      show-selected-first: true
+      client-side-filtering: true
+
+    suggestions: 
+      type: None
+
+    source: 
+      database-column: PLAYER_ID
+      data-type: NUMBER
+
+    multiple-values: 
+      type: No
+
+    security: 
+      store-value-encrypted-in-session-state: true
+      escape-special-characters: true
+
+- # ====== Region: Weekly Results ==============================
+  id: 108352564477205647628
+  identification: 
+    title: Weekly Results
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with badges as (
+       select p.tournament_session_id, p.player_id
+              -- need to expand by the badge_count, because people can habe multiple-badges
+            , listagg( (select listagg(replace(b.icon_class, 'em em', 'em'), ' ') from dual connect by level <= p.badge_count) , ' ')  within group ( order by b.display_seq) other_badges
+            , json_objectagg(key p.badge_type_code value case when p.badge_count>=1 then 'true' else 'false' end) badge_json
+        from wmg_player_badges p
+           , wmg_badge_types b
+        where p.badge_type_code = b.code
+          and b.selectable_ind = 'Y'
+        group by p.tournament_session_id, p.player_id
+      )
+      , unicorns as (
+       select u.score_tournament_session_id tournament_session_id, u.player_id
+              -- need to expand by the badge_count, because people can habe multiple-badges
+            , listagg( replace(b.icon_class, 'em em', 'em'), ' ')  within group ( order by b.display_seq) unicorn_badges
+        from wmg_player_unicorns u
+           , wmg_badge_types b
+        where b.code = 'UNICORN'
+        group by u.score_tournament_session_id, u.player_id
+      )
+      select sp.week
+           , sp.pos
+           , sp.player_id
+           , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
+           , pp.country_code
+           , pp.country
+           , pp.player_name
+           , sp.easy_course_id, sp.hard_course_id
+           , ec.code easy_course_code
+           , ec.name easy_course
+           , hc.code hard_course_code
+           , hc.name hard_course
+           , sp.easy
+           , sp.hard
+           , sp.easy_round_id, sp.hard_round_id
+           , sp.total_score
+           , p.points
+           , case when sp.pos <= 10 then 'top' else 'p' || to_char(p.points) end
+           || case when p.points <= 0 then ' missing tooltip' end
+           || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
+           , case when p.points <= 0 then 'Disqualified, Failed to complete round, or failed to submit scores before deadline' end points_title
+           , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
+           , case when sp.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
+           , pp.rank_code
+           , pp.rank_name
+           , pp.rank_list_class
+           , case when sp.completed_ind = 'N' then
+               case sp.pos 
+               when 1 then 'em-first_place_medal '
+               when 2 then 'em-second_place_medal '
+               when 3 then 'em-third_place_medal '
+               end
+             end
+          || badges.other_badges || ' ' || unicorns.unicorn_badges badges
+           , i.icon issue_icon
+           , i.description issue_description
+           , p.issue_code
+      from wmg_tournament_session_points_v sp
+           join wmg_players_v pp on pp.id = sp.player_id
+           join wmg_courses ec on ec.id = sp.easy_course_id
+           join wmg_courses hc on hc.id = sp.hard_course_id
+      left join wmg_tournament_players p on sp.tournament_session_id = p.tournament_session_id
+                                        and sp.player_id = p.player_id
+      left join badges on sp.tournament_session_id = badges.tournament_session_id
+                      and sp.player_id = badges.player_id 
+      left join unicorns on sp.tournament_session_id = unicorns.tournament_session_id
+                      and sp.player_id = unicorns.player_id 
+      left join wmg_issues i on  p.issue_code = i.code
+      order by sp.week, p.points desc, sp.pos, nls_upper(sp.player_name)
+    optimizer-hint: WITH_PLSQL
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - js-showMaximizeButton
+    - t-Region--scrollBody
+    - margin-left-none
+    - margin-right-none
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: weekResults
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: <div id="currentFacets"></div>
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 250
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--verticalBorders
+
+    pagination: 
+      type: Row Ranges X to Y of Z (with pagination)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No scores yet -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: true
+      link-text: Download
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: WEEK ========================================
+    id: 46629627681602750
+    identification: 
+      column-name: WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Week
+      alignment: start
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_ICON ==================================
+    id: 47893557711349923
+    identification: 
+      column-name: ISSUE_ICON
+      type: Hidden Column
+
+    layout: 
+      sequence: 300
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_DESCRIPTION ===========================
+    id: 47893982204349925
+    identification: 
+      column-name: ISSUE_DESCRIPTION
+      type: Hidden Column
+
+    layout: 
+      sequence: 310
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_ROUND_ID ===============================
+    id: 47894390921349926
+    identification: 
+      column-name: EASY_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 280
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ROUND_ID ===============================
+    id: 47894796684349928
+    identification: 
+      column-name: HARD_ROUND_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 290
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ISSUE_CODE ==================================
+    id: 47895142066349929
+    identification: 
+      column-name: ISSUE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 270
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 47895592188349930
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: '<span class="searchLabel">Pos</span> #'
+      alignment: center
+
+    layout: 
+      sequence: 100
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <span class="#SELECTED_PLAYER#">#POS#</span>
+        <span class="u-vh rank">#RANK_CODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 47896340942349935
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR ======================================
+    id: 47896710979349936
+    identification: 
+      column-name: AVATAR
+      type: Plain Text
+
+    heading: 
+      heading: Avatar
+      alignment: center
+
+    layout: 
+      sequence: 130
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    server-side-condition: 
+      type: User is Authenticated (not public)
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 47897124163349937
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 110
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 47897523481349938
+    identification: 
+      column-name: COUNTRY
+      type: Plain Text
+
+    heading: 
+      heading: <span aria-hidden="true" class="fa fa-flag-o"></span>
+      alignment: center
+
+    layout: 
+      sequence: 120
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="Flag #COUNTRY_CODE#" title="#COUNTRY#"></i>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 47897995530349940
+    identification: 
+      column-name: PLAYER_NAME
+      type: Link
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 140
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:110:&SESSION.::&DEBUG.:110:P110_WEEK,P110_PLAYER_ID:&P60_WEEK.,#PLAYER_ID#'
+        page: 110 # Player Round Details
+        clear-cache: 110
+        values: 
+          p110_week: '&P60_WEEK.'
+          p110_player_id: '#PLAYER_ID#'
+
+      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY ========================================
+    id: 47898374483349941
+    identification: 
+      column-name: EASY
+      type: Link
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 150
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.:COMPARE:&DEBUG.:10:P10_ROUND_ID:#EASY_ROUND_ID#'
+        page: 10 # Player Round Details
+        request: COMPARE
+        clear-cache: 10
+        values: 
+          p10_round_id: '#EASY_ROUND_ID#'
+
+      link-text: '#EASY#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD ========================================
+    id: 47898709305349943
+    identification: 
+      column-name: HARD
+      type: Link
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10:&SESSION.:COMPARE:&DEBUG.:10:P10_ROUND_ID:#HARD_ROUND_ID#'
+        page: 10 # Player Round Details
+        request: COMPARE
+        clear-cache: 10
+        values: 
+          p10_round_id: '#HARD_ROUND_ID#'
+
+      link-text: '#HARD#'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_SCORE =================================
+    id: 47899170891349944
+    identification: 
+      column-name: TOTAL_SCORE
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
+
+    layout: 
+      sequence: 170
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS ======================================
+    id: 47899590841349946
+    identification: 
+      column-name: POINTS
+      type: Plain Text
+
+    heading: 
+      heading: Points
+      alignment: center
+
+    layout: 
+      sequence: 180
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<span class="points #POINT_CLASS#" title="#POINTS_TITLE#">#POINTS#</span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINT_CLASS =================================
+    id: 47899973803349947
+    identification: 
+      column-name: POINT_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POINTS_TITLE ================================
+    id: 47900352433349948
+    identification: 
+      column-name: POINTS_TITLE
+      type: Hidden Column
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SELECTED_PLAYER =============================
+    id: 47900738850349949
+    identification: 
+      column-name: SELECTED_PLAYER
+      type: Hidden Column
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TROPHY ======================================
+    id: 47901130140349950
+    identification: 
+      column-name: TROPHY
+      type: Hidden Column
+
+    layout: 
+      sequence: 220
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: RANK_CODE ===================================
+    id: 47901599120349953
+    identification: 
+      column-name: RANK_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_NAME ===================================
+    id: 47901906554349954
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden Column
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 47902396673349955
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden Column
+
+    layout: 
+      sequence: 260
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: BADGES ======================================
+    id: 47902747142349957
+    identification: 
+      column-name: BADGES
+      type: Plain Text
+
+    heading: 
+      heading: Badges
+      alignment: center
+
+    layout: 
+      sequence: 230
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {loop " " BADGES/}
+        <i class="badge em &APEX$ITEM." aria-role="presentation" aria-label="&APEX$ITEM." title=""></i>
+        {endloop/}
+        {if ISSUE_CODE/}
+        <i class="tooltip #ISSUE_ICON#" aria-role="presentation" aria-label="#ISSUE_CODE#" title="#ISSUE_DESCRIPTION#"></i>
+        {endif/}
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_ID ==============================
+    id: 47949993932518503
+    identification: 
+      column-name: EASY_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_ID ==============================
+    id: 47950033890518504
+    identification: 
+      column-name: HARD_COURSE_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_CODE ============================
+    id: 47950193159518505
+    identification: 
+      column-name: EASY_COURSE_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Easy Course
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span title="#EASY_COURSE#" class="tooltip">#EASY_COURSE_CODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 47950219035518506
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_CODE ============================
+    id: 47950389862518507
+    identification: 
+      column-name: HARD_COURSE_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Hard Course
+      alignment: start
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span title="#HARD_COURSE#" class="tooltip">#HARD_COURSE_CODE#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 47950946901518513
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+dynamic-actions: 
+- # ====== Dynamic Action: Highlight Player ====================
+  id: 48025518635261289
+  identification: 
+    name: Highlight Player
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    selection-type: Region
+    region: Weekly Results # 108352564477205647628
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 48025948548261291
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        $(".mark").parents("tr").addClass("mark");
+        wmgt.theme.init(); // tooltips
+
+    execution: 
+      sequence: 10
+      event: Highlight Player # 48025518635261289
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+

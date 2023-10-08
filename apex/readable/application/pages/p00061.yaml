@@ -90,10 +90,15 @@ css:
         text-decoration: line-through;
         color: #BBB;
     }
+    .discardI {
+        font-weight: bold;
+        color: var(--ut-palette-danger);
+    }
     
     .p0 {
         color: red;
     }
+    
     
     #PLAYER_NAME, #SEASON_TOTAL, #FULL_TOTAL {
         color: var(--ut-component-text-default-color);
@@ -121,6 +126,11 @@ css:
         color: var(--u-color-16-contrast);
         font-weight: normal;
     }
+    .&P61_WEEK..discardI {
+        font-weight: bold;
+        color: var(--ut-palette-danger);
+    }
+    
     
     .t-Report--altRowsDefault .t-Report-report tr.mark:nth-child(odd) {
         --ut-report-cell-background-color: #ff0;
@@ -1816,7 +1826,10 @@ regions:
           from (
               select ap.player_id
                    , coalesce(p.points, sp.points) points
-                   , p.discarded_points_flag
+                   , case when p.points < 0 then 
+                       'I' -- infraction
+                     else p.discarded_points_flag 
+                     end discarded_points_flag
                    , ap.round_num
                    , coalesce(sp.week, ap.week) week
                    , ap.session_date
