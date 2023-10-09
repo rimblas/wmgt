@@ -15,6 +15,11 @@ PRO DDL
 PRO ________________________________________
 
 
+PRO .. Recreate the week format constraint
+alter table wmg_rounds drop constraint wmg_rouund_week_ck;
+
+alter table wmg_rounds add constraint wmg_rouund_week_ck check (regexp_like(week, 'S[0-9]+[A-Z]?W[0-9]+'));
+
 
 PRO TABLES
 PRO ________________________________________
