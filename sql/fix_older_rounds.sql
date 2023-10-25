@@ -13,7 +13,7 @@ begin
   for ts in (
     select *
        from wmg_tournament_sessions
-      where week like 'S04%'
+      where week like 'S01%'
   )
   loop
 
