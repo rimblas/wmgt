@@ -37,7 +37,7 @@ css:
     #P3_PAR {font-weight: bold;}
 
 security: 
-  authorization-scheme: Contribution Rights # 46995203801871514425
+  authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
   authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
@@ -964,6 +964,7 @@ regions:
       table-owner: Parsing Schema
 
     security: 
+      authorization-scheme: Contribution Rights # 46995203801871514425
       escape-special-characters: true
 
 - # ====== Region: Previews ====================================
@@ -1081,6 +1082,9 @@ regions:
           values: 
             p13_id: '&ID.'
 
+      security: 
+        authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Region: Course ======================================
   id: 46995217613009514582
   identification: 
@@ -1117,6 +1121,11 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
+
+  read-only: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: return not apex_authorization.is_authorized('Contribution Rights');
 
   server-cache: 
     caching: Disabled
@@ -2878,6 +2887,9 @@ buttons:
     type: No Rows returned
     sql-query: "select 1 from wmg_rounds where week = 'S00W00' and players_id = 0 and course_id = :P3_ID"
 
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Button: ADD_PREVIEW =================================
   id: 7057236631691582673
   identification: 
@@ -2893,7 +2905,7 @@ buttons:
     column: 10
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -2913,6 +2925,9 @@ buttons:
         p13_course_id: '&P3_ID.'
 
     warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 - # ====== Button: CANCEL ======================================
   id: 46995221027256514585
@@ -2978,6 +2993,9 @@ buttons:
     type: Item is NOT NULL
     item: P3_ID
 
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
 - # ====== Button: SAVE ========================================
   id: 46995222904250514586
   identification: 
@@ -3009,6 +3027,9 @@ buttons:
   server-side-condition: 
     type: Item is NOT NULL
     item: P3_ID
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 - # ====== Button: CREATE ======================================
   id: 46995223260628514587
@@ -3043,6 +3064,9 @@ buttons:
   server-side-condition: 
     type: Item is NULL
     item: P3_ID
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
 - # ====== Dynamic Action: Refresh on Close ====================
@@ -3194,6 +3218,9 @@ processes:
   server-side-condition: 
     when-button-pressed: ADD_ROUND # 46934594683678623
 
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Process: Initialize form Course Strokes =============
   id: 15143134385721735743
   identification: 
@@ -3296,6 +3323,9 @@ processes:
     type: Request != Value
     value: CREATE
 
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Process: Initialize form Course =====================
   id: 46995223648017514587
   identification: 
@@ -3330,6 +3360,9 @@ processes:
 
   error: 
     display-location: Inline in Notification
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
 
 - # ====== Process: Close Dialog ===============================
   id: 46995224477650514587
