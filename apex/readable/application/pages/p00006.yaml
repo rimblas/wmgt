@@ -753,7 +753,7 @@ regions:
     id: 44154098021157944
     identification: 
       column-name: PLAYER_NAME
-      type: Plain Text
+      type: Link
 
     heading: 
       heading: Player
@@ -765,6 +765,17 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID,P120_TOURNAMENT_ID:#ID#,&P6_TOURNAMENT_ID.'
+        page: 120 # Player Badges & History
+        clear-cache: 120
+        values: 
+          p120_player_id: '#ID#'
+          p120_tournament_id: '&P6_TOURNAMENT_ID.'
+
+      link-text: '#PLAYER_NAME#'
 
     sorting: 
       sortable: true
@@ -1027,7 +1038,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Profile
+      heading: Discord
       alignment: center
 
     layout: 
@@ -1122,6 +1133,36 @@ page-items:
 
   layout: 
     sequence: 30
+    region: '{col2}' # 28677891608250946
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P6_TOURNAMENT_ID =========================
+  id: 47951463519518518
+  identification: 
+    name: P6_TOURNAMENT_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
     region: '{col2}' # 28677891608250946
     position: BODY
 
@@ -1258,6 +1299,22 @@ computations:
     type: SQL Query (return single value)
     sql-query: |
       select week
+      from wmg_tournament_sessions
+      where id = :G_CURRENT_SESSION_ID
+
+- # ====== Computation: P6_TOURNAMENT_ID =======================
+  id: 47951591288518519
+  identification: 
+    item-name: P6_TOURNAMENT_ID
+
+  execution: 
+    sequence: 20
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select tournament_id
       from wmg_tournament_sessions
       where id = :G_CURRENT_SESSION_ID
 

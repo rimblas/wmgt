@@ -22,6 +22,9 @@ navigation:
 javascript: 
   file-urls: 
   - '&G_APP_FILES.lib/jquery.syotimer.min.js'
+  - //cdnjs.cloudflare.com/ajax/libs/snap.svg/0.4.1/snap.svg-min.js
+  - //cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js
+  - '&G_APP_FILES.lib/ghosts#MIN#.js'
   function-and-global-variable-declaration: |
     function getDiff(nextDate) {
       const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
@@ -53,8 +56,21 @@ javascript:
       headTitle: title
     });
     }
+    
+    let wmgVisible = true; stageManager = new StageManager(Snap('svg'));
+    stageManager.init();
+    
+    function makeGhost() {
+        if (wmgVisible) {
+            stageManager.addGhost();
+        }
+        setTimeout(makeGhost, Math.random() * 500);
+    }
+    
   execute-when-page-loads: |
     wmgt.theme.init();
+    // makeGhost();
+    
     setTimeout(function(){
     $(".discAttention").addClass("fa-anim-vertical-shake");
     }, 9500);
@@ -1135,7 +1151,7 @@ regions:
     link: 
       target: 
         url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID:#PLAYER_ID#'
-        page: 120 # Player Profile
+        page: 120 # Player Badges & History
         clear-cache: 120
         values: 
           p120_player_id: '#PLAYER_ID#'
@@ -1354,7 +1370,7 @@ regions:
     type: Static Content
 
   source: 
-    html-code: '<img class="seasonTrophy" src="&BUCKET.S09_CHAMPION.gif" title="Champion Trophy: his.Dudeness S9 Champion">'
+    html-code: '<img class="seasonTrophy" src="&BUCKET.S10_CHAMPION.gif" title="Champion Trophy: Zanetti S10 Champion">'
 
   layout: 
     sequence: 50
@@ -2057,7 +2073,7 @@ regions:
     html-code: |
       <div class="syotimer">
       </div>
-      
+      <svg id="svg"></svg>
 
   layout: 
     sequence: 1
@@ -5384,7 +5400,7 @@ buttons:
     action: Redirect to Page in this Application
     target: 
       url: 'f?p=&APP_ID.:120:&SESSION.::&DEBUG.:120:P120_PLAYER_ID:&G_PLAYER_ID.'
-      page: 120 # Player Profile
+      page: 120 # Player Badges & History
       clear-cache: 120
       values: 
         p120_player_id: '&G_PLAYER_ID.'
@@ -5969,6 +5985,7 @@ processes:
       apex_region.purge_cache (
           p_page_id    => 1
       );
+      
 
   execution: 
     sequence: 20

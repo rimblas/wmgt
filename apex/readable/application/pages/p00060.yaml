@@ -103,7 +103,7 @@ javascript:
         {
           type: "action",
           label: "Add Diamond",
-          icon: "em-large_blue_diamond",
+          icon: "em-gem",
           action: function(menu, btn) {
             // console.log("Adding", button$.data("id"));
             // console.log(this);
@@ -1547,7 +1547,7 @@ regions:
       from (
           select result, who, total, rank() over (order by total desc) rn
           from (
-          select '<i class="em em-large_blue_diamond" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
+          select '<i class="em em-gem" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
               || 'Player(s) with most Aces' result
                , r.player_name who
                , sum(decode(s1, 1, 1, 0)

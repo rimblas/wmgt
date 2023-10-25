@@ -878,6 +878,56 @@ regions:
     performance: 
       lazy-loading: false
 
+- # ====== Region: Audit =======================================
+  id: 112217179419889737541
+  identification: 
+    title: Audit
+    type: Static Content
+
+  layout: 
+    sequence: 90
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Collapsible # 46995059570249514350
+    template-options: 
+    - '#DEFAULT#'
+    - is-collapsed
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P9_ID
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Course Strokes} ============================
   id: 141764614561785866230
   identification: 
@@ -4047,6 +4097,216 @@ page-items:
   session-state: 
     data-type: VARCHAR2
     storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_CREATED_ON ============================
+  id: 56201537374857797875
+  identification: 
+    name: P9_CREATED_ON
+    type: Display Only
+
+  label: 
+    label: Created On
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 30
+    region: Audit # 112217179419889737541
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46995171305980514398
+    template-options: 
+    - '#DEFAULT#'
+    format-mask: 'DD-MON-YYYY HH:MIPM'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46995274814383515488
+    column: CREATED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_CREATED_BY ============================
+  id: 56201537803064797876
+  identification: 
+    name: P9_CREATED_BY
+    type: Display Only
+
+  label: 
+    label: Created By
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 10
+    region: Audit # 112217179419889737541
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46995171305980514398
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46995274814383515488
+    column: CREATED_BY
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_UPDATED_ON ============================
+  id: 56201538218996797876
+  identification: 
+    name: P9_UPDATED_ON
+    type: Display Only
+
+  label: 
+    label: Updated On
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 40
+    region: Audit # 112217179419889737541
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46995171305980514398
+    template-options: 
+    - '#DEFAULT#'
+    format-mask: 'DD-MON-YYYY HH:MIPM'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46995274814383515488
+    column: UPDATED_ON
+    data-type: TIMESTAMP WITH LOCAL TIME ZONE
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P9_UPDATED_BY ============================
+  id: 56201538656691797876
+  identification: 
+    name: P9_UPDATED_BY
+    type: Display Only
+
+  label: 
+    label: Updated By
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Item Value
+    show-line-breaks: true
+    send-on-page-submit: false
+
+  layout: 
+    sequence: 20
+    region: Audit # 112217179419889737541
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional # 46995171305980514398
+    template-options: 
+    - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Round # 46995274814383515488
+    column: UPDATED_BY
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted

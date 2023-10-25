@@ -264,8 +264,6 @@ regions:
   server-cache: 
     caching: Enabled
     cache-timeout: 2 weeks
-    depends-on-item(s): 
-    - APP_REQUEST_DATA_HASH
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1849,7 +1847,7 @@ regions:
       from (
           select result, who, total, rank() over (order by total desc) rn
           from (
-          select '<i class="em em-large_blue_diamond" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
+          select '<i class="em em-gem" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
               || 'Player(s) with most Aces' result
                , r.player_name who
                , sum(decode(s1, 1, 1, 0)
@@ -1943,7 +1941,7 @@ regions:
 
   server-cache: 
     caching: Enabled
-    cache-timeout: 2 days
+    cache-timeout: 12 hours
     depends-on-item(s): 
     - P100_WEEK
     type: Rows returned
