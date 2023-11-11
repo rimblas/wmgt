@@ -1148,8 +1148,24 @@ begin
 
 
   /*
+   *    RISING status can be achieved by the following:
+   *    (1x) Top 25  -or- .. TBD
+   */
+
+  log('.. Advance to RISING', l_scope);
+  update wmg_players
+     set rank_code = 'RISING'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 25
+       and p.rank_code not in ('PRO', 'SEMI', 'RISING')
+   );
+
+  /*
    *    SEMI-PRO status can be achieved by the following:
-   *    (1x) Top 20  -or- (3x) Top 20 with 9 pts.
+   *    (1x) Top 10  -or- TBD
    */
 
   log('.. Advance to SEMI-PRO', l_scope);
@@ -1159,7 +1175,7 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 20
+       and p.pos <= 10
        and p.rank_code not in ('PRO', 'SEMI')
    );
   
@@ -1169,7 +1185,7 @@ begin
 
   /*
    *    PRO status can be achieved by the following:
-   *    (1x) Top 5 -or- (3x) Top 10 
+   *    (1x) Top 3 -or- TBD
    */
 
   log('.. Advance to PRO', l_scope);
@@ -1179,7 +1195,7 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 5
+       and p.pos <= 3
        and p.rank_code != 'PRO'
    );
   
