@@ -199,6 +199,55 @@ regions:
     layout: 
       sequence: 20
 
+- # ====== Region: {Ko-Fi} =====================================
+  id: 47951924553518523
+  identification: 
+    title: '{Ko-Fi}'
+    type: Static Content
+
+  source: 
+    html-code: "<a href='https://ko-fi.com/Z8Z5NO80A' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>"
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: REGION_POSITION_05
+    start-new-layout: false
+    start-new-row: false
+    column: 10
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":APP_PAGE_ID != 50 and :APP_PAGE_ID < 500 and mod(to_char(sysdate, 'SS') ,2) = 1"
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {AutoDetectTimeZone.js} =====================
   id: 47585929640078469250
   identification: 

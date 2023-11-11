@@ -52,6 +52,76 @@ theme.init = function() {
   $(".tooltip").tooltip();
 },
 
+    // PRIVATE
+    // Called by continuousReportRefresh
+    _startIntervalRefreshReport: function (regionID, refreshEnabledItem) {
+      var activeRefresh = true;
+      if (typeof refreshEnabledItem == "undefined") {
+        activeRefresh = true;
+      }
+      else {
+        try {
+            // test the item to see if the refresh calls should continue
+            activeRefresh = $v(refreshEnabledItem) === "Y";
+        }
+        catch(e) {
+            activeRefresh = true;
+        }
+      }
+      if (mmWindowFocused && mmRefreshCompleted && activeRefresh) {
+         // if the window has focus, the previous refresh completed and we want 
+         // to continue refreshing (activeRefresh) then go ahead and refresh
+         mmRefreshCompleted = false;  // clear so we detect that the session is still active
+         apex.region(regionID).refresh();
+      }
+    },
+  
+
+
+    /*
+    * Refresh a region indefinitely, but stop refreshing when the browser tab
+    * is not visible any more
+    *
+    * "visibility change" Technique borrowed from:
+    * https://stackoverflow.com/questions/7389328/detect-if-browser-tab-has-focus
+    *
+    * Examples
+    * mastermind.theme.continuousReportRefresh("jobsRegion", 500, "P1_REFRESH_IND");
+    * mastermind.theme.continuousReportRefresh("jobsRegion", 500);
+    *
+    * @author Jorge Rimblas
+    * @created February 17, 2022
+    * @param regionID: Static ID
+    * @param interval: Milliseconds between refreshes
+    * @param refreshEnabledItem [Optional]: A Y/N APEX Item that when Y will continue with the autorefresh
+    */
+    continuousReportRefresh: function(regionID, interval, refreshEnabledItem) {
+        const intervalReport = setInterval(mastermind.theme._startIntervalRefreshReport, interval, regionID, refreshEnabledItem);
+
+        mmWindowFocused = true;
+        document.addEventListener("visibilitychange", function() {
+            // detect when the window is not visible any more
+            if (document.visibilityState === 'visible') {
+                mmWindowFocused = true;
+            } else {
+                mmWindowFocused = false;
+            }
+        });
+
+        mmRefreshCompleted = true;
+        // after each refresh we indicate the refresh has completed
+        // when the session expires the `apexafterrefresh` event will never happen
+        apex.jQuery( "#" + regionID ).on( "apexafterrefresh", function() {
+            // detect if the latest apexafterrefresh happen, if it didn't
+            // it could indicate to an expired session or error
+            mmRefreshCompleted = true;
+        });
+
+        return intervalReport;
+    },
+
+
+
 
 /* Week LOV Template */
 theme.weekLovTemplate = function (options) {

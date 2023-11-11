@@ -21,7 +21,8 @@
     html-code: |
       <div class="pro-legend row margin-sm u-justify-content-space-around">
       <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
-      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro player</div>
+      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi Pro</div>
+      <div class="-wm-rank-rise fa margin-right-sm" title="Rising Star"> = Rising Star</div>
       <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur player</div>
       <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
       </div>
@@ -41,12 +42,6 @@
         <input type="radio" id="f01_ALL" value="ALL" checked name="f01" class="wm-search"> 
         <label for="f01_ALL"><div class="fa fa-users margin-right-sm" title="All Players"> All Players</div></label>
       </div>'
-      ||  case when :APP_PAGE_ID = 61 then
-      '<div class="wm-search-item">
-        <input type="radio" id="f01_TOP" value="TOP" name="f01" class="wm-search"> 
-        <label for="f01_TOP"><div class="fa-trophy fa margin-right-sm" title="Top Finishes"> Top Finishes</div></label>
-      </div>'
-      end
       || 
       '<div class="wm-search-item">
         <input type="radio" id="f01_PRO" value="PRO" name="f01" class="wm-search"> 
@@ -54,18 +49,52 @@
       </div>
       <div class="wm-search-item">
         <input type="radio" id="f01_SEMI" value="SEMI" name="f01" class="wm-search"> 
-        <label for="f01_SEMI"><div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> Semi-Pro players</div></label>
+        <label for="f01_SEMI"><div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> Semi-Pro</div></label>
+      </div>
+      <div class="wm-search-item">
+        <input type="radio" id="f01_RISING" value="RISING" name="f01" class="wm-search"> 
+        <label for="f01_RISING"><div class="-wm-rank-rise fa margin-right-sm" title="Rising Star"> Rising Star</div></label>
       </div>
       <div class="wm-search-item">
         <input type="radio" id="f01_AMA" value="AMA" name="f01" class="wm-search"> 
-        <label for="f01_AMA"><div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> Amateur players</div></label>
-      </div>
-      <div class="wm-search-item">
+        <label for="f01_AMA"><div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> Amateur</div></label>
+      </div>'
+      || case when :APP_PAGE_ID in ( 60, 63) then '' else
+      '<div class="wm-search-item">
         <input type="radio" id="f01_NEW" value="NEW" name="f01" class="wm-search"> 
         <label for="f01_NEW"><div class="-wm-rank-new fa margin-right-sm" title="New player!"> New players!</div></label>
-      </div>
+      </div>'
+      end
+      || '</div>';
+
+- # ====== Shortcut: TOP_FINISHES_SEARCH =======================
+  id: 49987731957689917
+  identification: 
+    name: TOP_FINISHES_SEARCH
+
+  source: 
+    type: Function Body returning VARCHAR2
+    language: PL/SQL
+    pl/sql-function-body: |
+      return '<div class="pro-legend row margin-sm u-justify-content-space-around">
       
-      </div>';
+      <div class="wm-search-item">
+        <input type="radio" id="f01_ALL" value="ALL" checked name="f01" class="wm-search"> 
+        <label for="f01_ALL"><div class="fa fa-users margin-right-sm" title="All Finisher"> All Finisher</div></label>
+      </div>
+      <div class="wm-search-item">
+        <input type="radio" id="f01_TOP3" value="TOP3" name="f01" class="wm-search"> 
+        <label for="f01_TOP3"><div class="em em-first_place_medal margin-right-sm" title="Podium Finishes"> Podium Finishes</div></label>
+      </div>
+      <div class="wm-search-item">
+        <input type="radio" id="f01_TOP10" value="TOP10" name="f01" class="wm-search"> 
+        <label for="f01_TOP10"><div class="em em-keycap_ten margin-right-sm" title="Top 10 Finishes"> Top 10 Finishes</div></label>
+      </div>
+      <div class="wm-search-item">
+        <input type="radio" id="f01_TOP25" value="TOP25" name="f01" class="wm-search"> 
+        <label for="f01_TOP25"><div class="em em-clap margin-right-sm" title="Top 25 Finishes"> Top 25 Finishes</div></label>
+      </div>'
+      || '</div>';
 
 - # ====== Shortcut: CLEAR_BUTTON ==============================
   id: 48045102356359420375

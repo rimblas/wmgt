@@ -40,11 +40,20 @@ begin
   {
     "code": "TOP10",
     "name": "Top 10 Finish",
-    "description": "Top 10 Finish",
+    "description": "A Top 10 Finish, but not a podium",
     "icon_class": "em em-sports_medal",
     "system": "Y",
     "selectable": "N",
     "seq": 4
+  },
+  {
+    "code": "TOP25",
+    "name": "Top 25 Finish",
+    "description": "Finishing in the Top 25, but not including the Top 10",
+    "icon_class": "em em-clap",
+    "system": "Y",
+    "selectable": "N",
+    "seq": 5
   },
   {
     "code": "COCONUT",

@@ -824,7 +824,7 @@ begin
   -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   log('BEGIN', l_scope);
 
-  log('.. Top 10 player badges');
+  log('.. Top 10 and 25 player badges');
   insert into wmg_player_badges (
       tournament_session_id
     , player_id
@@ -838,11 +838,12 @@ begin
            when p.pos = 2 then 'SECOND'
            when p.pos = 3 then 'THIRD'
            when p.pos >= 4 and  p.pos <= 10 then 'TOP10'
+           when p.pos > 10 and  p.pos <= 25 then 'TOP25'
          end
        , 1
     from wmg_tournament_session_points_v p
    where p.tournament_session_id = p_tournament_session_id
-     and p.pos <=10;
+     and p.pos <=25;
 
 
   insert into wmg_player_badges (
@@ -884,6 +885,29 @@ begin
      )
      group by player_id
   )
+  , diamond as (
+    select u.player_id, count(*) aces
+          from wmg_rounds_unpivot_mv u
+             , wmg_tournament_players tp
+             , wmg_tournament_sessions ts
+         where ts.week = u.week
+           and ts.id = tp.tournament_session_id
+           and tp.player_id = u.player_id
+           and tp.issue_code is null  -- only players with no issues are eligible
+           and ts.completed_ind = 'N' -- only live results
+           and ts.id = p_tournament_session_id
+           and u.score = 1
+         group by u.player_id
+         having count(*) in (
+             select max(sum(u2.score)) aces
+              from wmg_rounds_unpivot_mv u2
+                 , wmg_tournament_sessions ts2
+              where ts2.week = u2.week
+                and u2.score = 1
+                and ts2.id = p_tournament_session_id
+              group by u2.player_id
+         )
+  )
   select p.tournament_session_id
        , p.player_id
        , 'COCONUT' badge
@@ -900,7 +924,16 @@ begin
     from wmg_tournament_session_points_v p
        , cactus
    where p.tournament_session_id = p_tournament_session_id
-     and p.player_id = cactus.player_id;
+     and p.player_id = cactus.player_id
+  union all
+  select p.tournament_session_id
+       , p.player_id
+       , 'DIAMOND' badge
+       , 2 badge_count
+    from wmg_tournament_session_points_v p
+       , diamond
+   where p.tournament_session_id = p_tournament_session_id
+     and p.player_id = diamond.player_id;
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
 

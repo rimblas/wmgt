@@ -22,9 +22,7 @@ navigation:
 javascript: 
   file-urls: 
   - '&G_APP_FILES.lib/jquery.syotimer.min.js'
-  - //cdnjs.cloudflare.com/ajax/libs/snap.svg/0.4.1/snap.svg-min.js
-  - //cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js
-  - '&G_APP_FILES.lib/ghosts#MIN#.js'
+  - null
   function-and-global-variable-declaration: |
     function getDiff(nextDate) {
       const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
@@ -57,19 +55,20 @@ javascript:
     });
     }
     
-    let wmgVisible = true; stageManager = new StageManager(Snap('svg'));
-    stageManager.init();
-    
-    function makeGhost() {
-        if (wmgVisible) {
-            stageManager.addGhost();
-        }
-        setTimeout(makeGhost, Math.random() * 500);
-    }
     
   execute-when-page-loads: |
     wmgt.theme.init();
-    // makeGhost();
+    
+    // tab visibility detation
+    document.addEventListener("visibilitychange", function() {
+        // detect when the window is not visible any more
+        if (document.visibilityState === 'visible') {
+            wmgVisible = true;
+        }
+        else {
+            wmgVisible = false;
+        }
+    });
     
     setTimeout(function(){
     $(".discAttention").addClass("fa-anim-vertical-shake");
@@ -757,6 +756,8 @@ regions:
         where ts.tournament_id in (  
             select tournament_id
           from wmg_tournament_sessions
+          where completed_ind = 'Y'
+            and week not like '%B%'
           order by session_date desc
           fetch first 1 rows only
         )
@@ -1344,6 +1345,7 @@ regions:
       select id, round_num, completed_ind
       into l_tournament_session_id, l_round_num, l_completed_ind
       from wmg_tournament_sessions
+      where week not like '%B%'
       order by session_date desc
       fetch first 1 rows only;
       
@@ -1579,6 +1581,8 @@ regions:
                , s.hard_course_id
                , s.hard_release_order
                , case when s.completed_ind = 'Y' then 'white_check_mark' else 'golf' end status
+            -- halloween
+            --   , case when s.completed_ind = 'Y' then 'skull' else 'jack_o_lantern' end status
                , s.session_date
                , s.completed_ind
           from wmg_tournament_sessions_v s
@@ -1610,8 +1614,12 @@ regions:
            , e.code easy_course
            , tce.easy_course_code
            , e.name easy_name
-           , case when e.release_order <= 8 then 'zzz' else 'lock' end status
-           , case when e.release_order <= 8 then 99 else 2 end order_by
+          -- , case when e.release_order <= 8 then 'zzz' else 'lock' end status
+           , 'lock' status
+          -- halloween
+          -- , 'skull_and_crossbones' status
+          -- , case when e.release_order <= 8 then 99 else 2 end order_by
+           , 1 order_by
            , e.release_order
            , e.factoids
       from wmg_courses e
@@ -1639,8 +1647,12 @@ regions:
                , h.code hard_course
                , h.name hard_name
                , tch.hard_course_code
-               , case when h.release_order <= 8 then 'zzz' else 'lock' end status     
-               , case when h.release_order <= 8 then 99 else 2 end order_by
+              -- , case when e.release_order <= 8 then 'zzz' else 'lock' end status
+               , 'lock' status
+              -- halloween
+              -- , 'skull_and_crossbones' status
+              -- , case when e.release_order <= 8 then 99 else 2 end order_by
+               , 1 order_by
                , h.release_order
                , h.factoids
           from wmg_courses h
@@ -1680,7 +1692,9 @@ regions:
            , decode(c.status
                 , 'white_medium_square', 'Pending to be played'
                 , 'white_check_mark', 'Already played'
+                , 'skull', 'Already played'
                 , 'golf', 'Current tournament courses'
+                , 'jack_o_lantern', 'Current tournament courses'
                 , 'o', 'Not available', ''
                 ) status_title
            , 1 order_by
@@ -2750,6 +2764,7 @@ regions:
       <div class="pro-legend row margin-sm u-justify-content-space-around">
       <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
       <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi-Pro</div>
+      <div class="-wm-rank-rise fa margin-right-sm" title="Rising Star"> = Rising Star</div>
       <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur</div>
       <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
       </div>
@@ -3626,6 +3641,48 @@ regions:
         and s.rooms_open_flag is not null
         and s.completed_ind = 'N'
         and s.round_num >= 1
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {decorations} ===============================
+  id: 47951881903518522
+  identification: 
+    title: '{decorations}'
+    type: Static Content
+
+  layout: 
+    sequence: 20
+    parent-region: '{col3}' # 13437440212291548
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: decorationRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
 
   server-cache: 
     caching: Disabled
@@ -6018,6 +6075,30 @@ processes:
 
   execution: 
     sequence: 10
+    point: Before Regions
+    run-process: Once Per Page Visit (default)
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
+- # ====== Process: Clear User Theme Styles ====================
+  id: 47951644601518520
+  identification: 
+    name: Clear User Theme Styles
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      apex_theme.clear_all_users_style(
+      p_application_id => :APP_ID,
+      p_theme_number => 42
+      );
+
+  execution: 
+    sequence: 20
     point: Before Regions
     run-process: Once Per Page Visit (default)
 

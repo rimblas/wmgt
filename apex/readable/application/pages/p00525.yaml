@@ -1214,7 +1214,7 @@ processes:
       where rank_code != 'AMA';
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -1229,6 +1229,31 @@ processes:
     type: Item = Value
     item: P525_RESET_RANKS_IND
     value: Y
+
+- # ====== Process: Set Correct Current Flag Value =============
+  id: 47951768838518521
+  identification: 
+    name: Set Correct Current Flag Value
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: ':P525_CURRENT_FLAG := null;'
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P525_CURRENT_FLAG = 'N'"
 
 - # ====== Process: Clear All Previous Current Flag ============
   id: 56024165922117751658
@@ -1288,7 +1313,7 @@ processes:
     return-primary-key(s)-after-insert: true
 
   execution: 
-    sequence: 20
+    sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -1303,7 +1328,7 @@ processes:
     execution-chain: None
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
