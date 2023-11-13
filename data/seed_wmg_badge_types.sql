@@ -68,7 +68,7 @@ begin
     "code": "DIAMOND",
     "name": "Diamond",
     "description": "Most Aces thru 36 holes",
-    "icon_class": "em em-large_blue_diamond",
+    "icon_class": "em em-gem",
     "system": "N",
     "selectable": "Y",
     "seq": 20

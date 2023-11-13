@@ -929,7 +929,7 @@ begin
   select p.tournament_session_id
        , p.player_id
        , 'DIAMOND' badge
-       , 2 badge_count
+       , 1 badge_count
     from wmg_tournament_session_points_v p
        , diamond
    where p.tournament_session_id = p_tournament_session_id
