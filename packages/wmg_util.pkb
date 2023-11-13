@@ -874,8 +874,8 @@ begin
         from wmg_rounds_unpivot_mv u
            , wmg_tournament_sessions ts
            , wmg_tournament_players tp
-       where ts.week = u.week
-         and ts.id = tp.tournament_session_id
+       where ts.id = tp.tournament_session_id
+         and ts.week = u.week
          and tp.player_id = u.player_id
          and tp.issue_code is null  -- only players with no issues are eligible
          and ts.id = p_tournament_session_id
@@ -884,6 +884,36 @@ begin
        group by u.course_id || ':' || u.h, u.score
      )
      group by player_id
+  )
+  , beetle as (
+     select u.player_id, count(*) n
+       from wmg_rounds_unpivot_mv u
+          , wmg_tournament_players tp
+          , wmg_tournament_sessions ts
+      where ts.week = u.week
+        and ts.id = tp.tournament_session_id
+        and tp.player_id = u.player_id
+        and tp.issue_code is null  -- only players with no issues are eligible
+        and ts.id = p_tournament_session_id
+        and (u.course_id, u.h, u.score) in (
+          select u2.course_id, u2.h, u2.score
+            from wmg_rounds_unpivot_mv u2
+               , wmg_tournament_sessions ts2
+           where ts2.week = u2.week
+             and ts2.id = p_tournament_session_id
+             and (u2.course_id, u2.h, u2.score) in (
+                 select u3.course_id, u3.h, min(u3.score) possible_beetles
+                   from wmg_rounds_unpivot_mv u3
+                      , wmg_tournament_sessions ts3
+                  where ts3.week = u3.week
+                    and ts3.id = p_tournament_session_id
+                    and u3.score > 1 -- non-ace score
+                  group by u3.course_id, u3.h
+           )
+          having count(*) <= 3  -- only when less than 3 people got it
+           group by u2.course_id, u2.h, u2.score
+      )
+     group by u.player_id
   )
   , diamond as (
     select u.player_id, count(*) aces
@@ -925,6 +955,15 @@ begin
        , cactus
    where p.tournament_session_id = p_tournament_session_id
      and p.player_id = cactus.player_id
+  union all
+  select p.tournament_session_id
+       , p.player_id
+       , 'BEETLE' badge
+       , beetle.n badge_count
+    from wmg_tournament_session_points_v p
+       , beetle
+   where p.tournament_session_id = p_tournament_session_id
+     and p.player_id = beetle.player_id
   union all
   select p.tournament_session_id
        , p.player_id
