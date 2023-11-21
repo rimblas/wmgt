@@ -256,6 +256,14 @@ begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
 
+  if p_from_player_id is null or p_into_player_id is null then
+    raise_application_error(-20000, 'Select two players');
+  end if;
+
+  if p_from_player_id = p_into_player_id then
+    raise_application_error(-20001, 'Cannot merge the same player');
+  end if;
+
   select *
     into l_player_rec
     from wmg_players
@@ -292,11 +300,24 @@ begin
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
 
+  log('.. Move tournament rounds', l_scope);
   update wmg_rounds
      set players_id = p_into_player_id
    where players_id = p_from_player_id;
 
+  log('.. Move player badges', l_scope);
+  update wmg_player_badges
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+  log('.. Move player unicorns', l_scope);
+  update wmg_player_unicorns
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+
   if p_remove_from_player then
+    log('.. Delete old player', l_scope);
     delete
       from wmg_players
      where id = p_from_player_id;

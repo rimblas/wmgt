@@ -478,124 +478,6 @@ end reset_room_assignments;
 
 
 /**
- * Given a tournament session, send push notifications when the rooms have been assigned
- * to all the players that registered for this session AND opted in for push notifications.
- *
- *
- * @example
- * 
- * @issue
- *
- * @author Jorge Rimblas
- * @created September 24, 2023
- * @param p_tournament_session_id
- * @return
- */
-procedure notify_room_assignments(
-    p_tournament_session_id  in wmg_tournament_sessions.id%type
-)
-is
-  l_scope  scope_t := gc_scope_prefix || 'notify_room_assignments';
-  -- l_params logger.tab_param;
-
-  c_crlf varchar2(2) := chr(13)||chr(10);
-
-  l_room  varchar2(100);
-  l_when  varchar2(100);
-  l_who   varchar2(4000);
-
-begin
-  -- logger.append_param(l_params, 'p_param1', p_param1);
-  log('BEGIN', l_scope);
-
-  log('.. Loops through room assignments', l_scope);
-
-  for push_player in (
-    select distinct p.user_name, tp.player_id
-      from apex_appl_push_subscriptions p
-         , wmg_tournament_player_v tp
-     where p.user_name = tp.account_login
-       and tp.tournament_session_id = p_tournament_session_id
-       and tp.active_ind = 'Y'
-       and tp.rooms_open_flag = 'Y'
-       -- and p.user_name like 'rimblas%' -- for testing purposes
-  )
-  loop
-      log('.. Get room assignment for ' || push_player.user_name, l_scope);
-
-      with my_room as (
-        select p.tournament_session_id, p.time_slot, p.room_no
-             , nvl(p.prefered_tz, sessiontimezone) tz
-        from wmg_tournament_player_v p
-        where p.active_ind = 'Y'
-          and p.tournament_session_id = p_tournament_session_id
-          and p.player_id = push_player.player_id
-      )
-      , format_room as (
-        select room_no
-             , player
-             , to_char(local_tz, 'fmDy, fmMonth fmDD') 
-              || ' ' 
-              || case when tz like 'US/%' or tz like 'America%' then
-                   ltrim(to_char(local_tz, 'HH:MI PM'), '0')
-                 else 
-                   to_char(local_tz, 'HH24:MI')
-                 end
-              || ' ' || tz at_local_time
-        from (
-          select p.tournament_player_id
-               , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
-               , case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
-              || apex_escape.html(p.player_name) player
-               , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || p.time_slot) at time zone r.tz local_tz
-               , r.tz
-          from wmg_tournament_player_v p
-             , wmg_tournament_sessions s
-             , my_room r
-          where s.id =  p.tournament_session_id
-            and p.active_ind = 'Y'
-            and p.tournament_session_id = r.tournament_session_id
-            and p.time_slot = r.time_slot
-            and p.room_no = r.room_no
-            and s.rooms_open_flag = 'Y'
-        )
-        order by tournament_player_id
-      )
-      select room_no
-           , at_local_time
-           , listagg(player, ', ') players
-        into l_room
-           , l_when
-           , l_who
-        from format_room
-       group by room_no, at_local_time;
-
-
-      apex_pwa.send_push_notification (
-        p_user_name      => push_player.user_name
-      , p_title          => 'Your room is ' || l_room
-      , p_body           => l_who || c_crlf
-                         || 'When: ' || l_when || c_crlf
-                         || 'Room: ' || l_room || c_crlf
-
-      );
-  end loop;
-
-  log('.. push_queue!', l_scope);
-  apex_pwa.push_queue;
-
-  log('END', l_scope);
-
-  exception
-    when OTHERS then
-      log('Unhandled Exception', l_scope);
-      raise;
-end notify_room_assignments;
-
-
-
-
-/**
  * Given a Discord ID see if this player's name matches one of the existing
  * players.
  *
@@ -1988,7 +1870,7 @@ procedure add_unicorns(
 )
 is
   l_scope  scope_t := gc_scope_prefix || 'add_unicorns';
-  l_attepts number;
+  l_attempts number;
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
@@ -1999,7 +1881,8 @@ begin
         from wmg_tournament_courses c
            , wmg_tournament_sessions s
         where s.id = c.tournament_session_id
-          and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+          and c.course_id in (select course_id from wmg_tournament_courses where tournament_session_id = p_tournament_session_id)
+          and s.completed_ind = 'Y'
         group by c.course_id
   )
   , courses_played as (
@@ -2007,7 +1890,7 @@ begin
       from wmg_courses_v  c
          , course_play_count cc
       where c.course_id = cc.course_id
-        and cc.play_count >= 5
+        and cc.play_count >= 5  -- filter qualifying courses. 5 x or more
   )
   select uni.course_name
        , uni.course_id
@@ -2052,7 +1935,7 @@ begin
 
     -- count the number of attempts at the hole before the unicorn
     select count(*) attempts
-      into l_attepts
+      into l_attempts
      from wmg_rounds_unpivot_mv a
      where a.course_id = u.course_id
        and a.h = u.h
@@ -2077,7 +1960,7 @@ begin
     select u.course_id
        , u.ace_by_player_id
        , u.h
-       , l_attepts
+       , l_attempts
        , ts.id                    score_tournament_session_id
        , p_tournament_session_id  award_tournament_session_id
      from wmg_tournament_sessions ts
@@ -2085,6 +1968,41 @@ begin
 
     log('Added ' || SQL%ROWCOUNT, l_scope);
   end loop;
+
+/*
+  for u in (
+    with course_play_count as (
+          select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+          from wmg_tournament_courses c
+             , wmg_tournament_sessions s
+          where s.id = c.tournament_session_id
+            and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+          group by c.course_id
+    )
+    , courses_played as (
+        select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+        from wmg_courses_v  c
+           , course_play_count cc
+        where c.course_id = cc.course_id
+          and cc.play_count >= 5
+    )
+    select course_id
+      from courses_played;
+
+
+
+  update wmg_player_unicorns pu
+  set pu.repeat_count = (
+      select count(*)
+      from wmg_rounds_unpivot_mv u
+         , wmg_players_v p
+      where u.player_id = p.id
+        and u.course_id = pu.course_id
+        and u.h = pu.h
+        and u.score = 1
+  )
+  where pu.course_id = 185
+*/
 
   log('END', l_scope);
 
