@@ -1,0 +1,614 @@
+---
+# ====== Page: System Parameters =============================
+id: 560
+identification: 
+  name: System Parameters
+  alias: SYSTEM-PARAMETERS
+  title: System Parameters
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authorization-scheme: Tournament Admin # 55902033226819493948
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: System Parameters ===========================
+  id: 50605928100453662
+  identification: 
+    title: System Parameters
+    type: Interactive Grid
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_PARAMETERS
+    include-rowid-column: false
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Interactive Report # 46995096482313514365
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 50606419035453664
+    edit: 
+      enabled: true
+      allowed-operations: 
+      - Update Row
+      lost-update-type: Row Values
+
+    performance: 
+      lazy-loading: false
+
+    appearance: 
+      select-first-row: true
+      fixed-row-height: true
+
+    pagination: 
+      type: Page
+      show-total-count: true
+
+    toolbar: 
+      show: true
+      controls: 
+      - Search Column Selection
+      - Search Field
+      - Actions Menu
+      - Reset Button
+      - Save Button
+
+    enable-users-to: 
+      save-public-report: false
+      flashback: false
+      define-chart-view: false
+      download: false
+
+    heading: 
+      fixed-to: Page
+
+    icon-view: 
+      show: false
+
+    detail-view: 
+      show: false
+
+    saved-reports: 
+    - # ====== Saved Report: Primary Report ========================
+      id: 50606812736453669
+      identification: 
+        name: Primary Report
+        alias: 506069
+
+  columns: 
+  - # ====== Column: APEX$ROW_SELECTOR ===========================
+    id: 50607200740453677
+    identification: 
+      column-name: APEX$ROW_SELECTOR
+      type: Row Selector
+
+    settings: 
+      enable-multi-select: true
+      show-select-all: true
+      hide-control: false
+
+    layout: 
+      sequence: 10
+
+  - # ====== Column: APEX$ROW_ACTION =============================
+    id: 50607717056453678
+    identification: 
+      column-name: APEX$ROW_ACTION
+      type: Actions Menu
+
+    layout: 
+      sequence: 20
+
+  - # ====== Column: ID ==========================================
+    id: 50608603523453695
+    identification: 
+      column-name: ID
+      type: Hidden
+
+    settings: 
+      value-protected: true
+
+    layout: 
+      sequence: 30
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: ID
+      data-type: NUMBER
+      query-only: true
+      primary-key: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+
+  - # ====== Column: CATEGORY ====================================
+    id: 50609673401453698
+    identification: 
+      column-name: CATEGORY
+      type: HTML Expression
+
+    heading: 
+      heading: Category
+      alignment: start
+
+    settings: 
+      html-expression: <h3>&CATEGORY.</h3>
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: CATEGORY
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: false
+
+  - # ====== Column: NAME_KEY ====================================
+    id: 50610679243453700
+    identification: 
+      column-name: NAME_KEY
+      type: Display Only
+
+    heading: 
+      heading: Name Key
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: NAME_KEY
+      data-type: VARCHAR2
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: false
+
+  - # ====== Column: VALUE =======================================
+    id: 50611675433453704
+    identification: 
+      column-name: VALUE
+      type: Textarea
+
+    heading: 
+      heading: Value
+      alignment: start
+
+    settings: 
+      resizable: true
+      auto-height: false
+      character-counter: false
+      trim-spaces: Leading and Trailing
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+      maximum-length: 4000
+
+    source: 
+      type: Database Column
+      database-column: VALUE
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: false
+
+  - # ====== Column: DESCRIPTION =================================
+    id: 50612652128453706
+    identification: 
+      column-name: DESCRIPTION
+      type: Textarea
+
+    heading: 
+      heading: Description
+      alignment: start
+
+    settings: 
+      resizable: true
+      auto-height: false
+      character-counter: false
+      trim-spaces: Leading and Trailing
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    validation: 
+      value-required: false
+      maximum-length: 4000
+
+    source: 
+      type: Database Column
+      database-column: DESCRIPTION
+      data-type: VARCHAR2
+      query-only: false
+      primary-key: false
+
+    default: 
+      duplicate-copies-existing-value: true
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: None
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: false
+      hide: true
+
+  - # ====== Column: CREATED_ON ==================================
+    id: 50613622661453710
+    identification: 
+      column-name: CREATED_ON
+      type: Display Only
+
+    heading: 
+      heading: Created On
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: CREATED_ON
+      data-type: TIMESTAMP WITH LOCAL TIME ZONE
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      lov-type: Distinct Column
+      date-ranges: All
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: CREATED_BY ==================================
+    id: 50614617773453712
+    identification: 
+      column-name: CREATED_BY
+      type: Display Only
+
+    heading: 
+      heading: Created By
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 90
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: CREATED_BY
+      data-type: VARCHAR2
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: UPDATED_ON ==================================
+    id: 50615692257453715
+    identification: 
+      column-name: UPDATED_ON
+      type: Display Only
+
+    heading: 
+      heading: Updated On
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 100
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: UPDATED_ON
+      data-type: TIMESTAMP WITH LOCAL TIME ZONE
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      lov-type: Distinct Column
+      date-ranges: All
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+  - # ====== Column: UPDATED_BY ==================================
+    id: 50616626774453717
+    identification: 
+      column-name: UPDATED_BY
+      type: Display Only
+
+    heading: 
+      heading: Updated By
+      alignment: start
+
+    settings: 
+      format: Plain Text
+      based-on: Item Value
+
+    layout: 
+      sequence: 110
+      column-alignment: start
+      stretch: Use Report Setting
+
+    accessibility: 
+      value-identifies-row: false
+
+    source: 
+      type: Database Column
+      database-column: UPDATED_BY
+      data-type: VARCHAR2
+      query-only: true
+      primary-key: false
+
+    session-state: 
+      data-type: VARCHAR2
+
+    column-filter: 
+      enabled: true
+      performance-impacting-operators: 
+      - Contains
+      - Starts With
+      - Case Insensitive
+      - Regular Expression
+      text-case: Mixed
+      lov-type: Distinct Column
+      exact-match: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    enable-users-to: 
+      sort: true
+      control-break/aggregate: true
+      hide: true
+
+processes: 
+- # ====== Process: System Parameters - Save Interactive Grid Da
+  id: 50617632829453724
+  identification: 
+    name: System Parameters - Save Interactive Grid Data
+    type: Interactive Grid - Automatic Row Processing (DML)
+    execution-chain: None
+    editable-region: System Parameters # 50605928100453662
+
+  settings: 
+    target-type: Region Source
+    prevent-lost-updates: true
+    lock-row: Yes
+    return-primary-key(s)-after-insert: true
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    execution-scope: For Created and Modified Rows
+

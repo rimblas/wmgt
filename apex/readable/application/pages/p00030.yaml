@@ -1912,6 +1912,10 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
+      declare
+        l_rank_code    wmg_players_v.rank_code%type;
+      begin
+      
       if :REQUEST = 'UNREGISTER' then
         :G_ENROLLED_IND := 'N';
         :G_REGISTRATION_ID := null;
@@ -1951,19 +1955,32 @@ processes:
       if :REQUEST = 'SIGNUP' and :G_REGISTRATION_ID is null then
         begin
           select tp.id
+               , p.rank_code
             into :G_REGISTRATION_ID
+               , l_rank_code
           from wmg_tournament_players tp
-             , wmg_players p
+             , wmg_players_v p
           where tp.player_id = p.id
             and tp.tournament_session_id = :G_CURRENT_SESSION_ID
-            and p.account_login = :APP_USER
+            and p.id = :P30_PLAYER_ID
             and tp.active_ind = 'Y';
          exception
           when no_data_found then
             -- this should not happen but lets protect
             :G_REGISTRATION_ID := null;
          end;
+      
+         if l_rank_code = 'NEW' then
+             wmg_notification.new_player(
+                p_player_id => :P30_PLAYER_ID
+              , p_registration_id => :G_REGISTRATION_ID
+            );
+      
+          end if;
+      
       end if;
+      
+      end;
 
   execution: 
     sequence: 10

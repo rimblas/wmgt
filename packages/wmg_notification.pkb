@@ -286,7 +286,7 @@ begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
 
-  log('.. Gather the new session into', l_scope);
+  log('.. Gather the new session info. id=' || p_tournament_session_id, l_scope);
 
   for new_session in (
     select round_num, week, session_date
@@ -308,6 +308,8 @@ begin
             || 'When:' || c_crlf
             || to_char(new_session.session_date);
 
+    log('title:' || l_title, l_scope);
+    log(l_what, l_scope);
     for push_player in (
       select distinct user_name
         from apex_appl_push_subscriptions
