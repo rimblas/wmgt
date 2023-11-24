@@ -5692,41 +5692,6 @@ buttons:
     - with
     - Discord"
 
-- # ====== Button: PUSH ========================================
-  id: 49806238128068420
-  identification: 
-    button-name: PUSH
-    label: Push
-
-  layout: 
-    sequence: 49
-    region: No Parent
-    position: BODY
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    alignment: Right
-
-  appearance: 
-    button-template: Text with Icon # 46995174047152514400
-    hot: false
-    template-options: 
-    - '#DEFAULT#'
-    - t-Button--iconLeft
-
-  behavior: 
-    action: Submit Page
-    execute-validations: true
-    warn-on-unsaved-changes: Do Not Check
-
-  security: 
-    authorization-scheme: Administration Rights # 46995203575692514425
-
-  configuration: 
-    build-option: 'Feature: Push Notifications' # 18634749735748301
-
 - # ====== Button: MY_ROUNDS ===================================
   id: 57673651285599605
   identification: 
@@ -6043,6 +6008,9 @@ processes:
           p_page_id    => 1
       );
       
+      
+      
+      
 
   execution: 
     sequence: 20
@@ -6104,42 +6072,6 @@ processes:
 
   configuration: 
     build-option: Commented Out # 46995003406591514325
-
-- # ====== Process: New_1 ======================================
-  id: 49807243293068430
-  identification: 
-    name: New_1
-    type: Execute Code
-    execution-chain: None
-
-  source: 
-    location: Local Database
-    language: PL/SQL
-    pl/sql-code: |
-      /*
-      BEGIN
-          apex_pwa.send_push_notification (
-              p_application_id => :APP_ID
-            , p_user_name      => 'rimblas  (discord)' -- :APP_USER,
-            , p_title          => 'Your room has been assigned'
-            , p_body           => 'Your tournament room is set' );
-      
-          apex_pwa.push_queue;
-      
-      END;
-      */
-      wmg_util.notify_room_assignments(p_tournament_session_id => :G_CURRENT_SESSION_ID);
-
-  execution: 
-    sequence: 10
-    point: Processing
-    run-process: Once Per Page Visit (default)
-
-  error: 
-    display-location: Inline in Notification
-
-  server-side-condition: 
-    when-button-pressed: PUSH # 49806238128068420
 
 branches: 
 - # ====== Branch: Go Match existing player to Discord account =
