@@ -308,7 +308,7 @@ page-items:
     type: Popup LOV
 
   label: 
-    label: Your Country
+    label: Find your Country
     alignment: Left
 
   settings: 
@@ -404,7 +404,7 @@ page-items:
     type: Select List
 
   label: 
-    label: Your Region
+    label: Select your Region
     alignment: Left
 
   settings: 
@@ -481,39 +481,15 @@ page-items:
   id: 57677017896599639
   identification: 
     name: P18_NAME
-    type: Text Field
-
-  label: 
-    label: Display name
-    alignment: Left
+    type: Hidden
 
   settings: 
-    subtype: Text
-    trim-spaces: Leading and Trailing
-    text-case: NO CHANGE
-    submit-when-enter-pressed: false
-    disabled: false
+    value-protected: true
 
   layout: 
     sequence: 30
     region: Welcome &G_DISCORD.! # 59882845077489659
     position: BODY
-    alignment: Left
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-    label-column-span: Page Template Default
-
-  appearance: 
-    template: Optional - Floating # 46995171503553514398
-    template-options: 
-    - '#DEFAULT#'
-    width: 30
-
-  validation: 
-    value-required: false
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -527,18 +503,16 @@ page-items:
     static-value: '&G_DISCORD_NAME.'
 
   session-state: 
+    data-type: VARCHAR2
     storage: Per Session (Persistent)
-
-  quick-picks: 
-    show-quick-picks: false
 
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-  help: 
-    inline-help-text: Set ONLY if you use a Display Name for the WMG Discord server different than your username.
+  comments: 
+    comments: Set ONLY if you use a Display Name for the WMG Discord server different than your username.
 
 buttons: 
 - # ====== Button: SETUP =======================================
