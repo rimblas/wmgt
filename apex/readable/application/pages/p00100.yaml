@@ -1847,7 +1847,7 @@ regions:
       from (
           select result, who, total, rank() over (order by total desc) rn
           from (
-          select '<i class="em em-gem" aria-role="presentation" aria-label="LARGE BLUE DIAMOND"></i> '
+          select '<i class="em em-gem" aria-role="presentation" aria-label="DIAMOND"></i> '
               || 'Player(s) with most Aces' result
                , r.player_name who
                , sum(decode(s1, 1, 1, 0)
@@ -1877,6 +1877,21 @@ regions:
       )
       where rn = 1
       group by  result, total
+      union all
+      select '<i class="em em-coconut" title="Coconut"></i> Coconuts' result, ' - Listed in Results -' who,  count(*) total
+      from (
+          select u.week
+            from wmg_rounds_unpivot_mv u
+               , wmg_tournament_sessions ts
+               , wmg_tournament_players tp
+           where ts.week = u.week
+             and ts.id = tp.tournament_session_id
+             and tp.player_id = u.player_id
+             and tp.issue_code is null  -- only players with no issues are eligible
+             and u.week = :P100_WEEK
+           having sum(case when par <= 0 then 1 else 0 end) = 36
+           group by u.week, u.player_id
+      )
       union all
       select 'Players w/zero Aces on Hard' result, '- Undisclosed -' who, count(*) total
       from ( 

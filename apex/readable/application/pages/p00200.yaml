@@ -30,6 +30,7 @@ javascript:
     		'topPlayersRegion', 
     		'courseStatsChart',
     		'strokeHistogram',
+            'courseDetails',
     		'buttonPreviewJS',
     		'unicornAces',
     		'futureUnicornAces',
@@ -2911,6 +2912,137 @@ regions:
 
       tick-label: 
         show: true
+
+- # ====== Region: {View Course Details Button} ================
+  id: 50056607913137714
+  identification: 
+    title: '{View Course Details Button}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select id course_id
+      from wmg_courses
+      where id = :P200_COURSE_ID
+    page-items-to-submit: 
+    - P200_COURSE_ID
+
+  layout: 
+    sequence: 10
+    parent-region: '{options}' # 43228410746087619
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 3
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: courseDetails
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: COURSE_ID ===================================
+    id: 50056797009137715
+    identification: 
+      column-name: COURSE_ID
+      type: Link
+
+    heading: 
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:3:&SESSION.::&DEBUG.:3:P3_ID:#COURSE_ID#'
+        page: 3 # Course
+        clear-cache: 3
+        values: 
+          p3_id: '#COURSE_ID#'
+
+      link-text: Explore Course Details
+      link-attributes: class="t-Button t-Button--small t-Button--link"
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: false
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 - # ====== Region: Hole Preview ================================
   id: 20769742293250454856

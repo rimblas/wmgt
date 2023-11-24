@@ -120,6 +120,7 @@ javascript:
             badgeMenuAction(btn, this, 'BEETLE', btn.dataset.id);
           },
           hide: function () {
+              return true; // beetles are now automated. -- TODO jrimblas: remove!
               var btn$ = $("button.is-active.js-menuButton");
               return hasIssue(btn$);
           }
@@ -1794,7 +1795,6 @@ regions:
       with coconut as (
           select u.week
                , u.player_id, sum(case when score is not null and par <= 0 then 1 else 0 end) under_par
-               , sum(case when score = 1 then 1 else 0 end) hn1_count
             from wmg_rounds_unpivot_mv u
                , wmg_tournament_sessions ts
                , wmg_tournament_players tp
@@ -1846,6 +1846,33 @@ regions:
                   and u2.score = 1
                   group by u2.player_id
              )
+      )
+      , beetle as (
+           select u.player_id, count(*) n
+             from wmg_rounds_unpivot_mv u
+                 , wmg_tournament_players tp
+                 , wmg_tournament_sessions ts
+             where ts.week = u.week
+               and ts.id = tp.tournament_session_id
+               and tp.player_id = u.player_id
+               and tp.issue_code is null  -- only players with no issues are eligible
+               and u.week = :P60_WEEK
+               and ts.completed_ind = 'N'  -- only live results
+               and (u.course_id, u.h, u.score) in (
+                select u.course_id, u.h, u.score
+                  from wmg_rounds_unpivot_mv u
+                  where u.week = :P60_WEEK
+                   and (u.course_id, u.h, u.score) in (
+                       select u2.course_id, u2.h, min(u2.score) possible_beetles
+                          from  wmg_rounds_unpivot_mv u2
+                          where u2.week = :P60_WEEK
+                          and u2.score > 1 -- non-ace score
+                          group by u2.course_id, u2.h
+                 )
+                having count(*) <= 3
+                 group by u.course_id, u.h, u.score
+            )
+           group by u.player_id
       )
       , badges as (
        select p.tournament_session_id, p.player_id
@@ -1903,8 +1930,9 @@ regions:
                when 3 then 'em-third_place_medal '
                end
              end
-          || decode(coconut.under_par, 36, 'em-coconut' || decode(cactus.player_id, null, '', ' '), '') 
-          || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) 
+          || decode(coconut.under_par, 36, 'em-coconut' || case when cactus.player_id is null and beetle.player_id is null then '' else ' ' end, '') 
+          || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) || decode(cactus.player_id, null, null, ' ')
+          || decode(beetle.player_id, null, null, (select listagg('em-beetle', ' ') from dual connect by level <= beetle.n) ) 
           || decode(diamond.player_id, null, '', ' ') || decode(diamond.player_id, null, null, 'em-gem')
           || ' ' || badges.other_badges || ' ' || unicorns.unicorn_badges badges
            , nvl(badges.badge_json, '{}') badge_json
@@ -1922,16 +1950,18 @@ regions:
       , cactus
       , badges
       , diamond
+      , beetle
       , unicorns
       , me
       where sp.week = :P60_WEEK
         and sp.player_id = pp.id
+        and sp.player_id = p.player_id (+)
         and sp.player_id = coconut.player_id (+)
         and sp.player_id = cactus.player_id (+)
         and sp.player_id = diamond.player_id (+)
+        and sp.player_id = beetle.player_id (+)
         and sp.player_id = badges.player_id (+)
         and sp.player_id = unicorns.player_id (+)
-        and sp.player_id = p.player_id (+)
         and sp.tournament_session_id = p.tournament_session_id (+)
         and p.issue_code = i.code (+)
         and (:P60_ONLY_ME_IND = 'N' 
