@@ -2205,7 +2205,7 @@ processes:
       
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -2236,7 +2236,7 @@ processes:
       
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -2250,10 +2250,10 @@ processes:
   server-side-condition: 
     when-button-pressed: CLOSE_WEEKEND # 16730497793921831
 
-- # ====== Process: Save Courses ===============================
+- # ====== Process: Save Courses & Push Notifications ==========
   id: 56024166207057751661
   identification: 
-    name: Save Courses
+    name: Save Courses & Push Notifications
     type: Execute Code
     execution-chain: None
 
@@ -2297,6 +2297,14 @@ processes:
       apex_region.purge_cache (
           p_page_id    => 1
       );
+      
+      commit; -- Make sure everything up to now is saved.
+      
+      if :REQUEST = 'CREATE' then
+      -- apex_debug.message('[%s] %s', 'Save Courses & Push Notifications', 'P532_ID=' || :P532_ID);
+      wmg_notification.notify_new_courses(p_tournament_session_id => :P532_ID);
+      end if;
+      
 
   execution: 
     sequence: 20
@@ -2361,7 +2369,7 @@ processes:
     - REQUEST
 
   execution: 
-    sequence: 50
+    sequence: 60
     point: Processing
     run-process: Once Per Page Visit (default)
 
