@@ -1,0 +1,1825 @@
+---
+# ====== Page: Merge Players =================================
+id: 80
+identification: 
+  name: Merge Players
+  alias: MERGE-PLAYERS
+  title: Merge Players
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authorization-scheme: Tournament Admin # 55902033226819493948
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Merge Players ===============================
+  id: 50056833214137716
+  identification: 
+    title: Merge Players
+    type: Static Content
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {From} ======================================
+  id: 50057284904137720
+  identification: 
+    title: '{From}'
+    type: Static Content
+
+  source: 
+    html-code: <h2>Remove</h2>
+
+  layout: 
+    sequence: 25
+    parent-region: Merge Players # 50056833214137716
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Into} ======================================
+  id: 50057365741137721
+  identification: 
+    title: '{Into}'
+    type: Static Content
+
+  source: 
+    html-code: <h2>Keep</h2>
+
+  layout: 
+    sequence: 35
+    parent-region: Merge Players # 50056833214137716
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 5
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Options} ===================================
+  id: 50057553180137723
+  identification: 
+    title: '{Options}'
+    type: Static Content
+
+  source: 
+    html-code: <h2>&nbsp;</h2>
+
+  layout: 
+    sequence: 45
+    parent-region: Merge Players # 50056833214137716
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-sm
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Stats =======================================
+  id: 50058078467137728
+  identification: 
+    title: Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select 'Rounds' stat, count(*) n
+      from wmg_rounds
+      where players_id = :P80_FROM_PLAYER_ID
+      
+    page-items-to-submit: 
+    - P80_FROM_PLAYER_ID
+
+  layout: 
+    sequence: 60
+    parent-region: '{From}' # 50057284904137720
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 10
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No rounds -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: STAT ========================================
+    id: 50058143332137729
+    identification: 
+      column-name: STAT
+      type: Plain Text
+
+    heading: 
+      heading: Stat
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: N ===========================================
+    id: 50058234843137730
+    identification: 
+      column-name: N
+      type: Plain Text
+
+    heading: 
+      heading: N
+      alignment: end
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Discord Stats ===============================
+  id: 50058535991137733
+  identification: 
+    title: Discord Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      
+      with stats as (
+          select tp.player_id, max(ts.session_date) last_played
+            from wmg_tournament_players tp
+               , wmg_tournament_sessions ts
+          where tp.tournament_session_id = ts.id
+          group by tp.player_id
+      )
+      , current_tournament as (
+          select tp.player_id
+            from wmg_tournament_players tp
+           where tournament_session_id = :G_CURRENT_SESSION_ID 
+      )
+      select case when p.discord_id is not null then
+              wmg_discord.avatar_link(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar)
+             else '' end discord_profile
+           , p.player_name, p.discord_id, p.discord_discriminator, p.prefered_tz, p.country_code
+          , s.last_played
+      from wmg_players_v p
+           , stats s
+           , current_tournament ct
+      where p.id = s.player_id (+)
+        and p.id = ct.player_id (+)
+        and p.id > 0
+        and p.id = :P80_FROM_PLAYER_ID
+      
+    page-items-to-submit: 
+    - P80_FROM_PLAYER_ID
+
+  layout: 
+    sequence: 40
+    parent-region: '{From}' # 50057284904137720
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Value Attribute Pairs - Column # 46995141981277514384
+      template-options: 
+      - '#DEFAULT#'
+      - t-AVPList--leftAligned
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- Select a Player -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: DISCORD_ID ==================================
+    id: 50058957882137737
+    identification: 
+      column-name: DISCORD_ID
+      type: Plain Text
+
+    heading: 
+      heading: Discord Id
+      alignment: end
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_DISCRIMINATOR =======================
+    id: 50059072649137738
+    identification: 
+      column-name: DISCORD_DISCRIMINATOR
+      type: Plain Text
+
+    heading: 
+      heading: Discord Discriminator
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PREFERED_TZ =================================
+    id: 50059172079137739
+    identification: 
+      column-name: PREFERED_TZ
+      type: Plain Text
+
+    heading: 
+      heading: TZ
+      alignment: start
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 50059276202137740
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Country Code
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_PROFILE =============================
+    id: 50455018059338205
+    identification: 
+      column-name: DISCORD_PROFILE
+      type: Plain Text
+
+    heading: 
+      heading: Discord Profile
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 50455163518338206
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player Name
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: LAST_PLAYED =================================
+    id: 50455233919338207
+    identification: 
+      column-name: LAST_PLAYED
+      type: Plain Text
+
+    heading: 
+      heading: Last Played
+      alignment: start
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Discord Stats ===============================
+  id: 50059493884137742
+  identification: 
+    title: Discord Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with stats as (
+          select tp.player_id, max(ts.session_date) last_played
+            from wmg_tournament_players tp
+               , wmg_tournament_sessions ts
+          where tp.tournament_session_id = ts.id
+          group by tp.player_id
+      )
+      , current_tournament as (
+          select tp.player_id
+            from wmg_tournament_players tp
+           where tournament_session_id = :G_CURRENT_SESSION_ID 
+      )
+      select case when p.discord_id is not null then
+              wmg_discord.avatar_link(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar)
+             else '' end discord_profile
+           , p.player_name, p.discord_id, p.discord_discriminator, p.prefered_tz, p.country_code
+          , s.last_played
+      from wmg_players_v p
+           , stats s
+           , current_tournament ct
+      where p.id = s.player_id (+)
+        and p.id = ct.player_id (+)
+        and p.id > 0
+        and p.id = :P80_INTO_PLAYER_ID
+      
+    page-items-to-submit: 
+    - P80_INTO_PLAYER_ID
+
+  layout: 
+    sequence: 40
+    parent-region: '{Into}' # 50057365741137721
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Value Attribute Pairs - Column # 46995141981277514384
+      template-options: 
+      - '#DEFAULT#'
+      - t-AVPList--leftAligned
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- Select a Player -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: DISCORD_ID ==================================
+    id: 50059681534137744
+    identification: 
+      column-name: DISCORD_ID
+      type: Plain Text
+
+    heading: 
+      heading: Discord Id
+      alignment: end
+
+    layout: 
+      sequence: 30
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_DISCRIMINATOR =======================
+    id: 50059739380137745
+    identification: 
+      column-name: DISCORD_DISCRIMINATOR
+      type: Plain Text
+
+    heading: 
+      heading: Discord Discriminator
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PREFERED_TZ =================================
+    id: 50059870591137746
+    identification: 
+      column-name: PREFERED_TZ
+      type: Plain Text
+
+    heading: 
+      heading: TZ
+      alignment: start
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 50059994860137747
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Country Code
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_PROFILE =============================
+    id: 50455306757338208
+    identification: 
+      column-name: DISCORD_PROFILE
+      type: Plain Text
+
+    heading: 
+      heading: Discord Profile
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 50455451178338209
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player Name
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: LAST_PLAYED =================================
+    id: 50455512891338210
+    identification: 
+      column-name: LAST_PLAYED
+      type: Plain Text
+
+    heading: 
+      heading: Last Played
+      alignment: start
+
+    layout: 
+      sequence: 80
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Stats =======================================
+  id: 50060069970137748
+  identification: 
+    title: Stats
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select 'Rounds' stat, count(*) n
+      from wmg_rounds
+      where players_id = :P80_INTO_PLAYER_ID
+      
+    page-items-to-submit: 
+    - P80_INTO_PLAYER_ID
+
+  layout: 
+    sequence: 40
+    parent-region: '{Into}' # 50057365741137721
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 11
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    messages: 
+      when-no-data-found: '- No rounds -'
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: STAT ========================================
+    id: 50060156256137749
+    identification: 
+      column-name: STAT
+      type: Plain Text
+
+    heading: 
+      heading: Stat
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: N ===========================================
+    id: 50060284593137750
+    identification: 
+      column-name: N
+      type: Plain Text
+
+    heading: 
+      heading: N
+      alignment: end
+
+    layout: 
+      sequence: 20
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Info ========================================
+  id: 50454948575338204
+  identification: 
+    title: Info
+    type: Static Content
+
+  source: 
+    html-code: <h4>Left player will be merged into <span aria-hidden="true" class="fa fa-arrow-right-alt fa-anim-horizontal-shake fa-lg"></span> Right Player</h4>
+
+  layout: 
+    sequence: 5
+    parent-region: Merge Players # 50056833214137716
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    css-classes: 
+    - u-tC
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Action ======================================
+  id: 50455687938338211
+  identification: 
+    title: Action
+    type: Static Content
+
+  layout: 
+    sequence: 90
+    parent-region: Merge Players # 50056833214137716
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-lg
+    css-classes: 
+    - u-tC
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+page-items: 
+- # ====== Page Item: P80_FROM_PLAYER_ID =======================
+  id: 50056954055137717
+  identification: 
+    name: P80_FROM_PLAYER_ID
+    type: Popup LOV
+
+  label: 
+    label: From Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{From}' # 50057284904137720
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46995172770404514399
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P80_INTO_PLAYER_ID =======================
+  id: 50057047921137718
+  identification: 
+    name: P80_INTO_PLAYER_ID
+    type: Popup LOV
+
+  label: 
+    label: Into Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 10
+    region: '{Into}' # 50057365741137721
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Required - Floating # 46995172770404514399
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: true
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
+    display-null-value: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P80_REMOVE_FROM_PLAYER_IND ===============
+  id: 50057989005137727
+  identification: 
+    name: P80_REMOVE_FROM_PLAYER_IND
+    type: Switch
+
+  label: 
+    label: Delete Player?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 20
+    region: '{From}' # 50057284904137720
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: |
+      Delete this player after merge?
+      <br>
+      The recommendation is YES, always.
+      
+
+buttons: 
+- # ====== Button: SWAP ========================================
+  id: 50057176114137719
+  identification: 
+    button-name: SWAP
+    label: Swap
+
+  layout: 
+    sequence: 10
+    region: '{Options}' # 50057553180137723
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--large
+    icon: fa-exchange
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
+- # ====== Button: MERGE_PLAYERS ===============================
+  id: 50455717499338212
+  identification: 
+    button-name: MERGE_PLAYERS
+    label: Merge Players!
+
+  layout: 
+    sequence: 20
+    region: Action # 50455687938338211
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--large
+    - t-Button--danger
+    - t-Button--iconRight
+    - t-Button--hoverIconPush
+    icon: fa-compress
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  confirmation: 
+    message: Are you sure? This operation cannot be undone!
+    style: Danger
+
+- # ====== Button: CANCEL ======================================
+  id: 50455873716338213
+  identification: 
+    button-name: CANCEL
+    label: Cancel
+
+  layout: 
+    sequence: 10
+    region: Action # 50455687938338211
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 2
+    new-column: true
+    column-span: 2
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:6:&SESSION.::&DEBUG.:::'
+      page: 6 # Players
+
+    warn-on-unsaved-changes: Do Not Check
+
+dynamic-actions: 
+- # ====== Dynamic Action: Swap Players ========================
+  id: 50057797338137725
+  identification: 
+    name: Swap Players
+
+  execution: 
+    sequence: 10
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: SWAP # 50057176114137719
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 50057864281137726
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var fromID = $v("P80_FROM_PLAYER_ID")
+         toID = $v("P80_INTO_PLAYER_ID");
+        
+        apex.item("P80_FROM_PLAYER_ID").setValue(toID);
+        apex.item("P80_INTO_PLAYER_ID").setValue(fromID);
+        
+
+    execution: 
+      sequence: 10
+      event: Swap Players # 50057797338137725
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh From PLayer  Stats ==========
+  id: 50058345318137731
+  identification: 
+    name: Refresh From PLayer  Stats
+
+  execution: 
+    sequence: 20
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P80_FROM_PLAYER_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 50058491464137732
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Stats # 50058078467137728
+
+    execution: 
+      sequence: 10
+      event: Refresh From PLayer  Stats # 50058345318137731
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 50059388121137741
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Discord Stats # 50058535991137733
+
+    execution: 
+      sequence: 20
+      event: Refresh From PLayer  Stats # 50058345318137731
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh Into Player Stats ===========
+  id: 50454650458338201
+  identification: 
+    name: Refresh Into Player Stats
+
+  execution: 
+    sequence: 30
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P80_INTO_PLAYER_ID
+
+  execution: 
+    event-scope: Static
+    type: Immediate
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 50454786318338202
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Discord Stats # 50059493884137742
+
+    execution: 
+      sequence: 10
+      event: Refresh Into Player Stats # 50454650458338201
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 50454895513338203
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Stats # 50060069970137748
+
+    execution: 
+      sequence: 20
+      event: Refresh Into Player Stats # 50454650458338201
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+validations: 
+- # ====== Validation: Don't Allow the Same user ===============
+  id: 50456452971338219
+  identification: 
+    name: Don't Allow the Same user
+
+  execution: 
+    sequence: 10
+
+  validation: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ':P80_FROM_PLAYER_ID != :P80_INTO_PLAYER_ID'
+    always-execute: false
+
+  error: 
+    error-message: Cannot merge the same player!
+    display-location: Inline with Field and in Notification
+
+processes: 
+- # ====== Process: Merge Players ==============================
+  id: 50455999843338214
+  identification: 
+    name: Merge Players
+    type: Invoke API
+    execution-chain: None
+
+  settings: 
+    type: PL/SQL Package
+    owner: PARSING SCHEMA
+    package: WMG_DISCORD
+    procedure-or-function: MERGE_PLAYERS
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Player Successfully Merged!
+
+  error: 
+    error-message: Problems merging players
+    display-location: Inline in Notification
+
+  parameters: 
+  - # ====== Parameter: p_from_player_id =========================
+    id: 50456021807338215
+    identification: 
+      name: p_from_player_id
+
+    parameter: 
+      direction: In
+      data-type: NUMBER
+      has-default: false
+
+    value: 
+      type: Item
+      item: P80_FROM_PLAYER_ID
+
+    advanced: 
+      display-sequence: 10
+
+  - # ====== Parameter: p_into_player_id =========================
+    id: 50456175438338216
+    identification: 
+      name: p_into_player_id
+
+    parameter: 
+      direction: In
+      data-type: NUMBER
+      has-default: false
+
+    value: 
+      type: Item
+      item: P80_INTO_PLAYER_ID
+
+    advanced: 
+      display-sequence: 20
+
+  - # ====== Parameter: p_remove_from_player =====================
+    id: 50456279471338217
+    identification: 
+      name: p_remove_from_player
+
+    parameter: 
+      direction: In
+      data-type: BOOLEAN
+      has-default: true
+
+    value: 
+      type: Function Body
+      language: PL/SQL
+      pl/sql-function-body: |
+        if :P80_REMOVE_FROM_PLAYER_IND = 'Y' then 
+          return true;
+        else
+          return false;
+         end if;
+        
+
+    advanced: 
+      display-sequence: 30
+
+branches: 
+- # ====== Branch: Success, branch to all players ==============
+  id: 50456300550338218
+  identification: 
+    name: Success, branch to all players
+
+  execution: 
+    sequence: 10
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:6:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 6 # Players
+
+  server-side-condition: 
+    when-button-pressed: MERGE_PLAYERS # 50455717499338212
+
