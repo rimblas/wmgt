@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Theme Default
+  page-template: Left Side Column # 46995007703516514328
   template-options: 
   - '#DEFAULT#'
 
@@ -17,7 +17,7 @@ navigation-menu:
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
 
 css: 
   file-urls: 
@@ -2286,7 +2286,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: '{col1}' # 48744215735254448
     position: BODY
     start-new-layout: false
@@ -2357,10 +2357,139 @@ regions:
   customization: 
     customizable: Not Customizable By End Users
 
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
   attributes: 
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: Badges ======================================
+  id: 50456516991338220
+  identification: 
+    title: Badges
+    type: Static Content
+
+  layout: 
+    sequence: 40
+    parent-region: '{col1}' # 48744215735254448
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: System Parameters ===========================
+  id: 50456699642338221
+  identification: 
+    title: System Parameters
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: '{col1}' # 48744215735254448
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: System Options Menu =========================
+  id: 50456781372338222
+  identification: 
+    title: System Options Menu
+    type: List
+
+  source: 
+    list: System Maintenance # 50593107333401542
+
+  layout: 
+    sequence: 40
+    parent-region: No Parent
+    position: REGION_POSITION_02
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: None
+    render-components: Above Content
+
+  advanced: 
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    appearance: 
+      list-template: Links List # 46995155368298514390
+      template-options: 
+      - '#DEFAULT#'
+      - t-LinksList--showBadge
+      - t-LinksList--showArrow
+      - t-LinksList--actions
+      - t-LinksList--showTopIcons
 
 - # ====== Region: About & Rules ===============================
   id: 50437967039206816774
@@ -3373,8 +3502,8 @@ buttons:
     label: Badge Maintenance
 
   layout: 
-    sequence: 30
-    region: '{col1}' # 48744215735254448
+    sequence: 10
+    region: Badges # 50456516991338220
     position: BODY
     start-new-layout: false
     start-new-row: true
@@ -3389,6 +3518,7 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconLeft
+    - t-Button--stretch
 
   behavior: 
     action: Redirect to Page in this Application
@@ -3413,7 +3543,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3421,6 +3551,7 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconLeft
+    - t-Button--stretch
 
   behavior: 
     action: Redirect to Page in this Application
@@ -3445,7 +3576,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3453,6 +3584,7 @@ buttons:
     template-options: 
     - '#DEFAULT#'
     - t-Button--iconLeft
+    - t-Button--stretch
 
   behavior: 
     action: Redirect to Page in this Application
