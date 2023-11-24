@@ -124,8 +124,29 @@ regions:
     exclude-title-from-translation: false
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: P3_ID
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare
+       l_row number;
+      begin
+          if apex_authorization.is_authorized('Contribution Rights') then
+            return true;
+          else
+              select count(*)
+                into l_row
+                from WMG_ROUNDS_V
+               where week = 'S00W00'
+                 and player_id = 0
+                 and course_id = :P3_ID;
+              
+              if l_row > 0 then 
+                return true;
+              else
+                return false;
+              end if;
+          end if;
+      end;
 
   server-cache: 
     caching: Disabled
@@ -767,27 +788,10 @@ regions:
     id: 48727575178200509
     identification: 
       column-name: PLAYER_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Player
-      alignment: center
+      type: Hidden Column
 
     layout: 
       sequence: 30
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -839,7 +843,7 @@ regions:
 
     layout: 
       sequence: 240
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -903,7 +907,7 @@ regions:
 
     layout: 
       sequence: 230
-      column-alignment: start
+      column-alignment: end
 
     accessibility: 
       value-identifies-row: false
@@ -1214,6 +1218,11 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
+  read-only: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: return not apex_authorization.is_authorized('Contribution Rights');
+
   server-cache: 
     caching: Disabled
 
@@ -1330,6 +1339,11 @@ page-items:
     data-type: VARCHAR2
     storage: Per Request (Memory Only)
 
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: "return apex_authorization.is_authorized('Contribution Rights') or :P3_FACTOIDS is not null;"
+
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
@@ -1360,6 +1374,10 @@ page-items:
     new-column: true
     column-span: 1
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-3
+    - col-xs-6
+    - col-xxs-6
 
   appearance: 
     template: Required - Floating # 46995172770404514399
@@ -1451,6 +1469,10 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-3
+    - col-xs-6
+    - col-xxs-6
 
   appearance: 
     template: Required - Floating # 46995172770404514399
@@ -1543,6 +1565,10 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-3
+    - col-xs-6
+    - col-xxs-6
 
   appearance: 
     template: Required - Floating # 46995172770404514399
@@ -1662,6 +1688,10 @@ page-items:
     new-column: true
     column-span: 2
     label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-3
+    - col-xs-6
+    - col-xxs-6
 
   appearance: 
     template: Optional - Floating # 46995171503553514398
