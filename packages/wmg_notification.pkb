@@ -9,6 +9,10 @@ is
  */
 
 -- CONSTANTS
+ c_embed_color_green     number := 5832556;
+ c_embed_color_lightblue number := 5814783;
+ c_crlf varchar2(2) := chr(13)||chr(10);
+
 /**
  * @constant gc_scope_prefix Standard logger package name
  */
@@ -49,6 +53,90 @@ end log;
 
 
 
+/**
+ * Send messages to Discord via Webhooks
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created November 24, 2023
+ * @param p_webhook_code Code of a webhook to use from `wmg_webhooks`
+ * @param p_content message content
+ * @param p_embeds [Optional] JSON of embeds to go along with the message
+ * @param p_user_name Optional user_name that owns the webhook
+ * @return
+ */
+procedure send_to_discord_webhook(
+    p_webhook_code    in wmg_webhooks.code%type
+  , p_content         in clob
+  , p_embeds          in clob default null
+  , p_user_name       in wmg_players.account%type default null
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'send_to_discord_webhook';
+  -- l_params logger.tab_param;
+
+  l_url           varchar2(4000);
+  l_json_body     clob;
+  l_response      clob;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+  
+  if p_embeds is null then
+    l_json_body := json_object('content' value p_content);
+  else
+        -- Construct the full JSON body
+    l_json_body := json_object(
+        'content' value p_content,
+        -- 'embeds' value json_array(p_embeds) format json -- Use FORMAT JSON for nested structures
+        'embeds' value p_embeds format json -- Use FORMAT JSON for nested structures
+    );
+  end if;
+
+  log(l_json_body, l_scope);
+
+   apex_web_service.set_request_headers(
+        p_name_01        => 'Content-Type',
+        p_value_01       => 'application/json'
+  );
+  for webhook in (
+    select h.*
+      from wmg_webhooks h
+     where h.code = p_webhook_code
+       and h.active_ind = 'Y'
+       and (p_user_name is null or owner_username = p_user_name)
+  )
+  loop
+    log('Found webhook:' || webhook.name, l_scope);  
+    l_response := apex_web_service.make_rest_request(
+        p_url           => webhook.webhook_url
+      , p_http_method   => 'POST'
+      , p_body          => l_json_body
+    );
+
+    log('l_response', l_scope);
+    log(l_response, l_scope);
+  end loop;
+
+  log('END', l_scope);
+
+exception
+  when OTHERS then
+    log('Unhandled Exception', l_scope);
+    log(l_response, l_scope);
+    raise;
+end send_to_discord_webhook;
+
+
+
+
+
+
 
 /**
  * Send a notification that a "New Player" just registered
@@ -70,9 +158,13 @@ is
   l_scope  scope_t := gc_scope_prefix || 'new_player';
 
   l_time_slot      wmg_tournament_players.time_slot%type;
+  l_registration_attempts number;
 
   l_email_override varchar2(1000);
   l_body clob;
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
@@ -86,10 +178,22 @@ begin
         into l_time_slot
         from wmg_tournament_players
        where id = p_registration_id;
+
+      
+      -- Count all registrations from this player, but exclude the current one
+      select sum(decode(id, p_registration_id, 0, decode(active_ind, 'Y', 1, 0))) registrations
+           , max(decode(id, p_registration_id, time_slot, '')) time_slot
+        into l_registration_attempts
+           , l_time_slot
+         from wmg_tournament_players
+        where player_id = p_player_id;
+
      exception
       when no_data_found then
+       l_registration_attempts := 0;
        l_time_slot := 'N/A';
     end;
+    log('registration_attempts:' || l_registration_attempts, l_scope);
     log('time_slot:' || l_time_slot, l_scope);
   end if;
 
@@ -102,6 +206,7 @@ begin
         '   ,"PLAYER_NAME":'         || apex_json.stringify( p.player_name ) ||
         '   ,"DISCORD_AVATAR":'      || apex_json.stringify( p.avatar_image ) ||
         '   ,"TIME_SLOT":'           || apex_json.stringify( l_time_slot ) ||
+        '   ,"REGISTRATION_ATTEMPTS":'|| apex_json.stringify( l_registration_attempts ) ||
         '   ,"ACCOUNT":'             || apex_json.stringify( p.account ) ||
         '   ,"NAME":'                || apex_json.stringify( p.name ) ||
         '   ,"DISCORD_ID":'          || apex_json.stringify( p.discord_id ) ||
@@ -110,14 +215,57 @@ begin
         '}' ;
 
     log(l_body, l_scope);
-
     apex_mail.send (
         p_to                 => l_email_override,
         p_from               => wmg_util.get_param('FROM_EMAIL'),
         p_template_static_id => 'NEW_PLAYER_REGISTRATION',
         p_placeholders       => l_body);
--- apex_page.get_url( 1 )
-   end loop;
+
+     -- Construct the embeds JSON for the webhook
+     l_content := 'New Player: __' || p.player_name || '__ just registered for __' || l_time_slot || '__'
+       || case
+          when l_registration_attempts > 0 then 
+           c_crlf || '__Previous Registrations to WMG__: **' || l_registration_attempts || '**' || c_crlf
+          end;
+     l_embeds := json_array (
+               json_object(
+                 'title' value 'Player: ' || p.player_name,
+                 'description' value '[' || wmg_util.get_param('ENV') || ']',
+                 'color' value c_embed_color_green,
+                 'image' value json_object('url' value p.avatar_image),
+                 'fields' value json_array(
+                     json_object(
+                         'name' value 'Display Name', 'value' value p.player_name, 'inline' value true
+                     ),
+                     json_object(
+                         'name' value 'Display Account', 'value' value p.account, 'inline' value true
+                     ),
+                     json_object(
+                         'name' value 'Discord ID', 'value' value p.discord_id
+                     ),
+                     json_object(
+                         'name' value 'Country', 'value' value p.country, 'inline' value true
+                     ),
+                     json_object(
+                         'name' value 'Timezone', 'value' value p.prefered_tz, 'inline' value true
+                     )
+                 )
+             )
+           );
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'BEAR313'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+
+  end loop;
 
   apex_mail.push_queue;
 
@@ -153,8 +301,6 @@ procedure notify_room_assignments(
 is
   l_scope  scope_t := gc_scope_prefix || 'notify_room_assignments';
   -- l_params logger.tab_param;
-
-  c_crlf varchar2(2) := chr(13)||chr(10);
 
   l_room  varchar2(100);
   l_when  varchar2(100);
