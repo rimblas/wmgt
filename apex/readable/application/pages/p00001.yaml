@@ -2087,7 +2087,7 @@ regions:
     html-code: |
       <div class="syotimer">
       </div>
-      <svg id="svg"></svg>
+      
 
   layout: 
     sequence: 1
@@ -2122,6 +2122,11 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |
+      For Halloween theme :
+      <svg id="svg"></svg>
 
   attributes: 
     settings: 
@@ -5943,6 +5948,52 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Highlight Player # 44899215379786405
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Glow Registration ===================
+  id: 50458328157338238
+  identification: 
+    name: Glow Registration
+
+  execution: 
+    sequence: 60
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: $(".t-Cards-item.glow").length > 0
+
+  execution: 
+    event-scope: Static
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_players
+      where id = :G_PLAYER_ID
+        and rank_code in ('NEW', 'AMA')
+        and :G_CURRENT_SESSION_ID is not null
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  actions: 
+  - # ====== Action: Make it Glow after a few sec delay ==========
+    id: 50458451690338239
+    identification: 
+      name: Make it Glow after a few sec delay
+      action: Execute JavaScript Code
+
+    settings: 
+      code: setTimeout(function (){$(".t-Cards-item.glow").addClass("-wm-animate-glow-blue");}, 5000);
+
+    execution: 
+      sequence: 10
+      event: Glow Registration # 50458328157338238
       fire-when-event-result-is: True
       fire-on-initialization: false
 
