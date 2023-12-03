@@ -1237,8 +1237,16 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: G_REGISTRATION_ID
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      if :G_REGISTRATION_ID is not null then
+        return true;
+      elsif apex_authorization.is_authorized('Contribution Rights') and :P30_PLAYER_ID is not null then
+        return true;
+      else
+        return false;
+      end if;
 
 - # ====== Button: CANCEL ======================================
   id: 53005782523297846335
@@ -1580,7 +1588,7 @@ dynamic-actions:
       sequence: 10
       event: Enable/Disable Signup on Rules Agreement # 36049355171175804
       fire-when-event-result-is: True
-      fire-on-initialization: true
+      fire-on-initialization: false
 
   - # ====== Action: Disable =====================================
     id: 36049592219175806
@@ -1794,6 +1802,33 @@ validations:
     error-message: You need to select a time slot
     display-location: Inline with Field and in Notification
     associated-item: P30_TZ # 57216327729555707937
+
+- # ====== Validation: Must Agree to the Rules =================
+  id: 50458247730338237
+  identification: 
+    name: Must Agree to the Rules
+
+  execution: 
+    sequence: 30
+
+  validation: 
+    type: Item = Value
+    item: P30_RULES_AGREEMENT_IND
+    value: Y
+    always-execute: false
+
+  error: 
+    error-message: You must agree to the rules to register
+    display-location: Inline with Field and in Notification
+    associated-item: P30_RULES_AGREEMENT_IND # 28678174312250949
+
+  server-side-condition: 
+    when-button-pressed: SIGNUP # 53005782911872846339
+    type: Item is NULL
+    item: G_REGISTRATION_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
 
 processes: 
 - # ====== Process: Remember Me ================================

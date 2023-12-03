@@ -767,6 +767,33 @@ begin
      )
      group by player_id
   )
+  , duck as (
+       select player_id, count(*) n
+        from (
+            select u.course_id || ':' || u.h h, u.score, u.player_id player_id
+              from wmg_rounds_unpivot_mv u
+                 , wmg_tournament_players tp
+                 , wmg_tournament_sessions ts
+             where ts.week = u.week
+               and ts.id = tp.tournament_session_id
+               and tp.player_id = u.player_id
+               and tp.issue_code is null  -- only players with no issues are eligible
+               and ts.id = p_tournament_session_id
+               and u.score = 1
+               and (u.course_id, u.h) in (
+                     select u2.course_id, u2.h
+                        -- , count(*) possible_ducks
+                       from wmg_rounds_unpivot_mv u2
+                          , wmg_tournament_sessions ts2
+                      where ts2.week = u2.week
+                        and ts2.id = p_tournament_session_id
+                        and u2.score = 1 -- ace score
+                        having count(*) between 2 and 2 
+                        group by u2.course_id, u2.h
+               )
+       )
+       group by player_id
+  )
   , beetle as (
      select u.player_id, count(*) n
        from wmg_rounds_unpivot_mv u
@@ -837,6 +864,15 @@ begin
        , cactus
    where p.tournament_session_id = p_tournament_session_id
      and p.player_id = cactus.player_id
+  union all
+  select p.tournament_session_id
+       , p.player_id
+       , 'DUCK' badge
+       , duck.n badge_count
+    from wmg_tournament_session_points_v p
+       , duck
+   where p.tournament_session_id = p_tournament_session_id
+     and p.player_id = duck.player_id
   union all
   select p.tournament_session_id
        , p.player_id

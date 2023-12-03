@@ -60,7 +60,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 40
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -577,6 +577,53 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Tournament Recap ============================
+  id: 101801312021386159
+  identification: 
+    title: Tournament Recap
+    type: Static Content
+
+  layout: 
+    sequence: 50
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: "select 1 from wmg_tournament_sessions where id = :P532_ID and rooms_defined_flag = 'Y' and rooms_open_flag = 'Y'"
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Rooms =======================================
   id: 40389412381026769161
   identification: 
@@ -741,6 +788,69 @@ page-items:
 
   session-state: 
     data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_RECAP ===============================
+  id: 101801727662386193
+  identification: 
+    name: P532_RECAP
+    type: Markdown Editor
+
+  label: 
+    label: Tournament Recap
+    alignment: Left
+
+  settings: 
+    toolbar: Full
+    syntax-highlighting: true
+
+  layout: 
+    sequence: 10
+    region: Tournament Recap # 101801312021386159
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      declare 
+       l_out clob;
+      begin
+      
+      wmg_notification.tournament_recap_template(
+          p_tournament_session_id  => :P532_ID
+        , x_out                    => l_out
+      );
+      return l_out;
+      end;
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: CLOB
     storage: Per Session (Persistent)
 
   security: 

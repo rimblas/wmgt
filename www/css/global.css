@@ -22,6 +22,7 @@
     --rw-palette-ocean-180: #13212c;
     --rw-palette-ocean-190: #0b171f;
     --rw-palette-ocean-200: #000;
+
 }
 
 @media (max-width: 639px) {
@@ -89,12 +90,31 @@
     background-color: #ff0;
     color: #000;
 }
+
+.apex-theme-ww-v1 .mark,
+.apex-theme-ww-v1 .t-Report--altRowsDefault .t-Report-report tr.mark:nth-child(odd) {
+  background-color: var(--ut-focus-outline-color);
+  color: var(--ut-alert-title-text-color);
+}
+
 /* force alternating rows to "mark" */
 .t-Report--altRowsDefault .t-Report-report tr.mark:nth-child(odd) {
     --ut-report-cell-background-color: #ff0;
     color: #000;
 }
 
+@keyframes -wm-glow-blue {
+  from {
+    box-shadow: 0 0 10px -10px #aeddf4;
+  }
+  to {
+    box-shadow: 0 0 10px 10px #aeddf4;
+  }
+}
+
+.-wm-animate-glow-blue {
+ animation: -wm-glow-blue 1s infinite alternate;
+}
 
 /* Profiles */
 .-wm-rank-pro:before {
