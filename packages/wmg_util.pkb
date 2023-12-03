@@ -1,3 +1,4 @@
+alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
 create or replace package body wmg_util
 is
 
@@ -19,6 +20,10 @@ c_issue_noshow     constant wmg_tournament_players.issue_code%type := 'NOSHOW';
 c_issue_noscore    constant wmg_tournament_players.issue_code%type := 'NOSCORE';
 c_issue_infraction constant wmg_tournament_players.issue_code%type := 'INFRACTION';
 
+
+g_rooms_set_ind wmg_tournament_sessions.rooms_defined_flag%type;
+
+
 /**
  * Log either via logger or apex.debug
  *
@@ -39,6 +44,7 @@ procedure log(
 )
 is
 begin
+  -- $IF logger_logs.g_logger_version is not null $THEN
   $IF $$LOGGER $THEN
   logger.log(p_text => p_msg, p_scope => p_ctx);
   $ELSE
@@ -96,18 +102,29 @@ is
   l_scope  scope_t := gc_scope_prefix || 'rooms_set';
   l_rooms_defined_flag wmg_tournament_sessions.rooms_defined_flag%type;
 begin
+  $IF $$VERBOSE_OUTPUT $THEN
   log('START', l_scope);
+  log('g_rooms_set_ind:' || g_rooms_set_ind, l_scope);
+  $END
 
-  select nvl(rooms_defined_flag, 'N')
-    into l_rooms_defined_flag
-    from wmg_tournament_sessions 
-   where id = p_tournament_session_id;
+  if g_rooms_set_ind is null then
+    $IF $$VERBOSE_OUTPUT $THEN
+    log('fetch new rooms_defined_flag:', l_scope);
+    $END
+    select nvl(rooms_defined_flag, 'N')
+      into l_rooms_defined_flag
+      from wmg_tournament_sessions 
+     where id = p_tournament_session_id;
+
+    g_rooms_set_ind := l_rooms_defined_flag;
+  end if;
    
-  return l_rooms_defined_flag;
+  return g_rooms_set_ind;
 
   exception
     when no_data_found then
-      return 'N';
+      g_rooms_set_ind := 'N';
+      return g_rooms_set_ind;
     when OTHERS then
       log('Unhandled Exception', l_scope);
       raise;

@@ -26,12 +26,20 @@ begin
     "seq": 10
   },
   {
+    "code": "RISING",
+    "name": "Rising Star",
+    "profile_class": "-wm-rank-rise-profile rank",
+    "list_class": "-wm-rank-rise fa",
+    "active_ind": "Y",
+    "seq": 20
+  },
+  {
     "code": "SEMI",
     "name": "Semi-Pro",
     "profile_class": "-wm-rank-semi-profile rank",
     "list_class": "-wm-rank-semi fa",
     "active_ind": "Y",
-    "seq": 20
+    "seq": 30
   },
   {
     "code": "PRO",
@@ -39,7 +47,7 @@ begin
     "profile_class": "-wm-rank-pro-profile rank",
     "list_class": "-wm-rank-pro fa",
     "active_ind": "Y",
-    "seq": 30
+    "seq": 40
   }
 ]
 !';
