@@ -1,3 +1,4 @@
+alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
 create or replace package body wmg_notification
 is
 

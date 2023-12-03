@@ -1,4 +1,5 @@
 set define off
+alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
 create or replace package body wmg_discord
 is
 
@@ -72,7 +73,10 @@ is
   l_avatar wmg_players.discord_avatar%type;
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
-  log('BEGIN', l_scope);
+  $IF $$VERBOSE_OUTPUT $THEN
+  log('START', l_scope);
+  $END
+
 
   if p_avatar_uri is null then
      select discord_avatar
@@ -87,7 +91,6 @@ begin
   return 'https://cdn.discordapp.com/avatars/' || p_discord_id|| '/' || l_avatar || '.png';
 
 
-  log('END', l_scope);
 
 exception
     when no_data_found then
@@ -126,7 +129,9 @@ is
 
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
+  $IF $$VERBOSE_OUTPUT $THEN
   log('START', l_scope);
+  $END
 
    if p_discord_id is null then
      return '<img class="avatar ' || p_size_class || '" src="' || V('APP_IMAGES') || '/img/discord_mask.png' || '">';
@@ -174,7 +179,10 @@ is
 
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
+  $IF $$VERBOSE_OUTPUT $THEN
   log('BEGIN', l_scope);
+  $END
+
 
   if p_player_id is null then
     -- we don't have a player yet
@@ -223,7 +231,9 @@ begin
      end if;
   end loop;
 
+  $IF $$VERBOSE_OUTPUT $THEN
   log('END', l_scope);
+  $END
 
 exception
     when no_data_found then
