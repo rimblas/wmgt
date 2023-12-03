@@ -1826,6 +1826,32 @@ regions:
            )
            group by player_id
       )
+      , duck as (
+           select player_id, count(*) n
+            from (
+                select u.course_id || ':' || u.h h, u.score, u.player_id player_id
+                  from wmg_rounds_unpivot_mv u
+                     , wmg_tournament_players tp
+                     , wmg_tournament_sessions ts
+                 where ts.week = u.week
+                   and ts.id = tp.tournament_session_id
+                   and tp.player_id = u.player_id
+                   and tp.issue_code is null  -- only players with no issues are eligible
+                   and u.week = :P60_WEEK
+                   and ts.completed_ind = 'N' -- only live results
+                   and u.score = 1
+                   and (u.course_id, u.h) in (
+                           select u2.course_id, u2.h
+                              -- , count(*) possible_ducks
+                              from  wmg_rounds_unpivot_mv u2
+                              where u2.week = :P60_WEEK
+                              and u2.score = 1 -- ace score
+                              having count(*) between 2 and 2 
+                              group by u2.course_id, u2.h
+                   )
+           )
+           group by player_id
+      )
       , diamond as (
         select u.player_id, count(*) aces
               from wmg_rounds_unpivot_mv u
@@ -1932,6 +1958,7 @@ regions:
              end
           || decode(coconut.under_par, 36, 'em-coconut' || case when cactus.player_id is null and beetle.player_id is null then '' else ' ' end, '') 
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) || decode(cactus.player_id, null, null, ' ')
+          || decode(duck.player_id, null, null, (select listagg('em-duck', ' ') from dual connect by level <= duck.n) ) || decode(beetle.player_id, null, null, ' ')
           || decode(beetle.player_id, null, null, (select listagg('em-beetle', ' ') from dual connect by level <= beetle.n) ) 
           || decode(diamond.player_id, null, '', ' ') || decode(diamond.player_id, null, null, 'em-gem')
           || ' ' || badges.other_badges || ' ' || unicorns.unicorn_badges badges
@@ -1948,6 +1975,7 @@ regions:
       , wmg_players_v pp
       , coconut
       , cactus
+      , duck
       , badges
       , diamond
       , beetle
@@ -1958,6 +1986,7 @@ regions:
         and sp.player_id = p.player_id (+)
         and sp.player_id = coconut.player_id (+)
         and sp.player_id = cactus.player_id (+)
+        and sp.player_id = duck.player_id (+)
         and sp.player_id = diamond.player_id (+)
         and sp.player_id = beetle.player_id (+)
         and sp.player_id = badges.player_id (+)
