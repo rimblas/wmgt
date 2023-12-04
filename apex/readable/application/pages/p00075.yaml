@@ -1598,6 +1598,7 @@ page-items:
 
   advanced: 
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
   source: 
     type: Null
@@ -1613,9 +1614,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P75_ISSUE_CODE ===========================
   id: 22411151774828428
@@ -2245,7 +2243,7 @@ buttons:
     column-css-classes: 
     - col-xxs-6
     - col-sm-4
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -2274,6 +2272,8 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -2286,10 +2286,6 @@ dynamic-actions:
     - P75_SHOW_NO_SHOWS_FLAG
     - P75_SLOT
     - P75_ROOM
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2329,16 +2325,14 @@ dynamic-actions:
 
   execution: 
     sequence: 120
+    event-scope: Dynamic
+    static-container-(jquery-selector): '#verifyRegion'
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: td[headers$=SCORECARD]
-
-  execution: 
-    event-scope: Dynamic
-    static-container-(jquery-selector): '#verifyRegion'
-    type: Immediate
 
   actions: 
   - # ====== Action: Add Class ===================================
@@ -2365,15 +2359,13 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .verification
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: Get player ID ===============================
@@ -2508,16 +2500,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
     selection-type: Item(s)
     item(s): 
     - P75_SEARCH
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -2562,15 +2552,13 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Verify Results # 11998064850694896
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -2600,6 +2588,8 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -2610,10 +2600,6 @@ dynamic-actions:
   client-side-condition: 
     type: Item is null
     item: P75_SEARCH
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -2640,6 +2626,8 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -2651,10 +2639,6 @@ dynamic-actions:
     type: Item = Value
     item: P75_NEW_FLAG
     value: E
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Value ===================================
@@ -2708,15 +2692,13 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL_NOTE # 43961464901790350
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Close Region ================================
@@ -2741,15 +2723,13 @@ dynamic-actions:
 
   execution: 
     sequence: 100
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: ADD_NOTE # 43961015185790346
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute Server-side Code ====================
@@ -2816,15 +2796,13 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .wmg-action
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: Get Issue ===================================
@@ -2991,15 +2969,13 @@ dynamic-actions:
 
   execution: 
     sequence: 110
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Rooms # 48741676080254422
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3027,15 +3003,13 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .roomVerification
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: Remove Class ================================

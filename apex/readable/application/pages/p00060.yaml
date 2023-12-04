@@ -379,11 +379,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -393,6 +388,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -549,6 +545,8 @@ regions:
   server-cache: 
     caching: Enabled
     cache-timeout: 2 weeks
+    depends-on-item(s): 
+    - APP_REQUEST_DATA_HASH
 
   customization: 
     customizable: Not Customizable By End Users
@@ -3315,6 +3313,7 @@ page-items:
       </button>
       
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
   source: 
     type: Null
@@ -3330,9 +3329,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P60_TOTAL_PLAYERS ========================
   id: 58999002369755516160
@@ -3687,15 +3683,13 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Week Results (&P60_WEEK.) # 108304671264572297709
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3741,12 +3735,10 @@ dynamic-actions:
 
   execution: 
     sequence: 120
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Request = Value
@@ -3787,16 +3779,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
     selection-type: Item(s)
     item(s): 
     - P60_SEARCH
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3849,16 +3839,14 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P60_ONLY_ME_IND
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -3883,6 +3871,8 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -3893,10 +3883,6 @@ dynamic-actions:
   client-side-condition: 
     type: Item is null
     item: P60_SEARCH
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3930,15 +3916,13 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .week_nav_btn
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Value ===================================
@@ -4005,12 +3989,10 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4041,15 +4023,13 @@ dynamic-actions:
 
   execution: 
     sequence: 100
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Region
     region: Week Results (&P60_WEEK.) # 108304671264572297709
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   security: 
     authorization-scheme: Contribution Rights # 46995203801871514425
@@ -4095,15 +4075,13 @@ dynamic-actions:
 
   execution: 
     sequence: 110
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: jQuery Selector
     jquery-selector: .wm-search
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Get Selected Value ==========================
@@ -4192,15 +4170,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Week Results (&P60_WEEK.) # 108304671264572297709
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4241,16 +4217,14 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P60_WEEK
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================

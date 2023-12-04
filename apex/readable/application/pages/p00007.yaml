@@ -507,6 +507,18 @@ page-items:
   advanced: 
     post-text-: '"CLEAR_BUTTON"'
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~R.">' +
+              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
+                 '<span class="country-name">~D.</span>' +
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
 
   source: 
     form-region: Player # 46995262475564515187
@@ -533,20 +545,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: |
-      function(options) {
-          options.display = "list";
-      
-          options.recordTemplate = (
-        '<li data-id="~R.">' +
-              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
-                 '<span class="country-name">~D.</span>' +
-        '</li>').replace(/~/g, "&");
-      
-          return options;
-      }
 
 - # ====== Page Item: P7_DISCORD_ID ============================
   id: 13435595431291529
@@ -1469,12 +1467,10 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Function Body
@@ -1546,12 +1542,10 @@ dynamic-actions:
 
   execution: 
     sequence: 5
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Hide ========================================
@@ -1576,15 +1570,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL # 46995265300623515189
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
@@ -1644,6 +1636,7 @@ processes:
   settings: 
     items-to-return-: 
     - P7_ID
+    show-success-messages: false
 
   execution: 
     sequence: 50

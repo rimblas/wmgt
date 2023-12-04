@@ -185,16 +185,19 @@ page-items:
   id: 44381474037120434
   identification: 
     name: P13_BATCH_UPLOAD
-    type: File Browse...
+    type: File Upload
 
   label: 
     label: Batch Upload
     alignment: Left
 
-  settings: 
+  display: 
     display-as: Block Dropzone
     dropzone-description: Select one or multiple filed with format CCC_NNN.jpg
-    storage-type: Table APEX_APPLICATION_TEMP_FILES
+    capture-using: NONE
+
+  storage:: 
+    type: Table APEX_APPLICATION_TEMP_FILES
     purge-file-at: End of Session
     allow-multiple-files: true
 
@@ -423,20 +426,23 @@ page-items:
   id: 20730476682966858535
   identification: 
     name: P13_IMAGE_PREVIEW
-    type: File Browse...
+    type: File Upload
 
   label: 
     label: Upload Image Preview
     alignment: Left
 
-  settings: 
+  display: 
     display-as: Inline Dropzone
-    storage-type: BLOB column specified in Item Source attribute
+    display-download-link: true
+    content-disposition: Inline
+    capture-using: NONE
+
+  storage:: 
+    type: BLOB column specified in Item Source attribute
     mime-type-column: MIMETYPE
     filename-column: FILENAME
     blob-last-updated-column: IMAGE_LAST_UPDATE
-    display-download-link: true
-    content-disposition: Inline
     maximum-file-size: 200
 
   layout: 
@@ -950,6 +956,8 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -960,10 +968,6 @@ dynamic-actions:
   client-side-condition: 
     type: JavaScript expression
     javascript-expression: apex.item("P13_BATCH_UPLOAD").value.length === 1
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -1014,15 +1018,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL # 20730484819002858542
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
@@ -1043,6 +1045,8 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -1053,10 +1057,6 @@ dynamic-actions:
   client-side-condition: 
     type: Item is null
     item: P13_SAME_AS_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Show Upload =================================
@@ -1184,6 +1184,9 @@ processes:
     name: Close Dialog
     type: Close Dialog
     execution-chain: None
+
+  settings: 
+    show-success-messages: false
 
   execution: 
     sequence: 50

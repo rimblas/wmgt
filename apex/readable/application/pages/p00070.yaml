@@ -138,6 +138,7 @@ page-items:
 
   advanced: 
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
   source: 
     type: Null
@@ -153,9 +154,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 buttons: 
 - # ====== Button: VERIFY_RESULTS ==============================
@@ -208,6 +206,8 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -218,10 +218,6 @@ dynamic-actions:
   client-side-condition: 
     type: Item is not null
     item: P70_FILE
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================

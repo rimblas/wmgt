@@ -358,7 +358,7 @@ page-items:
     alignment: Left
 
   settings: 
-    library: CKEditor [Deprecated]
+    library: CKEditor
     format: Markdown
     minimum-height: 180
     allow-custom-html: false
@@ -941,15 +941,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL # 49777529025984282
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
@@ -1005,6 +1003,9 @@ processes:
     name: Close Dialog
     type: Close Dialog
     execution-chain: None
+
+  settings: 
+    show-success-messages: false
 
   execution: 
     sequence: 50
