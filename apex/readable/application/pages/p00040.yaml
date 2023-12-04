@@ -66,7 +66,7 @@ javascript:
 css: 
   inline: |
     .room h2 {font-weight: bold;}
-    mark.player {display: block;}
+    mark.player {display: inline-block;}
     td#ROOM_NO {
       border-bottom: 1px solid;
       font-size: 1.7em;
@@ -94,11 +94,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -108,6 +103,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -2341,12 +2337,10 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Highlight Player ============================
@@ -2405,16 +2399,14 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P40_SHOW_AVATARS_IND
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================
@@ -2438,12 +2430,10 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Rows returned
@@ -2481,15 +2471,13 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_00 # 40389410438139769142
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2514,15 +2502,13 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_04 # 40389411448742769152
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2547,15 +2533,13 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_08 # 40389411553192769153
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2580,15 +2564,13 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_12 # 40389411686873769154
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2613,15 +2595,13 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_16 # 40389411770778769155
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2646,15 +2626,13 @@ dynamic-actions:
 
   execution: 
     sequence: 100
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Button
     button: EDIT_20 # 40389411849958769156
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -2679,15 +2657,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: ASSIGN_ROOM # 24450904212536936277
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Confirm =====================================

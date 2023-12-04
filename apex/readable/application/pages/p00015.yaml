@@ -29,11 +29,6 @@ navigation:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Enabled
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -43,6 +38,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -249,12 +245,10 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================

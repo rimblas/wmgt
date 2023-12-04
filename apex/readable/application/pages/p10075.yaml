@@ -1,10 +1,10 @@
 ---
-# ====== Page: Webbhook Maintencance =========================
+# ====== Page: Webbhook Setup ================================
 id: 10075
 identification: 
-  name: Webbhook Maintencance
-  alias: WEBBHOOK-MAINTENCANCE
-  title: Webbhook Maintencance
+  name: Webbhook Setup
+  alias: WEBBHOOK-SETUP
+  title: Webbhook Setup
 
 appearance: 
   page-mode: Modal Dialog
@@ -728,7 +728,7 @@ page-items:
 
 buttons: 
 - # ====== Button: TEST_WEBHOOK ================================
-  id: 50458516285338240
+  id: 25635516420764339
   identification: 
     button-name: TEST_WEBHOOK
     label: Test
@@ -739,7 +739,7 @@ buttons:
     position: BODY
     start-new-layout: false
     start-new-row: false
-    column: 11
+    column: 10
     new-column: true
     column-span: Automatic
     alignment: Left center
@@ -757,10 +757,6 @@ buttons:
     action: Submit Page
     execute-validations: true
     warn-on-unsaved-changes: Do Not Check
-
-  server-side-condition: 
-    type: Item is NOT NULL
-    item: P10075_CODE
 
 - # ====== Button: CANCEL ======================================
   id: 51080915624174843
@@ -901,15 +897,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL # 51080915624174843
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
@@ -924,10 +918,10 @@ dynamic-actions:
       fire-on-initialization: false
 
 processes: 
-- # ====== Process: Test Webbhook ==============================
-  id: 50458611463338241
+- # ====== Process: Send Test  Webhook Call ====================
+  id: 25635638266764340
   identification: 
-    name: Test Webbhook
+    name: Send Test  Webhook Call
     type: Execute Code
     execution-chain: None
 
@@ -939,7 +933,7 @@ processes:
         l_content varchar2(1000);
       begin
       
-          l_content := 'Yup, this webhook works!';
+           l_content := 'Yup, this webhook works!';
           wmg_notification.send_to_discord_webhook(
                p_webhook_code => :P10075_CODE
              , p_content      => l_content
@@ -961,7 +955,7 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    when-button-pressed: TEST_WEBHOOK # 50458516285338240
+    when-button-pressed: TEST_WEBHOOK # 25635516420764339
 
 - # ====== Process: Initialize form Webbhook Maintencance ======
   id: 51083526259174861
@@ -1004,6 +998,9 @@ processes:
     name: Close Dialog
     type: Close Dialog
     execution-chain: None
+
+  settings: 
+    show-success-messages: false
 
   execution: 
     sequence: 30

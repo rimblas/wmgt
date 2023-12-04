@@ -1479,7 +1479,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Icon # 46995173311788514399
@@ -1508,7 +1508,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -1545,7 +1545,7 @@ buttons:
     column: 2
     new-column: true
     column-span: 2
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -1571,15 +1571,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: SWAP # 50057176114137719
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -1609,16 +1607,14 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P80_FROM_PLAYER_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -1658,16 +1654,14 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P80_INTO_PLAYER_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================

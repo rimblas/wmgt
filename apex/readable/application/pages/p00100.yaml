@@ -179,11 +179,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -193,6 +188,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -264,6 +260,8 @@ regions:
   server-cache: 
     caching: Enabled
     cache-timeout: 2 weeks
+    depends-on-item(s): 
+    - APP_REQUEST_DATA_HASH
 
   customization: 
     customizable: Not Customizable By End Users
@@ -6387,6 +6385,7 @@ page-items:
 
   advanced: 
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
   source: 
     type: Null
@@ -6402,9 +6401,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P100_MODE ================================
   id: 47495450896221845276
@@ -6886,15 +6882,13 @@ dynamic-actions:
 
   execution: 
     sequence: 140
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Top Players # 49314170932528588530
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -6918,16 +6912,14 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P100_PLAYER_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -6967,16 +6959,14 @@ dynamic-actions:
 
   execution: 
     sequence: 100
+    event-scope: Dynamic
+    static-container-(jquery-selector): .courseStats
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: th
-
-  execution: 
-    event-scope: Dynamic
-    static-container-(jquery-selector): .courseStats
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7000,15 +6990,13 @@ dynamic-actions:
 
   execution: 
     sequence: 110
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: OK # 40389412862425769166
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Close Region ================================
@@ -7033,16 +7021,14 @@ dynamic-actions:
 
   execution: 
     sequence: 120
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P100_WEEK
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================
@@ -7067,15 +7053,13 @@ dynamic-actions:
 
   execution: 
     sequence: 130
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: '&P100_EASY. - Stats' # 94463329724515094660
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Style ===================================
@@ -7104,15 +7088,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .drill
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: United Codes Nested Reports =================
@@ -7277,12 +7259,10 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7313,16 +7293,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: PLUGIN_COM.FOS.RANGE_SLIDER|ITEM TYPE|fos-rangeslider-change
     selection-type: Item(s)
     item(s): 
     - P100_HN
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -7347,15 +7325,13 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .hnSliderAdv
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Value ===================================
@@ -7388,15 +7364,13 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: TOGGLE_PLAYERS # 48044019556229678731
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7445,6 +7419,8 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.MOUSEENTER
@@ -7454,10 +7430,6 @@ dynamic-actions:
   client-side-condition: 
     type: JavaScript expression
     javascript-expression: '!isExpanding'
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   server-side-condition: 
     type: Never
@@ -7609,15 +7581,13 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: PLUGIN_UC_NESTED_REPORTS|DYNAMIC ACTION|uc_default_callback
     selection-type: Region
     region: '&P100_EASY. - Stats' # 94463329724515094660
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7643,15 +7613,13 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .hnSliderRew
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Value ===================================

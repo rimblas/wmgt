@@ -144,12 +144,12 @@ regions:
     - t-HeroRegion--headingFontAlt
     render-components: Above Content
 
-  image: 
-    file-url: '&P17_AVATAR.'
-
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
+
+  image: 
+    file-url: '&P17_AVATAR.'
 
   advanced: 
     region-display-selector: false
@@ -386,15 +386,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .matchDiscord
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   server-side-condition: 
     type: Expression

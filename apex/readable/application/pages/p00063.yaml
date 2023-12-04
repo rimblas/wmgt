@@ -248,11 +248,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -262,6 +257,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -2718,6 +2714,7 @@ page-items:
       </button>
       
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
   source: 
     type: Null
@@ -2733,9 +2730,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: wmgt.theme.weekLovTemplate
 
 - # ====== Page Item: P63_SEARCH ===============================
   id: 98221794681762589
@@ -3260,15 +3254,13 @@ dynamic-actions:
 
   execution: 
     sequence: 130
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Top Finishes (&P63_TOURNAMENT.) # 94751440789671678
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3294,16 +3286,14 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P63_WEEK
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================
@@ -3328,16 +3318,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
     selection-type: Item(s)
     item(s): 
     - P63_SEARCH
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3402,16 +3390,14 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P63_ONLY_ME_IND
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
 - # ====== Dynamic Action: Clear on Change =====================
   id: 49913856918885594
@@ -3420,6 +3406,8 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -3430,10 +3418,6 @@ dynamic-actions:
   client-side-condition: 
     type: Item is null
     item: P63_SEARCH
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3467,15 +3451,13 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .week_nav_btn
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Set Value ===================================
@@ -3542,12 +3524,10 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3578,15 +3558,13 @@ dynamic-actions:
 
   execution: 
     sequence: 100
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: jQuery Selector
     jquery-selector: .wm-search
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -3676,12 +3654,10 @@ dynamic-actions:
 
   execution: 
     sequence: 120
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Request = Value

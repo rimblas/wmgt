@@ -51,11 +51,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -65,6 +60,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -216,6 +212,7 @@ regions:
 
     list-of-values: 
       type: Distinct Values
+      sort-direction: Ascending
       include-null-option: false
 
     list-entries: 
@@ -324,6 +321,7 @@ regions:
 
     list-of-values: 
       type: Distinct Values
+      sort-direction: Ascending
       include-null-option: false
 
     list-entries: 
@@ -1061,15 +1059,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
     region: '{Courses}' # 21598597575342820
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -1094,15 +1090,13 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
     button: CREATE # 46995227276864514590
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================

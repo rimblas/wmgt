@@ -276,11 +276,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -290,6 +285,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -2125,7 +2121,7 @@ regions:
 
   comments: 
     comments: |
-      For Halloween theme :
+      For Halloween theme:
       <svg id="svg"></svg>
 
   attributes: 
@@ -5777,15 +5773,13 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Most recent registrations # 39559725575969820
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -5802,6 +5796,50 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Glow Registration ===================
+  id: 25635352674764337
+  identification: 
+    name: Glow Registration
+
+  execution: 
+    sequence: 60
+    event-scope: Static
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  client-side-condition: 
+    type: JavaScript expression
+    javascript-expression: $(".t-Cards-item.glow").length > 0
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_players
+      where id = :G_PLAYER_ID
+        and rank_code in ('NEW', 'AMA')
+        and :G_CURRENT_SESSION_ID is not null
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  actions: 
+  - # ====== Action: Make it glow ================================
+    id: 25635495747764338
+    identification: 
+      name: Make it glow
+      action: Execute JavaScript Code
+
+    settings: 
+      code: setTimeout(function (){$(".t-Cards-item.glow").addClass("-wm-animate-glow-blue");}, 5000);
+
+    execution: 
+      sequence: 10
+      event: Glow Registration # 25635352674764337
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Show Tooltips =======================
   id: 28674932410250917
   identification: 
@@ -5809,15 +5847,13 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Season Courses # 32751428375549205
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -5858,15 +5894,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
     button: EDIT # 32755234177549243
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -5891,6 +5925,8 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
@@ -5900,10 +5936,6 @@ dynamic-actions:
   client-side-condition: 
     type: JavaScript expression
     javascript-expression: this.browserEvent.metaKey
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================
@@ -5928,12 +5960,10 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Highlight Player ============================
@@ -5948,52 +5978,6 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Highlight Player # 44899215379786405
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
-- # ====== Dynamic Action: Glow Registration ===================
-  id: 50458328157338238
-  identification: 
-    name: Glow Registration
-
-  execution: 
-    sequence: 60
-
-  when: 
-    event: EVENT.EVENT.BROWSER.READY
-
-  client-side-condition: 
-    type: JavaScript expression
-    javascript-expression: $(".t-Cards-item.glow").length > 0
-
-  execution: 
-    event-scope: Static
-
-  server-side-condition: 
-    type: Rows returned
-    sql-query: |
-      select 1
-      from wmg_players
-      where id = :G_PLAYER_ID
-        and rank_code in ('NEW', 'AMA')
-        and :G_CURRENT_SESSION_ID is not null
-
-  security: 
-    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
-
-  actions: 
-  - # ====== Action: Make it Glow after a few sec delay ==========
-    id: 50458451690338239
-    identification: 
-      name: Make it Glow after a few sec delay
-      action: Execute JavaScript Code
-
-    settings: 
-      code: setTimeout(function (){$(".t-Cards-item.glow").addClass("-wm-animate-glow-blue");}, 5000);
-
-    execution: 
-      sequence: 10
-      event: Glow Registration # 50458328157338238
       fire-when-event-result-is: True
       fire-on-initialization: false
 

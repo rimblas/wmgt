@@ -91,7 +91,7 @@ regions:
       link-column: Link to Custom Target
       target: 
         url: 'f?p=&APP_ID.:10075:&SESSION.::&DEBUG.:10075:P10075_ID:#ID#'
-        page: 10075 # Webbhook Maintencance
+        page: 10075 # Webbhook Setup
         clear-cache: 10075
         values: 
           p10075_id: '#ID#'
@@ -625,7 +625,7 @@ buttons:
     action: Redirect to Page in this Application
     target: 
       url: 'f?p=&APP_ID.:10075:&APP_SESSION.::&DEBUG.:10075::'
-      page: 10075 # Webbhook Maintencance
+      page: 10075 # Webbhook Setup
       clear-cache: 10075
 
     warn-on-unsaved-changes: Do Not Check
@@ -638,15 +638,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
     region: Webbhook Definitions # 51084962037174866
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
