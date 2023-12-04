@@ -198,11 +198,6 @@ css:
 
 security: 
   authentication: Page Is Public
-
-advanced: 
-  enable-meta-tags: false
-
-security: 
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -212,6 +207,7 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
+  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -4460,16 +4456,14 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P110_FRONT_BACK
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: FRONT: Hide Back 9 ==========================
@@ -4693,6 +4687,7 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
@@ -4700,9 +4695,6 @@ dynamic-actions:
   client-side-condition: 
     type: JavaScript expression
     javascript-expression: 'apex.theme.mq("(max-width: 768px)")'
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Set Value ===================================
@@ -4735,15 +4727,13 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
     selection-type: Region
     region: Player Round Details # 98808650782335523961
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4769,16 +4759,14 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Dynamic
+    static-container-(jquery-selector): .courseStats
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: th
-
-  execution: 
-    event-scope: Dynamic
-    static-container-(jquery-selector): .courseStats
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4802,15 +4790,13 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: OK # 40389413151862769169
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Close Region ================================
@@ -4835,16 +4821,14 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P110_PLAYER_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================

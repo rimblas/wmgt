@@ -170,12 +170,12 @@ regions:
     - t-HeroRegion--headingFontAlt
     render-components: Below Content
 
-  image: 
-    file-url: '&P18_AVATAR.'
-
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
+
+  image: 
+    file-url: '&P18_AVATAR.'
 
   advanced: 
     region-display-selector: false
@@ -359,6 +359,18 @@ page-items:
   advanced: 
     post-text-: '"CLEAR_BUTTON"'
     warn-on-unsaved-changes: Page Default
+    initialization-javascript-function: |
+      function(options) {
+          options.display = "list";
+      
+          options.recordTemplate = (
+        '<li data-id="~R.">' +
+              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
+                 '<span class="country-name">~D.</span>' +
+        '</li>').replace(/~/g, "&");
+      
+          return options;
+      }
 
   source: 
     type: Null
@@ -382,20 +394,6 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
-
-  advanced: 
-    initialization-javascript-function: |
-      function(options) {
-          options.display = "list";
-      
-          options.recordTemplate = (
-        '<li data-id="~R.">' +
-              '<i class="em em-flag-~R." aria-role="presentation" aria-label="~D. Flag"></i>' +
-                 '<span class="country-name">~D.</span>' +
-        '</li>').replace(/~/g, "&");
-      
-          return options;
-      }
 
 - # ====== Page Item: P18_TZ ===================================
   id: 33360982671845731
@@ -586,6 +584,8 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -597,10 +597,6 @@ dynamic-actions:
     type: Item = Value
     item: P18_WMG_DISCORD_MEMBER_IND
     value: Y
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Enable ======================================
@@ -640,16 +636,14 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Dynamic
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P18_MATCH_PLAYER_ID
-
-  execution: 
-    event-scope: Dynamic
-    type: Immediate
 
   actions: 
   - # ====== Action: Oops ========================================

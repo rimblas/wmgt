@@ -80,7 +80,7 @@ regions:
     - P500_ISSUE_CODE
 
   layout: 
-    sequence: 70
+    sequence: 80
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -295,6 +295,52 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Tournament Recap ============================
+  id: 25635069668764334
+  identification: 
+    title: Tournament Recap
+    type: Static Content
+
+  layout: 
+    sequence: 65
+    parent-region: Current  Session # 56178155412404412208
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag = 'Y'"
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Signups =====================================
   id: 32752353856549214
   identification: 
@@ -327,7 +373,7 @@ regions:
       
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -506,7 +552,7 @@ regions:
       
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -2287,52 +2333,6 @@ regions:
       - t-LinksList--actions
       - t-LinksList--showTopIcons
 
-- # ====== Region: Tournament Recap ============================
-  id: 50458029210338235
-  identification: 
-    title: Tournament Recap
-    type: Static Content
-
-  layout: 
-    sequence: 65
-    parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
-    start-new-layout: false
-    start-new-row: true
-    column: Automatic
-    new-column: true
-    column-span: Automatic
-
-  appearance: 
-    template: Standard # 46995101107768514367
-    template-options: 
-    - '#DEFAULT#'
-    - t-Region--scrollBody
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  server-side-condition: 
-    type: Rows returned
-    sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag = 'Y'"
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    settings: 
-      output-as: HTML
-      expand-shortcuts: false
-
 - # ====== Region: About & Rules ===============================
   id: 50437967039206816774
   identification: 
@@ -2605,7 +2605,7 @@ regions:
        order by ROUND_NUM
 
   layout: 
-    sequence: 30
+    sequence: 20
     parent-region: Season & Tournament Control # 56024163957746751639
     position: BODY
     start-new-layout: false
@@ -3087,7 +3087,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 40
+    sequence: 30
     region: Season & Tournament Control # 56024163957746751639
     position: BODY
 
@@ -3169,7 +3169,7 @@ page-items:
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P500_RECAP ===============================
-  id: 50458192473338236
+  id: 25635133727764335
   identification: 
     name: P500_RECAP
     type: Markdown Editor
@@ -3184,7 +3184,7 @@ page-items:
 
   layout: 
     sequence: 10
-    region: Tournament Recap # 50458029210338235
+    region: Tournament Recap # 25635069668764334
     position: BODY
     alignment: Left
     start-new-layout: false
@@ -3414,7 +3414,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3447,7 +3447,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3480,7 +3480,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3544,15 +3544,13 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
     selection-type: Region
     region: Current  Session # 56178155412404412208
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -3577,15 +3575,13 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
     button: POP_WMG_TOURNAMENT_SESSIONS # 20127465655175550
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -3610,16 +3606,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P500_ISSUE_CODE
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -3644,15 +3638,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Button
     button: NEW_SEASON # 56024165352799751653
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -3677,15 +3669,13 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
     selection-type: Region
     region: Season & Tournament Control # 56024163957746751639
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================

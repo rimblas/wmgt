@@ -4,7 +4,7 @@ id: 200
 identification: 
   name: WMGT
   alias: WMGT
-  version: Release 2.4.6
+  version: Release 2.4.7
 
 row-search: 
   tokenize: true
@@ -26,6 +26,7 @@ advanced:
   logging: true
   debugging: true
   compatibility-mode: 21.2 / 22.1 / 22.2
+  pass-ecid: N
 
 authentication: 
   public-user: APEX_PUBLIC_USER
@@ -48,9 +49,6 @@ security:
   html-escaping-mode: Extended
   runtime-api-usage: 
   - Modify This Application
-
-advanced: 
-  pass-ecid: N
 
 database-session: 
   parsing-schema: WKSP_WMGT
@@ -149,6 +147,150 @@ substitutions:
   value: 
     static-value: 'https://objectstorage.us-ashburn-1.oraclecloud.com/n/idw1nygcxpvm/b/wmgt-assets/o/'
 
+component-settings: 
+- # ====== Component Setting: NATIVE_ADFBC =====================
+  id: 8784700892657470
+  identification: 
+    name: NATIVE_ADFBC
+    type: REST Data Source
+
+  subscription: 
+    version-number: 40348156161857
+
+- # ====== Component Setting: NATIVE_MAP_REGION ================
+  id: 11118864433703315
+  identification: 
+    name: NATIVE_MAP_REGION
+    type: Region
+
+  settings: 
+    attribute-1: Y
+
+  subscription: 
+    version-number: 40348156184453
+
+- # ====== Component Setting: NATIVE_DATE_PICKER_APEX ==========
+  id: 27516905235888134
+  identification: 
+    name: NATIVE_DATE_PICKER_APEX
+    type: Item
+
+  settings: 
+    attribute-1: 'MONTH-PICKER:YEAR-PICKER'
+    attribute-2: VISIBLE
+    attribute-3: 15
+    attribute-4: FOCUS
+
+  subscription: 
+    version-number: 40348156184456
+
+- # ====== Component Setting: NATIVE_COLOR_PICKER ==============
+  id: 46995000327182514324
+  identification: 
+    name: NATIVE_COLOR_PICKER
+    type: Item
+
+  settings: 
+    attribute-1: FULL
+    attribute-2: POPUP
+
+  subscription: 
+    version-number: 40348156184456
+
+- # ====== Component Setting: NATIVE_GEOCODED_ADDRESS ==========
+  id: 46995000949694514324
+  identification: 
+    name: NATIVE_GEOCODED_ADDRESS
+    type: Item
+
+  settings: 
+    attribute-1: RELAX_HOUSE_NUMBER
+    attribute-2: N
+    attribute-3: 'POPUP:ITEM'
+    attribute-4: default
+    attribute-6: LIST
+
+  subscription: 
+    version-number: 40348156184456
+
+- # ====== Component Setting: NATIVE_SINGLE_CHECKBOX ===========
+  id: 46995001557258514325
+  identification: 
+    name: NATIVE_SINGLE_CHECKBOX
+    type: Item
+
+  settings: 
+    attribute-1: Y
+    attribute-2: N
+
+  subscription: 
+    version-number: 40348156184457
+
+- # ====== Component Setting: NATIVE_STAR_RATING ===============
+  id: 46995001913973514325
+  identification: 
+    name: NATIVE_STAR_RATING
+    type: Item
+
+  settings: 
+    attribute-1: fa-star
+    attribute-4: '#VALUE#'
+
+  subscription: 
+    version-number: 40348156184460
+
+- # ====== Component Setting: NATIVE_YES_NO ====================
+  id: 46995002196784514325
+  identification: 
+    name: NATIVE_YES_NO
+    type: Item
+
+  settings: 
+    attribute-1: Y
+    attribute-3: N
+    attribute-5: SWITCH_CB
+
+  subscription: 
+    version-number: 40348156184460
+
+- # ====== Component Setting: NATIVE_DISPLAY_SELECTOR ==========
+  id: 46995002744093514325
+  identification: 
+    name: NATIVE_DISPLAY_SELECTOR
+    type: Region
+
+  settings: 
+    attribute-1: Y
+
+  subscription: 
+    version-number: 40348156184466
+
+- # ====== Component Setting: NATIVE_IR ========================
+  id: 46995003046456514325
+  identification: 
+    name: NATIVE_IR
+    type: Region
+
+  settings: 
+    attribute-1: IG
+
+  subscription: 
+    version-number: 40348156184470
+
+- # ====== Component Setting: PLUGIN_UC_NESTED_REPORTS =========
+  id: 47496809529178607516
+  identification: 
+    name: PLUGIN_UC_NESTED_REPORTS
+    type: Dynamic Action
+
+  settings: 
+    attribute-1: 200
+    attribute-2: 400
+    attribute-3: Y
+
+  subscription: 
+    version-number: 40348156184476
+
 application-settings: 
 - # ====== Application Setting: FEEDBACK_ATTACHMENTS_YN ========
   id: 46995204567167514426
@@ -162,6 +304,9 @@ application-settings:
   advanced: 
     valid-values: Y, N
     on-upgrade-keep-value: true
+
+  subscription: 
+    version-number: 40348156188364
 
   configuration: 
     build-option: 'Feature: Feedback' # 46995201057049514424
@@ -178,6 +323,9 @@ application-settings:
   advanced: 
     valid-values: ACL_ONLY, ALL_USERS
     on-upgrade-keep-value: true
+
+  subscription: 
+    version-number: 40348156188364
 
   configuration: 
     build-option: 'Feature: Access Control' # 46995200878247514424

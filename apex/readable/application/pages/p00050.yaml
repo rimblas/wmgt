@@ -7201,12 +7201,10 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Never
@@ -7246,16 +7244,14 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P50_PLAYERS_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Submit Page =================================
@@ -7347,15 +7343,13 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: VERIFIED # 46933856448678616
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Alert =======================================
@@ -7383,12 +7377,10 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: Set Focus ===================================
@@ -7414,12 +7406,10 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   actions: 
   - # ====== Action: United Codes List Extension =================
@@ -7451,15 +7441,13 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
     selection-type: jQuery Selector
     jquery-selector: .number_field[name^='P50_ES'],.number_field[name^='P50_HS']
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7649,9 +7637,12 @@ processes:
     execution-chain: None
 
   settings: 
-    execute-in-background: true
-    serialize-executions: false
+    run-in-background: true
     temporary-file-handling: Ignore
+    submit-immediately: true
+
+  serialization: 
+    serialize: false
 
   execution: 
     sequence: 70

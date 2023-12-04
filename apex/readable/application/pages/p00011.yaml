@@ -89,12 +89,12 @@ regions:
     - t-ImageRegion--noFilter
     render-components: Above Content
 
-  image: 
-    file-url: '#APP_FILES#LAB_scorecard2.jpg'
-
   accessibility: 
     use-landmark: true
     landmark-type: Template Default
+
+  image: 
+    file-url: '#APP_FILES#LAB_scorecard2.jpg'
 
   advanced: 
     region-display-selector: true
@@ -148,15 +148,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: GO # 14530544624009032
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================

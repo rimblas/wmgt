@@ -4608,7 +4608,7 @@ buttons:
     column: Automatic
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Icon # 46995173311788514399
@@ -4675,16 +4675,14 @@ dynamic-actions:
 
   execution: 
     sequence: 80
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P9_S5
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4714,15 +4712,13 @@ dynamic-actions:
 
   execution: 
     sequence: 90
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: OVERRIDE_SCORE # 11995428796685649
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Open Region =================================
@@ -4747,15 +4743,13 @@ dynamic-actions:
 
   execution: 
     sequence: 70
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: jQuery Selector
     jquery-selector: .coursePar .t-Form-fieldContainer
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4779,15 +4773,13 @@ dynamic-actions:
 
   execution: 
     sequence: 10
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CLICK
     selection-type: Button
     button: CANCEL # 46995292304019515498
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Cancel Dialog ===============================
@@ -4808,12 +4800,10 @@ dynamic-actions:
 
   execution: 
     sequence: 20
+    event-scope: Static
 
   when: 
     event: EVENT.EVENT.BROWSER.READY
-
-  execution: 
-    event-scope: Static
 
   server-side-condition: 
     type: Item is NULL
@@ -4849,15 +4839,13 @@ dynamic-actions:
 
   execution: 
     sequence: 30
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.KEYUP
     selection-type: jQuery Selector
     jquery-selector: .number_field[name^='P9_S'
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -4903,6 +4891,8 @@ dynamic-actions:
 
   execution: 
     sequence: 40
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -4910,10 +4900,6 @@ dynamic-actions:
     item(s): 
     - P9_WEEK
     - P9_PLAYERS_ID
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Execute Server-side Code ====================
@@ -4975,6 +4961,8 @@ dynamic-actions:
 
   execution: 
     sequence: 50
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
@@ -4986,10 +4974,6 @@ dynamic-actions:
     type: Item = Value
     item: P9_DUP_IND
     value: N
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   server-side-condition: 
     type: Item is NULL
@@ -5104,16 +5088,14 @@ dynamic-actions:
 
   execution: 
     sequence: 60
+    event-scope: Static
+    type: Immediate
 
   when: 
     event: EVENT.EVENT.BROWSER.CHANGE
     selection-type: Item(s)
     item(s): 
     - P9_WEEK
-
-  execution: 
-    event-scope: Static
-    type: Immediate
 
   actions: 
   - # ====== Action: Refresh =====================================
@@ -5399,6 +5381,9 @@ processes:
     name: Close Dialog
     type: Close Dialog
     execution-chain: None
+
+  settings: 
+    show-success-messages: false
 
   execution: 
     sequence: 60
