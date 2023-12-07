@@ -1,6 +1,6 @@
-alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
 create or replace package body wmg_notification
 is
+-- alter session set PLSQL_CCFLAGS='NO_LOGGER:TRUE';
 
 
 --------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ is
  c_embed_color_green     number := 5832556;
  c_embed_color_lightblue number := 5814783;
  c_crlf varchar2(2) := chr(13)||chr(10);
+ c_amp varchar2(2) := chr(38);
 
 /**
  * @constant gc_scope_prefix Standard logger package name
@@ -43,11 +44,11 @@ procedure log(
 )
 is
 begin
-  $IF $$LOGGER $THEN
-  logger.log(p_text => p_msg, p_scope => p_ctx);
-  $ELSE
+  $IF $$NO_LOGGER $THEN
   dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
+  $ELSE
+  logger.log(p_text => p_msg, p_scope => p_ctx);
   $END
 
 end log;
@@ -422,7 +423,6 @@ is
   l_scope  scope_t := gc_scope_prefix || 'notify_new_courses';
   -- l_params logger.tab_param;
 
-  c_crlf varchar2(2) := chr(13)||chr(10);
   c_amp varchar2(2) := chr(38);
 
   l_title varchar2(4000);
@@ -508,9 +508,6 @@ is
   l_scope  scope_t := gc_scope_prefix || 'tournament_recap_template';
   -- l_params logger.tab_param;
 
-  c_crlf varchar2(2) := chr(13)||chr(10);
-  c_amp varchar2(2) := chr(38);
-
   l_subject varchar2( 4000 );
   l_placeholders varchar2( 4000 );
   l_html    clob;
@@ -538,19 +535,19 @@ begin
          , easy_course_code
          , hard_course_code
          , '' "NULL"
-         , (select listagg(p.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
                    within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
               from wmg_tournament_session_points_v p
              where p.tournament_session_id = s.tournament_session_id
                and p.pos = 1
            ) first_place
-         , (select listagg(p.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
                    within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
               from wmg_tournament_session_points_v p
              where p.tournament_session_id = s.tournament_session_id
                and p.pos = 2
            ) second_place
-         , (select listagg(p.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
                    within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
               from wmg_tournament_session_points_v p
              where p.tournament_session_id = s.tournament_session_id
@@ -560,7 +557,7 @@ begin
               from (
                   select who, total, rank() over (order by total desc) rn
                   from (
-                  select r.player_name who
+                  select '@'||r.account who
                        , sum(decode(s1, 1, 1, 0)
                            + decode(s2, 1, 1, 0)
                            + decode(s3, 1, 1, 0)
@@ -582,7 +579,7 @@ begin
                         ) total
                     from wmg_rounds_v r
                    where r.week = s.week
-                  group by r.player_name
+                  group by r.account
                   ) aces
                   order by aces.who
               )
@@ -612,30 +609,30 @@ begin
                     )
                    ) c
           ) coconut_players
-         , (select listagg(player_name, ', ') || '  **' || total || '**' top_easy
+         , (select listagg('@'||account, ', ') || '  **' || total || '**' top_easy
               from (
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
-                    select course_mode, player_id, player_name, sum(under_par) total
+                    select course_mode, player_id, player_name, account, sum(under_par) total
                       from wmg_rounds_v
                       where week = s.week
                         and course_mode = 'E'
-                     group by course_mode, player_id, player_name
+                     group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
               )
               where rn = 1
               group by  course_mode, total
             ) easy_top_players
-         , (select listagg(player_name, ', ') || '  **' || total || '**' top_hard
+         , (select listagg('@'||account, ', ') || '  **' || total || '**' top_hard
               from (
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
-                    select course_mode, player_id, player_name, sum(under_par) total
+                    select course_mode, player_id, player_name, account, sum(under_par) total
                       from wmg_rounds_v
                       where week = s.week
                         and course_mode = 'H'
-                     group by course_mode, player_id, player_name
+                     group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
               )
@@ -695,6 +692,101 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end tournament_recap_template;
+
+
+
+
+
+
+/**
+ * Given a tournament session, generate a template with the Tournament Issues (Not Cool List) template
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created December 3, 2023
+ * @param p_tournament_session_id
+ * @param x_out CLOB with template output
+ * @return
+ */
+procedure tournament_issues_template(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , x_out                    out clob
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'tournament_issues_template';
+  -- l_params logger.tab_param;
+
+  l_subject varchar2( 4000 );
+  l_placeholders varchar2( 4000 );
+  l_html    clob;
+  l_text    clob;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  log('.. Gather the new session info. id=' || p_tournament_session_id, l_scope);
+
+  for new_session in (
+    with issues as (
+      select p.issue_code
+           -- , listagg(p.player_name, chr(13)||chr(10) ) issue_list
+           , listagg('@'||p.account, chr(13)||chr(10) ) issue_list
+      from wmg_tournament_player_v p
+         , wmg_issues i
+      where p.issue_code = i.code
+        and p.tournament_session_id = p_tournament_session_id
+      group by p.issue_code
+    )
+    select prefix_tournament, round_num, week, session_date
+         , '' "NULL"
+         , (select issue_list from issues where issue_code = 'NOSHOW') no_show_list
+         , (select issue_list from issues where issue_code = 'NOSCORE') no_score_list
+      from wmg_tournament_sessions_v s
+     where s.tournament_session_id = p_tournament_session_id
+  )
+  loop
+
+    log('.. SEASON:' || new_session.prefix_tournament, l_scope);
+    log('.. WEEK_NUM:' || new_session.round_num, l_scope);
+
+    l_placeholders := '{' ||
+        '    "SEASON":'         || apex_json.stringify( new_session.prefix_tournament ) ||
+        '   ,"WEEK_NUM":'       || apex_json.stringify( new_session.round_num ) ||
+        '   ,"NO_SCORES_LIST":' || apex_json.stringify( new_session.no_score_list ) ||
+        '   ,"NO_SHOWS_LIST":'  || apex_json.stringify( new_session.no_show_list ) ||
+        '}';
+
+    log(l_placeholders, l_scope);
+
+    apex_mail.prepare_template (
+        p_static_id    => 'TOURNAMENT_RECAP_ISSUES'
+      , p_placeholders => l_placeholders
+      , p_subject      => l_subject
+      , p_html         => l_html
+      , p_text         => l_text
+    );
+
+  end loop;
+
+  log('.. recap template', l_scope);
+  log(l_subject, l_scope);
+  log(l_text, l_scope);
+  -- log(l_html, l_scope);
+
+  x_out := l_text;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end tournament_issues_template;
 
 
 
