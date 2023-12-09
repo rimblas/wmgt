@@ -130,6 +130,10 @@ regions:
       declare
        l_row number;
       begin
+          if :P3_ID is null then 
+            return false;
+          end if;
+      
           if apex_authorization.is_authorized('Contribution Rights') then
             return true;
           else
