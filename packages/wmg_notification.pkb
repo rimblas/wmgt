@@ -593,11 +593,11 @@ begin
               where rn = 1
               group by total
            ) diamond_players
-         , (select c.total_coconuts || ' player' || decode(c.total_coconuts,1,'', 's')
+         , (select c.total_coconuts || ' out of ' || st.total_played || ' players'
                  || case 
                     when nvl(st.total_played,0) = 0 then ''
                     else
-                     ' (' || round(c.total_coconuts / st.total_played,2) || '%)'
+                     ' (' || 100  * round(c.total_coconuts / st.total_played,2) || '%)'
                     end total   -- total  (total %)
               from session_stats st
                  , (select count(*) total_coconuts
