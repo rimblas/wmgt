@@ -166,6 +166,7 @@ is
   l_body clob;
   l_content varchar2(1000);
   l_embeds  varchar2(1000);
+  l_avatar_image  varchar2(1000);
 
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
@@ -203,10 +204,16 @@ begin
     select p.* from wmg_players_v p where id = p_player_id
   )
   loop
+    -- People with a default discord avatar use an internal image lacking the protocol
+    -- if there's not protocol, add it
+    l_avatar_image := case 
+                      when instr(p.avatar_image, 'http:') = 0 then
+                         apex_util.host_url('SCRIPT')
+                      end || p.avatar_image;
     l_body := '{' ||
         '    "ENV":'                 || apex_json.stringify( wmg_util.get_param('ENV') ) ||
         '   ,"PLAYER_NAME":'         || apex_json.stringify( p.player_name ) ||
-        '   ,"DISCORD_AVATAR":'      || apex_json.stringify( p.avatar_image ) ||
+        '   ,"DISCORD_AVATAR":'      || apex_json.stringify( l_avatar_image ) ||
         '   ,"TIME_SLOT":'           || apex_json.stringify( l_time_slot ) ||
         '   ,"REGISTRATION_ATTEMPTS":'|| apex_json.stringify( l_registration_attempts ) ||
         '   ,"ACCOUNT":'             || apex_json.stringify( p.account ) ||
@@ -234,7 +241,7 @@ begin
                  'title' value 'Player: ' || p.player_name,
                  'description' value '[' || wmg_util.get_param('ENV') || ']',
                  'color' value c_embed_color_green,
-                 'image' value json_object('url' value p.avatar_image),
+                 'image' value json_object('url' value l_avatar_image),
                  'fields' value json_array(
                      json_object(
                          'name' value 'Display Name', 'value' value p.player_name, 'inline' value true
