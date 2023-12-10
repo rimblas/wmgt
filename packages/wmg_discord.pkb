@@ -38,11 +38,11 @@ procedure log(
 )
 is
 begin
-  $IF $$LOGGER $THEN
-  logger.log(p_text => p_msg, p_scope => p_ctx);
-  $ELSE
+  $IF $$NO_LOGGER $THEN
   dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
+  $ELSE
+  logger.log(p_text => p_msg, p_scope => p_ctx);
   $END
 
 end log;
@@ -94,7 +94,7 @@ begin
 
 exception
     when no_data_found then
-      return V('APP_IMAGES') || '/img/discord_mask.png';
+      return V('APP_IMAGES') || 'img/discord_mask.png';
 
     when OTHERS then
       log('Unhandled Exception', l_scope);
@@ -134,7 +134,7 @@ begin
   $END
 
    if p_discord_id is null then
-     return '<img class="avatar ' || p_size_class || '" src="' || V('APP_IMAGES') || '/img/discord_mask.png' || '">';
+     return '<img class="avatar ' || p_size_class || '" src="' || V('APP_IMAGES') || 'img/discord_mask.png' || '">';
    else
      -- return '<a class="-wm-discord-link" href="discord://discordapp.com/users/' || p_discord_id || '/">'
      return '<a class="-wm-discord-link" href="https://discordapp.com/users/' || p_discord_id || '/" target="discord">'
@@ -237,14 +237,14 @@ begin
 
 exception
     when no_data_found then
-      return V('APP_IMAGES') || '/img/discord_mask.png';
+      return V('APP_IMAGES') || 'img/discord_mask.png';
 
     when OTHERS then
       log('Unhandled Exception', l_scope);
       return 
       '<div class="row">'
          || '<div class="' || l_cols || ' u-tC">'
-         || '<img class="avatar" src="' || v('APP_IMAGES') || '/img/discord_mask.png' || '">'
+         || '<img class="avatar" src="' || v('APP_IMAGES') || 'img/discord_mask.png' || '">'
          || ' Something went wrong retriving your profile. Plese let a Tournament Director know.'
          || '</div>'
      || '</div>';
