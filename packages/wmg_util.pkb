@@ -2019,17 +2019,25 @@ begin
      from wmg_tournament_sessions ts
      where ts.week = u.week;
 
-    log('Added ' || SQL%ROWCOUNT, l_scope);
+    log('.. Added ' || SQL%ROWCOUNT, l_scope);
   end loop;
 
-/*
-  for u in (
+
+  log('.. Updating repeat unicorns, ie commoncorns', l_scope);
+  for courses in (
     with course_play_count as (
           select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
           from wmg_tournament_courses c
              , wmg_tournament_sessions s
           where s.id = c.tournament_session_id
             and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+            and c.course_id in (
+              select c.course_id
+                from wmg_tournament_sessions ts
+                   , wmg_tournament_courses c
+                 where ts.id = c.tournament_session_id 
+                   and ts.id = p_tournament_session_id
+                )
           group by c.course_id
     )
     , courses_played as (
@@ -2040,22 +2048,28 @@ begin
           and cc.play_count >= 5
     )
     select course_id
-      from courses_played;
-
-
-
-  update wmg_player_unicorns pu
-  set pu.repeat_count = (
-      select count(*)
-      from wmg_rounds_unpivot_mv u
-         , wmg_players_v p
-      where u.player_id = p.id
-        and u.course_id = pu.course_id
-        and u.h = pu.h
-        and u.score = 1
+      from courses_played
   )
-  where pu.course_id = 185
-*/
+  loop
+    -- for each course and for each hole, update the number of 
+    -- unicorn repeats
+    update wmg_player_unicorns pu
+    set pu.repeat_count = (
+       select case when n = 1 then null else n -1 end
+         from (
+          select count(*) n
+          from wmg_rounds_unpivot_mv u
+             , wmg_players_v p
+          where u.player_id = p.id
+            and u.course_id = pu.course_id
+            and u.h = pu.h
+            and u.score = 1
+      )
+    )
+    where pu.course_id = courses.course_id;
+    
+  end loop;
+
 
   log('END', l_scope);
 
