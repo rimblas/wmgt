@@ -444,10 +444,10 @@ begin
 
   for new_session in (
     select round_num, week, session_date
-         , easy_course_name
+         , nvl(easy_course_name, 'TBD') easy_course_name
          , hard_course_name
-         , easy_course_code
-         , hard_course_code
+         , nvl(easy_course_code, 'TBD') easy_course_code
+         , nvl(hard_course_code, 'TBD') hard_course_code
       from wmg_tournament_sessions_v
      where tournament_session_id = p_tournament_session_id
   )
