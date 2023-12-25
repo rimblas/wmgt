@@ -15,6 +15,7 @@ begin
     "name": "New tournament",
     "description": "Get notified when a new tournament is open for registration",
     "icon_class": "em em-golf",
+    "supported_methods": "PUSH:EMAIL:WEBHOOK",
     "player_selectable": "Y",
     "td_selectable": "Y",
     "seq": 10
@@ -24,6 +25,7 @@ begin
     "name": "Tournament Close",
     "description": "Get notified when the tournament is officially closed",
     "icon_class": "em em-thropy",
+    "supported_methods": "PUSH:EMAIL",
     "player_selectable": "Y",
     "td_selectable": "Y",
     "seq": 20
@@ -33,15 +35,17 @@ begin
     "name": "Tournament Room Defined",
     "description": "Get notified when your tournament room has been defined",
     "icon_class": "em em-golfer",
+    "supported_methods": "PUSH:EMAIL",
     "player_selectable": "Y",
     "td_selectable": "N",
     "seq": 30
   },
   {
-    "code": "SCORING_CLOSING",
+    "code": "SCORING_CLOSING",	
     "name": "Score Entry Window Closing",
     "description": "Get notified 15 min before the score entry window closes and you have not entered your scores yet.",
     "icon_class": "em em-alarm_clock",
+    "supported_methods": "PUSH:EMAIL",
     "player_selectable": "Y",
     "td_selectable": "N",
     "seq": 40
@@ -51,6 +55,7 @@ begin
     "name": "New Player Signup",
     "description": "Get notified a brand new player registers for the tournament",
     "icon_class": "em em-sunny",
+    "supported_methods": "PUSH:EMAIL:WEBHOOK",
     "player_selectable": "N",
     "td_selectable": "Y",
     "seq": 30
@@ -66,6 +71,7 @@ begin
       name varchar2(4000) path '$.name',
       description varchar2(4000) path '$.description',
       icon_class varchar2(4000) path '$.icon_class',
+      supported_methods varchar2(4000) path '$.supported_methods',
       player_selectable varchar2(4000) path '$.player_selectable',
       td_selectable varchar2(4000) path '$.td_selectable',
       seq number path '$.seq'
@@ -91,6 +97,7 @@ begin
           dest.name = data.name,
           dest.description = data.description,
           dest.icon_class = data.icon_class,
+          dest.supported_methods = data.supported_methods,
           dest.player_selectable_ind = data.player_selectable,
           dest.td_selectable_ind = data.td_selectable,
           dest.display_seq = data.seq
@@ -101,6 +108,7 @@ begin
         description,
         icon_class,
         display_seq,
+        supported_methods,
         player_selectable_ind,
         td_selectable_ind,
         active_ind,
@@ -112,6 +120,7 @@ begin
         data.description,
         data.icon_class,
         data.seq,
+        data.supported_methods,
         data.player_selectable,
         data.td_selectable,
         'Y',

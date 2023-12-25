@@ -13,16 +13,8 @@ create table wmg_notification_subs (
                                    references wmg_notification_types(id),
     notification_method            varchar2(20 char)
                                    constraint wmg_notification_subs_method_ck
-                                   check (notification_method in ('EMAIL', 'WEBHOOK')) not null,
-    name                           varchar2(60 char)
-                                   constraint wmg_notification_subs_name_unq unique not null,
-    display_seq                    integer not null,
+                                   check (notification_method in ('PUSH', 'EMAIL', 'WEBHOOK')) not null,
     description                    varchar2(4000 char),
-    icon_class                     varchar2(100 char),
-    player_selectable_ind          varchar2(1 char) default 'N' constraint wmg_notification_subs_p_select_ind_ck
-                                   check (player_selectable_ind        in ('Y','N')) not null,
-    td_selectable_ind              varchar2(1 char) default 'N' constraint wmg_notification_subs_td_select_ind_ck
-                                   check (td_selectable_ind        in ('Y','N')) not null,
     active_ind                     varchar2(1 char) default 'Y' constraint wmg_notification_subs_active_ind_ck
                                    check (active_ind in ('Y','N')) not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,

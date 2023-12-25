@@ -12,6 +12,7 @@ create table wmg_notification_types (
     display_seq                    integer not null,
     description                    varchar2(4000 char),
     icon_class                     varchar2(100 char),
+    supported_methods              varchar2(100 char),
     player_selectable_ind          varchar2(1 char) default 'N' constraint wmg_notification_types_p_select_ind_ck
                                    check (player_selectable_ind        in ('Y','N')) not null,
     td_selectable_ind              varchar2(1 char) default 'N' constraint wmg_notification_types_td_select_ind_ck
@@ -26,6 +27,7 @@ create table wmg_notification_types (
 ;
 
 comment on table wmg_notification_types is 'Notifications that a player or TD can select';
+comment on column wmg_notification_types.supported_methods is 'Colon delimited list of methods: PUSH,EMAIL,WEBHOOK';
 
 -- triggers
 create or replace trigger wmg_notification_types_bu
