@@ -207,7 +207,7 @@ begin
     -- People with a default discord avatar use an internal image lacking the protocol
     -- if there's not protocol, add it
     l_avatar_image := case 
-                      when instr(p.avatar_image, 'http:') = 0 then
+                      when instr(p.avatar_image, 'http') = 0 then
                          apex_util.host_url('SCRIPT')
                       end || p.avatar_image;
     l_body := '{' ||
