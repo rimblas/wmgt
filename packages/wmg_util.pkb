@@ -1232,6 +1232,11 @@ begin
     , p_tournament_session_id => p_tournament_session_id
   );
 
+  log('.. Add Unicorns', l_scope);
+  add_unicorns(
+     p_tournament_session_id => p_tournament_session_id
+  );
+
   log('.. Add Badges', l_scope);
   snapshot_badges(
       p_tournament_id         => p_tournament_id
