@@ -3,7 +3,7 @@ create table wmg_tournament_sessions (
                                    constraint wmg_tournament_ses_id_pk primary key,
     tournament_id                  number
                                    constraint wmg_tournament_tournament_fk
-                                   references wmg_tournaments,
+                                   references wmg_tournaments not null,
     round_num                      integer not null,
     session_date                   date,
     week                           varchar2(10 char) constraint wmg_tournament_sessions_uk1 unique not null,
