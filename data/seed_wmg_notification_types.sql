@@ -58,7 +58,27 @@ begin
     "supported_methods": "PUSH:EMAIL:WEBHOOK",
     "player_selectable": "N",
     "td_selectable": "Y",
-    "seq": 30
+    "seq": 50
+  },
+  {
+    "code": "FIRST_SCORE",
+    "name": "First Weekend Score Entered",
+    "description": "Get notified the first player enters their scores",
+    "icon_class": "em em-memo",
+    "supported_methods": "PUSH:EMAIL:WEBHOOK",
+    "player_selectable": "Y",
+    "td_selectable": "Y",
+    "seq": 60
+  },
+  {
+    "code": "SIGNUP_REMINDER",
+    "name": "Remember to Signup",
+    "description": "Get notified a day before the tournament starts if you are not signed-up",
+    "icon_class": "em em-alarm_clock",
+    "supported_methods": "PUSH:EMAIL",
+    "player_selectable": "Y",
+    "td_selectable": "N",
+    "seq": 70
   },
 ]
 !';
