@@ -67,6 +67,11 @@ procedure close_tournament_session (
   , p_tournament_session_id in wmg_tournament_sessions.id%type
 );
 
+function is_season_over(
+   p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+return boolean;
+
 function score_points(
     p_rank         in number
   , p_percent_rank in number
