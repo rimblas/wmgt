@@ -1269,6 +1269,66 @@ end close_tournament_session;
 
 
 
+/**
+ * Detect when a sesson is over.
+ *  * If we have a p_tournament_session_id then we're actively in a season
+ *  * Or if the very las round is round 12 and it's completed
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created February 5, 2024
+ * @param p_tournament_session_id
+ * @return boolean
+ */
+function is_season_over(
+   p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+return boolean
+is
+  l_scope  logger_logs.scope%type := gc_scope_prefix || 'is_season_over';
+  l_params logger.tab_param;
+
+  l_tournament_session_id wmg_tournament_sessions.id%type;
+  l_round_num wmg_tournament_sessions.round_num%type;
+  l_completed_ind wmg_tournament_sessions.completed_ind%type;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  -- logger.log('BEGIN', l_scope, null, l_params);
+
+
+  if nvl(p_tournament_session_id,-1) != -1 then
+    return false;
+  end if;
+
+  select id, round_num, completed_ind
+    into l_tournament_session_id, l_round_num, l_completed_ind
+    from wmg_tournament_sessions
+   where week not like '%B%'  -- skip the special inbetween tournaments
+   order by session_date desc
+   fetch first 1 rows only;
+
+  if l_round_num = 12 and l_completed_ind = 'Y' then
+    return true;
+  end if;
+
+  return false;
+
+  -- logger.log('END', l_scope, null, l_params);
+
+  exception
+    when OTHERS then
+      logger.log_error('Unhandled Exception', l_scope, null, l_params);
+      -- x_result_status := mm_api.g_ret_sts_unexp_error;
+      raise;
+end is_season_over;
+
+
+
 
 
 /**
