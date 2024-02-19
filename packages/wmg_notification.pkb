@@ -834,7 +834,8 @@ is
 
   function course_rank(p_course_id in wmg_courses.id%type) return varchar2
   as
-     l_course_rank_info varchar2(200);
+     l_course_rank_info varchar2(250);
+     l_course_last_played_info varchar2(250);
   begin
     for rank_info in (
       with std_scale as (
@@ -910,11 +911,68 @@ is
       end if;
       
     end loop;
-    return l_course_rank_info;
+
+    begin
+      select 'It was last played on ' || ts.week || ' on ' || to_char(ts.session_date, 'Month DD, YYYY')
+      || ' (' || apex_util.get_since(ts.session_date) || ')'
+        into l_course_last_played_info
+      from wmg_tournament_sessions ts
+         , wmg_tournament_courses tc
+         , wmg_courses c
+      where tc.tournament_session_id = ts.id
+        and tc.tournament_session_id != p_tournament_session_id
+        and tc.course_id = c.id
+        and tc.course_id = p_course_id
+        order by ts.session_date desc
+       fetch first 1 rows only;
+    
+    exception
+      when no_data_found then
+        -- never played before
+        l_course_last_played_info := '';
+
+    end;
+
+    return l_course_rank_info || chr(13)||chr(10) || l_course_last_played_info;
 
   end course_rank;
 
-      
+
+  -- Get the easiest and hardest holes for a course
+  function course_holes(p_course_id in wmg_courses.id%type, p_type in varchar2) return varchar2
+  as
+     l_course_holes_info varchar2(200);
+  begin
+    with std_scale as (
+       select max(std_dev) max_std_dev
+         from wmg_course_stats_v
+    )
+    , holes as (
+      select s.course_id, s.course_code, s.h
+           , case 
+                when s.std_dev = 0 then 0
+                else round(s.std_dev / std_scale.max_std_dev * 10,1)
+              end value
+      from  wmg_course_stats_v s
+          , std_scale
+      where s.course_id = p_course_id
+    )
+    select listagg('Hole ' || h || ' with a rating of ' || round(value,2) || ' out of 10', chr(13)||chr(10) )
+      into l_course_holes_info
+    from (
+      select h
+           , value
+           , row_number() over (order by value) easiest
+           , row_number() over (order by value desc) hardest
+      from holes
+    )
+    where (p_type = 'E' and easiest =1)
+       or (p_type = 'H' and hardest =1);
+    return l_course_holes_info;
+
+  end course_holes;
+
+        
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
@@ -942,7 +1000,8 @@ begin
     log('.. HARD_CODE:' || new_session.hard_course_code, l_scope);
 
     -- Easy Course Record
-    select listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name)  || ': ' || min(under_par) course_record
+   -- select listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name)  || ': ' || min(under_par) course_record
+    select '**(' || min(under_par) || ')**' || chr(13)||chr(10) || listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name) course_record
       into l_easy_record
       from (
        select max(week) week, player_name, under_par
@@ -957,7 +1016,8 @@ begin
       );
 
     -- Hard Course Record
-    select listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name)  || ': ' || min(under_par) course_record
+   -- select listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name)  || ': ' || min(under_par) course_record
+    select '**(' || min(under_par) || ')**' || chr(13)||chr(10) || listagg(player_name || ' (' || week || ')', ', ') within group (order by week, player_name) course_record
       into l_hard_record
       from (
        select max(week) week, player_name, under_par
@@ -1061,8 +1121,8 @@ begin
       '   ,"EASY_RECORD":'           || apex_json.stringify( l_easy_record ) ||
       '   ,"EASY_TOP_SCORES":'       || apex_json.stringify( l_easy_top_scores ) ||
       '   ,"EASY_RANKING":'          || apex_json.stringify( course_rank(new_session.easy_course_id ) ) ||
-      '   ,"EASY_HARD_HOLES":'       || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"EASY_EASY_HOLES":'       || apex_json.stringify( new_session."NULL" ) ||
+      '   ,"EASY_HARD_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'H' ) ) ||
+      '   ,"EASY_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'E' ) ) ||
       '   ,"EASY_UNICORNS":'         || apex_json.stringify( new_session."NULL" ) ||
       '   ,"EASY_UNICORNS_PENDING":' || apex_json.stringify( new_session."NULL" ) ||
       '   ,"UNICORNS_EASY_OK":'      || apex_json.stringify( 'N' ) ||  -- no unicons for now
@@ -1071,8 +1131,8 @@ begin
       '   ,"HARD_RECORD":'           || apex_json.stringify( l_hard_record ) ||
       '   ,"HARD_TOP_SCORES":'       || apex_json.stringify( l_hard_top_scores ) ||
       '   ,"HARD_RANKING":'          || apex_json.stringify( course_rank(new_session.hard_course_id ) ) ||
-      '   ,"HARD_HARD_HOLES":'       || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"HARD_EASY_HOLES":'       || apex_json.stringify( new_session."NULL" ) ||
+      '   ,"HARD_HARD_HOLES":'       || apex_json.stringify( course_holes(new_session.hard_course_id, 'H' ) ) ||
+      '   ,"HARD_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.hard_course_id, 'E' ) ) ||
       '   ,"HARD_UNICORNS":'         || apex_json.stringify( new_session."NULL" ) ||
       '   ,"HARD_UNICORNS_PENDING":' || apex_json.stringify( new_session."NULL" ) ||
       '   ,"UNICORNS_HARD_OK":'      || apex_json.stringify( 'N' ) ||  -- no unicons for now
