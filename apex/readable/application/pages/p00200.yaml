@@ -24,6 +24,11 @@ javascript:
     var refreshingThings = 0;
     
     function refreshAllThings() {
+        apex.submit({showWait:true});
+        return; // do not do live reloading any more on change of course
+        // at this point we want to save on concurrent sessions hitting the DB. We are very limited on ATP, so a submit reduces 
+        // the count from 7 to 5 which at this point is significant enough
+    
     	if (!refreshingThings) {
     		refreshingThings = 1;
     		[
@@ -62,12 +67,20 @@ javascript:
         apex.region("playersDrilldown").refresh();
         openModal("playersDrilldown");
     }
+    
+    function switchCourse(pCourse) {
+        $s("P200_TOURNAMENT_SESSION_ID", "", "", true);
+        $s("P200_COURSE_ID", pCourse, "- Loading -", true);
+        apex.submit("REFRESH");
+    }
 
 css: 
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
   inline: |
-    #P200_H_DISPLAY {width: 6rem;}
+    #P200_H {
+        min-width: 4rem;
+    }
     
     #P200_GOALS_IND_CONTAINER {
     --ut-field-padding-y: 0;
@@ -1987,7 +2000,7 @@ regions:
 
       link: 
         type: Redirect to URL
-        target: 'javascript:$s("P200_COURSE_ID", "#COURSE_ID#")'
+        target: 'javascript:switchCourse("#COURSE_ID#")'
 
       label: 
         show: true
@@ -2926,7 +2939,7 @@ regions:
     - P200_COURSE_ID
 
   layout: 
-    sequence: 10
+    sequence: 60
     parent-region: '{options}' # 43228410746087619
     position: BODY
     start-new-layout: false
@@ -3232,15 +3245,15 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 10
-    region: How Hard is this Course? # 8728218549818336
-    position: NEXT
+    sequence: 30
+    region: '{options}' # 43228410746087619
+    position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 3
     label-column-span: Page Template Default
 
   appearance: 
@@ -3248,13 +3261,14 @@ page-items:
     template-options: 
     - '#DEFAULT#'
     width: 32
+    value-placeholder: '- Select course -'
 
   validation: 
     value-required: false
 
   list-of-values: 
     type: Shared Component
-    list-of-values: COURSES # 46995231723178514881
+    list-of-values: COURSES_P200 # 32465799237443924
     display-extra-values: true
     display-null-value: true
 
@@ -3290,7 +3304,7 @@ page-items:
     format: Plain Text
     based-on: Item Value
     show-line-breaks: true
-    send-on-page-submit: true
+    send-on-page-submit: false
 
   layout: 
     sequence: 10
@@ -3354,6 +3368,110 @@ page-items:
   security: 
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P200_TOURNAMENT_SESSION_ID ===============
+  id: 32460389489429301
+  identification: 
+    name: P200_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: '{options}' # 43228410746087619
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P200_TOURNAMENT_COURSE_ID ================
+  id: 32460514638429303
+  identification: 
+    name: P200_TOURNAMENT_COURSE_ID
+    type: Radio Group
+
+  label: 
+    label: Courses
+    alignment: Left
+
+  settings: 
+    number-of-columns: 2
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 20
+    region: '{options}' # 43228410746087619
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - margin-top-none
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select c.code d, tc.course_id r
+      from wmg_tournament_courses tc
+          , wmg_courses c
+      where tc.course_id = c.id
+        and tc.tournament_session_id = :P200_TOURNAMENT_SESSION_ID
+        order by c.course_mode
+      
+    display-extra-values: true
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Item
+    item: P200_COURSE_ID
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P200_TOURNAMENT_SESSION_ID
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P200_ALL_COURSES_IND =====================
@@ -3426,19 +3544,19 @@ page-items:
     page-action-on-selection: Redirect and Set Value
 
   layout: 
-    sequence: 10
+    sequence: 50
     region: '{options}' # 43228410746087619
     position: BODY
     alignment: Left
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
-    column-span: 5
-    label-column-span: 1
+    column-span: 3
+    label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional - Floating # 46995171503553514398
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--stretchInputs
@@ -3692,7 +3810,7 @@ buttons:
     label: By Score Avg
 
   layout: 
-    sequence: 20
+    sequence: 40
     region: How Hard is this Course? # 8728218549818336
     position: NEXT
     start-new-layout: false
@@ -3726,7 +3844,7 @@ buttons:
     label: By Std Dev
 
   layout: 
-    sequence: 30
+    sequence: 50
     region: How Hard is this Course? # 8728218549818336
     position: NEXT
     start-new-layout: false
@@ -3974,6 +4092,74 @@ dynamic-actions:
     - P200_COURSE_ID
 
   actions: 
+  - # ====== Action: Clear tournament_session_id to show All cours
+    id: 32460891014429306
+    identification: 
+      name: Clear tournament_session_id to show All courses
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      suppress-change-event: true
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P200_TOURNAMENT_SESSION_ID
+
+    execution: 
+      sequence: 10
+      event: Refresh on Course Change # 8985036673642610
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: false
+      wait-for-result: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P200_COURSE_ID
+      value: '-1'
+
+  - # ====== Action: Reload Page to Show All Courses =============
+    id: 32460970190429307
+    identification: 
+      name: Reload Page to Show All Courses
+      action: Submit Page
+
+    settings: 
+      request-/-button-name: REFRESH
+      show-processing: true
+
+    execution: 
+      sequence: 20
+      event: Refresh on Course Change # 8985036673642610
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item = Value
+      item: P200_COURSE_ID
+      value: '-1'
+
+  - # ====== Action: Sync Course Selection =======================
+    id: 32461119813429409
+    identification: 
+      name: Sync Course Selection
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $s("P200_TOURNAMENT_COURSE_ID", $v("P200_COURSE_ID"), '', true);
+
+    execution: 
+      sequence: 30
+      event: Refresh on Course Change # 8985036673642610
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item is not null
+      item: P200_TOURNAMENT_SESSION_ID
+
   - # ====== Action: Execute JavaScript Code =====================
     id: 44380923329120429
     identification: 
@@ -3983,10 +4169,15 @@ dynamic-actions:
       code: refreshAllThings()
 
     execution: 
-      sequence: 80
+      sequence: 40
       event: Refresh on Course Change # 8985036673642610
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+    client-side-condition: 
+      type: Item != Value
+      item: P200_COURSE_ID
+      value: '-1'
 
 - # ====== Dynamic Action: Show by Score Avg ===================
   id: 8986907306642629
@@ -4222,6 +4413,41 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Close Player Drill Down # 9185764827315403
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Sync Course Selection ===============
+  id: 32460647624429304
+  identification: 
+    name: Sync Course Selection
+
+  execution: 
+    sequence: 130
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P200_TOURNAMENT_COURSE_ID
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P200_TOURNAMENT_SESSION_ID
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 32460715758429305
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $s("P200_COURSE_ID", $v("P200_TOURNAMENT_COURSE_ID"))
+
+    execution: 
+      sequence: 10
+      event: Sync Course Selection # 32460647624429304
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -4560,6 +4786,30 @@ dynamic-actions:
       value: Y
 
 processes: 
+- # ====== Process: Clear on REFRESH ===========================
+  id: 32461001630429408
+  identification: 
+    name: Clear on REFRESH
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      :P200_TOURNAMENT_COURSE_ID := null;
+      :P200_COURSE_ID := null;
+
+  execution: 
+    sequence: 20
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
+  server-side-condition: 
+    type: Item = Value
+    item: P200_COURSE_ID
+    value: '-1'
+
 - # ====== Process: Save Preference ============================
   id: 43228692764087621
   identification: 

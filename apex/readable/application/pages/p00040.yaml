@@ -13,14 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -135,6 +128,106 @@ help:
     
 
 regions: 
+- # ====== Region: Welcome! ====================================
+  id: 8054307322938707
+  identification: 
+    title: Welcome!
+    type: Static Content
+
+  source: 
+    html-code: |
+      🎊 Excited to have you in the Mini Golf Tournament!<br>
+      <br>
+      We know there's a lot to take in, so here are the <u>3 most crucial</u> things to remember:<br>
+      <br>
+      <ul>
+      <li><b>Timeliness is Key:</b> Be on time, rounds start on the hour. Latecomers can't join in!</li>
+      <li><b>Score Submission:</b> Done playing? Submit your scores right away.</li>
+      <li><b>Room Control:</b> It's best to let an experienced player manage the room your first time.</li>
+      </ul>
+      <br>
+      Swing with confidence and have fun! ⛳🎉
+      
+
+  layout: 
+    sequence: 139
+    parent-region: No Parent
+    position: REGION_POSITION_04
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Dialog # 46995081883957514359
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-autoheight
+    - js-dialog-size480x320
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: welcomeInfo
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {all rules info} ============================
+  id: 8054431181938708
+  identification: 
+    title: '{all rules info}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Welcome! # 8054307322938707
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: About the rooms =============================
   id: 12341661862723547
   identification: 
@@ -1712,6 +1805,11 @@ regions:
     performance: 
       lazy-loading: false
 
+    messages: 
+      when-no-data-found: |
+        - The next tournament courses have not been selected yet -<br>
+        Try again tomorrow...
+
     break-formatting: 
       break-columns: No Break
 
@@ -1995,6 +2093,44 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: VIEW_RULES ==================================
+  id: 9167594958065075
+  identification: 
+    button-name: VIEW_RULES
+    label: View all the rules
+
+  layout: 
+    sequence: 40
+    region: '{all rules info}' # 8054431181938708
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--link
+    - t-Button--iconLeft
+    - t-Button--stretch
+    - t-Button--padTop
+    - t-Button--padBottom
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::P20_NOTE_TYPE:RULES'
+      page: 20 # About/Rules
+      values: 
+        p20_note_type: RULES
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: OPEN_ROOMS ==================================
   id: 12339952842723530
   identification: 
@@ -2330,6 +2466,38 @@ buttons:
     authorization-scheme: Tournament Admin # 55902033226819493948
 
 dynamic-actions: 
+- # ====== Dynamic Action: Open New Player Welcome! ============
+  id: 8054786260938711
+  identification: 
+    name: Open New Player Welcome!
+
+  execution: 
+    sequence: 110
+    event-scope: Static
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  server-side-condition: 
+    type: Request = Value
+    value: NEW_PLAYER
+
+  actions: 
+  - # ====== Action: Open Region =================================
+    id: 8054867722938712
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: Welcome! # 8054307322938707
+
+    execution: 
+      sequence: 10
+      event: Open New Player Welcome! # 8054786260938711
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Init Actions ========================
   id: 12528847877550025
   identification: 

@@ -11,16 +11,10 @@ appearance:
   page-template: Theme Default
   template-options: 
   - '#DEFAULT#'
+  - t-DeferredRendering
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -158,6 +152,17 @@ css:
            --ut-report-header-cell-padding-x: .1rem;
       }
     }
+    
+    /* Hide the seletors in short landscape orientation */
+    @media only screen and (orientation: landscape) and (max-height: 400px) {
+      #P63_TOURNAMENT_ID_CONTAINER,
+      #P63_WEEK_CONTAINER,
+      #P63_SEARCH_CONTAINER,
+      .pro-legend {
+        display: none!important;
+      }
+    }
+    
     
     .w {
         display: inline-block;
@@ -2760,6 +2765,7 @@ page-items:
     column-span: Automatic
     label-column-span: Page Template Default
     column-css-classes: 
+    - null
     - col-xxs-6
     - col-md-4
     - col-sm-5

@@ -86,8 +86,9 @@ regions:
     exclude-title-from-translation: false
 
   server-side-condition: 
-    type: Item is NULL
-    item: G_CURRENT_SESSION_ID
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: 'nvl(:G_CURRENT_SESSION_ID, -1) = -1'
 
   server-cache: 
     caching: Disabled
@@ -164,8 +165,9 @@ regions:
     exclude-title-from-translation: false
 
   server-side-condition: 
-    type: Item is NOT NULL
-    item: G_CURRENT_SESSION_ID
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: 'nvl(:G_CURRENT_SESSION_ID, -1)>0'
 
   server-cache: 
     caching: Disabled

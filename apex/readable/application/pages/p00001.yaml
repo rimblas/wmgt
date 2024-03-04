@@ -81,12 +81,15 @@ javascript:
         $(".google-style").css("display", "block");
       }
     });
+    
+    $(".-wm-round1212").parents("tr").addClass("t-Timeline-item")
 
 css: 
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
   inline: |
     .t-HeroRegion-icon {background-color: whitesmoke;}
+    
     
     .t-Login-region:first-of-type .t-Login-header {padding-bottom: 0}
     .t-Login-logo {
@@ -273,6 +276,20 @@ css:
     
     #leadersByRankRegion td h5 {margin-top: 10px;}
     
+    .-wm-pill {
+        background-color: var(--u-color-4);
+        color: var(--u-color-4-contrast);
+        padding: .3rem;
+        border-radius: var(--a-button-border-radius,.125rem);
+    }
+    .-wm-pill.important {font-weight: bold;}
+    .t-Report-cell[headers="PLAYER"] {padding-left:0;}
+    
+    
+    #seasonCourses tr.t-Timeline-item {
+        --ut-timeline-border-color: #b7b7b7;
+        --ut-component-inner-border-width: 2px;
+    }
 
 security: 
   authentication: Page Is Public
@@ -304,6 +321,311 @@ help:
     
 
 regions: 
+- # ====== Region: You're Registered! ==========================
+  id: 8055004655938714
+  identification: 
+    title: You're Registered!
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with my_room as (
+      select p.tournament_session_id
+           , nvl(p.prefered_tz, sessiontimezone) tz
+           , p.time_slot
+           , wmg_discord.avatar_link(p_discord_id => p.discord_id)
+          || apex_escape.html(p.player_name) player
+      from wmg_tournament_player_v p
+      where p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.player_id = :G_PLAYER_ID
+      )
+      select r.*
+          , to_char(local_tz, 'fmDy, fmMonth fmDD') 
+            || ' ' 
+            || case when tz like 'US/%' or tz like 'America%' then
+                 ltrim(to_char(local_tz, 'HH:MI PM'), '0')
+               else 
+                 to_char(local_tz, 'HH24:MI')
+               end
+            || ' ' || tz at_local_time
+      from (
+      select r.player
+           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || r.time_slot) at time zone r.tz local_tz
+           , r.tz
+           , r.time_slot
+      from wmg_tournament_sessions s
+         , my_room r
+      where s.id = r.tournament_session_id
+      ) r
+      
+
+  layout: 
+    sequence: 10
+    parent-region: '{col2}' # 11993448770685629
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    row-css-classes: 
+    - u-justify-content-center
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - room
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-8
+    - col-md-6
+    - col-lg-5
+    - col-xl-5
+    - col-xxl-4
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--showIcon
+    - t-Region--accent3
+    - t-Region--scrollBody
+    - margin-top-none
+    css-classes: 
+    - '-wm-animate-glow-blue'
+    icon: fa fa-check-square fa-anim-vertical-shake
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    header-text: |
+      <div class="u-bold">When:</div>
+      <span class="your-tzRoomTime"></span><br>
+      
+      
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players p
+         , wmg_tournament_sessions s
+      where p.tournament_session_id = s.id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.player_id = :G_PLAYER_ID
+        and s.rooms_open_flag is null
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: AT_LOCAL_TIME ===============================
+    id: 8055363504938717
+    identification: 
+      column-name: AT_LOCAL_TIME
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER ======================================
+    id: 8055487167938718
+    identification: 
+      column-name: PLAYER
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        <div class="u-flex u-justify-content-space-between">
+        <span><span class="u-bold">Time Slot</span> <span class="-wm-pill important">#TIME_SLOT# UTC</span></span>
+        <span><span class="u-bold">Room</span> TBD</span>
+        </div>
+        <span class="tzRoomTime u-vh">#AT_LOCAL_TIME#</span>
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: LOCAL_TZ ====================================
+    id: 8055595983938719
+    identification: 
+      column-name: LOCAL_TZ
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TZ ==========================================
+    id: 8055688753938720
+    identification: 
+      column-name: TZ
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TIME_SLOT ===================================
+    id: 8055709054938721
+    identification: 
+      column-name: TIME_SLOT
+      type: Hidden Column
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: {Prev Season Courses Message} ===============
+  id: 8058491760938748
+  identification: 
+    title: '{Prev Season Courses Message}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      <span class="legend">These are the courses played in the previous season.<br>
+      Be aware that those courses do not have much bearing on the courses that will be played next season.</span>
+
+  layout: 
+    sequence: 10
+    parent-region: Season Courses # 32751428375549205
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: 'return wmg_util.is_season_over(:G_CURRENT_SESSION_ID);'
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: {Next Tournament Info} ======================
   id: 9186482410315410
   identification: 
@@ -311,7 +633,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 19
+    sequence: 50
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -507,7 +829,7 @@ regions:
       
 
   layout: 
-    sequence: 5
+    sequence: 20
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -1301,7 +1623,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 50
+    sequence: 60
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -1327,28 +1649,7 @@ regions:
   server-side-condition: 
     type: Function Body
     language: PL/SQL
-    pl/sql-function-body: |
-      declare
-      l_tournament_session_id wmg_tournament_sessions.id%type;
-      l_round_num wmg_tournament_sessions.round_num%type;
-      l_completed_ind wmg_tournament_sessions.completed_ind%type;
-      begin
-      
-      if :G_CURRENT_SESSION_ID is not null then
-        return false;
-      end if;
-      
-      select id, round_num, completed_ind
-      into l_tournament_session_id, l_round_num, l_completed_ind
-      from wmg_tournament_sessions
-      where week not like '%B%'
-      order by session_date desc
-      fetch first 1 rows only;
-      
-      if l_round_num = 12 and l_completed_ind = 'Y' then
-        return true;
-      end if;
-      end;
+    pl/sql-function-body: 'return wmg_util.is_season_over(:G_CURRENT_SESSION_ID);'
 
   server-cache: 
     caching: Disabled
@@ -1368,7 +1669,7 @@ regions:
     type: Static Content
 
   source: 
-    html-code: '<img class="seasonTrophy" src="&BUCKET.S10_CHAMPION.gif" title="Champion Trophy: Zanetti S10 Champion">'
+    html-code: '<img class="seasonTrophy" src="&BUCKET.S11_CHAMPION.gif" style="width: 100%" title="Champion Trophy: his.Dudeness S11 Champion">'
 
   layout: 
     sequence: 50
@@ -1408,10 +1709,10 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: About the next season =======================
+- # ====== Region: Next season coming soon! ====================
   id: 28673639639250904
   identification: 
-    title: About the next season
+    title: Next season coming soon!
     type: Classic Report
 
   source: 
@@ -1439,7 +1740,7 @@ regions:
     - '#DEFAULT#'
     - t-Alert--colorBG
     - t-Alert--horizontal
-    - t-Alert--noIcon
+    - t-Alert--defaultIcons
     - t-Alert--info
     render-components: Below Content
 
@@ -1467,6 +1768,9 @@ regions:
 
   customization: 
     customizable: Not Customizable By End Users
+
+  comments: 
+    comments: Display when there's a new Current Tournament, but there are NO sessions defined yet
 
   attributes: 
     layout: 
@@ -1720,7 +2024,7 @@ regions:
       
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: '{col3}' # 13437440212291548
     position: SUB_REGIONS
     start-new-layout: false
@@ -1830,12 +2134,12 @@ regions:
     column-formatting: 
       html-expression: |
         {if URL/}
-        <a class="t-Button t-Button--icon t-Button--tiny" href="#URL#">
+        <a class="t-Button t-Button--icon t-Button--tiny -wm-round#ROUND_NUM#12" href="#URL#">
           <span class="t-Button-label"><span class="hidden-xs-down">Week </span>#ROUND_NUM# of 12</span>
         </a>
         {else/}
         {if ROUND_NUM/}
-        <div class="t-Button t-Button--icon t-Button--tiny">
+        <div class="t-Button t-Button--icon t-Button--tiny -wm-round#ROUND_NUM#12">
         <span class="hidden-xs-down">Week </span>#ROUND_NUM# of 12</span>
         </div>
         {endif/}
@@ -3606,7 +3910,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 110
+    sequence: 90
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -3661,7 +3965,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 20
+    sequence: 30
     parent-region: '{col3}' # 13437440212291548
     position: SUB_REGIONS
     start-new-layout: false
@@ -3961,7 +4265,7 @@ regions:
       
 
   layout: 
-    sequence: 10
+    sequence: 30
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -3989,6 +4293,8 @@ regions:
     - t-Region--accent1
     - t-Region--scrollBody
     - margin-top-none
+    css-classes: 
+    - '-wm-animate-glow-blue'
     icon: fa fa-bell-o fa-anim-horizontal-shake
     render-components: Above Content
 
@@ -4169,10 +4475,10 @@ regions:
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.easy_course_id), 'TBD') easy_record
-           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.easy_course_id) easy_stats_url
+           , apex_page.get_url(p_page => 200, p_clear_cache => '200', p_items =>'P200_COURSE_ID,P200_TOURNAMENT_SESSION_ID', p_values => s.easy_course_id || ',' || s.tournament_session_id) easy_stats_url
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
-           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
+           , apex_page.get_url(p_page => 200, p_clear_cache => '200', p_items =>'P200_COURSE_ID,P200_TOURNAMENT_SESSION_ID', p_values => s.hard_course_id || ',' || s.tournament_session_id) hard_stats_url
            , case when ec.id is null then 'u-vh' else '' end tbd_class
       from wmg_tournament_sessions_v s
          , wmg_courses ec
@@ -4590,20 +4896,24 @@ regions:
     type: SQL Query
     sql-query: |
       with prev_ts as (
-          select id tournament_session_id
+          select id tournament_session_id, week
           from wmg_tournament_sessions
           where (tournament_id, round_num) in (
               select s.tournament_id, s.round_num - 1
               from wmg_tournament_sessions s
               where s.id = :G_CURRENT_SESSION_ID
           )
-          union all
-          (select ts.id tournament_session_id
-          from wmg_tournament_sessions ts
-          where :G_CURRENT_SESSION_ID is null
-          order by ts.session_date desc
-          fetch first 1 rows only
+          union -- get the current week as a a backup
+          select tournament_session_id, week
+          from (
+          select id tournament_session_id, week
+            from wmg_tournament_sessions
+           where id = decode(:G_CURRENT_SESSION_ID, null, id, -1, id, :G_CURRENT_SESSION_ID)
+           order by session_date desc
+           fetch first 1 rows only
           )
+          order by week
+          fetch first 1 rows only
       )
       , badges as (
        select p.tournament_session_id, p.player_id
@@ -4661,12 +4971,10 @@ regions:
         and r.active_ind = 'Y'
       order by r.display_seq desc, p.rank_pos, p.pos, nls_upper(p.player_name)
       
-    page-items-to-submit: 
-    - P1_TOURNAMENT_SESSION_ID
     optimizer-hint: WITH_PLSQL
 
   layout: 
-    sequence: 60
+    sequence: 70
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -4705,7 +5013,7 @@ regions:
       union 
       select 1
       from dual
-      where :G_CURRENT_SESSION_ID is null
+      where nvl(:G_CURRENT_SESSION_ID, -1) = -1
 
   server-cache: 
     caching: Cache By Session
@@ -5387,6 +5695,40 @@ buttons:
   security: 
     authorization-scheme: Tournament Admin # 55902033226819493948
 
+- # ====== Button: CHANGE_REGISTRATION =========================
+  id: 23850630349801623
+  identification: 
+    button-name: CHANGE_REGISTRATION
+    label: Change Registration
+
+  layout: 
+    sequence: 10
+    region: You're Registered! # 8055004655938714
+    position: COPY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.:30:P30_PAGE_ID_PREV:1'
+      page: 30 # Registration
+      clear-cache: 30
+      values: 
+        p30_page_id_prev: 1
+
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: EDIT ========================================
   id: 32755234177549243
   identification: 
@@ -5994,6 +6336,8 @@ computations:
   computation: 
     type: SQL Query (return single value)
     sql-query: |
+      select nvl(max(id),-1)
+      from (
       select s.id
       from wmg_tournament_sessions s
       where s.tournament_id in (
@@ -6005,6 +6349,7 @@ computations:
       and s.completed_ind = 'N'
       order by s.session_date desc
       fetch first 1 rows only
+      )
 
 - # ====== Computation: G_REGISTRATION_ID ======================
   id: 2325269782827905532

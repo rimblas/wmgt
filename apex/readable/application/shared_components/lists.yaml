@@ -301,10 +301,10 @@
     user-defined-attributes: 
       translatable: false
 
-  - # ====== Entry: Enter Scores =================================
+  - # ====== Entry: Enter Rounds =================================
     id: 33927458870565436
     label: 
-      label: Enter Scores
+      label: Enter Rounds
 
     icon: 
       image/icon-css-classes: fa-number-3
@@ -1686,7 +1686,7 @@
     server-side-condition: 
       type: Expression
       language: PL/SQL
-      pl/sql-expression: ':G_CURRENT_SESSION_ID is null'
+      pl/sql-expression: 'nvl(:G_CURRENT_SESSION_ID,-1) = -1'
 
   - # ====== Entry: Session Analysis =============================
     id: 55893111412147225988
@@ -1748,7 +1748,7 @@
     server-side-condition: 
       type: Expression
       language: PL/SQL
-      pl/sql-expression: ":G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is null) and wmg_util.rooms_set(:G_CURRENT_SESSION_ID) = 'N'"
+      pl/sql-expression: "nvl(:G_CURRENT_SESSION_ID,-1)>0 and (:G_REGISTRATION_ID is null) and wmg_util.rooms_set(:G_CURRENT_SESSION_ID) = 'N'"
 
   - # ====== Entry: Rooms ========================================
     id: 55893112211982225989
@@ -1776,10 +1776,10 @@
       translatable: false
       7.: Tee Time & View Room
 
-  - # ====== Entry: Enter Scores =================================
+  - # ====== Entry: Enter Rounds =================================
     id: 55893112610456225989
     label: 
-      label: Enter Scores
+      label: Enter Rounds
 
     icon: 
       image/icon-css-classes: fa-number-3
