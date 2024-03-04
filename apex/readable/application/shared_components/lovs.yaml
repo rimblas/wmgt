@@ -258,6 +258,38 @@
     display: PLAYER_NAME
     default-sort: Use Order By from Query
 
+- # ====== List of Values: COURSES_P200 ========================
+  id: 32465799237443924
+  identification: 
+    name: COURSES_P200
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select course_id
+           , code
+           , prepared_name
+        from wmg_courses_v
+       where course_id in (
+        select course_id
+          from wmg_tournament_courses
+         where tournament_session_id = :P200_TOURNAMENT_SESSION_ID
+      )
+      or :P200_TOURNAMENT_SESSION_ID is null
+      union all
+      select -1 course_id
+           , 'ZZZX' code
+           , ' - View All -' prepared_name
+        from dual
+       where :P200_TOURNAMENT_SESSION_ID is not null
+
+  column-mapping: 
+    return: COURSE_ID
+    display: PREPARED_NAME
+    default-sort: CODE
+    sort-direction: Ascending (Nulls Last)
+
 - # ====== List of Values: WMG_BADGE_TYPES.CODE ================
   id: 41751146171172722
   identification: 

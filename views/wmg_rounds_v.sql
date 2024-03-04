@@ -32,6 +32,7 @@ select
     r.id                                          round_id,
     r.round_played_on                             round_played_on,
     r.week,
+    r.tournament_session_id,
     r.room_name                                   room_name,
     r.s1,
     r.s2,

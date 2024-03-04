@@ -72,11 +72,13 @@ regions:
               select id from wmg_tournament_sessions where tournament_id in (select tournament_id from wmg_tournament_sessions where id = :P535_TOURNAMENT_SESSION_ID)
            ))
         )
+        and (p.player_id = :P535_PLAYER_ID or :P535_PLAYER_ID is null)
       order by decode(:P535_FULL_SEASON_FLAG, 'Y', total, null) desc, i.display_seq, p.player_name, p.week
     page-items-to-submit: 
     - P535_ISSUE_CODE
     - P535_TOURNAMENT_SESSION_ID
     - P535_FULL_SEASON_FLAG
+    - P535_PLAYER_ID
 
   layout: 
     sequence: 9
@@ -475,6 +477,73 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P535_PLAYER_ID ===========================
+  id: 32277633269466709
+  identification: 
+    name: P535_PLAYER_ID
+    type: Popup LOV
+
+  label: 
+    label: Player
+    alignment: Left
+
+  settings: 
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
+
+  layout: 
+    sequence: 40
+    region: Tournament Issues # 48063503660716020
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 4
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xs-8
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: PLAYERS.ACCOUNT # 46995275924792515489
+    display-extra-values: true
+    display-null-value: true
+    null-display-value: '- All players -'
+
+  advanced: 
+    post-text-: '"CLEAR_BUTTON"'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P535_ISSUE_CODE ==========================
   id: 51286280698651900
   identification: 
@@ -498,7 +567,7 @@ page-items:
     start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 4
     label-column-span: Page Template Default
 
   appearance: 
@@ -554,6 +623,7 @@ dynamic-actions:
     - P535_TOURNAMENT_SESSION_ID
     - P535_ISSUE_CODE
     - P535_FULL_SEASON_FLAG
+    - P535_PLAYER_ID
 
   actions: 
   - # ====== Action: Refresh =====================================

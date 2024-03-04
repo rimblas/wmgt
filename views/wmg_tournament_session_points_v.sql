@@ -1,7 +1,8 @@
 create or replace view wmg_tournament_session_points_v
 as
 with rounds as (
-    select r.week
+    select r.tournament_session_id
+         , r.week
          , r.player_id
          , r.easy, r.hard, r.total_score
          , r.easy_course_id, r.hard_course_id
@@ -9,23 +10,31 @@ with rounds as (
          , rank() over (partition by r.week order by r.total_score) pos
          , count(*) over (partition by r.week) player_count
     from (
-        select week, player_id, easy, hard, nvl(easy + hard, 99) total_score
+        select tournament_session_id, week
+             , player_id
+             , easy, hard, nvl(easy + hard, 99) total_score
              , easy_round_id, hard_round_id
              , easy_course_id, hard_course_id
        from (
-          select r.week
+          select ts.id tournament_session_id
+               , r.week
                , r.player_id
                , r.under_par
-               , c.course_mode
                , r.round_id
                , r.course_id
-            from wmg_rounds_v r
+               , tc.course_no
+            from wmg_tournament_sessions ts
+               , wmg_tournament_courses tc
                , wmg_courses c
-          where r.course_id = c.id
+               , wmg_rounds_v r
+          where ts.id = tc.tournament_session_id
+            and tc.course_id = c.id
+            and ts.week = r.week
+            and r.course_id = c.id
           )
          pivot (
-             sum(under_par), any_value(round_id) round_id, any_value(course_id) course_id for course_mode in (
-              'E' EASY, 'H' HARD
+             sum(under_par), any_value(round_id) round_id, any_value(course_id) course_id for course_no in (
+              1 EASY, 2 HARD
              )
           )
       ) r
@@ -43,7 +52,7 @@ with rounds as (
        , player_count
   from rounds r
      , wmg_tournament_player_v p
-  where p.week = r.week
+  where p.tournament_session_id = r.tournament_session_id
    and p.player_id = r.player_id
    and p.active_ind = 'Y'
 )

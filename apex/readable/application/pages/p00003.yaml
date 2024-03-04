@@ -1295,6 +1295,71 @@ regions:
       lost-update-type: Row Values
 
 page-items: 
+- # ====== Page Item: P3_COURSE_EMOJI ==========================
+  id: 32461879324429416
+  identification: 
+    name: P3_COURSE_EMOJI
+    type: Text Field
+
+  label: 
+    label: Emoji
+    alignment: Left
+
+  settings: 
+    subtype: Text
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 80
+    region: Course # 46995217613009514582
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: 3
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-sm-3
+    - col-xs-7
+    - col-xxs-7
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+    maximum-length: 60
+
+  advanced: 
+    post-text-: '<img src="&BUCKET.&P3_COURSE_EMOJI..webp" style="width:48px;" title="&P3_COURSE_EMOJI.">'
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Course # 46995217613009514582
+    column: COURSE_EMOJI
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P3_FACTOIDS ==============================
   id: 36053177748175842
   identification: 
@@ -1310,7 +1375,7 @@ page-items:
     syntax-highlighting: true
 
   layout: 
-    sequence: 80
+    sequence: 100
     region: Course # 46995217613009514582
     position: BODY
     alignment: Left
@@ -1475,8 +1540,8 @@ page-items:
     label-column-span: Page Template Default
     column-css-classes: 
     - col-sm-3
-    - col-xs-6
-    - col-xxs-6
+    - col-xs-5
+    - col-xxs-5
 
   appearance: 
     template: Required - Floating # 46995172770404514399

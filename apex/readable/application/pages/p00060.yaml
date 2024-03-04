@@ -13,14 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -410,6 +403,61 @@ help:
     the same opportunity.
 
 regions: 
+- # ====== Region: Breadcrumb Bar (Contrubutor) ================
+  id: 8056243674938726
+  identification: 
+    title: Breadcrumb Bar (Contrubutor)
+    type: Breadcrumb
+
+  source: 
+    breadcrumb: Breadcrumb # 46995003987350514326
+
+  layout: 
+    sequence: 11
+    parent-region: No Parent
+    position: REGION_POSITION_01
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Title Bar # 46995113482779514372
+    template-options: 
+    - '#DEFAULT#'
+    - t-BreadcrumbRegion--compactTitle
+    - t-BreadcrumbRegion--useBreadcrumbTitle
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  comments: 
+    comments: |
+      This breadcrumb contains the Contributor buttons to download and verify results.
+      
+
+  attributes: 
+    appearance: 
+      breadcrumb-template: Breadcrumb # 46995175568845514400
+      template-options: 
+      - '#DEFAULT#'
+
 - # ====== Region: {col1} ======================================
   id: 36324460593635102
   identification: 
@@ -1205,10 +1253,10 @@ regions:
       select s.session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.easy_course_id), 'TBD') easy_record
-           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.easy_course_id) easy_stats_url
+           , apex_page.get_url(p_page => 200, p_clear_cache => '200', p_items =>'P200_COURSE_ID,P200_TOURNAMENT_SESSION_ID', p_values => s.easy_course_id || ',' || s.tournament_session_id) easy_stats_url
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
-           , apex_page.get_url(p_page => 200, p_items =>'P200_COURSE_ID', p_values => s.hard_course_id) hard_stats_url
+           , apex_page.get_url(p_page => 200,p_clear_cache => '200', p_items =>'P200_COURSE_ID,P200_TOURNAMENT_SESSION_ID', p_values => s.hard_course_id || ',' || s.tournament_session_id) hard_stats_url
            , case when ec.id is null then 'u-vh' else '' end tbd_class
       from wmg_tournament_sessions_v s
          , wmg_courses ec
@@ -1217,9 +1265,11 @@ regions:
         and s.hard_course_id = hc.id (+)
         and s.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
       
+    page-items-to-submit: 
+    - P60_TOURNAMENT_SESSION_ID
 
   layout: 
-    sequence: 10
+    sequence: 20
     parent-region: '{col2}' # 44899432802786407
     position: SUB_REGIONS
     start-new-layout: false
@@ -1506,7 +1556,16 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with players_with_aces as (
+      with session_stats as (
+            select count(*) total_registered, sum(decode(pp.player_id, null, 0, 1)) total_played
+              from wmg_tournament_players p
+              left join wmg_tournament_session_points_v pp 
+                on pp.tournament_session_id = p.tournament_session_id
+                and pp.player_id = p.player_id
+            where p.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+               and p.active_ind = 'Y'
+      )
+      , players_with_aces as (
             select c.id course_id, c.course_mode, r.player_id
               from wmg_rounds_unpivot_mv r
                  , wmg_courses c
@@ -1561,14 +1620,50 @@ regions:
           order by aces.who
       )
       where rn = 1
+      and total > 0
       group by  result, total
+      union all
+      select '<i class="em em-coconut" aria-role="presentation" aria-label="em-coconut" title="Coconuts"></i> Coconuts' result, who, total
+      from 
+       (select c.total_coconuts || ' out of ' || st.total_played || ' players'
+                       || case 
+                          when nvl(st.total_played,0) = 0 then ''
+                          else
+                           ' (' || 100  * round(c.total_coconuts / st.total_played,2) || '%)'
+                          end who   -- total  (total %)
+              , c.total_coconuts total
+              , case 
+                  when nvl(st.total_played,0) = 0 then 1
+                  else
+                     c.total_coconuts / st.total_played
+                end ratio
+            from session_stats st
+               , (select count(*) total_coconuts
+                  from (
+                      select u.week
+                        from wmg_rounds_unpivot_mv u
+                           , wmg_tournament_sessions ts
+                           , wmg_tournament_players tp
+                       where ts.week = u.week
+                         and ts.id = tp.tournament_session_id
+                         and u.week = :P60_WEEK
+                         and tp.player_id = u.player_id
+                         and tp.issue_code is null  -- only players with no issues are eligible
+                         -- and u.week = s.week
+                       having sum(case when par <= 0 then 1 else 0 end) = 36
+                       group by u.week, u.player_id
+                  )
+                 ) c
+        ) coconut_players
+       where ratio < .2 -- only display when the ration is less than 20%
+      
       
       
     page-items-to-submit: 
     - P60_WEEK
 
   layout: 
-    sequence: 10
+    sequence: 30
     parent-region: '{About week &P60_WEEK.}' # 24790742868226858754
     position: BODY
     start-new-layout: false
@@ -1818,6 +1913,7 @@ regions:
                and tp.issue_code is null  -- only players with no issues are eligible
                and u.week = :P60_WEEK
                and ts.completed_ind = 'N' -- only live results
+               and :P60_TOTAL_PLAYED >= 5 -- at least 5 players
                and u.score = 1
             having count(*) = 1
              group by u.course_id || ':' || u.h, u.score
@@ -1837,6 +1933,7 @@ regions:
                    and tp.issue_code is null  -- only players with no issues are eligible
                    and u.week = :P60_WEEK
                    and ts.completed_ind = 'N' -- only live results
+                   and :P60_TOTAL_PLAYED >= 10 -- at least 10 players
                    and u.score = 1
                    and (u.course_id, u.h) in (
                            select u2.course_id, u2.h
@@ -1882,6 +1979,7 @@ regions:
                and tp.issue_code is null  -- only players with no issues are eligible
                and u.week = :P60_WEEK
                and ts.completed_ind = 'N'  -- only live results
+               and :P60_TOTAL_PLAYED >= 10 -- at least 10 players
                and (u.course_id, u.h, u.score) in (
                 select u.course_id, u.h, u.score
                   from wmg_rounds_unpivot_mv u
@@ -1941,7 +2039,7 @@ regions:
            , case when sp.pos <= 10 then 'top' else 'p' || to_char(coalesce(p.points, sp.points)) end
            || case when coalesce(p.points, sp.points) <= 0 then ' missing tooltip' end
            || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
-           , case when coalesce(p.points, sp.points) <= 0 then 'Disqualified, Failed to complete round, or failed to submit scores before deadline' end points_title
+           , case when coalesce(p.points, sp.points) <= 0 then 'Failed to complete round, or failed to submit scores before deadline' end points_title
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when sp.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
            , pp.rank_code
@@ -1954,7 +2052,7 @@ regions:
                when 3 then 'em-third_place_medal '
                end
              end
-          || decode(coconut.under_par, 36, 'em-coconut' || case when cactus.player_id is null and beetle.player_id is null then '' else ' ' end, '') 
+          || decode(coconut.under_par, 36, 'em-coconut' || case when cactus.player_id is null and beetle.player_id is null and duck.player_id is null then '' else ' ' end, '') 
           || decode(cactus.player_id, null, null, (select listagg('em-cactus', ' ') from dual connect by level <= cactus.n) ) || decode(cactus.player_id, null, null, ' ')
           || decode(duck.player_id, null, null, (select listagg('em-duck', ' ') from dual connect by level <= duck.n) ) || decode(beetle.player_id, null, null, ' ')
           || decode(beetle.player_id, null, null, (select listagg('em-beetle', ' ') from dual connect by level <= beetle.n) ) 
@@ -1997,6 +2095,7 @@ regions:
       order by coalesce(p.points, sp.points) desc, sp.pos, nls_upper(sp.player_name)
     page-items-to-submit: 
     - P60_WEEK
+    - P60_TOTAL_PLAYED
     - P60_TOURNAMENT_SESSION_ID
     - P60_ONLY_ME_IND
     optimizer-hint: WITH_PLSQL
@@ -2502,7 +2601,7 @@ regions:
       type: Link
 
     heading: 
-      heading: Easy
+      heading: '&P60_EASY.'
       alignment: center
 
     layout: 
@@ -2545,7 +2644,7 @@ regions:
       type: Link
 
     heading: 
-      heading: Hard
+      heading: '&P60_HARD.'
       alignment: center
 
     layout: 
@@ -2815,6 +2914,36 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P60_TOTAL_PLAYED =========================
+  id: 8054926482938713
+  identification: 
+    name: P60_TOTAL_PLAYED
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 160
+    region: '{items}' # 106632178401810217449
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P60_TOTAL_WEEKS ==========================
   id: 12088827004682766
   identification: 
@@ -3482,14 +3611,12 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select name
-          from wmg_courses_v
-         where course_id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P60_WEEK 
-          )
-         and course_mode = 'E'
+      select c.code
+          from wmg_courses_v c
+             , wmg_tournament_courses tc
+         where c.course_id = tc.course_id
+           and tc.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+           and course_no = 1
     used: Always, replacing any existing value in session state
 
   default: 
@@ -3525,14 +3652,12 @@ page-items:
   source: 
     type: SQL Query (return single value)
     sql-query: |
-      select name
-          from wmg_courses_v
-         where course_id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P60_WEEK 
-          )
-         and course_mode = 'H'
+      select c.code
+          from wmg_courses_v c
+             , wmg_tournament_courses tc
+         where c.course_id = tc.course_id
+           and tc.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+           and course_no = 2
     used: Always, replacing any existing value in session state
 
   default: 
@@ -3593,7 +3718,7 @@ buttons:
 
   layout: 
     sequence: 40
-    region: Breadcrumb # 59007190296908349363
+    region: Breadcrumb Bar (Contrubutor) # 8056243674938726
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -3630,6 +3755,45 @@ buttons:
   security: 
     authorization-scheme: Contribution Rights # 46995203801871514425
 
+- # ====== Button: COURSES_ROUNDUP =============================
+  id: 32461521264429413
+  identification: 
+    button-name: COURSES_ROUNDUP
+    label: Courses Roundup
+
+  layout: 
+    sequence: 10
+    region: '{About week &P60_WEEK.}' # 24790742868226858754
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 10
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-compass
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:64:&SESSION.::&DEBUG.:64:P64_TOURNAMENT_SESSION_ID:&P60_TOURNAMENT_SESSION_ID.'
+      page: 64 # Courses Roundup
+      clear-cache: 64
+      values: 
+        p64_tournament_session_id: '&P60_TOURNAMENT_SESSION_ID.'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Button: DOWNLOAD ====================================
   id: 24450902434343936260
   identification: 
@@ -3638,7 +3802,7 @@ buttons:
 
   layout: 
     sequence: 30
-    region: Breadcrumb # 59007190296908349363
+    region: Breadcrumb Bar (Contrubutor) # 8056243674938726
     position: NEXT
     start-new-layout: false
     start-new-row: true
@@ -4283,11 +4447,16 @@ processes:
                   where s.id = :G_CURRENT_SESSION_ID
               )
               union -- get the current week as a a backup
+              select tournament_session_id, week
+              from (
               select id tournament_session_id, week
                 from wmg_tournament_sessions
-               where id = :G_CURRENT_SESSION_ID
+               where id = decode(:G_CURRENT_SESSION_ID, null, id, -1, id, :G_CURRENT_SESSION_ID)
+               order by session_date desc
                fetch first 1 rows only
-      
+              )
+              order by week desc
+              fetch first 1 rows only
           )
           select decode(ts.rooms_open_flag, 'Y', ts.week, prev_ts.week) week
                , decode(ts.rooms_open_flag, 'Y', ts.id, prev_ts.tournament_session_id) 
@@ -4295,7 +4464,9 @@ processes:
                , :P60_TOURNAMENT_SESSION_ID
             from wmg_tournament_sessions ts
             left join prev_ts on 1=1
-           where ts.id = :G_CURRENT_SESSION_ID;
+           where ts.id = prev_ts.tournament_session_id;
+      
+      --     where ts.id = :G_CURRENT_SESSION_ID;
       
        end if;
       
@@ -4307,6 +4478,19 @@ processes:
                , :P60_TOURNAMENT
             from wmg_tournament_sessions_v
            where week = :P60_WEEK;
+      
+          select nvl(players,0)
+               , nvl2(players, players || '/', '') || total players
+            into :P60_TOTAL_PLAYED, :P60_TOTAL_PLAYERS
+          from (
+          select count(*) total, sum(decode(pp.player_id, null, 0, 1)) players
+            from wmg_tournament_players p
+            left join wmg_tournament_session_points_v pp 
+              on pp.tournament_session_id = p.tournament_session_id
+              and pp.player_id = p.player_id
+           where p.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+             and p.active_ind = 'Y'
+           );
       
            select decode(prev_week, null, 'hide_nav_pre') NAV_PREV
                 , decode(next_week, null, 'hide_nav_next') NAV_NEXT

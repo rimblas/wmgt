@@ -5,6 +5,7 @@ create table wmg_courses (
     code                           varchar2(5 char)
                                    constraint courses_code_unq unique,
     name                           varchar2(255 char) not null,
+    course_emoji                   varchar2(60 char),
     factoids                       varchar2(4000 char),
     course_mode                    varchar2(1 char) constraint courses_course_mode_ck
                                    check (course_mode in ('E','H')),

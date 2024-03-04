@@ -13,14 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -1812,6 +1805,72 @@ page-items:
 
   quick-picks: 
     show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_E_TOURNAMENT_SESSION_ID ==============
+  id: 13352338145585112
+  identification: 
+    name: P50_E_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: '&P50_EASY_COURSE.' # 62519776936965148717
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_EASY_COURSE.' # 62519776936965148717
+    column: TOURNAMENT_SESSION_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P50_H_TOURNAMENT_SESSION_ID ==============
+  id: 13352412736585113
+  identification: 
+    name: P50_H_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 50
+    region: '&P50_HARD_COURSE.' # 47585929783602469251
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: '&P50_HARD_COURSE.' # 47585929783602469251
+    column: TOURNAMENT_SESSION_ID
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Request (Memory Only)
 
   security: 
     session-state-protection: Unrestricted
@@ -4470,7 +4529,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 50
+    sequence: 60
     region: '&P50_EASY_COURSE.' # 62519776936965148717
     position: BODY
     alignment: Left
@@ -7767,6 +7826,8 @@ processes:
         from wmg_tournament_sessions_v
        where tournament_session_id = :G_CURRENT_SESSION_ID;
       
+      :P50_E_TOURNAMENT_SESSION_ID := :G_CURRENT_SESSION_ID;
+      
       select code || ' - ' || name
          into :P50_EASY_COURSE
          from wmg_courses
@@ -7960,6 +8021,7 @@ processes:
     pl/sql-code: |
       -- The Hard Round has it's own week annd player_id columns so we need to copy the user selection to those rows.
       :P50_H_WEEK := :P50_WEEK;
+      :P50_H_TOURNAMENT_SESSION_ID := :P50_E_TOURNAMENT_SESSION_ID;
       :P50_H_PLAYER_ID := :P50_PLAYERS_ID;
       :P50_H_ROOM_NAME := :P50_ROOM_NAME;
 

@@ -752,7 +752,12 @@ processes:
       
       exception
         when DUP_VAL_ON_INDEX then
-         -- Someone already has thay Discord ID
+      
+          logger.log(p_text => 'DUP_VAL_ON_INDEX: Someone already has the same Name or Discord ID', p_scope => 'Setup New Player');
+          logger.log('G_DISCORD_ID:' || :G_DISCORD_ID, 'Setup New Player');
+          logger.log('G_DISCORD_AVATAR:' || :G_DISCORD_AVATAR, 'Setup New Player');
+          logger.log('G_DISCORD_DISCRIMINATOR:' || :G_DISCORD_DISCRIMINATOR, 'Setup New Player');
+          logger.log('G_DISCORD:' || :G_DISCORD, 'Setup New Player');
       
           :P18_MATCH_PLAYER_ID := -1;
          -- WKSP_WMGT.WMG_PLAYERS_U03

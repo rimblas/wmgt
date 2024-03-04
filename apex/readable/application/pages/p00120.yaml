@@ -348,8 +348,12 @@ regions:
         group by player_id
       )
       , player as (
-       select b.code
-            , listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
+       select code
+            ,  (select listagg(icon_class, ' ') from dual connect by level <= n) all_badges
+      from (
+       select b.code, replace(b.icon_class, 'em em', 'em') icon_class, sum(p.badge_count)  n
+      --      , listagg(replace(b.icon_class, 'em em', 'em'), ' ') within group ( order by b.display_seq) all_badges
+            -- , replace(b.icon_class, 'em em', 'em') all_badges
         from wmg_player_badges p
            , wmg_badge_types b
         where b.code = p.badge_type_code 
@@ -360,7 +364,8 @@ regions:
             )
           )
           and p.player_id (+) = :P120_PLAYER_ID
-        group by b.code
+        group by b.code, b.icon_class
+      )
       )
       select b.name
            , b.icon_class

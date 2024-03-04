@@ -13,14 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: First item on page
@@ -697,6 +690,36 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P30_NEW_PLAYER_FLAG ======================
+  id: 8054519288938709
+  identification: 
+    name: P30_NEW_PLAYER_FLAG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 85
+    region: Registration # 24744259667333395558
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P30_DIFF_PLAYER_FLAG =====================
   id: 13435084550291524
   identification: 
@@ -1989,6 +2012,7 @@ processes:
          end;
       
          if l_rank_code = 'NEW' then
+             :P30_NEW_PLAYER_FLAG := 'Y';
              wmg_notification.new_player(
                 p_player_id => :P30_PLAYER_ID
               , p_registration_id => :G_REGISTRATION_ID
@@ -2012,6 +2036,21 @@ processes:
     display-location: Inline in Notification
 
 branches: 
+- # ====== Branch: Go See the Rooms ============================
+  id: 8054625284938710
+  identification: 
+    name: Go See the Rooms
+
+  execution: 
+    sequence: 30
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 40 # Room Selections & Assignments
+
 - # ====== Branch: Player Not Setup ============================
   id: 36328749045635145
   identification: 
@@ -2034,10 +2073,10 @@ branches:
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 55902033226819493948
 
-- # ====== Branch: Go See the Rooms ============================
+- # ====== Branch: Go See the Rooms (new Player) ===============
   id: 46934112970678619
   identification: 
-    name: Go See the Rooms
+    name: Go See the Rooms (new Player)
 
   execution: 
     sequence: 20
@@ -2046,8 +2085,14 @@ branches:
   behavior: 
     type: Page or URL (Redirect)
     target: 
-      url: 'f?p=&APP_ID.:40:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      url: 'f?p=&APP_ID.:40:&SESSION.:NEW_PLAYER:&DEBUG.:::&success_msg=#SUCCESS_MSG#'
       page: 40 # Room Selections & Assignments
+      request: NEW_PLAYER
+
+  server-side-condition: 
+    type: Item = Value
+    item: P30_NEW_PLAYER_FLAG
+    value: Y
 
 - # ====== Branch: Go To Page 1 ================================
   id: 53005783069505846341

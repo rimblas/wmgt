@@ -13,14 +13,7 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
@@ -158,6 +151,16 @@ css:
            --ut-report-header-cell-padding-x: .1rem;
       }
     }
+    
+    /* Hide the seletors in short landscape orientation */
+    @media only screen and (orientation: landscape) and (max-height: 400px) {
+      #P61_TOURNAMENT_ID_CONTAINER,
+      #P61_WEEK_CONTAINER,
+      .pro-legend {
+        display: none!important;
+      }
+    }
+    
     
     .w {
         display: inline-block;
@@ -467,6 +470,8 @@ regions:
       
     page-items-to-submit: 
     - P61_TOURNAMENT_ID
+    - P61_WEEK
+    - P61_ONLY_ME_IND
 
   layout: 
     sequence: 35
@@ -2385,7 +2390,7 @@ page-items:
     minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 10
+    sequence: 25
     region: '{items}' # 106680515790002094521
     position: BODY
     alignment: Left
@@ -2419,6 +2424,11 @@ page-items:
     list-of-values: WEEKS # 41203762596358122145
     display-extra-values: true
     display-null-value: true
+
+  cascading-list-of-values: 
+    parent-item(s): 
+    - P61_TOURNAMENT_ID
+    parent-required: false
 
   advanced: 
     pre-text: |
@@ -2467,7 +2477,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 30
+    sequence: 35
     region: '{items}' # 106680515790002094521
     position: BODY
     alignment: Left
@@ -2478,7 +2488,7 @@ page-items:
     column-span: Automatic
     label-column-span: Page Template Default
     column-css-classes: 
-    - col-xxs-6
+    - hidden-xs-down
     - col-md-4
     - col-sm-5
     - col-lg-4
@@ -2526,7 +2536,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 40
+    sequence: 45
     region: '{items}' # 106680515790002094521
     position: BODY
     alignment: Left
@@ -2581,7 +2591,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 50
+    sequence: 55
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2611,7 +2621,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 60
+    sequence: 65
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2641,7 +2651,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 70
+    sequence: 75
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2684,7 +2694,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 80
+    sequence: 85
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2727,7 +2737,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 90
+    sequence: 95
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2751,15 +2761,54 @@ page-items:
   id: 48372203479877269
   identification: 
     name: P61_TOURNAMENT_ID
-    type: Hidden
+    type: Popup LOV
+
+  label: 
+    label: Season
+    alignment: Left
 
   settings: 
-    value-protected: true
+    display-as: Inline Popup
+    initial-fetch: Automatic
+    multiple-values: false
+    manual-entry: false
+    search-as-you-type: true
+    minimum-characters: No minimum (0)
 
   layout: 
-    sequence: 100
+    sequence: 15
     region: '{items}' # 106680515790002094521
     position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+    column-css-classes: 
+    - col-xxs-6
+    - col-xs-6
+    - col-sm-6
+    - col-md-4
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      select prefix_tournament d, id r
+      from wmg_tournaments
+      order by prefix_tournament desc
+    display-extra-values: true
+    display-null-value: true
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -2769,8 +2818,10 @@ page-items:
     used: Only when current value in session state is null
 
   session-state: 
-    data-type: VARCHAR2
     storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
 
   security: 
     session-state-protection: Unrestricted
@@ -2787,7 +2838,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 110
+    sequence: 115
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2817,7 +2868,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 120
+    sequence: 125
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2847,7 +2898,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 130
+    sequence: 135
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2877,7 +2928,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 140
+    sequence: 145
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -2911,7 +2962,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 150
+    sequence: 155
     region: '{items}' # 106680515790002094521
     position: BODY
 
@@ -3053,6 +3104,59 @@ buttons:
     authorization-scheme: Contribution Rights # 46995203801871514425
 
 dynamic-actions: 
+- # ====== Dynamic Action: Display Season ======================
+  id: 8055883225938722
+  identification: 
+    name: Display Season
+
+  execution: 
+    sequence: 140
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CHANGE
+    selection-type: Item(s)
+    item(s): 
+    - P61_TOURNAMENT_ID
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 8055947457938723
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: Static Assignment
+      suppress-change-event: true
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P61_WEEK
+
+    execution: 
+      sequence: 10
+      event: Display Season # 8055883225938722
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: false
+      wait-for-result: false
+
+  - # ====== Action: Submit Page =================================
+    id: 8056008081938724
+    identification: 
+      action: Submit Page
+
+    settings: 
+      show-processing: true
+
+    execution: 
+      sequence: 20
+      event: Display Season # 8055883225938722
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Celebrate with Confetti =============
   id: 20608778317923798
   identification: 
@@ -3259,7 +3363,7 @@ dynamic-actions:
           $other.show();
         }
         
-        console.log({selectedRank});
+        // console.log({selectedRank});
         if (term) {
         
           if (!!selectedRank) {
@@ -3643,12 +3747,35 @@ processes:
     language: PL/SQL
     pl/sql-code: |
       begin
+       -- logger.log(p_text => 'P61_WEEK:' || :P61_WEEK, p_scope => 'p61 init');
+       -- logger.log(p_text => 'G_CURRENT_SESSION_ID:' || :G_CURRENT_SESSION_ID, p_scope => 'p61 init');
+       -- logger.log(p_text => 'P61_TOURNAMENT_ID:' || :P61_TOURNAMENT_ID, p_scope => 'p61 init');
        if :P61_WEEK is null then
-          select week
+          if nvl(:G_CURRENT_SESSION_ID,-1) != -1 then
+              select week
+                into :P61_WEEK
+                from wmg_tournament_sessions_v
+               where tournament_session_id = :G_CURRENT_SESSION_ID;
+               :P61_TOURNAMENT_SESSION_ID := :G_CURRENT_SESSION_ID;
+           else
+              :P61_TOURNAMENT_SESSION_ID := null;
+           end if;
+      
+          if :P61_TOURNAMENT_ID is not null then
+           -- get the latest week for the selected tournmament
+           select max(week)
             into :P61_WEEK
-            from wmg_tournament_sessions_v
-           where tournament_session_id = :G_CURRENT_SESSION_ID;
-           :P61_TOURNAMENT_SESSION_ID := :G_CURRENT_SESSION_ID;
+            from (
+             select week, row_number() over (order by session_date desc) rn
+               from wmg_tournament_sessions
+              where tournament_id = :P61_TOURNAMENT_ID
+            )
+            where rn = 1;
+      
+          -- logger.log(p_text => 'new calculated P61_WEEK:' || :P61_WEEK, p_scope => 'p61 init');
+      
+          end if;
+      
        end if;
       
            select tournament_session_id
