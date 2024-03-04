@@ -6,6 +6,7 @@ with courses as (
          , c.course_mode
          , c.code
          , c.name
+         , c.course_emoji
          , c.release_order
     from wmg_tournament_courses tc
        , wmg_courses c

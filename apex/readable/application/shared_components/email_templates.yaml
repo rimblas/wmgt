@@ -130,6 +130,85 @@
   subscription: 
     version-number: 40538533453710
 
+- # ====== Email Template: TOURNAMENT COURSES ==================
+  id: 32439359551733976
+  identification: 
+    name: TOURNAMENT COURSES
+    email-subject: TOURNAMENT_COURSES
+
+  html-format: 
+    body: |
+      # 🧭 🗺️**COURSE STATS REPORT**🗺️ 🧭 
+      ***WMGT #SEASON# W#WEEK_NUM# Courses***
+      Here is what to expect for this weekend tournament.
+      
+
+  plain-text-format: 
+    content: |
+      # 🧭 🗺️**COURSE STATS REPORT**🗺️ 🧭 
+      ***WMGT #SEASON# W#WEEK_NUM# Courses***
+      Here is what to expect for this weekend’s courses:
+      
+      ========================
+      
+      ## #EASY_COURSE# (#EASY_CODE#)
+      __Difficulty__
+      #EASY_RANKING#
+      
+      🥇 **Course Record:** #EASY_RECORD#
+      
+      #EASY_TOP_SCORES#
+      
+      ⛳ **Most Difficult Holes:**
+      #EASY_HARD_HOLES#
+      
+      ⛳ **Easiest Holes:**
+      #EASY_EASY_HOLES#
+      
+      ### Unicorns 🦄
+      
+      {if UNICORNS_EASY_OK /}
+      #EASY_UNICORNS#
+      
+      {else/}
+      This course is not eligible yet.
+      
+      {endif/}
+      
+      -----------------------------
+      
+      ## #HARD_COURSE# (#HARD_CODE#)
+      __Difficulty__
+      #HARD_RANKING#
+      
+      🥇 **Course Record:** #HARD_RECORD#
+      
+      #HARD_TOP_SCORES#
+      
+      ⛳ **Most Difficult Holes:**
+      #HARD_HARD_HOLES#
+      
+      ⛳ **Easiest Holes:**
+      #HARD_EASY_HOLES#
+      
+      ### Unicorns 🦄
+      
+      {if UNICORNS_HARD_OK /}
+      #HARD_UNICORNS#
+      
+      {else/}
+      This course is not eligible yet.
+      {endif/}
+      
+      -----------------------------
+      
+
+  advanced: 
+    static-id: TOURNAMENT_COURSES
+
+  subscription: 
+    version-number: 41078087636695
+
 - # ====== Email Template: NEW PLAYER REGISTRATION =============
   id: 50537819434086157
   identification: 

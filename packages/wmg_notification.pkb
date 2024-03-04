@@ -829,6 +829,11 @@ is
   l_easy_top_scores varchar2( 4000 );
   l_hard_top_scores varchar2( 4000 );
 
+  l_unicorns_easy_ok varchar2(1);
+  l_unicorns_easy    varchar2(4000);
+  l_unicorns_hard_ok varchar2(1);
+  l_unicorns_hard    varchar2(4000);
+
   l_html    clob;
   l_text    clob;
 
@@ -859,6 +864,7 @@ is
         select course_id
              , course_code, course_name
              , round(difficulty) difficulty
+             , rank() over (partition by course_mode order by difficulty desc nulls last) mode_rank
              , rank() over (order by difficulty) easiest_rank
              , rank() over (order by difficulty desc nulls last) hardest_rank
              , count(*) over () total_courses
@@ -866,6 +872,7 @@ is
               select c.id course_id
                    , c.code course_code
                    , c.name course_name
+                   , c.course_mode
                , sum(
                   case 
                     when s.std_dev = 0 then 0
@@ -876,7 +883,7 @@ is
                   , wmg_course_stats_v s
                   , std_scale
               where c.id = s.course_id (+)
-              group by c.id, c.code, c.name
+              group by c.id, c.code, c.name, c.course_mode
           )
         ) r
        where r.course_id = p_course_id
@@ -908,6 +915,10 @@ is
         l_course_rank_info := rank_info.course_code 
            || ' is ' || rank_info.hardest_rank || ' in difficulty out of ' || rank_info.total_courses || ' courses with a rank '
            || rank_info.difficulty || ' out of 100';
+        if rank_info.mode_rank = 1 then
+          l_course_rank_info := l_course_rank_info || c_crlf
+                           || 'But more important, ' || rank_info.course_code || ' is the hardest of all the easy courses!';
+        end if;
       end if;
       
     end loop;
@@ -972,7 +983,132 @@ is
 
   end course_holes;
 
-        
+
+  /**
+  * unicorns_ok
+  *  N = Not eligible for Unicorns
+  *  Y = Eligible for Unicorns
+  * 
+  */
+  function unicorns_ok(p_course_id in wmg_courses.id%type)
+  return varchar2
+  is
+    l_unicorns_ok varchar2(1);
+  begin
+    with course_play_count as (
+      select count(*) play_count
+      from wmg_tournament_courses c
+         , wmg_tournament_sessions s
+      where s.id = c.tournament_session_id
+        and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+        and c.course_id = p_course_id
+      group by c.course_id
+    )
+    select case when play_count >= 5 then 'Y' else 'N' end
+      into l_unicorns_ok
+      from course_play_count;
+
+    return l_unicorns_ok;
+    
+  end unicorns_ok;
+
+  /**
+  * unicorns_info
+  *  Return available and pending unicorns for a course
+  * 
+  */
+  function unicorns_info(p_course_id in wmg_courses.id%type)
+  return varchar2
+  is
+    l_unicorns_info varchar2(4000);
+  begin
+    log('.. unicorns_info', l_scope);
+    l_unicorns_info := null;
+
+    for u in (
+        with course_play_count as (
+            select c.course_id
+                 , count(*) play_count
+                 , sum(decode(s.completed_ind, 'Y', 1, 0)) real_play_count
+                 , max(s.week) week, max(s.session_date) session_date
+            from wmg_tournament_courses c
+               , wmg_tournament_sessions s
+            where s.id = c.tournament_session_id
+              and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+              and c.course_id = p_course_id
+            group by c.course_id
+        )
+        , courses_played as (
+          select c.course_id, c.code course_code, c.name course_name, cc.play_count, cc.real_play_count, cc.week, cc.session_date
+          from wmg_courses_v  c
+             , course_play_count cc
+          where c.course_id = cc.course_id
+            and cc.play_count >= 1
+        )
+        , missing_ace as (
+            select level h
+            from dual
+            connect by level <= 18
+            minus
+            select distinct h
+            from wmg_rounds_unpivot_mv
+            where course_id = p_course_id
+            and score = 1
+        )
+        select 'For ' || cp.course_code || ', played ' || cp.real_play_count || ' times before, these holes have never been aced:' || chr(13)||chr(10)
+               || listagg('* Hole ' || m.h, chr(13)||chr(10)) within group (order by h) unicorn_info
+             , 'P' unicorn_status
+        from missing_ace m
+           , courses_played cp
+        group by cp.course_code, cp.real_play_count 
+        union all
+        select 'For ' || course_code || ', played ' || real_play_count || ' times before, these are the uniconrs:' || chr(13)||chr(10)
+               || listagg('* Hole ' || h || ' (' || week || ') by ' || ace_by , chr(13)||chr(10)) within group (order by h) unicorn_info
+               , unicorn_status
+          from (
+          select uni.course_code
+               , 'U' unicorn_status
+               , uni.play_count
+               , uni.real_play_count
+               , uni.h
+               , uni.week
+                -- for debuging
+               , (select listagg(p.player_name, ',') player_name
+                    from wmg_rounds_unpivot_mv u
+                       , wmg_players_v p
+                   where u.player_id = p.id
+                     and u.course_id = uni.course_id
+                     and u.h = uni.h
+                     and u.week <= uni.week
+                     and u.score = 1) ace_by
+          from (
+              select u.course_id, cp.course_code, cp.play_count, cp.real_play_count, u.h
+                   , max(u.week) week
+                from wmg_rounds_unpivot_mv u
+                   , courses_played cp
+                where u.score = 1
+                  and u.course_id = cp.course_id
+                  and cp.play_count >= 5
+                  and u.week in (select ts.week from wmg_tournament_sessions ts where ts.session_date <= cp.session_date)
+                  and (u.course_id, u.h) not in (select course_id, h from wmg_player_unicorns) -- eliminate previous unicorns
+                group by u.course_id, cp.course_code, cp.play_count, cp.real_play_count, u.h
+               having count(*) = 1
+          ) uni
+        )
+        group by course_code, real_play_count, unicorn_status
+        order by unicorn_status
+      )
+   loop
+    log('.... unicorns_info:' || u.unicorn_info, l_scope);
+     l_unicorns_info := l_unicorns_info || u.unicorn_info || c_crlf;
+   end loop;
+
+    return l_unicorns_info;
+    
+  end unicorns_info;
+
+
+
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
@@ -980,11 +1116,14 @@ begin
   log('.. Gather the tournament courses info. id=' || p_tournament_session_id, l_scope);
 
   for new_session in (
-    select prefix_tournament, round_num, week, session_date
+    select tournament_id, prefix_tournament
+         , round_num, week, session_date
          , easy_course_id
          , nvl(easy_course_name, 'TBD') easy_course_name
+         , easy_course_emoji
          , hard_course_id
          , nvl(hard_course_name, 'TBD') hard_course_name
+         , hard_course_emoji
          , nvl(easy_course_code, 'TBD') easy_course_code
          , nvl(hard_course_code, 'TBD') hard_course_code
          , '' "NULL"
@@ -1108,7 +1247,16 @@ begin
           and best_under is not null
      )
      order by under_par asc, score_type;
-    
+
+
+    l_unicorns_easy_ok := unicorns_ok(new_session.easy_course_id);
+    log('.. unicorns_easy_ok: '|| l_unicorns_easy_ok, l_scope);
+    l_unicorns_easy := unicorns_info(new_session.easy_course_id);
+
+    l_unicorns_hard_ok := unicorns_ok(new_session.hard_course_id);
+    log('.. unicorns_hard_ok: '|| l_unicorns_hard_ok, l_scope);
+    l_unicorns_hard := unicorns_info(new_session.hard_course_id);
+
 
     log('.. course_ranks', l_scope);
 
@@ -1116,26 +1264,24 @@ begin
     l_placeholders := '{' ||
       '    "SEASON":'         || apex_json.stringify( new_session.prefix_tournament ) ||
       '   ,"WEEK_NUM":'       || apex_json.stringify( new_session.round_num ) ||
-      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.easy_course_name ) ||
+      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.east_course_emoji || new_session.easy_course_name ) ||
       '   ,"EASY_CODE":'             || apex_json.stringify( new_session.easy_course_code ) ||
       '   ,"EASY_RECORD":'           || apex_json.stringify( l_easy_record ) ||
       '   ,"EASY_TOP_SCORES":'       || apex_json.stringify( l_easy_top_scores ) ||
       '   ,"EASY_RANKING":'          || apex_json.stringify( course_rank(new_session.easy_course_id ) ) ||
       '   ,"EASY_HARD_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'H' ) ) ||
       '   ,"EASY_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'E' ) ) ||
-      '   ,"EASY_UNICORNS":'         || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"EASY_UNICORNS_PENDING":' || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"UNICORNS_EASY_OK":'      || apex_json.stringify( 'N' ) ||  -- no unicons for now
-      '   ,"HARD_COURSE":'           || apex_json.stringify( new_session.hard_course_name ) ||
+      '   ,"UNICORNS_EASY_OK":'      || apex_json.stringify( l_unicorns_easy_ok ) || 
+      '   ,"EASY_UNICORNS":'         || apex_json.stringify( l_unicorns_easy ) || 
+      '   ,"HARD_COURSE":'           || apex_json.stringify( new_session.hard_course_emoji || new_session.hard_course_name ) ||
       '   ,"HARD_CODE":'             || apex_json.stringify( new_session.hard_course_code ) ||
       '   ,"HARD_RECORD":'           || apex_json.stringify( l_hard_record ) ||
       '   ,"HARD_TOP_SCORES":'       || apex_json.stringify( l_hard_top_scores ) ||
       '   ,"HARD_RANKING":'          || apex_json.stringify( course_rank(new_session.hard_course_id ) ) ||
       '   ,"HARD_HARD_HOLES":'       || apex_json.stringify( course_holes(new_session.hard_course_id, 'H' ) ) ||
       '   ,"HARD_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.hard_course_id, 'E' ) ) ||
-      '   ,"HARD_UNICORNS":'         || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"HARD_UNICORNS_PENDING":' || apex_json.stringify( new_session."NULL" ) ||
-      '   ,"UNICORNS_HARD_OK":'      || apex_json.stringify( 'N' ) ||  -- no unicons for now
+      '   ,"UNICORNS_HARD_OK":'      || apex_json.stringify( l_unicorns_hard_ok ) ||  
+      '   ,"HARD_UNICORNS":'         || apex_json.stringify( l_unicorns_hard ) ||  
       '}';
 
     log(l_placeholders, l_scope);

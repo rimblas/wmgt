@@ -496,6 +496,8 @@ regions:
            , apex_markdown.to_html(c.factoids, p_embedded_html_mode => 'PRESERVE') factoids
            , c.course_mode
            , c.course_par
+           , c.course_emoji
+           , :BUCKET || c.course_emoji || '.webp' emoji_url
            , :BUCKET || c.code || '_FULL.jpg' icon
            , s.last_played
            , nvl(s.played_count, 0) played_count
@@ -659,7 +661,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 110
+      sequence: 130
       column-alignment: start
 
     accessibility: 
@@ -727,7 +729,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 70
+      sequence: 90
       column-alignment: start
 
     accessibility: 
@@ -735,7 +737,7 @@ regions:
 
     column-formatting: 
       html-expression: |
-        <h3>#NAME#</h3>
+        <h3>{if COURSE_EMOJI/}<img src="#EMOJI_URL#" style="width: 48px">{endif/}#NAME#</h3>
         {if FACTOIDS/}<div class="legend">#FACTOIDS#</div>{endif/}
         
 
@@ -765,7 +767,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 110
       column-alignment: center
 
     accessibility: 
@@ -801,7 +803,7 @@ regions:
       alignment: end
 
     layout: 
-      sequence: 100
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -883,7 +885,7 @@ regions:
       alignment: start
 
     layout: 
-      sequence: 120
+      sequence: 140
       column-alignment: start
 
     accessibility: 
@@ -919,7 +921,7 @@ regions:
       alignment: end
 
     layout: 
-      sequence: 130
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -955,7 +957,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 160
       column-alignment: center
 
     accessibility: 
@@ -983,6 +985,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: COURSE_EMOJI ================================
+    id: 32461952143429417
+    identification: 
+      column-name: COURSE_EMOJI
+      type: Hidden Column
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EMOJI_URL ===================================
+    id: 32462022974429418
+    identification: 
+      column-name: EMOJI_URL
+      type: Hidden Column
+
+    layout: 
+      sequence: 170
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: FACTOIDS ====================================
     id: 39068542529021502
     identification: 
@@ -990,7 +1022,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 80
+      sequence: 100
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1005,7 +1037,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 60
+      sequence: 70
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
