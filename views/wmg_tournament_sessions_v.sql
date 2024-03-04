@@ -8,6 +8,7 @@ with courses as (
          , c.name
          , c.course_emoji
          , c.release_order
+         , tc.course_no
     from wmg_tournament_courses tc
        , wmg_courses c
    where tc.course_id = c.id (+)
@@ -48,7 +49,7 @@ from wmg_tournaments t
 where ts.tournament_id(+) = t.id
 --  and tc.tournament_session_id(+) = ts.id
   and ts.id = e.tournament_session_id (+)
-  and e.course_mode (+) = 'E'
+  and e.course_no (+) = 1
   and ts.id = h.tournament_session_id (+)
-  and h.course_mode (+) = 'H'
+  and h.course_no (+) = 2
 /
