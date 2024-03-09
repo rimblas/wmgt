@@ -41,6 +41,10 @@ procedure tournament_issues_template(
   , x_out                    out clob
 );
 
+procedure tournament_courses_template(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , x_out                    out clob
+);
 
 end wmg_notification;
 /
