@@ -1,0 +1,10 @@
+@uc_nested_reports.pks
+@uc_list_extension.pks
+@wmg_discord.pks
+@wmg_discord.pkb
+@wmg_error_handler.pks
+@wmg_error_handler.pkb
+@wmg_notification.pks
+@wmg_notification.pkb
+@wmg_util.pks
+@wmg_util.pkb

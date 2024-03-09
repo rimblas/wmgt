@@ -1321,6 +1321,10 @@ begin
   -- logger.log('END', l_scope, null, l_params);
 
   exception
+    when no_data_found then
+      -- no real previous season
+      return false;
+
     when OTHERS then
       logger.log_error('Unhandled Exception', l_scope, null, l_params);
       -- x_result_status := mm_api.g_ret_sts_unexp_error;

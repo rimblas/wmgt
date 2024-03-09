@@ -1264,7 +1264,7 @@ begin
     l_placeholders := '{' ||
       '    "SEASON":'         || apex_json.stringify( new_session.prefix_tournament ) ||
       '   ,"WEEK_NUM":'       || apex_json.stringify( new_session.round_num ) ||
-      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.east_course_emoji || new_session.easy_course_name ) ||
+      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.easy_course_emoji || new_session.easy_course_name ) ||
       '   ,"EASY_CODE":'             || apex_json.stringify( new_session.easy_course_code ) ||
       '   ,"EASY_RECORD":'           || apex_json.stringify( l_easy_record ) ||
       '   ,"EASY_TOP_SCORES":'       || apex_json.stringify( l_easy_top_scores ) ||
