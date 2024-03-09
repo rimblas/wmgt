@@ -3,6 +3,8 @@ PRO .. wmg_parameters.sql
 @wmg_parameters.sql
 PRO .. wmg_constraint_lookup.sql
 @wmg_constraint_lookup.sql
+PRO .. wmg_notes.sql
+@wmg_notes.sql
 PRO .. wmg_courses.sql
 @wmg_courses.sql
 PRO .. wmg_course_previews.sql
