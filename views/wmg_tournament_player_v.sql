@@ -1,4 +1,4 @@
-create or replace view wmg_tournament_player_v
+create or replace force view wmg_tournament_player_v
 as
 select t.id                              tournament_id
      , t.code                            code

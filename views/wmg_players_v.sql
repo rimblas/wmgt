@@ -1,4 +1,4 @@
-create or replace view wmg_players_v
+create or replace force view wmg_players_v
 as
 select p.id
      , p.account
