@@ -37,10 +37,12 @@ select t.id                              tournament_id
      , e.course_id                       easy_course_id
      , e.code                            easy_course_code
      , e.name                            easy_course_name
+     , e.course_emoji                    easy_course_emoji
      , e.release_order                   easy_release_order
      , h.course_id                       hard_course_id
      , h.code                            hard_course_code
      , h.name                            hard_course_name
+     , h.course_emoji                    hard_course_emoji
      , h.release_order                   hard_release_order
 from wmg_tournaments t
    , wmg_tournament_sessions ts
