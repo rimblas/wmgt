@@ -9,7 +9,7 @@ create table wmg_players (
     discord_discriminator          varchar2(10),
     account_login                  varchar2(100),
     prefered_tz                    varchar2(20),
-    country_code                   varchar2(5),
+    country_code                   varchar2(10),
     rank_code                      varchar2(10) default on null 'NEW' not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
     created_by                     varchar2(60 char) default on null coalesce(sys_context('APEX$SESSION','APP_USER'),user) not null,
