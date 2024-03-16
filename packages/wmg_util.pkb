@@ -802,7 +802,11 @@ begin
                         -- , count(*) possible_ducks
                        from wmg_rounds_unpivot_mv u2
                           , wmg_tournament_sessions ts2
+                          , wmg_tournament_players tp2
                       where ts2.week = u2.week
+                        and ts2.id = tp2.tournament_session_id
+                        and u2.player_id = tp2.player_id
+                        and tp2.issue_code is null  -- only players with no issues are eligible
                         and ts2.id = p_tournament_session_id
                         and u2.score = 1 -- ace score
                         having count(*) between 2 and 2 
