@@ -214,7 +214,9 @@ begin
   loop
     if p_mode = 'MINI' then
       return '<div class="row col-6 col-md-8 u-justify-content-space-around">' || p.discord_profile 
+          $IF env.wmgt $THEN
           || ' &nbsp; <span class="' || p.rank_profile_class || '">' || p.rank_name || '</span>'
+          $END
           || p.flag
       || '</div>';
     else
@@ -222,7 +224,9 @@ begin
          || '<div class="' || l_cols || ' u-tC">'
          ||   p.discord_profile
          || '<h3>' || p.player_name || '</h3>'
+         $IF env.wmgt $THEN
          || '<div class="' || p.rank_profile_class || '">' || p.rank_name || '</div>'
+         $END
          || '</div></div>'
          || '<div class="row">'
          || '<div class="' || l_cols || ' u-tC">'

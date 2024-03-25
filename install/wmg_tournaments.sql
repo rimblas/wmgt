@@ -11,6 +11,7 @@ create table wmg_tournaments (
     active_ind                     varchar2(1 char) constraint wmg_tournaments_active_ind_ck
                                    check (active_ind in ('Y','N')) not null,
     url                            varchar2(4000 char),
+    prefix_room_name               varchar2(10 char) default 'WMGT',
     notes                          varchar2(4000 char),
     start_date                     date,
     created_on                     timestamp with local time zone default on null current_timestamp not null,

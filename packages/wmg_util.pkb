@@ -350,6 +350,12 @@ begin
         from (
             select lpad( (n-1)*4,2,0) slot
             from slots_n
+            $IF env.fhit $THEN
+            union all
+            select '02' from dual
+            union all
+            select '18' from dual
+            $END
         )
     )
     select d time_slot, t
@@ -1293,8 +1299,10 @@ function is_season_over(
 )
 return boolean
 is
+  $IF $$LOGGER $THEN
   l_scope  logger_logs.scope%type := gc_scope_prefix || 'is_season_over';
   l_params logger.tab_param;
+  $END
 
   l_tournament_session_id wmg_tournament_sessions.id%type;
   l_round_num wmg_tournament_sessions.round_num%type;
@@ -1330,7 +1338,9 @@ begin
       return false;
 
     when OTHERS then
+      $IF $$LOGGER $THEN
       logger.log_error('Unhandled Exception', l_scope, null, l_params);
+      $END
       -- x_result_status := mm_api.g_ret_sts_unexp_error;
       raise;
 end is_season_over;
@@ -1942,6 +1952,12 @@ begin
         from (
             select lpad( (n-1)*4,2,0) slot
             from slots_n
+            $IF env.fhit $THEN
+            union all
+            select '02' from dual
+            union all
+            select '18' from dual
+            $END
         )
     )
     , ts as (

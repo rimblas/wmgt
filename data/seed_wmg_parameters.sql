@@ -9,7 +9,7 @@ insert into wmg_parameters (
 values (
     'Environment'   -- category
   , 'ENV'   -- name_key
-  , 'WMGT'   -- value
+  , 'FHIT'   -- value
   , 'Environment code'   -- description
 )
 /
@@ -24,7 +24,7 @@ insert into wmg_parameters (
 values (
     'Notifications' --  category
   , 'EMAIL_OVERRIDE' --  name_key
-  , '' --  value
+  , 'jorge@rimblas.com' --  value
   , 'When set, is the Email that will receive all emails (instead of the designated address)' --  description
 )
 /
@@ -40,7 +40,7 @@ insert into wmg_parameters (
 values (
     'Notifications'   -- category
   , 'FROM_EMAIL'   -- name_key
-  , 'wmgt@rimblas.com'   -- value
+  , 'notification@myfhit.com'   -- value
   , 'Single Email address used to send all emails'   -- description
 )
 /
@@ -56,7 +56,7 @@ insert into wmg_parameters (
 values (
     'Notifications'   -- category
   , 'NEW_PLAYER_NOTIFICATION_EMAILS'   -- name_key
-  , 'jorge@rimblas.com,bjkrhino7@gmail.com'   -- value
+  , 'jorge@rimblas.com,FugoHallahallarin@gmail.com'   -- value
   , 'Emails to notify when a new player signs up'   -- description
 )
 /

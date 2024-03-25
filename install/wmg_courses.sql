@@ -6,6 +6,7 @@ create table wmg_courses (
                                    constraint courses_code_unq unique
   , name                           varchar2(255 char) not null
   , course_emoji                   varchar2(60 char)
+  , tournament_excluded_flag       varchar2(1)
   , factoids                       varchar2(4000 char)
   , course_mode                    varchar2(1 char) constraint courses_course_mode_ck
                                    check (course_mode in ('E','H'))
@@ -21,6 +22,7 @@ create table wmg_courses (
 comment on table wmg_courses is 'Master List of available courses';
 
 comment on column wmg_courses.factoids is 'Juicy tidbits of information';
+comment on column wmg_courses.tournament_excluded_flag is 'Indicates this course is excluded from the tournament';
 
 create or replace trigger wmg_courses_bu
     before update 

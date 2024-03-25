@@ -4,7 +4,7 @@ create table wmg_rounds (
     tournament_session_id          number not null
                                    constraint wmg_round_tournament_sess_fk
                                    references wmg_tournament_sessions(id),
-    week                           varchar2(10) constraint wmg_rouund_week_ck check (regexp_like(week, 'S[0-9]+W[0-9]+')),
+    week                           varchar2(10) constraint wmg_round_week_ck check (regexp_like(week, 'S[0-9]+W[0-9]+')),
     course_id                      number not null
                                    constraint wmg_rounds_course_id_fk
                                    references wmg_courses on delete cascade,

@@ -14,7 +14,7 @@ create table wmg_tournament_sessions (
     rooms_defined_flag             varchar2(1),
     rooms_defined_by               varchar2(60 char),
     rooms_defined_on               timestamp with time zone,
-    completed_ind                  varchar2(1 char) constraint wmg_tournament_completed_i_ck
+    completed_ind                  varchar2(1 char) default on null 'N' constraint wmg_tournament_completed_i_ck
                                    check (completed_ind in ('Y','N')) not null,
     completed_on                   timestamp with local time zone,
     created_on                     timestamp with local time zone default on null current_timestamp not null,

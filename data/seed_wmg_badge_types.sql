@@ -69,7 +69,7 @@ begin
     "name": "Diamond",
     "description": "Most Aces thru 36 holes",
     "icon_class": "em em-gem",
-    "system": "N",
+    "system": "Y",
     "selectable": "Y",
     "seq": 20
   },
@@ -87,7 +87,7 @@ begin
     "name": "Duck",
     "description": "Rare Ace (Small number of players to ace a hole)",
     "icon_class": "em em-duck",
-    "system": "N",
+    "system": "Y",
     "selectable": "Y",
     "seq": 40
   },
@@ -96,7 +96,7 @@ begin
     "name": "Beetle",
     "description": "Rare non-ace best score (Small number of players)",
     "icon_class": "em em-beetle",
-    "system": "N",
+    "system": "Y",
     "selectable": "Y",
     "seq": 50
   }

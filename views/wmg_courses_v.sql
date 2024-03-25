@@ -25,6 +25,7 @@ select
     c.code || ' - ' || c.name prepared_name,
     c.course_mode                                course_mode,
     c.course_emoji,
+    c.tournament_excluded_flag,
     c.factoids,
     cs.id                                  course_stroke_id,
     cs.h1,

@@ -1,6 +1,6 @@
+-- alter session set PLSQL_CCFLAGS='NO_LOGGER:TRUE';
 create or replace package body wmg_notification
 is
--- alter session set PLSQL_CCFLAGS='NO_LOGGER:TRUE';
 
 
 --------------------------------------------------------------------------------
@@ -220,7 +220,11 @@ begin
         '   ,"NAME":'                || apex_json.stringify( p.name ) ||
         '   ,"DISCORD_ID":'          || apex_json.stringify( p.discord_id ) ||
         '   ,"PREFERED_TZ":'         || apex_json.stringify( p.prefered_tz ) ||
+        $IF env.wmgt $THEN
         '   ,"MY_APPLICATION_LINK":' || '"' || apex_mail.get_instance_url || 'r/wmgt/wmgt/home' || '"' ||
+        $ELSE
+        '   ,"MY_APPLICATION_LINK":' || '"' || apex_mail.get_instance_url || 'r/fhit/fhit/home' || '"' ||
+        $END
         '}' ;
 
     log(l_body, l_scope);
@@ -267,11 +271,22 @@ begin
        , p_content      => l_content
        , p_embeds       => l_embeds
     );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+    $IF env.wmgt $THEN
     wmg_notification.send_to_discord_webhook(
          p_webhook_code => 'BEAR313'
        , p_content      => l_content
        , p_embeds       => l_embeds
     );
+    $END
 
 
   end loop;
@@ -355,15 +370,17 @@ begin
               || ' ' || tz at_local_time
         from (
           select p.tournament_player_id
-               , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+               , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, t.prefix_room_name, '') || p.room_no else '' end room_no
                , case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
               || apex_escape.html(p.player_name) player
                , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || p.time_slot) at time zone r.tz local_tz
                , r.tz
           from wmg_tournament_player_v p
              , wmg_tournament_sessions s
+             , wmg_tournaments t
              , my_room r
-          where s.id =  p.tournament_session_id
+          where t.id = s.tournament_id
+            and s.id =  p.tournament_session_id
             and p.active_ind = 'Y'
             and p.tournament_session_id = r.tournament_session_id
             and p.time_slot = r.time_slot
