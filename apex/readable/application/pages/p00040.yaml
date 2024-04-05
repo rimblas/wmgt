@@ -236,14 +236,17 @@ regions:
 
   source: 
     html-code: |
-      The private room names will be/are <i>WMGT1</i>, <i>WMGT2</i>, etc... Rooms assignments will be posted 1 hour before the 1st group is due to play.<br>
+      The private room names will be/are <i>&P40_ROOM_PREFIX.1</i>, <i>&P40_ROOM_PREFIX.2</i>, etc... Rooms assignments will be posted 1 hour before the 1st group is due to play.<br>
+      <img style="width: 100%; max-width: 900px;" src="&BUCKET.&P40_ROOM_PREFIX._rooms.png"><br>
       Find your room and join a few minutes before so you can start your round precisely on time.<br>
       <br>
       🚨 <b>VERY IMPORTANT</b> 🚨 <br>
       <ol>
-          <li>Play the Easy Course round first</li>
+          <li>Play the courses in the order specified, no exceptions</li>
+          <li>Play the first course</li>
           <li>Take picture</li>
-          <li>Play the Hard Course round last</li>
+          <li>Play the second course</li>
+          <li>Take picture</li>
           <li>Submit your scores back here <a href="#0" onclick="$('#ENTER_ROUNDS').click()">3. Enter Scores</a> <i>(Posting of pictures is NOT submission of scores)</i></li>
           <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
       </ol>
@@ -2009,6 +2012,36 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P40_ROOM_PREFIX ==========================
+  id: 32462645442429424
+  identification: 
+    name: P40_ROOM_PREFIX
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 40
+    region: '00:00' # 7057232864153582635
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P40_SHOW_AVATARS_IND =====================
   id: 37927902156930039
   identification: 
@@ -2955,6 +2988,21 @@ computations:
   server-side-condition: 
     type: Item is NULL
     item: G_DISCORD_ID
+
+- # ====== Computation: P40_ROOM_PREFIX ========================
+  id: 32462775704429425
+  identification: 
+    item-name: P40_ROOM_PREFIX
+
+  execution: 
+    sequence: 40
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select prefix_room_name from wmg_tournaments
+      where id = (select tournament_id from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID)
 
 - # ====== Computation: P40_NEW_PLAYER_ID ======================
   id: 39135828991390009

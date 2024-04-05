@@ -4244,7 +4244,7 @@ regions:
             || ' ' || tz at_local_time
       from (
       select p.tournament_player_id
-           , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+           , case when s.rooms_open_flag = 'Y' then nvl2(p.room_no, t.prefix_room_name, '') || p.room_no else '' end room_no
            , case when s.rooms_open_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
           || wmg_discord.avatar_link(p_discord_id => p.discord_id)
           || apex_escape.html(p.player_name)
@@ -4253,8 +4253,10 @@ regions:
            , r.tz
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
+         , wmg_tournaments t
          , my_room r
       where s.id =  p.tournament_session_id
+        and s.tournament_id = t.id
         and p.active_ind = 'Y'
         and p.tournament_session_id = r.tournament_session_id
         and p.time_slot = r.time_slot

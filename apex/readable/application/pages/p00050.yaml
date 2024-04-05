@@ -7575,24 +7575,6 @@ validations:
     type: Request != Value
     value: RELOAD
 
-- # ====== Validation: Week format =============================
-  id: 15533722903055466829
-  identification: 
-    name: Week format
-
-  execution: 
-    sequence: 10
-
-  validation: 
-    type: Expression
-    language: PL/SQL
-    pl/sql-expression: "regexp_like(:P9_WEEK, 'S[0-9]+W[0-9]+')"
-    always-execute: false
-
-  error: 
-    error-message: Week format is SnnWnn. i.e. S08W01, S08W02
-    display-location: Inline with Field and in Notification
-
 processes: 
 - # ====== Process: Set Message ================================
   id: 12528127980550018
@@ -7859,15 +7841,19 @@ processes:
       
              begin
                -- get the room assingment
-               select 'WMGT' || room_no
-                    , decode(verified_score_flag, 'Y', 'Y', null)
-                    , id
+               select t.prefix_room_name || p.room_no
+                    , decode(p.verified_score_flag, 'Y', 'Y', null)
+                    , p.id
                  into :P50_ROOM_NAME
                     , :P50_VERIFIED_FLAG
                     , :P50_TOURNAMENT_PLAYER_ID
-                 from wmg_tournament_players
-                where tournament_session_id = :G_CURRENT_SESSION_ID
-                  and player_id = :P50_PLAYERS_ID;
+                 from wmg_tournament_players p
+                    , wmg_tournament_sessions s
+                    , wmg_tournaments t
+                where t.id = s.tournament_id
+                  and s.id = p.tournament_session_id
+                  and p.tournament_session_id = :G_CURRENT_SESSION_ID
+                  and p.player_id = :P50_PLAYERS_ID;
               exception
                when NO_DATA_FOUND then
                  null;
@@ -8142,6 +8128,33 @@ branches:
   server-side-condition: 
     type: Request = Value
     value: RELOAD
+
+- # ====== Branch: Not Registered ==============================
+  id: 32462305044429421
+  identification: 
+    name: Not Registered
+
+  execution: 
+    sequence: 30
+    point: Before Header
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:51:&SESSION.::&DEBUG.:51::&success_msg=#SUCCESS_MSG#'
+      page: 51 # Enter Rounds - Not Ready
+      clear-cache: 51
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+         from wmg_tournament_players
+        where tournament_session_id = nvl(:G_CURRENT_SESSION_ID, -1)
+          and player_id = :G_PLAYER_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
 
 - # ====== Branch: View Results ================================
   id: 41138512033776034
