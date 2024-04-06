@@ -388,19 +388,17 @@ regions:
     type: SQL Query
     sql-query: |
       with week_courses as (
-        select id course_id, course_mode, :P110_WEEK week
-          from wmg_courses
-         where id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P110_WEEK 
-          )
-         and course_mode = 'H'
+        select tc.course_id, tc.course_no, s.week
+          from wmg_tournament_courses tc
+             , wmg_tournament_sessions s
+         where tc.tournament_session_id = s.id
+           and s.week = :P110_WEEK 
+           and tc.course_no = 2
       )
       select 1 display_seq
            , code prepared_name
            , null data_filter
-           , null course_mode
+           , to_number(null) course_no
            , 'disabled' drill_class
            , h1
            , h2
@@ -429,7 +427,7 @@ regions:
       select 2 display_seq
            , player_name
            , null data_filter
-           , null course_mode
+           , to_number(null) course_no
            , 'disabled' drill_class,
              S1,
              S2,
@@ -453,7 +451,9 @@ regions:
         from WMG_ROUNDS_V
         where week = :P110_WEEK
           and player_id = :P110_PLAYER_ID
-          and course_mode = 'H'
+          and course_id in (
+           select course_id from week_courses
+          )
       union all
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
@@ -461,7 +461,7 @@ regions:
         select 90 display_seq
              , 'Triple Bogeys'
              , -3 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 3, h1, 1, 0)) a1
              , sum(decode(s2  - 3, h2, 1, 0)) a2
@@ -485,7 +485,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -494,7 +494,7 @@ regions:
         select 100 display_seq
              , 'Double Bogeys'
              , -2 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 2, h1, 1, 0)) a1
              , sum(decode(s2  - 2, h2, 1, 0)) a2
@@ -518,7 +518,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID   
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -527,7 +527,7 @@ regions:
         select 200 display_seq
              , 'Bogeys'
              , -1 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 1, h1, 1, 0)) a1
              , sum(decode(s2  - 1, h2, 1, 0)) a2
@@ -551,7 +551,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID   
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -560,7 +560,7 @@ regions:
         select 300 display_seq
              , 'Pars'
              , 0 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1, h1, 1, 0)) a1
              , sum(decode(s2, h2, 1, 0)) a2
@@ -584,7 +584,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -593,7 +593,7 @@ regions:
         select 400 display_seq
              , 'Birdies'
              , +1 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
              , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
@@ -617,7 +617,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -626,7 +626,7 @@ regions:
         select 500 display_seq
              , 'Eagles'
              , +2 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
              , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
@@ -650,7 +650,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -659,7 +659,7 @@ regions:
         select 600 display_seq
              , 'Albatrosses'
              , +3 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
              , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
@@ -683,7 +683,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -692,7 +692,7 @@ regions:
         select 700 display_seq
              , 'Condors or Better'
              , +4 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
              , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
@@ -716,7 +716,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -725,7 +725,7 @@ regions:
         select 1000 display_seq
              , 'Aces'
              , 99 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1, 1, 1, 0)) a1
              , sum(decode(s2, 1, 1, 0)) a2
@@ -749,7 +749,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
        ) r
       order by 1
       
@@ -833,6 +833,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: COURSE_NO ===================================
+    id: 32462526931429423
+    identification: 
+      column-name: COURSE_NO
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: DISPLAY_SEQ =================================
     id: 50437963658610816740
     identification: 
@@ -859,7 +874,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: end
 
     accessibility: 
@@ -869,7 +884,7 @@ regions:
       html-expression: |
         <span style="font-weight: bold;">#PREPARED_NAME#</span>
         <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
-        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
+        <span class="COURSE_NO" style="display: none">#COURSE_NO#</span>
 
     sorting: 
       sortable: false
@@ -890,21 +905,6 @@ regions:
     id: 50437963838655816742
     identification: 
       column-name: DATA_FILTER
-      type: Hidden Column
-
-    layout: 
-      sequence: 30
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COURSE_MODE =================================
-    id: 50437963977451816743
-    identification: 
-      column-name: COURSE_MODE
       type: Hidden Column
 
     layout: 
@@ -2875,19 +2875,17 @@ regions:
     type: SQL Query
     sql-query: |
       with week_courses as (
-        select id course_id, course_mode, :P110_WEEK week
-          from wmg_courses
-         where id in (
-            select distinct course_id
-              from wmg_rounds 
-             where week = :P110_WEEK 
-          )
-         and course_mode = 'E'
+        select tc.course_id, tc.course_no, s.week
+          from wmg_tournament_courses tc
+             , wmg_tournament_sessions s
+         where tc.tournament_session_id = s.id
+           and s.week = :P110_WEEK 
+           and tc.course_no = 1
       )
       select 1 display_seq
            , code prepared_name
            , null data_filter
-           , null course_mode
+           , to_number(null) course_no
            , 'disabled' drill_class
            , h1
            , h2
@@ -2916,7 +2914,7 @@ regions:
       select 2 display_seq
            , player_name
            , null data_filter
-           , null course_mode
+           , to_number(null) course_no
            , 'disabled' drill_class,
              S1,
              S2,
@@ -2940,7 +2938,9 @@ regions:
         from WMG_ROUNDS_V
         where week = :P110_WEEK
           and player_id = :P110_PLAYER_ID
-          and course_mode = 'E'
+          and course_id in (
+           select course_id from week_courses
+          )
       union all
       select r.*
            , a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 + a9 + a10 + a11 + a12 + a13 + a14 + a15 + a16 + a17 + a18 total
@@ -2948,7 +2948,7 @@ regions:
         select 90 display_seq
              , 'Triple Bogeys'
              , -3 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 3, h1, 1, 0)) a1
              , sum(decode(s2  - 3, h2, 1, 0)) a2
@@ -2972,7 +2972,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -2981,7 +2981,7 @@ regions:
         select 100 display_seq
              , 'Double Bogeys'
              , -2 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 2, h1, 1, 0)) a1
              , sum(decode(s2  - 2, h2, 1, 0)) a2
@@ -3005,7 +3005,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID   
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -3014,7 +3014,7 @@ regions:
         select 200 display_seq
              , 'Bogeys'
              , -1 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1  - 1, h1, 1, 0)) a1
              , sum(decode(s2  - 1, h2, 1, 0)) a2
@@ -3038,7 +3038,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID   
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -3047,7 +3047,7 @@ regions:
         select 300 display_seq
              , 'Pars'
              , 0 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1, h1, 1, 0)) a1
              , sum(decode(s2, h2, 1, 0)) a2
@@ -3071,7 +3071,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -3080,7 +3080,7 @@ regions:
         select 400 display_seq
              , 'Birdies'
              , +1 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1  and s1  + 1 = h1 then 1 else 0 end) a1
              , sum(case when s2>1  and s2  + 1 = h2 then 1 else 0 end) a2
@@ -3104,7 +3104,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -3113,7 +3113,7 @@ regions:
         select 500 display_seq
              , 'Eagles'
              , +2 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1  and s1  + 2 = h1 then 1 else 0 end) a1
              , sum(case when s2>1  and s2  + 2 = h2 then 1 else 0 end) a2
@@ -3137,7 +3137,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
       ) r
       union all
       select r.*
@@ -3146,7 +3146,7 @@ regions:
         select 600 display_seq
              , 'Albatrosses'
              , +3 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1 and s1  + 3 = h1 then 1 else 0 end) a1
              , sum(case when s2>1 and s2  + 3 = h2 then 1 else 0 end) a2
@@ -3170,7 +3170,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -3179,7 +3179,7 @@ regions:
         select 700 display_seq
              , 'Condors or Better'
              , +4 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(case when s1>1 and s1  + 4 <= h1 then 1 else 0 end) a1
              , sum(case when s2>1 and s2  + 4 <= h2 then 1 else 0 end) a2
@@ -3203,7 +3203,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
         ) r
       union all
       select r.*
@@ -3212,7 +3212,7 @@ regions:
         select 1000 display_seq
              , 'Aces'
              , 99 data_filter
-             , w.course_mode
+             , w.course_no
              , '' drill_class
              , sum(decode(s1, 1, 1, 0)) a1
              , sum(decode(s2, 1, 1, 0)) a2
@@ -3236,7 +3236,7 @@ regions:
          where r.week = w.week
            and r.course_id = w.course_id
            and r.player_id = :P110_PLAYER_ID
-          group by w.course_mode
+          group by w.course_no
        ) r
       order by 1
       
@@ -3320,6 +3320,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: COURSE_NO ===================================
+    id: 32462470332429422
+    identification: 
+      column-name: COURSE_NO
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: PREPARED_NAME ===============================
     id: 50818374902894990423
     identification: 
@@ -3331,7 +3346,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: end
 
     accessibility: 
@@ -3341,7 +3356,7 @@ regions:
       html-expression: |
         <span style="font-weight: bold;">#PREPARED_NAME#</span>
         <span class="DATA_FILTER" style="display: none">#DATA_FILTER#</span>
-        <span class="COURSE_MODE" style="display: none">#COURSE_MODE#</span>
+        <span class="COURSE_NO" style="display: none">#COURSE_NO#</span>
 
     sorting: 
       sortable: false
@@ -3369,7 +3384,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 40
+      sequence: 60
       column-alignment: end
 
     accessibility: 
@@ -3404,7 +3419,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 50
+      sequence: 70
       column-alignment: end
 
     accessibility: 
@@ -3439,7 +3454,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 60
+      sequence: 80
       column-alignment: end
 
     accessibility: 
@@ -3474,7 +3489,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 80
+      sequence: 90
       column-alignment: end
 
     accessibility: 
@@ -3509,7 +3524,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 90
+      sequence: 100
       column-alignment: end
 
     accessibility: 
@@ -3544,7 +3559,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 100
+      sequence: 110
       column-alignment: end
 
     accessibility: 
@@ -3579,7 +3594,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 110
+      sequence: 120
       column-alignment: end
 
     accessibility: 
@@ -3614,7 +3629,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 120
+      sequence: 130
       column-alignment: end
 
     accessibility: 
@@ -3649,7 +3664,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 130
+      sequence: 140
       column-alignment: end
 
     accessibility: 
@@ -3684,7 +3699,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 140
+      sequence: 150
       column-alignment: end
 
     accessibility: 
@@ -3719,7 +3734,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 150
+      sequence: 160
       column-alignment: end
 
     accessibility: 
@@ -3754,7 +3769,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 160
+      sequence: 170
       column-alignment: end
 
     accessibility: 
@@ -3789,7 +3804,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 170
+      sequence: 180
       column-alignment: end
 
     accessibility: 
@@ -3824,7 +3839,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 180
+      sequence: 190
       column-alignment: end
 
     accessibility: 
@@ -3859,7 +3874,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 190
+      sequence: 200
       column-alignment: end
 
     accessibility: 
@@ -3894,7 +3909,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 200
+      sequence: 210
       column-alignment: end
 
     accessibility: 
@@ -3929,7 +3944,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 210
+      sequence: 220
       column-alignment: end
 
     accessibility: 
@@ -3964,7 +3979,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 220
+      sequence: 230
       column-alignment: end
 
     accessibility: 
@@ -3999,7 +4014,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 230
+      sequence: 240
       column-alignment: end
 
     accessibility: 
@@ -4042,22 +4057,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 30
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COURSE_MODE =================================
-    id: 50818384195987990443
-    identification: 
-      column-name: COURSE_MODE
-      type: Hidden Column
-
-    layout: 
-      sequence: 35
+      sequence: 40
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -4072,7 +4072,7 @@ regions:
       type: Hidden Column
 
     layout: 
-      sequence: 36
+      sequence: 50
 
     ui-defaults-reference: 
       table-owner: Parsing Schema

@@ -1129,7 +1129,7 @@ page-items:
     type: Popup LOV
 
   label: 
-    label: Easy Course
+    label: 1st Course
     alignment: Left
 
   settings: 
@@ -1164,11 +1164,11 @@ page-items:
   list-of-values: 
     type: SQL Query
     sql-query: |
-      select code || ' - ' || name d
+      select code || ' - ' || name || decode(tournament_excluded_flag, 'Y', ' (excluded)') d
            , id 
       from wmg_courses
-      where course_mode = 'E'
-      order by release_order, code
+      -- where course_mode = 'E'
+      order by tournament_excluded_flag nulls first, release_order, code
     display-extra-values: true
     display-null-value: true
     null-display-value: '- TBD -'
@@ -1198,7 +1198,7 @@ page-items:
     type: Popup LOV
 
   label: 
-    label: Hard Course
+    label: 2nd Course
     alignment: Left
 
   settings: 
@@ -1233,11 +1233,11 @@ page-items:
   list-of-values: 
     type: SQL Query
     sql-query: |
-      select code || ' - ' || name d
+      select code || ' - ' || name || decode(tournament_excluded_flag, 'Y', ' (excluded)') d
            , id 
       from wmg_courses
       where course_mode = 'H'
-      order by release_order, code
+      order by tournament_excluded_flag nulls first, release_order, code
     display-extra-values: true
     display-null-value: true
     null-display-value: '- TBD -'

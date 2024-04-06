@@ -53,10 +53,10 @@ javascript:
       $s("P100_H", H);
       // console.log("Parent", $(el).parents(".t-Region"));
       if ( $(el).parents(".t-Region").hasClass("hard") ) {
-        $s("P100_MODE", "H");
+        $s("P100_MODE", "2");
       }
       else {
-        $s("P100_MODE", "E");
+        $s("P100_MODE", "1");
       }
     
       apex.region("holePreview").refresh();
@@ -502,8 +502,9 @@ regions:
          , wmg_courses_v c
       where 1 = 1 
         and p.course_id = c.course_id
-        and c.course_id = decode(:P100_MODE, 'H', :P100_HARD_ID, :P100_EASY_ID)
+        and c.course_id = decode(:P100_MODE, '2', :P100_HARD_ID, :P100_EASY_ID)
         and p.hole = nvl(:P100_H,0)
+      
     page-items-to-submit: 
     - P100_EASY_ID
     - P100_HARD_ID
@@ -713,7 +714,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with course_unpivot as (
+      with base_course_unpivot as (
          select week, course_id, course_code, course_mode, course_name, h, score, par
           from wmg_rounds_v
           unpivot (
@@ -739,65 +740,70 @@ regions:
             )
           )
         where week = :P100_WEEK
+      --    and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+      )
+      , course_unpivot as (
+        select tc.tournament_session_id, u.week, tc.course_id, u.course_code, u.course_mode, tc.course_no, u.course_name, u.h, u.score, u.par
+          from base_course_unpivot u
+             , wmg_tournament_courses tc
+        where tc.course_id = u.course_id
+         and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
       )
       , whole_totals as (
-            select course_id, course_code, course_mode, h, sum(score) total
+            select course_no, course_id, course_code, course_mode, h, sum(score) total
               from course_unpivot
-             group by course_id, course_code, course_mode, h
+             group by course_no, course_id, course_code, course_mode, h
       )
       , whole_pars as (
-            select course_id, course_code, course_mode, h, sum(par) total
+            select course_no, course_id, course_code, course_mode, h, sum(par) total
               from course_unpivot
-             group by course_id, course_code, course_mode,  h
+             group by course_no, course_id, course_code, course_mode,  h
       )
-      select 'Tournament Strokes' highlight, 'E + H' what, sum(total) total
+      select 'Tournament Strokes' highlight, 'Both Courses' what, sum(total) total
         from whole_totals
       union all
       select 'Hole with most Aces'
-           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
-      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_no || ''',' || h || ')">' 
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_mode, course_code, h, sum(score) total
+             select course_no, course_code, h, sum(score) total
               from course_unpivot
              where score = 1
-             group by course_mode, course_code, h
+             group by course_no, course_code, h
              order by total desc
              fetch first 1 rows only
       )
       union all
       select 'Easiest hole (strokes)'
-           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
+           , '<a href="javascript:viewH2(''' || course_no || ''',' || h || ')">' 
            -- || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_mode, course_code, h, total
+             select course_no, course_code, h, total
               from whole_totals
              order by total
              fetch first 1 rows only
       )
       union all
       select 'Most difficult hole (strokes)'
-           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
-      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+           , '<a href="javascript:viewH2(''' || course_no || ''',' || h || ')">' 
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_mode, course_code, h, total
+             select course_no, course_code, h, total
               from whole_totals
              order by total desc
              fetch first 1 rows only
       )
       union all
-      select 'Most difficult hole (Over Par) [WIP]'
-           , '<a href="javascript:viewH2(''' || course_mode || ''',' || h || ')">' 
-      --     , '<a href="' || apex_page.get_url(p_page => 15, p_items => 'P15_COURSE_ID,P15_HOLE', p_values => course_id || ',' || h) || '">'
+      select 'Most difficult hole (Over Par)'
+           , '<a href="javascript:viewH2(''' || course_no || ''',' || h || ')">' 
             || course_code || ' - H' || to_char(h) || '</a>' what
            , total
       from ( 
-             select course_mode, course_code, h, total
+             select course_no, course_code, h, total
               from whole_pars
              order by total desc
              fetch first 1 rows only
@@ -805,6 +811,7 @@ regions:
       
     page-items-to-submit: 
     - P100_WEEK
+    - P100_TOURNAMENT_SESSION_ID
 
   layout: 
     sequence: 40
@@ -838,16 +845,7 @@ regions:
     exclude-title-from-translation: false
 
   server-cache: 
-    caching: Enabled
-    cache-timeout: 2 days
-    depends-on-item(s): 
-    - P100_WEEK
-    type: Rows returned
-    sql-query: |
-      select 1
-      from wmg_tournament_sessions s
-      where s.completed_ind = 'Y'
-      and s.week = :P100_WEEK
+    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1423,14 +1421,18 @@ regions:
         from (
           select r.player_id, r.player_name, r.country_code
                , r.under_par
-               , c.course_mode
-            from wmg_rounds_v r, wmg_courses c
-          where r.course_id = c.id
-             and r.week = :P100_WEEK
+               , tc.course_no
+            from wmg_rounds_v r
+               , wmg_courses c
+               , wmg_tournament_courses tc
+           where tc.tournament_session_id = r.tournament_session_id
+             and tc.course_id = c.id
+             and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+             and r.course_id = c.id
           )
          pivot (
-           sum(under_par) for course_mode in (
-            'E' EASY, 'H' HARD
+           sum(under_par) for course_no in (
+            1 EASY, 2 HARD
            )
           )
       ) r
@@ -1813,26 +1815,32 @@ regions:
     type: SQL Query
     sql-query: |
       with players_with_aces as (
-            select c.id course_id, c.course_mode, r.player_id
+            select c.id course_id, tc.course_no, r.player_id
               from wmg_rounds_unpivot_mv r
+                 , wmg_tournament_courses tc
                  , wmg_courses c
-             where r.course_id = c.id
+             where tc.course_id = r.course_id
+               and r.course_id = c.id
                and r.week = :P100_WEEK
+               and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
                and r.score = 1
       )
-      select 'Best score ' || decode(course_mode, 'E', 'Easy', 'Hard') result, listagg(player_name, ', ') who, total
+      select 'Best score ' || course_code result, listagg(player_name, ', ') who, total
       from (
-            select r.*, rank() over (partition by course_mode order by r.total) rn
+            select r.*, rank() over (partition by course_no order by r.total) rn
             from (
-            select course_mode, player_id, player_name, sum(under_par) total
-              from wmg_rounds_v
-              where week = :P100_WEEK 
-             group by course_mode, player_id, player_name
+            select tc.course_no, r.course_code, r.player_id, r.player_name, sum(r.under_par) total
+              from wmg_rounds_v r
+                 , wmg_tournament_courses tc
+             where tc.tournament_session_id = r.tournament_session_id
+               and tc.course_id = r.course_id
+               and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+             group by tc.course_no, r.course_code, r.player_id, r.player_name
             ) r
-            order by course_mode, rn, r.player_name
+            order by course_no, course_code, rn, r.player_name
       )
       where rn = 1
-      group by  course_mode, total
+      group by  course_code, total
       union all
       select result, listagg(who, ', ') who, total
       from (
@@ -1884,33 +1892,38 @@ regions:
            group by u.week, u.player_id
       )
       union all
-      select 'Players w/zero Aces on Hard' result, '- Undisclosed -' who, count(*) total
+      select 'Players w/zero Aces on Course 1' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
-           where r.week = :P100_WEEK
-             and r.course_mode = 'H'
+             , wmg_tournament_courses tc
+           where tc.tournament_session_id = r.tournament_session_id
+             and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+             and tc.course_no = 1
         minus  -- all players, minus players with aces
          select player_id
           from players_with_aces
-         where course_mode = 'H'
+         where course_no = 1
       )
       union all
-      select 'Players w/zero Aces on Easy' result, '- Undisclosed -' who, count(*) total
+      select 'Players w/zero Aces on Course 2' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
-           where r.week = :P100_WEEK
-             and r.course_mode = 'E'
+             , wmg_tournament_courses tc
+           where tc.tournament_session_id = r.tournament_session_id
+             and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
+             and tc.course_no = 2
         minus  -- all players, minus players with aces
          select player_id
           from players_with_aces
-         where course_mode = 'E'
+         where course_no =2
       )
       
       
     page-items-to-submit: 
     - P100_WEEK
+    - P100_TOURNAMENT_SESSION_ID
 
   layout: 
     sequence: 30
@@ -1946,16 +1959,7 @@ regions:
     exclude-title-from-translation: false
 
   server-cache: 
-    caching: Enabled
-    cache-timeout: 12 hours
-    depends-on-item(s): 
-    - P100_WEEK
-    type: Rows returned
-    sql-query: |
-      select 1
-      from wmg_tournament_sessions s
-      where s.completed_ind = 'Y'
-      and s.week = :P100_WEEK
+    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -5812,7 +5816,7 @@ regions:
               , c.id                                         course_id
               , c.code                                       course_code
               , c.name                                       course_name
-              , c.course_mode                                course_mode
+              , tc.course_no                                 course_no
               , r.week
             , nvl(r.s1 - cs.h1, 0) h1
             , nvl(r.s2 - cs.h2, 0) h2
@@ -5836,8 +5840,11 @@ regions:
              , wmg_players_v p
              , wmg_courses c
              , wmg_course_strokes cs
+             , wmg_tournament_courses tc
           where r.players_id = p.id
             and r.course_id = c.id
+            and tc.course_id = c.id
+            and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
             and cs.course_id(+) = c.id
           )
           , round_unpivot as (
@@ -5869,7 +5876,7 @@ regions:
                , sum(score * -1) total
           from (
           select player_name
-               , course_mode
+               , course_no
                , h
           --     , course_mode || lpad(to_char(h), 2, '0') label
           --     , sum(score * -1) over(partition by player_name order by course_mode, h range between unbounded preceding and current row) as value
@@ -5882,17 +5889,18 @@ regions:
               and r.week =  :P100_WEEK
           )
           )
-          where (:P100_HN <= 18 and course_mode = 'E'  and h <= :P100_HN)
+          where (:P100_HN <= 18 and course_no = 1  and h <= :P100_HN)
           or 
           (
-              :P100_HN > 18 and (course_mode = 'E'  or (h <= :P100_HN - 18 and course_mode = 'H' ))
+              :P100_HN > 18 and (course_no = 1  or (h <= :P100_HN - 18 and course_no = 2 ))
           )
           group by player_name
           order by 2 desc
         page-items-to-submit: 
+        - P100_TOURNAMENT_SESSION_ID
+        - P100_PLAYER_ID
         - P100_WEEK
         - P100_HN
-        - P100_PLAYER_ID
 
       column-mapping: 
         label: PLAYER_NAME
@@ -5935,17 +5943,20 @@ regions:
                   select p.player_name
                   , sum(r.par * -1) total
                   from wmg_rounds_unpivot_mv r
-                  , wmg_courses c
-                  , wmg_players_v p
-                  where r.player_id = p.id
+                     , wmg_courses c
+                     , wmg_tournament_courses tc
+                     , wmg_players_v p
+                  where tc.course_id = c.id
+                  and r.player_id = p.id
                   and r.week = :P100_WEEK
+                  and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
                   and :P100_PLAYERS_FILTER = 'ALL'
                   and r.course_id = c.id
                   and (
-                      (:P100_HN <= 18 and c.course_mode = 'E'  and r.h <= :P100_HN)
+                      (:P100_HN <= 18 and tc.course_no = 1  and r.h <= :P100_HN)
                   or 
                   (
-                      :P100_HN > 18 and (c.course_mode = 'E'  or (r.h <= :P100_HN - 18 and c.course_mode = 'H' ))
+                      :P100_HN > 18 and (tc.course_no = 1  or (r.h <= :P100_HN - 18 and tc.course_no = 2 ))
                   )
                   )
                   group by p.player_name
@@ -5954,8 +5965,8 @@ regions:
           where pos <= 10
           order by pos, player_name
         page-items-to-submit: 
-        - P100_PLAYERS_FILTER
         - P100_WEEK
+        - P100_TOURNAMENT_SESSION_ID
         - P100_PLAYERS_FILTER
         - P100_HN
 

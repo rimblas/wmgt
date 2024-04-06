@@ -1566,26 +1566,32 @@ regions:
                and p.active_ind = 'Y'
       )
       , players_with_aces as (
-            select c.id course_id, c.course_mode, r.player_id
+            select c.id course_id, tc.course_no, r.player_id
               from wmg_rounds_unpivot_mv r
+                 , wmg_tournament_courses tc
                  , wmg_courses c
-             where r.course_id = c.id
+             where tc.course_id = r.course_id
+               and r.course_id = c.id
                and r.week = :P60_WEEK
+               and tc.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
                and r.score = 1
       )
-      select 'Best score ' || decode(course_mode, 'E', 'Easy', 'Hard') result, listagg(player_name, ', ') who, total
+      select 'Best score ' || course_code result, listagg(player_name, ', ') who, total
       from (
-            select r.*, rank() over (partition by course_mode order by r.total) rn
+            select r.*, rank() over (partition by course_no order by r.total) rn
             from (
-            select course_mode, player_id, player_name, sum(under_par) total
-              from wmg_rounds_v
-              where week = :P60_WEEK 
-             group by course_mode, player_id, player_name
+            select tc.course_no, r.course_code, r.player_id, r.player_name, sum(r.under_par) total
+              from wmg_rounds_v r
+                 , wmg_tournament_courses tc
+             where tc.tournament_session_id = r.tournament_session_id
+               and tc.course_id = r.course_id
+               and tc.tournament_session_id = :P60_TOURNAMENT_SESSION_ID
+             group by tc.course_no, r.course_code, r.player_id, r.player_name
             ) r
-            order by course_mode, rn, r.player_name
+            order by course_no, course_code, rn, r.player_name
       )
       where rn = 1
-      group by  course_mode, total
+      group by  course_code, total
       union all
       select result, listagg(who, ', ') who, total
       from (
