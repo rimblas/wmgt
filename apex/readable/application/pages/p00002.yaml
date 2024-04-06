@@ -19,6 +19,9 @@ navigation:
   cursor-focus: Do not focus cursor
   warn-on-unsaved-changes: true
 
+javascript: 
+  execute-when-page-loads: wmgt.theme.init();
+
 css: 
   inline: |
     .courseIcon {
@@ -737,7 +740,7 @@ regions:
 
     column-formatting: 
       html-expression: |
-        <h3>{if COURSE_EMOJI/}<img src="#EMOJI_URL#" style="width: 48px">{endif/}#NAME#</h3>
+        <h3>#NAME#</h3>
         {if FACTOIDS/}<div class="legend">#FACTOIDS#</div>{endif/}
         
 
@@ -857,7 +860,6 @@ regions:
         Played: #PLAYED_COUNT# times{if PLAYED_COUNT/}, last #LAST_PLAYED#{endif/}<br>
         </div>
         {if FACTOIDS/}<div class="hidden-xs-up legend">#FACTOIDS#</div>{endif/}
-        
 
     sorting: 
       sortable: false
@@ -989,10 +991,32 @@ regions:
     id: 32461952143429417
     identification: 
       column-name: COURSE_EMOJI
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: Emoji
+      alignment: center
 
     layout: 
       sequence: 80
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '{if COURSE_EMOJI/}<img src="#EMOJI_URL#" title="#COURSE_EMOJI#" class="tooltip" style="width: 48px">{endif/}'
+      css-classes: 
+      - hidden-xs-down
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
