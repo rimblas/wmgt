@@ -473,8 +473,14 @@ begin
   log('.. removing room assignments', l_scope);
   update wmg_tournament_players
      set room_no = null
+       , verified_score_flag = null
+       , verified_by = null
+       , verified_on = null
    where tournament_session_id = p_tournament_session_id;
 
+
+  log('.. removing rooms', l_scope);
+  delete from wmg_tournament_rooms where tournament_session_id = p_tournament_session_id;
 
   log('.. Undo room set flags and reset', l_scope);
   update wmg_tournament_sessions
