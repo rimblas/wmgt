@@ -339,6 +339,9 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+  help: 
+    help-text: This is the name referenced from the code to send notifications. It cannot be changed after it has been set.
+
 - # ====== Page Item: P10075_DESCRIPTION =======================
   id: 51074786718174825
   identification: 
@@ -742,7 +745,7 @@ buttons:
     column: 10
     new-column: true
     column-span: Automatic
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -757,6 +760,10 @@ buttons:
     action: Submit Page
     execute-validations: true
     warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P10075_ID
 
 - # ====== Button: CANCEL ======================================
   id: 51080915624174843

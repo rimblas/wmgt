@@ -13,21 +13,14 @@ appearance:
   - '#DEFAULT#'
 
 navigation-menu: 
-  override-user-interface-level: true
-  list: Tournament Options # 55893111130016225986
-  list-position: Top
-  list-template: Top Navigation Tabs # 46995168148239514396
-  template-options: 
-  - '#DEFAULT#'
-  - t-NavTabs--inlineLabels-lg
-  - t-NavTabs--displayLabels-sm
+  override-user-interface-level: false
 
 navigation: 
   cursor-focus: Do not focus cursor
-  warn-on-unsaved-changes: true
+  warn-on-unsaved-changes: false
 
 security: 
-  authentication: Page Is Public
+  authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Arguments Must Have Checksum
   form-auto-complete: Off
@@ -37,7 +30,6 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
-  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -58,7 +50,7 @@ regions:
     html-code: The current tournament is closed or there isn't one scheduled just yet.
 
   layout: 
-    sequence: 9
+    sequence: 19
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -141,7 +133,7 @@ regions:
       
 
   layout: 
-    sequence: 19
+    sequence: 29
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -337,4 +329,63 @@ regions:
 
     security: 
       escape-special-characters: true
+
+- # ====== Region: You are not signed up! ======================
+  id: 32462222028429420
+  identification: 
+    title: You are not signed up!
+    type: Static Content
+
+  source: 
+    html-code: Sorry but you did not sign-up for this tournament
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 5
+    new-column: true
+    column-span: 5
+
+  appearance: 
+    template: Alert # 46995035459709514340
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--warning
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+         from wmg_tournament_players
+        where tournament_session_id = nvl(:G_CURRENT_SESSION_ID, -1)
+          and player_id = :G_PLAYER_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 

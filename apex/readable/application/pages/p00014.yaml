@@ -1,0 +1,91 @@
+---
+# ====== Page: Download ALL Previews =========================
+id: 14
+identification: 
+  name: Download ALL Previews
+  alias: DOWNLOAD-ALL-PREVIEWS
+  title: Download ALL Previews
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+processes: 
+- # ====== Process: Download ===================================
+  id: 32462180382429419
+  identification: 
+    name: Download
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      DECLARE
+        l_zip_blob BLOB;
+        CURSOR c_files IS
+          SELECT filename, image_preview
+          FROM wmg_course_previews;
+      BEGIN
+        -- Initialize the ZIP BLOB
+        DBMS_LOB.CREATETEMPORARY(l_zip_blob, TRUE);
+      
+        FOR rec IN c_files LOOP
+          -- Add each file to the ZIP archive
+          APEX_ZIP.ADD_FILE(
+            p_zipped_blob => l_zip_blob,
+            p_file_name => rec.filename,
+            p_content => rec.image_preview
+          );
+        END LOOP;
+      
+      apex_zip.finish (p_zipped_blob => l_zip_blob );
+      
+        -- Now l_zip_blob contains your ZIP archive
+        -- Example: Directly download (simplified, might need adjustments for actual use)
+        -- Set up headers for download
+        OWA_UTIL.MIME_HEADER('application/zip', FALSE);
+        HTP.p('Content-Disposition: attachment; filename="course_previews.zip"');
+        HTP.p('Content-Length: ' || DBMS_LOB.GETLENGTH(l_zip_blob));
+        OWA_UTIL.HTTP_HEADER_CLOSE;
+        
+        -- Output the BLOB as download
+        WPG_DOCLOAD.DOWNLOAD_FILE(l_zip_blob);
+      
+        -- Free the temporary BLOB
+        DBMS_LOB.FREETEMPORARY(l_zip_blob);
+      END;
+      
+
+  execution: 
+    sequence: 10
+    point: Before Header
+    run-process: Once Per Page Visit (default)
+
