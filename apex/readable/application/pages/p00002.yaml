@@ -1070,6 +1070,41 @@ regions:
       escape-special-characters: true
 
 buttons: 
+- # ====== Button: DOWNLOAD_PREVIEWS ===========================
+  id: 32462838531429426
+  identification: 
+    button-name: DOWNLOAD_PREVIEWS
+    label: Download All Previews
+
+  layout: 
+    sequence: 10
+    region: Breadcrumb # 59007190296908349363
+    position: HELP
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-download
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:14:&SESSION.::&DEBUG.:::'
+      page: 14 # Download ALL Previews
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Administration Rights # 46995203575692514425
+
 - # ====== Button: CREATE ======================================
   id: 46995227276864514590
   identification: 
