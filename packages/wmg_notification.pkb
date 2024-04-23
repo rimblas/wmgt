@@ -602,7 +602,11 @@ begin
                            + decode(s18, 1, 1, 0)
                         ) total
                     from wmg_rounds_v r
+                       , wmg_tournament_players tp
                    where r.week = s.week
+                     and r.tournament_session_id = tp.tournament_session_id
+                     and tp.player_id = r.player_id
+                     and tp.issue_code is null  -- only players with no issues are eligible
                   group by r.account
                   ) aces
                   order by aces.who
@@ -638,9 +642,12 @@ begin
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
                     select course_mode, player_id, player_name, account, sum(under_par) total
-                      from wmg_rounds_v
-                      where week = s.week
-                        and course_mode = 'E'
+                      from wmg_rounds_v r
+                         , wmg_tournament_courses tc
+                      where r.week = s.week
+                        and r.tournament_session_id = tc.tournament_session_id
+                        and r.course_id = tc.course_id
+                        and tc.course_no = 1
                      group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
@@ -653,9 +660,12 @@ begin
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
                     select course_mode, player_id, player_name, account, sum(under_par) total
-                      from wmg_rounds_v
-                      where week = s.week
-                        and course_mode = 'H'
+                      from wmg_rounds_v r
+                         , wmg_tournament_courses tc
+                      where r.week = s.week
+                        and r.tournament_session_id = tc.tournament_session_id
+                        and r.course_id = tc.course_id
+                        and tc.course_no = 2
                      group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
@@ -1079,7 +1089,7 @@ is
            , courses_played cp
         group by cp.course_code, cp.real_play_count 
         union all
-        select 'For ' || course_code || ', played ' || real_play_count || ' times before, these are the uniconrs:' || chr(13)||chr(10)
+        select 'For ' || course_code || ', played ' || real_play_count || ' times before, these are the unicorns:' || chr(13)||chr(10)
                || listagg('* Hole ' || h || ' (' || week || ') by ' || ace_by , chr(13)||chr(10)) within group (order by h) unicorn_info
                , unicorn_status
           from (
