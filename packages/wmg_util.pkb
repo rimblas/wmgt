@@ -2232,5 +2232,219 @@ begin
 end unavailable_application;
 
 
+----------------------------------------
+/**
+ * {description here}
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created April 21, 2024
+ * @param x_result_status
+ * @return
+ */
+procedure save_stream_scores(
+    p_stream_id wmg_streams.id%type
+  , p_scores_json in out nocopy varchar2
+)
+is
+  l_scope  logger_logs.scope%type := gc_scope_prefix || 'save_stream_scores';
+  l_params logger.tab_param;
+begin
+  logger.append_param(l_params, 'p_stream_id', p_stream_id);
+  logger.append_param(l_params, 'p_scores_json', p_scores_json);
+  logger.log('BEGIN', l_scope, null, l_params);
+
+  /* Merge scores for player 1 "e" */
+  merge into wmg_stream_scores sc
+  using (
+    select s.id stream_id
+         , sr.current_course_id course_id
+         , s.player1_id player_id
+         , nullif(jt.es1, 0) es1
+         , nullif(jt.es2, 0) es2
+         , nullif(jt.es3, 0) es3
+         , nullif(jt.es4, 0) es4
+         , nullif(jt.es5, 0) es5
+         , nullif(jt.es6, 0) es6
+         , nullif(jt.es7, 0) es7
+         , nullif(jt.es8, 0) es8
+         , nullif(jt.es9, 0) es9
+         , nullif(jt.es10, 0) es10
+         , nullif(jt.es11, 0) es11
+         , nullif(jt.es12, 0) es12
+         , nullif(jt.es13, 0) es13
+         , nullif(jt.es14, 0) es14
+         , nullif(jt.es15, 0) es15
+         , nullif(jt.es16, 0) es16
+         , nullif(jt.es17, 0) es17
+         , nullif(jt.es18, 0) es18
+    from wmg_streams s
+       , wmg_stream_round sr
+       , json_table(
+          p_scores_json, -- This is the JSON string containing the scores
+          '$'
+          columns (
+            es1 NUMBER PATH '$.es1',
+            es2 NUMBER PATH '$.es2',
+            es3 NUMBER PATH '$.es3',
+            es4 NUMBER PATH '$.es4',
+            es5 NUMBER PATH '$.es5',
+            es6 NUMBER PATH '$.es6',
+            es7 NUMBER PATH '$.es7',
+            es8 NUMBER PATH '$.es8',
+            es9 NUMBER PATH '$.es9',
+            es10 NUMBER PATH '$.es10',
+            es11 NUMBER PATH '$.es11',
+            es12 NUMBER PATH '$.es12',
+            es13 NUMBER PATH '$.es13',
+            es14 NUMBER PATH '$.es14',
+            es15 NUMBER PATH '$.es15',
+            es16 NUMBER PATH '$.es16',
+            es17 NUMBER PATH '$.es17',
+            es18 NUMBER PATH '$.es18'
+          )
+        ) jt
+      where s.id = sr.stream_id
+        and s.id = p_stream_id
+  ) src
+  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.player_id = src.player_id)
+  when matched then
+      update set
+          sc.s1 = src.es1,
+          sc.s2 = src.es2,
+          sc.s3 = src.es3,
+          sc.s4 = src.es4,
+          sc.s5 = src.es5,
+          sc.s6 = src.es6,
+          sc.s7 = src.es7,
+          sc.s8 = src.es8,
+          sc.s9 = src.es9,
+          sc.s10 = src.es10,
+          sc.s11 = src.es11,
+          sc.s12 = src.es12,
+          sc.s13 = src.es13,
+          sc.s14 = src.es14,
+          sc.s15 = src.es15,
+          sc.s16 = src.es16,
+          sc.s17 = src.es17,
+          sc.s18 = src.es18
+  when not matched then
+      insert (
+          stream_id, course_id, player_id
+        , s1, s2, s3, s4, s5, s6, s7, s8, s9, s10
+        , s11, s12, s13, s14, s15, s16, s17, s18
+      )
+      values (
+          src.stream_id, src.course_id, src.player_id
+        , src.es1, src.es2, src.es3, src.es4, src.es5, src.es6, src.es7, src.es8, src.es9
+        , src.es10, src.es11, src.es12, src.es13, src.es14, src.es15, src.es16, src.es17, src.es18
+      );
+
+  logger.log('p1 Rows: ' || SQL%ROWCOUNT, l_scope);
+
+----------------------------------------
+  /* Merge scores for player 2 "h" */
+  merge into wmg_stream_scores sc
+  using (
+    select s.id stream_id
+         , sr.current_course_id course_id
+         , s.player2_id player_id
+         , nullif(jt.hs1, 0) hs1
+         , nullif(jt.hs2, 0) hs2
+         , nullif(jt.hs3, 0) hs3
+         , nullif(jt.hs4, 0) hs4
+         , nullif(jt.hs5, 0) hs5
+         , nullif(jt.hs6, 0) hs6
+         , nullif(jt.hs7, 0) hs7
+         , nullif(jt.hs8, 0) hs8
+         , nullif(jt.hs9, 0) hs9
+         , nullif(jt.hs10, 0) hs10
+         , nullif(jt.hs11, 0) hs11
+         , nullif(jt.hs12, 0) hs12
+         , nullif(jt.hs13, 0) hs13
+         , nullif(jt.hs14, 0) hs14
+         , nullif(jt.hs15, 0) hs15
+         , nullif(jt.hs16, 0) hs16
+         , nullif(jt.hs17, 0) hs17
+         , nullif(jt.hs18, 0) hs18
+    from wmg_streams s
+       , wmg_stream_round sr
+       , json_table(
+          p_scores_json, -- This is the JSON string containing the scores
+          '$'
+          columns (
+            hs1 NUMBER PATH '$.hs1',
+            hs2 NUMBER PATH '$.hs2',
+            hs3 NUMBER PATH '$.hs3',
+            hs4 NUMBER PATH '$.hs4',
+            hs5 NUMBER PATH '$.hs5',
+            hs6 NUMBER PATH '$.hs6',
+            hs7 NUMBER PATH '$.hs7',
+            hs8 NUMBER PATH '$.hs8',
+            hs9 NUMBER PATH '$.hs9',
+            hs10 NUMBER PATH '$.hs10',
+            hs11 NUMBER PATH '$.hs11',
+            hs12 NUMBER PATH '$.hs12',
+            hs13 NUMBER PATH '$.hs13',
+            hs14 NUMBER PATH '$.hs14',
+            hs15 NUMBER PATH '$.hs15',
+            hs16 NUMBER PATH '$.hs16',
+            hs17 NUMBER PATH '$.hs17',
+            hs18 NUMBER PATH '$.hs18'
+          )
+        ) jt
+      where s.id = sr.stream_id
+        and s.id = p_stream_id
+  ) src
+  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.player_id = src.player_id)
+  when matched then
+      update set
+          sc.s1 = src.hs1,
+          sc.s2 = src.hs2,
+          sc.s3 = src.hs3,
+          sc.s4 = src.hs4,
+          sc.s5 = src.hs5,
+          sc.s6 = src.hs6,
+          sc.s7 = src.hs7,
+          sc.s8 = src.hs8,
+          sc.s9 = src.hs9,
+          sc.s10 = src.hs10,
+          sc.s11 = src.hs11,
+          sc.s12 = src.hs12,
+          sc.s13 = src.hs13,
+          sc.s14 = src.hs14,
+          sc.s15 = src.hs15,
+          sc.s16 = src.hs16,
+          sc.s17 = src.hs17,
+          sc.s18 = src.hs18
+  when not matched then
+      insert (
+          stream_id, course_id, player_id
+        , s1, s2, s3, s4, s5, s6, s7, s8, s9
+        , s10, s11, s12, s13, s14, s15, s16, s17, s18
+      )
+      values (
+          src.stream_id, src.course_id, src.player_id
+        , src.hs1, src.hs2, src.hs3, src.hs4, src.hs5, src.hs6, src.hs7, src.hs8, src.hs9
+        , src.hs10, src.hs11, src.hs12, src.hs13, src.hs14, src.hs15, src.hs16, src.hs17, src.hs18
+      );
+
+  logger.log('p2 Rows: ' || SQL%ROWCOUNT, l_scope);
+
+  -- x_result_status := mm_api.g_ret_sts_success;
+  logger.log('END', l_scope, null, l_params);
+
+  exception
+    when OTHERS then
+      logger.log_error('Unhandled Exception', l_scope, null, l_params);
+      -- x_result_status := mm_api.g_ret_sts_unexp_error;
+      raise;
+end save_stream_scores;
+
+
 end wmg_util;
 /

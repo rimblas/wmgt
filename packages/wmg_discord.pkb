@@ -200,7 +200,7 @@ begin
   select p.player_name
        , case when discord_id is not null then
           '<a href="discord://discordapp.com/users/' || p.discord_id || '/">'
-          || '<img class="avatar ' || case when  p_mode = 'MINI' then 'md' else 'lg' end || '" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
+          || '<img class="avatar ' || case when  p_mode in ('MINI', 'STREAM') then 'md' else 'lg' end || '" src="' || wmg_discord.avatar(p_discord_id => p.discord_id, p_avatar_uri => p.discord_avatar) || '">'
           || '</a>' 
          else '' end discord_profile
        , '<i class="' || case when  p_mode = 'MINI' then 'margin-top-sm' end || ' flag em-svg em-flag-' || p.country_code || '" aria-role="presentation" aria-label="' || p.COUNTRY_CODE || ' Flag"></i>' flag
@@ -219,6 +219,20 @@ begin
           $END
           || p.flag
       || '</div>';
+    elsif p_mode = 'STREAM' then
+      return '<div class="row">'
+         || '<div class="' || l_cols || ' u-tC">'
+         ||   p.discord_profile
+         || '<h3>' || p.player_name || '</h3>'
+         || '<hr>'
+         $IF env.wmgt $THEN
+         || '<div class="' || p.rank_profile_class || '">' || p.rank_name || '</div>'
+         $END
+         || '</div></div>'
+         || '<div class="row">'
+         || '<div class="' || l_cols || ' u-tC">'
+         || p.flag || '<br>' || p.country
+         || '</div></div>';
     else
       return '<div class="row">'
          || '<div class="' || l_cols || ' u-tC">'
@@ -269,6 +283,8 @@ is
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
+  log('.. p_from_player_id:' || p_from_player_id, l_scope);
+  log('.. p_into_player_id:' || p_into_player_id, l_scope);
 
   if p_from_player_id is null or p_into_player_id is null then
     raise_application_error(-20000, 'Select two players');
@@ -331,6 +347,12 @@ begin
 
 
   if p_remove_from_player then
+    $IF env.fhit $THEN
+    log('.. Delete player_invites', l_scope);
+    delete
+      from fhit_player_invites
+     where player_id = p_from_player_id;    
+    $END
     log('.. Delete old player', l_scope);
     delete
       from wmg_players
