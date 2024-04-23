@@ -277,6 +277,9 @@ is
   l_seed varchar2(100);
   l_rooms number;
   l_room  number;
+  l_room_no  number;       -- sequence for the room that does not reset.
+  l_last_room_no  number;  -- last room in the current slot that matches the l_room_no
+
   l_players  number;
   l_next_player  number;
 
@@ -339,6 +342,9 @@ begin
   l_seed := to_char(systimestamp,'YYYYDDMMHH24MISSFFFF');
   dbms_random.seed (val => l_seed);
 
+  l_room_no := 1;       -- start with room 1
+  
+
   for time_slots in (
     with slots_n as (
         select level n
@@ -350,12 +356,10 @@ begin
         from (
             select lpad( (n-1)*4,2,0) slot
             from slots_n
-            $IF env.fhit $THEN
             union all
             select '02' from dual
             union all
             select '18' from dual
-            $END
         )
     )
     select d time_slot, t
@@ -376,6 +380,7 @@ begin
     l_players := l_room_id_tbl.count;
     l_rooms := rooms(p_player_count => l_players);
     l_room := 1;
+    l_last_room_no := l_room_no;  -- Keep this in sync with room_no to indicate where the time slot starts
 
     log('.. Will need ' || l_rooms || ' Rooms', l_scope);
 
@@ -390,13 +395,17 @@ begin
       else
         l_next_player := get_next_player();
       end if;
-      l_room_id_tbl(l_next_player).room_no := l_room;
+      -- l_room_id_tbl(l_next_player).room_no := l_room;
+      l_room_id_tbl(l_next_player).room_no := l_room_no;
 
-      log('.. Room ' || l_room || ' = ' || players_on_room(l_room) || ' player(s)', l_scope);
+      log('.. Room ' || l_room || ' = ' || players_on_room(l_room_no) || ' player(s)', l_scope);
 
       l_room := l_room + 1;  -- next room
+      l_room_no := l_room_no + 1;  -- next room
+
       if l_room > l_rooms then
         l_room := 1;
+        l_room_no := l_last_room_no; -- reset the room
       end if;
 
       l_players := l_players -1;
@@ -412,6 +421,12 @@ begin
          and time_slot = time_slots.time_slot
          and id = l_room_id_tbl(idx).player_id;
 
+    -- Make absolutely sure the next room_no in the sequence is brand new
+    select max(room_no) + 1
+      into l_room_no
+      from wmg_tournament_players
+     where tournament_session_id = p_tournament_session_id
+       and time_slot = time_slots.time_slot;
 
   end loop; 
 
@@ -1958,12 +1973,10 @@ begin
         from (
             select lpad( (n-1)*4,2,0) slot
             from slots_n
-            $IF env.fhit $THEN
             union all
             select '02' from dual
             union all
             select '18' from dual
-            $END
         )
     )
     , ts as (
