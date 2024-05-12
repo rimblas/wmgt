@@ -6,6 +6,7 @@ select p.id
      , nvl(p.name, p.account) player_name
      , p.discord_id
      , p.discord_avatar
+     , p.accent_color
      , p.discord_discriminator
      , p.account_login
      , p.prefered_tz

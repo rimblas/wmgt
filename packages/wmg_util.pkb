@@ -2266,16 +2266,32 @@ procedure save_stream_scores(
 is
   l_scope  logger_logs.scope%type := gc_scope_prefix || 'save_stream_scores';
   l_params logger.tab_param;
+
+  l_stream_rec       wmg_streams%rowtype;
+  l_stream_round_rec wmg_stream_round%rowtype;
+
 begin
   logger.append_param(l_params, 'p_stream_id', p_stream_id);
   logger.append_param(l_params, 'p_scores_json', p_scores_json);
   logger.log('BEGIN', l_scope, null, l_params);
+
+  select *
+    into l_stream_rec
+    from wmg_streams
+   where id = p_stream_id;
+
+  select *
+    into l_stream_round_rec
+    from wmg_stream_round
+   where stream_id = p_stream_id;
+
 
   /* Merge scores for player 1 "e" */
   merge into wmg_stream_scores sc
   using (
     select s.id stream_id
          , sr.current_course_id course_id
+         , sr.current_round
          , s.player1_id player_id
          , nullif(jt.es1, 0) es1
          , nullif(jt.es2, 0) es2
@@ -2295,6 +2311,7 @@ begin
          , nullif(jt.es16, 0) es16
          , nullif(jt.es17, 0) es17
          , nullif(jt.es18, 0) es18
+         , total_easy
     from wmg_streams s
        , wmg_stream_round sr
        , json_table(
@@ -2318,13 +2335,14 @@ begin
             es15 NUMBER PATH '$.es15',
             es16 NUMBER PATH '$.es16',
             es17 NUMBER PATH '$.es17',
-            es18 NUMBER PATH '$.es18'
+            es18 NUMBER PATH '$.es18',
+            total_easy NUMBER PATH '$.total_easy'
           )
         ) jt
       where s.id = sr.stream_id
         and s.id = p_stream_id
   ) src
-  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.player_id = src.player_id)
+  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.course_no = src.current_round and sc.player_id = src.player_id)
   when matched then
       update set
           sc.s1 = src.es1,
@@ -2344,20 +2362,49 @@ begin
           sc.s15 = src.es15,
           sc.s16 = src.es16,
           sc.s17 = src.es17,
-          sc.s18 = src.es18
+          sc.s18 = src.es18,
+          sc.final_score = src.total_easy
   when not matched then
       insert (
-          stream_id, course_id, player_id
+          stream_id, course_no, course_id, player_id
         , s1, s2, s3, s4, s5, s6, s7, s8, s9, s10
         , s11, s12, s13, s14, s15, s16, s17, s18
+        , final_score
       )
       values (
-          src.stream_id, src.course_id, src.player_id
+          src.stream_id, src.current_round, src.course_id, src.player_id
         , src.es1, src.es2, src.es3, src.es4, src.es5, src.es6, src.es7, src.es8, src.es9
         , src.es10, src.es11, src.es12, src.es13, src.es14, src.es15, src.es16, src.es17, src.es18
+        , src.total_easy
       );
 
   logger.log('p1 Rows: ' || SQL%ROWCOUNT, l_scope);
+  logger.log('l_stream_round_rec.current_round: ' || l_stream_round_rec.current_round, l_scope);
+
+
+  -- Update the round score for player 1
+  if l_stream_round_rec.current_round = 1 then
+  logger.log('l_stream_rec.player1_id:' || l_stream_rec.player1_id);
+    update wmg_stream_round sr
+       set sr.player1_round1_score = (
+          select final_score 
+            from wmg_stream_scores 
+           where stream_id = p_stream_id
+             and course_no = l_stream_round_rec.current_round
+             and player_id = l_stream_rec.player1_id
+          )
+     where stream_id = p_stream_id;
+  else
+    update wmg_stream_round sr
+       set sr.player1_round2_score = (
+          select final_score 
+            from wmg_stream_scores 
+           where stream_id = p_stream_id
+             and course_no = l_stream_round_rec.current_round
+             and player_id = l_stream_rec.player1_id
+          )
+     where stream_id = p_stream_id;
+  end if;
 
 ----------------------------------------
   /* Merge scores for player 2 "h" */
@@ -2365,6 +2412,7 @@ begin
   using (
     select s.id stream_id
          , sr.current_course_id course_id
+         , sr.current_round
          , s.player2_id player_id
          , nullif(jt.hs1, 0) hs1
          , nullif(jt.hs2, 0) hs2
@@ -2384,6 +2432,7 @@ begin
          , nullif(jt.hs16, 0) hs16
          , nullif(jt.hs17, 0) hs17
          , nullif(jt.hs18, 0) hs18
+         , total_hard
     from wmg_streams s
        , wmg_stream_round sr
        , json_table(
@@ -2407,13 +2456,14 @@ begin
             hs15 NUMBER PATH '$.hs15',
             hs16 NUMBER PATH '$.hs16',
             hs17 NUMBER PATH '$.hs17',
-            hs18 NUMBER PATH '$.hs18'
+            hs18 NUMBER PATH '$.hs18',
+            total_hard NUMBER PATH '$.total_hard'
           )
         ) jt
       where s.id = sr.stream_id
         and s.id = p_stream_id
   ) src
-  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.player_id = src.player_id)
+  on (sc.stream_id = src.stream_id and sc.course_id = src.course_id and sc.course_no = src.current_round and sc.player_id = src.player_id)
   when matched then
       update set
           sc.s1 = src.hs1,
@@ -2433,20 +2483,51 @@ begin
           sc.s15 = src.hs15,
           sc.s16 = src.hs16,
           sc.s17 = src.hs17,
-          sc.s18 = src.hs18
+          sc.s18 = src.hs18,
+          sc.final_score = src.total_hard
   when not matched then
       insert (
-          stream_id, course_id, player_id
+          stream_id, course_no, course_id, player_id
         , s1, s2, s3, s4, s5, s6, s7, s8, s9
         , s10, s11, s12, s13, s14, s15, s16, s17, s18
+        , final_score
       )
       values (
-          src.stream_id, src.course_id, src.player_id
+          src.stream_id, src.current_round, src.course_id, src.player_id
         , src.hs1, src.hs2, src.hs3, src.hs4, src.hs5, src.hs6, src.hs7, src.hs8, src.hs9
         , src.hs10, src.hs11, src.hs12, src.hs13, src.hs14, src.hs15, src.hs16, src.hs17, src.hs18
+        , src.total_hard
       );
 
   logger.log('p2 Rows: ' || SQL%ROWCOUNT, l_scope);
+
+  -- Update the round score for player 2
+  if l_stream_round_rec.current_round = 1 then
+    update wmg_stream_round sr
+       set sr.player2_round1_score = (
+          select final_score 
+            from wmg_stream_scores 
+           where stream_id = p_stream_id
+             and course_no = l_stream_round_rec.current_round
+             and player_id = l_stream_rec.player2_id
+          )
+     where stream_id = p_stream_id;
+  else
+    update wmg_stream_round sr
+       set sr.player2_round2_score = (
+          select final_score 
+            from wmg_stream_scores 
+           where stream_id = p_stream_id
+             and course_no = l_stream_round_rec.current_round
+             and player_id = l_stream_rec.player2_id
+          )
+     where stream_id = p_stream_id;
+  end if;
+
+  update wmg_stream_round sr
+     set player1_score = sr.player1_round1_score + nvl(sr.player1_round2_score, 0)
+       , player2_score = sr.player2_round1_score + nvl(sr.player2_round2_score, 0)
+   where stream_id = p_stream_id;
 
   -- x_result_status := mm_api.g_ret_sts_success;
   logger.log('END', l_scope, null, l_params);

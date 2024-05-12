@@ -6,6 +6,7 @@ create table wmg_players (
     name                           varchar2(60 char),
     discord_id                     number,
     discord_avatar                 varchar2(62),
+    accent_color                   number,
     discord_discriminator          varchar2(10),
     account_login                  varchar2(100),
     prefered_tz                    varchar2(20),

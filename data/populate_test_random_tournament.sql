@@ -1,3 +1,7 @@
+variable tournament_session_id number
+exec :tournament_session_id := 2;
+
+begin
 insert into wmg_tournament_players (
     tournament_session_id
   , player_id
@@ -26,12 +30,15 @@ players AS (
 ranked_players AS (
   SELECT p.id, p.player_name, p.player_rank, MOD(p.player_rank, (SELECT COUNT(*) FROM ranked_time_slots)) + 1 AS mod_rank
   FROM players p
-  where p.id not in (select player_id from wmg_tournament_players)
+  where p.id not in (select player_id from wmg_tournament_players where tournament_session_id = :tournament_session_id)
 )
-SELECT 2 tournament_session_id
+SELECT :tournament_session_id
      , rp.id
      -- , rp.player_name
      , rts.time AS time_slot
      , 'Y'
 FROM ranked_players rp
-JOIN ranked_time_slots rts ON rp.mod_rank = rts.slot_rank
+JOIN ranked_time_slots rts ON rp.mod_rank = rts.slot_rank;
+
+end;
+/

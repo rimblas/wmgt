@@ -13,8 +13,8 @@ create table wmg_stream_round (
   , current_hole_par number default on null 3
   , player1_round1_score number default on null 0
   , player2_round1_score number default on null 0
-  -- , player1_round2_score number default on null 0
-  -- , player2_round2_score number default on null 0
+  , player1_round2_score number default on null 0
+  , player2_round2_score number default on null 0
   , player1_score number default on null 0
   , player2_score number default on null 0
 )

@@ -6,6 +6,7 @@ create table wmg_stream_scores (
   , stream_id     number        not null
                                  constraint wmg_stream_scores_stream_fk
                                    references wmg_streams(id) on delete cascade
+  , course_no                      number
   , course_id                      number not null
                                    constraint wmg_stream_scores_course_id_fk
                                    references wmg_courses (id) on delete cascade

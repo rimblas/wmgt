@@ -282,7 +282,7 @@ begin
 
     $IF env.wmgt $THEN
     wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'BEAR313'
+         p_webhook_code => 'STAFFWMGT'
        , p_content      => l_content
        , p_embeds       => l_embeds
     );
@@ -1156,6 +1156,8 @@ begin
          , '' "NULL"
       from wmg_tournament_sessions_v
      where tournament_session_id = p_tournament_session_id
+       and easy_course_id is not null
+       and hard_course_id is not null
   )
   loop
 
