@@ -35,7 +35,6 @@ wmgt.convert = {};
 
 
 
-
 wmgt.theme = {};
 /**
  * @namespace
@@ -45,16 +44,20 @@ wmgt.theme = {};
 ( function( theme ) {
     "use strict";
 
+    var mmWindowFocused = true,
+        mmRefreshCompleted = [];
 
-/* Initialize Theme */
-theme.init = function() {
-  /* get tooltips going */
-  $(".tooltip").tooltip();
-},
+
+    /* Initialize Theme */
+    theme.init = function() {
+        /* get tooltips going */
+        $(".tooltip").tooltip();
+    },
+
 
     // PRIVATE
     // Called by continuousReportRefresh
-    _startIntervalRefreshReport: function (regionID, refreshEnabledItem) {
+    theme._startIntervalRefreshReport = function (regionID, refreshEnabledItem) {
       var activeRefresh = true;
       if (typeof refreshEnabledItem == "undefined") {
         activeRefresh = true;
@@ -68,10 +71,10 @@ theme.init = function() {
             activeRefresh = true;
         }
       }
-      if (mmWindowFocused && mmRefreshCompleted && activeRefresh) {
+      if (mmWindowFocused && mmRefreshCompleted[regionID] && activeRefresh) {
          // if the window has focus, the previous refresh completed and we want 
          // to continue refreshing (activeRefresh) then go ahead and refresh
-         mmRefreshCompleted = false;  // clear so we detect that the session is still active
+         mmRefreshCompleted[regionID] = false;  // clear so we detect that the session is still active
          apex.region(regionID).refresh();
       }
     },
@@ -86,8 +89,8 @@ theme.init = function() {
     * https://stackoverflow.com/questions/7389328/detect-if-browser-tab-has-focus
     *
     * Examples
-    * mastermind.theme.continuousReportRefresh("jobsRegion", 500, "P1_REFRESH_IND");
-    * mastermind.theme.continuousReportRefresh("jobsRegion", 500);
+    * wmgt.theme.continuousReportRefresh("jobsRegion", 500, "P1_REFRESH_IND");
+    * wmgt.theme.continuousReportRefresh("jobsRegion", 500);
     *
     * @author Jorge Rimblas
     * @created February 17, 2022
@@ -95,8 +98,9 @@ theme.init = function() {
     * @param interval: Milliseconds between refreshes
     * @param refreshEnabledItem [Optional]: A Y/N APEX Item that when Y will continue with the autorefresh
     */
-    continuousReportRefresh: function(regionID, interval, refreshEnabledItem) {
-        const intervalReport = setInterval(mastermind.theme._startIntervalRefreshReport, interval, regionID, refreshEnabledItem);
+    theme.continuousReportRefresh = function(regionID, interval, refreshEnabledItem) {
+        mmRefreshCompleted[regionID] = true; // default the refresh region to complete so it can refresh again
+        const intervalReport = setInterval(wmgt.theme._startIntervalRefreshReport, interval, regionID, refreshEnabledItem);
 
         mmWindowFocused = true;
         document.addEventListener("visibilitychange", function() {
@@ -108,24 +112,22 @@ theme.init = function() {
             }
         });
 
-        mmRefreshCompleted = true;
+        mmRefreshCompleted[regionID] = true;
         // after each refresh we indicate the refresh has completed
         // when the session expires the `apexafterrefresh` event will never happen
         apex.jQuery( "#" + regionID ).on( "apexafterrefresh", function() {
             // detect if the latest apexafterrefresh happen, if it didn't
             // it could indicate to an expired session or error
-            mmRefreshCompleted = true;
+            mmRefreshCompleted[regionID] = true;
         });
 
         return intervalReport;
     },
 
 
-
-
 /* Week LOV Template */
 theme.weekLovTemplate = function (options) {
-    options.display = "list";
+    options.display = "grid";
 
     options.recordTemplate = (
   '<li data-id="~WEEK.">' +
@@ -144,6 +146,8 @@ theme.weekLovTemplate = function (options) {
 
     return options;
 },
+
+
 
 
 /**
