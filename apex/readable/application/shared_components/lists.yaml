@@ -393,6 +393,41 @@
       language: PL/SQL
       pl/sql-expression: ':G_CURRENT_SESSION_ID is null'
 
+  - # ====== Entry: Change Registration ==========================
+    id: 37247789897919566
+    label: 
+      label: Change Registration
+
+    icon: 
+      image/icon-css-classes: fa-number-1
+
+    layout: 
+      sequence: 12
+      parent-entry: Tournament # 46995215368043514504
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:30:&SESSION.::&DEBUG.::P30_PAGE_ID_PREV:&APP_PAGE_ID.:'
+        page: 30 # Registration
+        values: 
+          p30_page_id_prev: '&APP_PAGE_ID.'
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+
+    server-side-condition: 
+      type: Expression
+      language: PL/SQL
+      pl/sql-expression: |
+        :G_CURRENT_SESSION_ID is not null and (:G_REGISTRATION_ID is not null) and wmg_util.rooms_set(:G_CURRENT_SESSION_ID) = 'N'
+        
+
   - # ====== Entry: Badges =======================================
     id: 40332489833072244
     label: 

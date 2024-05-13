@@ -861,6 +861,10 @@ page-items:
           from (
               select lpad( (n-1)*4,2,0) slot
               from slots_n
+              union all
+              select '02' from dual
+              union all
+              select '18' from dual
           )
       )
       select d, d r

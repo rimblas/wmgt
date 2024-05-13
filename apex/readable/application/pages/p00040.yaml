@@ -35,7 +35,7 @@ javascript:
         // Checking pending Rooms status
         apex.server.process('ROOMS_READY',
         {
-           x01: &G_CURRENT_SESSION_ID.
+           x01: "&G_CURRENT_SESSION_ID."
         }
         , {
           success: function(pData) {
@@ -248,10 +248,8 @@ regions:
           <li>Play the second course</li>
           <li>Take picture</li>
           <li>Submit your scores back here <a href="#0" onclick="$('#ENTER_ROUNDS').click()">3. Enter Scores</a> <i>(Posting of pictures is NOT submission of scores)</i></li>
-          <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/752022800562389015/763534404285890560" target="_blank">#tournament-chat</a> channel</li>
+          <li><b>One</b> person in the room must post pictures in the <a href="https://discord.com/channels/1114077077315006516/1235326643401134122" target="_blank">#weekly-scorecards</a> channel</li>
       </ol>
-      <br>
-      Don't forget to go to <a href="https://discord.com/channels/752022800562389015/763542150877020190" target="_blank">#tournament-info</a> and find the link to submit your scores after you finish your rounds!<br>
       <br>
       <b>Make sure the timestamp is visible in your pictures</b>
       (by clicking the 3 dots in the bottom right hand corner)<br>
@@ -262,7 +260,7 @@ regions:
       
 
   layout: 
-    sequence: 99
+    sequence: 109
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -325,6 +323,10 @@ regions:
           from (
               select lpad( (n-1)*4,2,0) slot
               from slots_n
+              union all
+              select '02' from dual
+              union all
+              select '18' from dual
           )
       )
       , ts as (
@@ -347,7 +349,7 @@ regions:
                else 
                  to_char(local_tz, 'HH24:MI')
                end
-              )
+              order by d)
               , tz
          into t, tz
         from (
@@ -360,12 +362,14 @@ regions:
              , slots
          );
       
-      return '<script>var s = ' || nvl(t, '["","","","","",""]') || ', tz = "' || tz || '";</script>';
+      return '<script>var s = ' || nvl(t, '["","","","","","","",""]') || ', tz = "' || tz || '";</script>';
       exception
       when others then
       return '<script>var s = ["","","","","",""], tz = "UTC";</script>';
       end;
       
+    page-items-to-submit: 
+    - P40_TZ
 
   layout: 
     sequence: 119
@@ -403,6 +407,380 @@ regions:
   attributes: 
     performance: 
       lazy-loading: false
+
+- # ====== Region: 02:00 =======================================
+  id: 36757155006835901
+  identification: 
+    title: '02:00'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+           , case when p.player_id = :G_PLAYER_ID then
+              '<mark class="player">'
+             end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              ' <a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
+              '</mark>'
+             end
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
+      from wmg_tournament_player_v p
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '02:00'
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_id
+      
+    page-items-to-submit: 
+    - P40_TD_FLAG
+    - P40_SHOW_AVATARS_IND
+
+  layout: 
+    sequence: 30
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - room
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-4
+    - col-md-3
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--accent2
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ROOM_NO =====================================
+    id: 36757205837835902
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 36757356856835903
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+- # ====== Region: 18:00 =======================================
+  id: 36757596356835905
+  identification: 
+    title: '18:00'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+           , case when p.player_id = :G_PLAYER_ID then
+              '<mark class="player">'
+             end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              ' <a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
+              '</mark>'
+             end
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
+      from wmg_tournament_player_v p
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '18:00'
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_id
+      
+    page-items-to-submit: 
+    - P40_TD_FLAG
+    - P40_SHOW_AVATARS_IND
+
+  layout: 
+    sequence: 89
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - room
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-4
+    - col-md-3
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--accent7
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ROOM_NO =====================================
+    id: 36757679289835906
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room No
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 36757768313835907
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
 
 - # ====== Region: Randomizing rooms... ========================
   id: 39135046539390001
@@ -516,7 +894,7 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
@@ -702,13 +1080,13 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent2
+    - t-Region--accent3
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -873,7 +1251,7 @@ regions:
       
 
   layout: 
-    sequence: 49
+    sequence: 59
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -886,13 +1264,13 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent3
+    - t-Region--accent4
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1057,11 +1435,11 @@ regions:
       
 
   layout: 
-    sequence: 59
+    sequence: 69
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -1070,13 +1448,13 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent4
+    - t-Region--accent5
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1241,7 +1619,7 @@ regions:
       
 
   layout: 
-    sequence: 69
+    sequence: 79
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1254,13 +1632,13 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent5
+    - t-Region--accent6
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1425,7 +1803,7 @@ regions:
       
 
   layout: 
-    sequence: 79
+    sequence: 99
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1438,13 +1816,13 @@ regions:
     - col-xxs-12
     - col-xs-12
     - col-sm-4
-    - col-md-4
+    - col-md-3
 
   appearance: 
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent6
+    - t-Region--accent8
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1576,7 +1954,7 @@ regions:
   source: 
     location: Local Database
     type: SQL Query
-    sql-query: "select 'The 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 times are in UTC. The times above the time slots are in ' || :P40_TZ legend from dual "
+    sql-query: "select 'The 00:00, 02:00, 04:00, 08:00, 12:00, 16:00, 20:00 times are in UTC. The times above the time slots are in ' || :P40_TZ legend from dual "
 
   layout: 
     sequence: 6
@@ -2241,6 +2619,80 @@ buttons:
   advanced: 
     static-id: ENTER_ROUNDS
 
+- # ====== Button: EDIT_02 =====================================
+  id: 36757461993835904
+  identification: 
+    button-name: EDIT_02
+    label: 'Edit 02:00'
+
+  layout: 
+    sequence: 10
+    region: '02:00' # 36757155006835901
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\02:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '02:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
+- # ====== Button: EDIT_18 =====================================
+  id: 36757847852835908
+  identification: 
+    button-name: EDIT_18
+    label: 'Edit 18:00'
+
+  layout: 
+    sequence: 10
+    region: '18:00' # 36757596356835905
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\18:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '18:00'
+
+    warn-on-unsaved-changes: Do Not Check
+
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
 - # ====== Button: ASSIGN_ROOM =================================
   id: 24450904212536936277
   identification: 
@@ -2505,7 +2957,7 @@ dynamic-actions:
     name: Open New Player Welcome!
 
   execution: 
-    sequence: 110
+    sequence: 130
     event-scope: Static
 
   when: 
@@ -2590,6 +3042,68 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Init Actions # 12528847877550025
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Dialog Close 02 ==========
+  id: 36757992396835909
+  identification: 
+    name: Refresh on Dialog Close 02
+
+  execution: 
+    sequence: 55
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    selection-type: Button
+    button: EDIT_02 # 36757461993835904
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 36758082340835910
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '02:00' # 36757155006835901
+
+    execution: 
+      sequence: 10
+      event: Refresh on Dialog Close 02 # 36757992396835909
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Dialog Close 18 ==========
+  id: 36758116604835911
+  identification: 
+    name: Refresh on Dialog Close 18
+
+  execution: 
+    sequence: 110
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    selection-type: Button
+    button: EDIT_18 # 36757847852835908
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 36758265742835912
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '18:00' # 36757596356835905
+
+    execution: 
+      sequence: 10
+      event: Refresh on Dialog Close 18 # 36758116604835911
       fire-when-event-result-is: True
       fire-on-initialization: false
 
@@ -2733,7 +3247,7 @@ dynamic-actions:
     name: Refresh on Dialog Close 08
 
   execution: 
-    sequence: 70
+    sequence: 80
     event-scope: Static
     type: Immediate
 
@@ -2764,7 +3278,7 @@ dynamic-actions:
     name: Refresh on Dialog Close 12
 
   execution: 
-    sequence: 80
+    sequence: 90
     event-scope: Static
     type: Immediate
 
@@ -2795,7 +3309,7 @@ dynamic-actions:
     name: Refresh on Dialog Close 16
 
   execution: 
-    sequence: 90
+    sequence: 100
     event-scope: Static
     type: Immediate
 
@@ -2826,7 +3340,7 @@ dynamic-actions:
     name: Refresh on Dialog Close 20
 
   execution: 
-    sequence: 100
+    sequence: 120
     event-scope: Static
     type: Immediate
 

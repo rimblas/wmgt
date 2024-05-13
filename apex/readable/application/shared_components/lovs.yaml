@@ -379,6 +379,10 @@
           from (
               select lpad( (n-1)*4,2,0) slot
               from slots_n
+              union all
+              select '02' from dual
+              union all
+              select '18' from dual
           )
       )
       select d, d r
@@ -770,6 +774,13 @@
       sequence: 12
       display: Point Scale
       return: POINTS
+
+  - # ====== Entry: Code of Conduct ==============================
+    id: 37203669000495606
+    entry: 
+      sequence: 10
+      display: Code of Conduct
+      return: CONDUCT
 
   - # ====== Entry: Player Ranks =================================
     id: 38342412041107990
