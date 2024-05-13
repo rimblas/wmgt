@@ -326,9 +326,11 @@ regions:
     - P75_SHOW_NO_SHOWS_FLAG
     - P75_SLOT
     - P75_ROOM
+    - P75_EASY
+    - P75_HARD
 
   layout: 
-    sequence: 159
+    sequence: 179
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -463,7 +465,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Easy
+      heading: '&P75_EASY.'
       alignment: center
 
     layout: 
@@ -498,7 +500,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Hard
+      heading: '&P75_HARD.'
       alignment: center
 
     layout: 
@@ -864,7 +866,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Easy<br>Sum
+      heading: '&P75_EASY.<br>Sum'
       alignment: center
 
     layout: 
@@ -901,7 +903,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: Hard<br>Sum
+      heading: '&P75_HARD.<br>Sum'
       alignment: center
 
     layout: 
@@ -1167,7 +1169,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 169
+    sequence: 189
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1231,7 +1233,7 @@ regions:
     - P75_SLOT
 
   layout: 
-    sequence: 149
+    sequence: 169
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1625,7 +1627,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 79
+    sequence: 99
     region: No Parent
     position: BODY
 
@@ -1635,6 +1637,118 @@ page-items:
   source: 
     type: Null
     used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_TOURNAMENT_SESSION_ID ================
+  id: 32462973937429427
+  identification: 
+    name: P75_TOURNAMENT_SESSION_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 69
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_EASY =================================
+  id: 36031729157523454
+  identification: 
+    name: P75_EASY
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 79
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select c.code
+          from wmg_courses_v c
+             , wmg_tournament_courses tc
+         where c.course_id = tc.course_id
+           and tc.tournament_session_id = :P75_TOURNAMENT_SESSION_ID
+           and course_no = 1
+    used: Always, replacing any existing value in session state
+
+  default: 
+    type: Static
+    static-value: Easy Course
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_HARD =================================
+  id: 36032038509525619
+  identification: 
+    name: P75_HARD
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 89
+    region: No Parent
+    position: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select c.code
+          from wmg_courses_v c
+             , wmg_tournament_courses tc
+         where c.course_id = tc.course_id
+           and tc.tournament_session_id = :P75_TOURNAMENT_SESSION_ID
+           and course_no = 2
+    used: Always, replacing any existing value in session state
+
+  default: 
+    type: Static
+    static-value: Hard Course
 
   session-state: 
     data-type: VARCHAR2
@@ -1660,7 +1774,7 @@ page-items:
     allow-multi-selection: false
 
   layout: 
-    sequence: 109
+    sequence: 129
     region: No Parent
     position: BODY
     alignment: Left
@@ -1723,7 +1837,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 119
+    sequence: 139
     region: No Parent
     position: BODY
     alignment: Left
@@ -1869,7 +1983,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 129
+    sequence: 149
     region: No Parent
     position: BODY
     alignment: Left
@@ -1979,7 +2093,7 @@ page-items:
     value-protected: false
 
   layout: 
-    sequence: 89
+    sequence: 109
     region: No Parent
     position: BODY
 
@@ -2134,7 +2248,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 99
+    sequence: 119
     region: No Parent
     position: BODY
     alignment: Left
@@ -2232,7 +2346,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 139
+    sequence: 159
     region: No Parent
     position: BODY
     start-new-layout: false
@@ -2243,7 +2357,7 @@ buttons:
     column-css-classes: 
     - col-xxs-6
     - col-sm-4
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -3138,6 +3252,22 @@ computations:
   server-side-condition: 
     type: Item is NULL
     item: P75_WEEK
+
+- # ====== Computation: P75_TOURNAMENT_SESSION_ID ==============
+  id: 32463087539429428
+  identification: 
+    item-name: P75_TOURNAMENT_SESSION_ID
+
+  execution: 
+    sequence: 10
+    point: Before Regions
+
+  computation: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select id
+      from wmg_tournament_sessions
+      where week = :P75_WEEK
 
 processes: 
 - # ====== Process: SET_VERIFY_ISSUE ===========================
