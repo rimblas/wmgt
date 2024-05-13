@@ -23,6 +23,11 @@ procedure new_player(
   , p_registration_id in wmg_tournament_players.id%type default null
 );
 
+procedure notify_first_timeslot_finish(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_player_id       in wmg_players.id%type
+);
+
 procedure notify_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );

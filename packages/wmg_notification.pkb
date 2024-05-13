@@ -305,6 +305,120 @@ end new_player;
 
 
 
+
+/**
+ * Send a webhook notification after the first player for any 
+ * timeslot submits their scores
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 12, 2024
+ * @param p_player_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure notify_first_timeslot_finish(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_player_id              in wmg_players.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_first_timeslot_finish';
+
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+  l_time_slot      wmg_tournament_players.time_slot%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  for p in (
+
+    select tp.time_slot, count(*) n
+    from wmg_tournament_players tp
+    where tp.tournament_session_id = p_tournament_session_id
+     and tp.time_slot in (
+        -- find the player's time slot
+        select p.time_slot
+          from wmg_tournament_players p
+         where p.tournament_session_id = p_tournament_session_id
+           and p.player_id = p_player_id
+    )
+    and exists (
+        -- player must have entered rounds
+        select 1
+        from wmg_rounds r
+        where r.tournament_session_id = tp.tournament_session_id
+          and r.players_id = tp.player_id
+    )
+    group by tp.time_slot
+    having count(*) = 1  -- is this the first one for their time slot
+  )
+  loop
+
+/*
+    -- People with a default discord avatar use an internal image lacking the protocol
+    -- if there's not protocol, add it
+    select case 
+            when instr(p.avatar_image, 'http') = 0 then
+               apex_util.host_url('SCRIPT')
+            end || p.avatar_image
+       into l_avatar_image
+       from wmg_players_v p 
+      where id = p_player_id;
+*/
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The first player from __' || l_time_slot || '__ just entered their scores!'
+          || c_crlf || 'time to verify some scorecards.';
+    l_embeds := '{}';
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'STAFFWMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_first_timeslot_finish;
+
+
+
+
+
+
 /**
  * Given a tournament session, send push notifications when the rooms have been assigned
  * to all the players that registered for this session AND opted in for push notifications.
