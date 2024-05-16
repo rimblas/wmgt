@@ -1330,7 +1330,7 @@ begin
      where rn = 1
      group by course_id
     )
-    select listagg(score_type || ' ' || under_par, chr(13)||chr(10) )
+    select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_easy_top_scores
     from (
         select '- Leaderboard: ' score_type, r.scorecard_total under_par
@@ -1339,13 +1339,13 @@ begin
           and r.player_id = 0
           and r.week = 'S00W00' 
         union all
-        select '- Realistic: ' score_type, r.best_strokes - c.course_par under_par
+        select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r
         where r.course_id = c.course_id
           and c.course_id = new_session.easy_course_id
         union all
-        select '- Utopian: ' score_type, best_under under_par
+        select '- Utopian:     ' score_type, best_under under_par
         from wmg_courses_v
         where course_id = new_session.easy_course_id
           and best_under is not null
@@ -1369,7 +1369,7 @@ begin
      where rn = 1
      group by course_id
     )
-    select listagg(score_type || ' ' || under_par, chr(13)||chr(10))
+    select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_hard_top_scores
     from (
         select '- Leaderboard: ' score_type, r.scorecard_total under_par
@@ -1378,13 +1378,13 @@ begin
           and r.player_id = 0
           and r.week = 'S00W00' 
         union all
-        select '- Realistic: ' score_type, r.best_strokes - c.course_par under_par
+        select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r
         where r.course_id = c.course_id
           and c.course_id = new_session.hard_course_id
         union all
-        select '- Utopian: ' score_type, best_under under_par
+        select '- Utopian:     ' score_type, best_under under_par
         from wmg_courses_v
         where course_id = new_session.hard_course_id
           and best_under is not null
@@ -1407,7 +1407,7 @@ begin
     l_placeholders := '{' ||
       '    "SEASON":'         || apex_json.stringify( new_session.prefix_tournament ) ||
       '   ,"WEEK_NUM":'       || apex_json.stringify( new_session.round_num ) ||
-      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.easy_course_emoji || new_session.easy_course_name ) ||
+      '   ,"EASY_COURSE":'           || apex_json.stringify( ':' || new_session.easy_course_emoji || ': ' || new_session.easy_course_name ) ||
       '   ,"EASY_CODE":'             || apex_json.stringify( new_session.easy_course_code ) ||
       '   ,"EASY_RECORD":'           || apex_json.stringify( l_easy_record ) ||
       '   ,"EASY_TOP_SCORES":'       || apex_json.stringify( l_easy_top_scores ) ||
@@ -1416,7 +1416,7 @@ begin
       '   ,"EASY_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'E' ) ) ||
       '   ,"UNICORNS_EASY_OK":'      || apex_json.stringify( l_unicorns_easy_ok ) || 
       '   ,"EASY_UNICORNS":'         || apex_json.stringify( l_unicorns_easy ) || 
-      '   ,"HARD_COURSE":'           || apex_json.stringify( new_session.hard_course_emoji || new_session.hard_course_name ) ||
+      '   ,"HARD_COURSE":'           || apex_json.stringify( ':' || new_session.hard_course_emoji || ': ' || new_session.hard_course_name ) ||
       '   ,"HARD_CODE":'             || apex_json.stringify( new_session.hard_course_code ) ||
       '   ,"HARD_RECORD":'           || apex_json.stringify( l_hard_record ) ||
       '   ,"HARD_TOP_SCORES":'       || apex_json.stringify( l_hard_top_scores ) ||
