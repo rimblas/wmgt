@@ -4,6 +4,18 @@ function adjustedScore(pStrokes, holePar) {
     return strokes ? strokes - par : 0;
 }
 
+function adjustedScoreMatchPlay(p1Strokes, p2Strokes) {
+    let p1strokes = wmgt.convert.to_number(p1Strokes());
+    let p2strokes = wmgt.convert.to_number(p2Strokes());
+
+    if (p1strokes === undefined || p2strokes === undefined || p1strokes === p2strokes || p2strokes < p1strokes) {
+        return 0;
+    } else if (p1strokes < p2strokes) {
+        // smaller values are less strokes and that wins the hole in match play
+        return 1;
+    }
+}
+
 function findCurrentHoleForTwoPlayers(playerE, playerH) {
     let currentHole = 1; // Default to the first hole if no scores are found
 
@@ -36,12 +48,17 @@ function generateScoresJson(viewModel) {
         scores['es' + i] = viewModel['es' + i]();
         scores['hs' + i] = viewModel['hs' + i]();
     }
+    scores['total_easy'] = viewModel['total_easy']();
+    scores['total_hard'] = viewModel['total_hard']();
     return JSON.stringify(scores);
 }
 
 
 function roundTotal() {
   var self = this;
+  const cStrokePlay = 'S';
+  const cMatchPlay = 'M';
+  let playMode = cStrokePlay;
 
   self.escore = ko.observable(0);
   self.hscore = ko.observable(0);
@@ -112,6 +129,10 @@ function roundTotal() {
   self.hs18 = ko.observable(0);
   self.hardpar = ko.observable(0);
 
+  self.setPlayMode = function (mode) {
+     self.playMode = mode;
+  }
+  
   self.overrideOnEasy = ko.computed(function() {
     if (!!self.scoreOverrideEasy() ) {
         return true;
@@ -133,6 +154,28 @@ function roundTotal() {
   self.total_easy = ko.computed(function() {
     if (!!self.scoreOverrideEasy()) {
         return wmgt.convert.to_number(self.scoreOverrideEasy());
+    }
+    else if (playMode === cMatchPlay) {
+      return (
+        adjustedScoreMatchPlay(self.es1, self.hs1) +
+        adjustedScoreMatchPlay(self.es2, self.hs2) +
+        adjustedScoreMatchPlay(self.es3, self.hs3) +
+        adjustedScoreMatchPlay(self.es4, self.hs4) +
+        adjustedScoreMatchPlay(self.es5, self.hs5) +
+        adjustedScoreMatchPlay(self.es6, self.hs6) +
+        adjustedScoreMatchPlay(self.es7, self.hs7) +
+        adjustedScoreMatchPlay(self.es8, self.hs8) +
+        adjustedScoreMatchPlay(self.es9, self.hs9) +
+        adjustedScoreMatchPlay(self.es10, self.hs10) +
+        adjustedScoreMatchPlay(self.es11, self.hs11) +
+        adjustedScoreMatchPlay(self.es12, self.hs12) +
+        adjustedScoreMatchPlay(self.es13, self.hs13) +
+        adjustedScoreMatchPlay(self.es14, self.hs14) +
+        adjustedScoreMatchPlay(self.es15, self.hs15) +
+        adjustedScoreMatchPlay(self.es16, self.hs16) +
+        adjustedScoreMatchPlay(self.es17, self.hs17) +
+        adjustedScoreMatchPlay(self.es18, self.hs18)
+      );
     }
     else
     return ( 
@@ -160,6 +203,28 @@ function roundTotal() {
   self.total_hard = ko.computed(function() {
     if (!!self.scoreOverrideHard()) {
         return wmgt.convert.to_number(self.scoreOverrideHard());
+    }
+    else if (playMode === cMatchPlay) {
+      return (
+        adjustedScoreMatchPlay(self.hs1, self.es1) +
+        adjustedScoreMatchPlay(self.hs2, self.es2) +
+        adjustedScoreMatchPlay(self.hs3, self.es3) +
+        adjustedScoreMatchPlay(self.hs4, self.es4) +
+        adjustedScoreMatchPlay(self.hs5, self.es5) +
+        adjustedScoreMatchPlay(self.hs6, self.es6) +
+        adjustedScoreMatchPlay(self.hs7, self.es7) +
+        adjustedScoreMatchPlay(self.hs8, self.es8) +
+        adjustedScoreMatchPlay(self.hs9, self.es9) +
+        adjustedScoreMatchPlay(self.hs10, self.es10) +
+        adjustedScoreMatchPlay(self.hs11, self.es11) +
+        adjustedScoreMatchPlay(self.hs12, self.es12) +
+        adjustedScoreMatchPlay(self.hs13, self.es13) +
+        adjustedScoreMatchPlay(self.hs14, self.es14) +
+        adjustedScoreMatchPlay(self.hs15, self.es15) +
+        adjustedScoreMatchPlay(self.hs16, self.es16) +
+        adjustedScoreMatchPlay(self.hs17, self.es17) +
+        adjustedScoreMatchPlay(self.hs18, self.es18)
+      );
     }
     else
         return ( 
@@ -287,6 +352,19 @@ function roundTotal() {
        console.log("subscription on currentHole", newVal);
        self.saveScore(self, 0);
    }.bind(self));
+
+  self.es18.subscribe(
+   function(newVal) {
+       console.log("subscription on es18", newVal);
+       self.saveScore(self, 1);
+   }.bind(self));
+
+  self.hs18.subscribe(
+   function(newVal) {
+       console.log("subscription on hs18", newVal);
+       self.saveScore(self, 2);
+   }.bind(self));
+
 
   self.total_easy.subscribe(
    function(newVal) {
