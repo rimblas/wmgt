@@ -1,7 +1,8 @@
 function adjustedScore(pStrokes, holePar) {
     let strokes = wmgt.convert.to_number(pStrokes());
     let par = wmgt.convert.to_number(holePar());
-    return strokes ? strokes - par : 0;
+    return strokes ? strokes - par : 0; // if there are no strokes count as a zero
+                                        // for a better running total calculation
 }
 
 function roundTotal() {
