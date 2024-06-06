@@ -493,7 +493,7 @@ begin
   update wmg_tournament_sessions
      set rooms_open_flag = decode(rooms_open_flag, 'Y', null, 'Y')
        , registration_closed_flag = decode(registration_closed_flag, 'Y', null, 'Y')
-    where id = p_tournament_session_id;
+  where id = p_tournament_session_id;
 
   commit;  -- Make sure the room open up regardless or other errors
 
@@ -532,7 +532,7 @@ procedure reset_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 )
 is
-  l_scope  scope_t := gc_scope_prefix || 'assign_rooms';
+  l_scope  scope_t := gc_scope_prefix || 'reset_room_assignments';
   -- l_params logger.tab_param;
 
 begin
@@ -754,6 +754,7 @@ begin
     select p.tournament_session_id
          , p.player_id
          , p.points
+         , p.total_score
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
   ) p
@@ -763,7 +764,8 @@ begin
   )
   when matched then
     update
-       set tp.points = nvl(tp.points_override, p.points);  -- if there's a points override, keep it.
+       set tp.points = nvl(tp.points_override, p.points)  -- if there's a points override, keep it.
+         , tp.total_score = p.total_score;
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
 
@@ -1062,13 +1064,25 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+               $IF env.wmgt $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
+               $END
+               $IF env.kwt $THEN
+               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
+               $END  
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
+               $IF env.kwt $THEN
+             , wmg_tournament_session_points_v sp
+               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
+            $IF env.kwt $THEN
+            and sp.week = ts.week
+            and sp.player_id = p.player_id
+            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
@@ -1108,13 +1122,25 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+               $IF env.wmgt $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
+               $END  
+               $IF env.kwt $THEN
+               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
+               $END
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
+               $IF env.kwt $THEN
+             , wmg_tournament_session_points_v sp
+               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
+            $IF env.kwt $THEN
+            and sp.week = ts.week
+            and sp.player_id = p.player_id
+            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
@@ -1328,14 +1354,15 @@ begin
     , p_tournament_session_id => p_tournament_session_id
   );
 
-  if g_must_be_current then -- make sure it's the current tournament. Only false for historical loads
-    log('.. promote players', l_scope);
-    promote_players(
-        p_tournament_id         => p_tournament_id
-      , p_tournament_session_id => p_tournament_session_id
-    );
+  if env.wmgt then
+    if g_must_be_current then -- make sure it's the current tournament. Only false for historical loads
+      log('.. promote players', l_scope);
+      promote_players(
+          p_tournament_id         => p_tournament_id
+        , p_tournament_session_id => p_tournament_session_id
+      );
+    end if;
   end if;
-
 
   log('.. close tournament session', l_scope);
   update wmg_tournament_sessions ts
@@ -1343,6 +1370,12 @@ begin
        , ts.completed_on = current_timestamp
    where ts.id = p_tournament_session_id
      and ts.tournament_id = p_tournament_id;
+
+  commit;
+
+  wmg_notification.notify_channel_tournament_close(
+     p_tournament_session_id => p_tournament_session_id
+  );
 
   log('END', l_scope);
 
@@ -1807,6 +1840,14 @@ begin
   -- logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   log('BEGIN', l_scope);
 
+
+  -- Send channel notifications of the people thay did not send a notification
+  wmg_notification.notify_channel_about_players(
+      p_tournament_session_id => p_tournament_session_id
+    , p_time_slot => p_time_slot
+  );
+
+
   begin
       select *
         into l_issue_rec
@@ -1819,7 +1860,6 @@ begin
       l_issue_rec.description := 'No show or No Score';
   end;
 
-      
   log('.. loop throough pending time entries', l_scope);
   for p in (
     select p.week
@@ -1892,6 +1932,8 @@ begin
      where id = p.tournament_player_id;
 
     verify_players_room(p_tournament_player_id => p.tournament_player_id );
+
+    commit;  -- just in case something fails
 
   end loop;
 
