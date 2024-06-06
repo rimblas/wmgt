@@ -42,6 +42,105 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Rooms =======================================
+  id: 36760420013835934
+  identification: 
+    title: Rooms
+    type: Cards
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with room as (
+      select nvl2(p.room_no, 'WMGT', '') || p.room_no room_no
+           , '<div class="p" data-id=' || p.tournament_player_id || '>' 
+          -- || row_number() over (partition by p.room_no order by p.tournament_player_id) || ': '
+          || apex_escape.html(p.player_name) 
+          || '</div>' players
+      --    || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
+      from wmg_tournament_player_v p
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = :P42_SLOT
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      )
+      select room_no, listagg(players, chr(13)||chr(10)) players
+      from room
+      group by room_no
+      order by room_no
+      
+    page-items-to-submit: 
+    - P42_SLOT
+
+  layout: 
+    sequence: 5
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Cards Container # 46995047792009514345
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 36760503979835935
+    appearance: 
+      layout: Grid
+      grid-columns: 2 Columns
+
+    card: 
+      primary-key-column-1: ROOM_NO
+
+    title: 
+      advanced-formatting: false
+      column: ROOM_NO
+
+    subtitle: 
+      advanced-formatting: false
+
+    body: 
+      advanced-formatting: true
+      html-expression: '&PLAYERS!RAW.'
+
+    secondary-body: 
+      advanced-formatting: false
+
+    icon-and-badge: 
+      icon-source: No Icon
+
+    media: 
+      advanced-formatting: false
+      source: No Media
+
+    performance: 
+      lazy-loading: false
+
+    pagination: 
+      type: Scroll
+      show-total-count: false
+
 - # ====== Region: Change Rooms ================================
   id: 40411287845322970261
   identification: 
@@ -934,7 +1033,140 @@ buttons:
   comments: 
     comments: Visually Hidden and called by IG Create button
 
+- # ====== Button: REFRESH_ROOMS ===============================
+  id: 36760887726835938
+  identification: 
+    button-name: REFRESH_ROOMS
+    label: Refresh Rooms
+
+  layout: 
+    sequence: 10
+    region: Rooms # 36760420013835934
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Right
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-refresh
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: true
+
 dynamic-actions: 
+- # ====== Dynamic Action: Enable Drag & Drop ==================
+  id: 36760609287835936
+  identification: 
+    name: Enable Drag & Drop
+
+  execution: 
+    sequence: 20
+    event-scope: Static
+
+  when: 
+    event: EVENT.EVENT.BROWSER.READY
+
+  actions: 
+  - # ====== Action: UC - Drag and Drop ==========================
+    id: 36760793767835937
+    identification: 
+      action: UC - Drag and Drop
+
+    settings: 
+      mode: Swap
+      drop-action: Execute PL/SQL Code
+      execute-pl/sql-code: |
+        declare
+          l_drag_room wmg_tournament_players.room_no%type;
+          l_drop_room wmg_tournament_players.room_no%type;
+        begin
+        
+        logger.log(':DRAG_ID:' || :DRAG_ID);
+        logger.log(':DROP_ID:' || :DROP_ID);
+        
+        select room_no 
+          into l_drag_room
+          from wmg_tournament_players
+         where id = :DRAG_ID;
+        
+        select room_no 
+          into l_drop_room
+          from wmg_tournament_players
+         where id = :DROP_ID;
+        
+        -- Swap Players Around
+        update wmg_tournament_players
+        set room_no = l_drag_room
+        where id = :DROP_ID;
+        
+        update wmg_tournament_players
+        set room_no = l_drop_room
+        where id = :DRAG_ID;
+        
+        end;
+        
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 36760420013835934
+
+    execution: 
+      sequence: 10
+      event: Enable Drag & Drop # 36760609287835936
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    advanced: 
+      initialization-javascript-function: |
+        function(config){
+        //    config.groupSelector = '.a-CardView-mainContent';
+            config.itemSelector  = 'div.p';
+            config.collidables = '.a-CardView-mainContent';
+        //    config.handle = '.fa-exchange';
+        //    config.dataIdFn      = function (item) {
+        //       return item.querySelector('td[headers="EMPNO"]').textContent;
+        //    }
+        }
+
+- # ====== Dynamic Action: Refresh Rooms =======================
+  id: 36760914469835939
+  identification: 
+    name: Refresh Rooms
+
+  execution: 
+    sequence: 30
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.BROWSER.CLICK
+    selection-type: Button
+    button: REFRESH_ROOMS # 36760887726835938
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 36761034398835940
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Rooms # 36760420013835934
+
+    execution: 
+      sequence: 10
+      event: Refresh Rooms # 36760914469835939
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh Report ======================
   id: 40389411323060769150
   identification: 

@@ -44,7 +44,7 @@ javascript:
             }
             else {
               // check all over again
-              setTimeout(roomsReady, 5500);
+              setTimeout(roomsReady, 6500);
             }
           }
     
@@ -3582,16 +3582,9 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
-      update wmg_tournament_sessions
-         set rooms_open_flag = decode(rooms_open_flag, 'Y', null, 'Y')
-           , registration_closed_flag = decode(registration_closed_flag, 'Y', null, 'Y')
-      where id = :G_CURRENT_SESSION_ID;
+      wmg_util.open_rooms(p_tournament_session_id => :G_CURRENT_SESSION_ID);
       
-      commit;  -- Make sure the room open up regardless or other errors
       
-      wmg_util.submit_close_scoring_jobs(p_tournament_session_id => :G_CURRENT_SESSION_ID);
-      
-      wmg_notification.notify_room_assignments(p_tournament_session_id => :G_CURRENT_SESSION_ID);
 
   execution: 
     sequence: 20
