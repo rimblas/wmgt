@@ -327,6 +327,137 @@ help:
     
 
 regions: 
+- # ====== Region: Promo =======================================
+  id: 480769978587238
+  identification: 
+    title: Promo
+    type: Cards
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_PROMOS
+    include-rowid-column: false
+    where-clause: code = 'CURRENT_WEEK'
+
+  order-by: 
+    type: None
+
+  layout: 
+    sequence: 15
+    parent-region: '{Next Tournament Info}' # 9186482410315410
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Cards Container # 46995047792009514345
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: weekPromoRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions s
+      where s.tournament_id in (
+          select id
+            from wmg_tournaments
+           where current_flag = 'Y'
+      )
+      and exists (
+      select 1 from wmg_promos where code = 'CURRENT_WEEK' and active_ind = 'Y'
+      )
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 480831335587239
+    appearance: 
+      layout: Float
+      css-classes: 
+      - u-tC
+
+    card: 
+      css-classes: 
+      - u-tC
+      primary-key-column-1: ID
+
+    title: 
+      advanced-formatting: true
+      html-expression: <b>The Next Courses have been selected!</b>
+
+    subtitle: 
+      advanced-formatting: false
+
+    body: 
+      advanced-formatting: false
+
+    secondary-body: 
+      advanced-formatting: false
+
+    icon-and-badge: 
+      icon-source: No Icon
+
+    media: 
+      advanced-formatting: false
+      source: BLOB Column
+      blob-column: IMAGE_PREVIEW
+      position: Body
+      appearance: Auto
+      sizing: Fit
+      image-description: Next courses!
+
+    blob-attributes: 
+      mime-type-column: MIMETYPE
+      last-updated-column: IMAGE_LAST_UPDATE
+
+    performance: 
+      lazy-loading: true
+
+    pagination: 
+      type: Scroll
+      show-total-count: false
+
+    actions: 
+    - # ====== Action: Full Card ===================================
+      id: 481252193587243
+      identification: 
+        type: Full Card
+
+      layout: 
+        sequence: 10
+
+      link: 
+        type: Redirect to Page in this Application
+        target: 
+          url: 'f?p=&APP_ID.:526:&SESSION.::&DEBUG.:526:P526_ID:&ID.'
+          page: 526 # Maintain Promos
+          clear-cache: 526
+          values: 
+            p526_id: '&ID.'
+
+      security: 
+        authorization-scheme: Contribution Rights # 46995203801871514425
+
 - # ====== Region: You're Registered! ==========================
   id: 8055004655938714
   identification: 

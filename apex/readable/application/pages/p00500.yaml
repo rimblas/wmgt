@@ -42,6 +42,117 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Week Promo ==================================
+  id: 478866952587219
+  identification: 
+    title: Week Promo
+    type: Cards
+
+  source: 
+    location: Local Database
+    type: Table / View
+    table-owner: Parsing Schema
+    table-name: WMG_PROMOS
+    include-rowid-column: false
+    where-clause: code = 'CURRENT_WEEK'
+
+  order-by: 
+    type: None
+
+  layout: 
+    sequence: 40
+    parent-region: Current  Session # 56178155412404412208
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Cards Container # 46995047792009514345
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: weekPromoRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 480560461587236
+    appearance: 
+      layout: Grid
+      grid-columns: Auto
+
+    card: 
+      primary-key-column-1: ID
+
+    title: 
+      advanced-formatting: false
+
+    subtitle: 
+      advanced-formatting: false
+
+    body: 
+      advanced-formatting: false
+
+    secondary-body: 
+      advanced-formatting: false
+
+    icon-and-badge: 
+      icon-source: No Icon
+
+    media: 
+      advanced-formatting: false
+      source: BLOB Column
+      blob-column: IMAGE_PREVIEW
+      position: Body
+      appearance: Auto
+      sizing: Fit
+
+    blob-attributes: 
+      mime-type-column: MIMETYPE
+      last-updated-column: IMAGE_LAST_UPDATE
+
+    performance: 
+      lazy-loading: false
+
+    pagination: 
+      type: Scroll
+      show-total-count: false
+
+    messages: 
+      when-no-data-found: No Promo for the Current Week
+
+    actions: 
+    - # ====== Action: Full Card ===================================
+      id: 480649464587237
+      identification: 
+        type: Full Card
+
+      layout: 
+        sequence: 10
+
+      link: 
+        type: Redirect to Page in this Application
+        target: 
+          url: 'f?p=&APP_ID.:526:&SESSION.::&DEBUG.::P526_ID:&ID.'
+          page: 526 # Maintain Promos
+          values: 
+            p526_id: '&ID.'
+
 - # ====== Region: {Issues Report} =============================
   id: 22411515589828432
   identification: 
@@ -305,7 +416,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 65
+    sequence: 80
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -691,7 +802,7 @@ regions:
       
 
   layout: 
-    sequence: 60
+    sequence: 70
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -1175,7 +1286,7 @@ regions:
       
 
   layout: 
-    sequence: 40
+    sequence: 50
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -1659,7 +1770,7 @@ regions:
       
 
   layout: 
-    sequence: 50
+    sequence: 60
     parent-region: Current  Session # 56178155412404412208
     position: SUB_REGIONS
     start-new-layout: false
@@ -3342,6 +3453,45 @@ page-items:
     restricted-characters: All characters can be saved.
 
 buttons: 
+- # ====== Button: UPLOAD ======================================
+  id: 480490081587235
+  identification: 
+    button-name: UPLOAD
+    label: Upload New
+
+  layout: 
+    sequence: 10
+    region: Week Promo # 478866952587219
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    alignment: Left center
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:526:&SESSION.::&DEBUG.:526:P526_CODE:CURRENT_WEEK'
+      page: 526 # Maintain Promos
+      clear-cache: 526
+      values: 
+        p526_code: CURRENT_WEEK
+
+    warn-on-unsaved-changes: Do Not Check
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: select 1 from wmg_promos where code = 'CURRENT_WEEK'
+
 - # ====== Button: POP_WMG_TOURNAMENT_SESSIONS =================
   id: 20127465655175550
   identification: 
