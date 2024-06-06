@@ -12,6 +12,7 @@ is
 -- CONSTANTS
  c_embed_color_green     number := 5832556;
  c_embed_color_lightblue number := 5814783;
+ c_embed_color_brightred number := 15605278;
  c_crlf varchar2(2) := chr(13)||chr(10);
  c_amp varchar2(2) := chr(38);
 
@@ -363,28 +364,22 @@ begin
   )
   loop
 
-/*
-    -- People with a default discord avatar use an internal image lacking the protocol
-    -- if there's not protocol, add it
-    select case 
-            when instr(p.avatar_image, 'http') = 0 then
-               apex_util.host_url('SCRIPT')
-            end || p.avatar_image
-       into l_avatar_image
-       from wmg_players_v p 
-      where id = p_player_id;
-*/
-
     -- Construct the embeds JSON for the webhook
-    l_content := '## The first player from __' || l_time_slot || '__ just entered their scores!'
-          || c_crlf || 'time to verify some scorecards.';
+    l_content := '## The first player from __' || p.time_slot || '__ just entered their scores!';
     l_embeds := '{}';
 
+    $IF env.wmgt $THEN
     wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'EL_JORGE'
+         p_webhook_code => 'WMGT'
        , p_content      => l_content
        , p_embeds       => l_embeds
     );
+    $END
+
+
+    -- Add to the webhook for the staff channels
+    l_content := l_content
+          || c_crlf || 'time to verify some scorecards.';
 
     $IF env.fhit $THEN
     wmg_notification.send_to_discord_webhook(
@@ -413,6 +408,229 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end notify_first_timeslot_finish;
+
+
+
+
+
+/**
+ * Send a webhook notification after the first time slot closes
+ * with all the players that did not show up
+
+   The way to prevent being on the list is:
+     * scores need to be present (they don't need to be validated)
+     * an INFRACTION issue is specified
+        For example, they couldn't finish, and we specify an INFRACTION (rule violation) issue 
+     * They are unregistered by an Admin
+
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 17, 2024
+ * @param p_tournament_session_id
+ * @param p_time_slot
+ * @return
+ */
+procedure notify_channel_about_players(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_time_slot              in wmg_tournament_players.time_slot%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_channel_about_players';
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+
+  l_env     wmg_parameters.value%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  l_env := wmg_util.get_param('ENV');
+
+  for p in (
+    select tp.time_slot, listagg('<@' || tp.discord_id || '> (' || tp.player_name || ')', c_crlf) players
+      from wmg_tournament_results_v r
+         , wmg_tournament_player_v tp
+     where tp.week = r.week (+)
+       and tp.player_id = r.player_id (+)
+       and tp.tournament_session_id = p_tournament_session_id
+       and tp.time_slot = p_time_slot
+       and tp.active_ind = 'Y'
+       and r.total_scorecard is null      -- Anyone with no scores entered will be included.
+     group by tp.time_slot
+  )
+  loop
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The __' || p.time_slot || ' UTC __ time-slot is now closed!';
+    
+    l_embeds := json_array (
+              json_object(
+                'title' value 'The following players either did' || c_crlf 
+                || 'not show up :ghost:' 
+                || c_crlf || ' or ' || c_crlf 
+                || 'did not enter their scores :red_square::' || c_crlf,
+                'description' value p.players,
+                'color' value c_embed_color_brightred,
+                'fields' value json_array(
+                    json_object(
+                        'name' value 'ENV', 'value' value l_env
+                    )
+                )
+            )
+          );
+
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'WMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_channel_about_players;
+
+
+
+
+
+
+/**
+ * Send a webhook notification after the weekend tournament closes
+ * Include a brief recap of winners.
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 19, 2024
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure notify_channel_tournament_close(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_channel_tournament_close';
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+
+  l_env     wmg_parameters.value%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  l_env := wmg_util.get_param('ENV');
+
+  for p in (
+    select s.prefix_tournament, s.round_num, s.week, to_char(s.session_date, 'YYYY-MM-DD') session_date_prepared
+         , (
+        select listagg(p.pos || ': ' || '<@' || p.discord_id || '> (' || p.player_name || ')' || '     **' || p.total_score || '**', chr(13)||chr(10))
+               within group (order by p.pos, decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4)) players
+          from wmg_tournament_session_points_v p
+         where p.tournament_session_id = s.tournament_session_id
+           and p.pos <= 3
+          ) podium_players
+      from wmg_tournament_sessions_v s
+     where s.tournament_session_id = p_tournament_session_id
+  )
+  loop
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The Weekly Tournament is now closed!';
+
+    l_embeds := json_array (
+              json_object(
+                'title' value 'Congratulations!',
+                'description' value p.podium_players || c_crlf|| c_crlf || '__final recap coming later__' ,
+                'color' value c_embed_color_green,
+                -- 'image' value json_object('url' value l_avatar_image),
+                'fields' value json_array(
+                    json_object(
+                        'name' value 'Season', 'value' value p.prefix_tournament, 'inline' value true
+                    ),
+                    json_object(
+                        'name' value 'Week', 'value' value p.round_num, 'inline' value true
+                    ),
+                    json_object(
+                        'name' value 'Date', 'value' value p.session_date_prepared
+                    )
+                )
+            )
+          );
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'WMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_channel_tournament_close;
 
 
 

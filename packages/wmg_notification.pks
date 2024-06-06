@@ -27,6 +27,13 @@ procedure notify_first_timeslot_finish(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
   , p_player_id       in wmg_players.id%type
 );
+procedure notify_channel_about_players(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_time_slot              in wmg_tournament_players.time_slot%type
+);
+procedure notify_channel_tournament_close(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+);
 
 procedure notify_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
