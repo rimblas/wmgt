@@ -14,8 +14,10 @@ create or replace type t_discord_user as object (
   -- , clan                   varchar2(64)
   , locale                 varchar2(10)
   , premium_type           number
+  , player_in_sync_flag    varchar2(1)
   , constructor function t_discord_user return self as result
   , member procedure init_from_json(p_json in clob)
+  , member procedure init_from_player(p_player_id in number)
   , member procedure insert_player
   , member procedure sync_player
 )

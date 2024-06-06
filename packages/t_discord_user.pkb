@@ -28,7 +28,35 @@ begin
     -- self.mfa_enabled            := l_json_obj.get_boolean('mfa_enabled');
     self.locale                 := l_json_obj.get_string('locale');
     self.premium_type           := l_json_obj.get_number('premium_type');
+    self.player_in_sync_flag    := null;
 end init_from_json;
+
+
+member procedure init_from_player(p_player_id number)
+is
+begin
+    select p.id player_id
+         , p.discord_id
+         , p.account username
+         , p.player_name
+         , p.discord_avatar
+         , p.accent_color
+         , p.discord_discriminator
+      into self.player_id
+         , self.discord_id
+         , self.username
+         , self.global_name
+         , self.avatar
+         , self.accent_color
+         , self.discriminator
+     from wmg_players_v p
+    where p.id = p_player_id;
+
+  self.player_in_sync_flag := 'Y'; -- avoid syncing since we just fetched this player
+
+end init_from_player;
+
+
 
 
 member procedure insert_player
@@ -64,14 +92,20 @@ is
   l_player_id number;
 begin
 
+  if self.player_in_sync_flag = 'Y' then
+    logger.log(p_text => '.. player previously synced. skipping', p_scope => 't_discord_user');
+    goto done_with_sync;
+  end if;
+
+
   -- sync username if it changed
-  update wmg_players
-     set account        = self.username
-       , account_login  = self.username || '  (discord)'
-       , discord_avatar = self.avatar
-       , accent_color   = self.accent_color
-       , name           = nvl(self.global_name, name)
-       , discord_discriminator = self.discriminator
+  update wmg_players p
+     set p.account        = nvl(self.username, p.account)
+       , p.account_login  = nvl(self.username, p.account) || '  (discord)'
+       , p.discord_avatar = nvl(self.avatar, p.discord_avatar)
+       , p.accent_color   = self.accent_color
+       , p.name           = nvl(self.global_name, name)
+       , p.discord_discriminator = nvl(self.discriminator, p.discord_discriminator)
     where discord_id = self.discord_id
       and (nvl(account, '~NA~') != nvl(self.username, '~NA~')
         or nvl(name, '~NA~') != nvl(self.global_name, '~NA~')
@@ -129,6 +163,9 @@ begin
 
   logger.log('.. player_id:' || l_player_id, p_scope => 't_discord_user.sync_player');
   self.player_id := l_player_id;
+
+  <<done_with_sync>>
+  null;
 
 end sync_player;
 
