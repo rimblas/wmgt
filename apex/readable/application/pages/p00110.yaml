@@ -1646,7 +1646,7 @@ regions:
     type: SQL Query
     sql-query: |
       select player_name
-           , course_id
+           , r.course_id
            , course_mode
            , course_code
            , course_name
@@ -1688,10 +1688,13 @@ regions:
            , case when s18 = 1 then 'HIO' when s18>h18 then 'OVER' end s18_status
            , round_strokes
            , under_par
-        from wmg_rounds_v
-        where week = :P110_WEEK
-          and player_id = :P110_PLAYER_ID
-      order by course_mode, course_code
+        from wmg_rounds_v r
+           , wmg_tournament_courses tc
+        where r.tournament_session_id = tc.tournament_session_id
+          and r.course_id = tc.course_id
+          and r.week = :P110_WEEK
+          and r.player_id = :P110_PLAYER_ID
+      order by tc.course_no
     page-items-to-submit: 
     - P110_WEEK
     - P110_PLAYER_ID
@@ -2178,7 +2181,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S1
+      heading: H1
       alignment: center
 
     layout: 
@@ -2213,7 +2216,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S2
+      heading: H2
       alignment: center
 
     layout: 
@@ -2249,7 +2252,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S3
+      heading: H3
       alignment: center
 
     layout: 
@@ -2284,7 +2287,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S4
+      heading: H4
       alignment: center
 
     layout: 
@@ -2320,7 +2323,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S5
+      heading: H5
       alignment: center
 
     layout: 
@@ -2332,6 +2335,7 @@ regions:
 
     column-formatting: 
       html-expression: <span class="#S5_STATUS#">#S5#</span>
+      highlight-words: 1
 
     sorting: 
       sortable: false
@@ -2355,7 +2359,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S6
+      heading: H6
       alignment: center
 
     layout: 
@@ -2391,7 +2395,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S7
+      heading: H7
       alignment: center
 
     layout: 
@@ -2427,7 +2431,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S8
+      heading: H8
       alignment: center
 
     layout: 
@@ -2463,7 +2467,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S9
+      heading: H9
       alignment: center
 
     layout: 
@@ -2535,7 +2539,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S11
+      heading: H11
       alignment: center
 
     layout: 
@@ -2571,7 +2575,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S12
+      heading: H12
       alignment: center
 
     layout: 
@@ -2607,7 +2611,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S13
+      heading: H13
       alignment: center
 
     layout: 
@@ -2643,7 +2647,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S14
+      heading: H14
       alignment: center
 
     layout: 
@@ -2679,7 +2683,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S15
+      heading: H15
       alignment: center
 
     layout: 
@@ -2715,7 +2719,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S16
+      heading: H16
       alignment: center
 
     layout: 
@@ -2751,7 +2755,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S17
+      heading: H17
       alignment: center
 
     layout: 
@@ -2786,7 +2790,7 @@ regions:
       type: Plain Text
 
     heading: 
-      heading: S18
+      heading: H18
       alignment: center
 
     layout: 

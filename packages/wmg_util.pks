@@ -45,6 +45,10 @@ procedure assign_rooms(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );
 
+procedure open_rooms(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+);
+
 procedure reset_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );
@@ -116,6 +120,14 @@ procedure add_unicorns(
 
 
 procedure unavailable_application (p_message in varchar2 default null);
+
+
+----------------------------------------
+procedure save_stream_scores(
+    p_stream_id wmg_streams.id%type
+  , p_scores_json in out nocopy varchar2
+);
+
 
 end wmg_util;
 /

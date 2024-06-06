@@ -6,6 +6,6 @@ select 'England' d, 'england' r from dual union all
 select 'Scotland' d, 'scotland' r from dual union all
 select 'Wales' d, 'wales' r from dual union all
 select formatted_name d, lower(iso) r
-from country
+from fhit.country
 )
 /

@@ -492,14 +492,8 @@ page-items:
   list-of-values: 
     type: SQL Query
     sql-query: |
-      select d, r
-      from (
-      select 'England' d, 'england' r from dual union all
-      select 'Scotland' d, 'scotland' r from dual union all
-      select 'Wales' d, 'wales' r from dual union all
-      select formatted_name d, lower(iso) r
-      from country
-      )
+      select name d, iso_code r
+      from wmg_country_iso_v
       order by 1
     display-extra-values: true
     display-null-value: true

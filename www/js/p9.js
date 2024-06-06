@@ -1,8 +1,16 @@
+function adjustedScore(pStrokes, holePar) {
+    let strokes = wmgt.convert.to_number(pStrokes());
+    let par = wmgt.convert.to_number(holePar());
+    return strokes ? strokes - par : 0; // if there are no strokes count as a zero
+                                        // for a better running total calculation
+}
+
 function roundTotal() {
   var self = this;
 
   self.score = ko.observable(0);
 
+  /* strokes per hole */
   self.s1 = ko.observable(0);
   self.s2 = ko.observable(0);
   self.s3 = ko.observable(0);
@@ -21,6 +29,27 @@ function roundTotal() {
   self.s16 = ko.observable(0);
   self.s17 = ko.observable(0);
   self.s18 = ko.observable(0);
+
+  /* par per hole */
+  self.par1 = ko.observable(0);
+  self.par2 = ko.observable(0);
+  self.par3 = ko.observable(0);
+  self.par4 = ko.observable(0);
+  self.par5 = ko.observable(0);
+  self.par6 = ko.observable(0);
+  self.par7 = ko.observable(0);
+  self.par8 = ko.observable(0);
+  self.par9 = ko.observable(0);
+  self.par10 = ko.observable(0);
+  self.par11 = ko.observable(0);
+  self.par12 = ko.observable(0);
+  self.par13 = ko.observable(0);
+  self.par14 = ko.observable(0);
+  self.par15 = ko.observable(0);
+  self.par16 = ko.observable(0);
+  self.par17 = ko.observable(0);
+  self.par18 = ko.observable(0);
+
   self.par = ko.observable(0);
   self.scoreOverride = ko.observable(0);
   self.overrideOn = ko.computed(function() {
@@ -38,25 +67,25 @@ function roundTotal() {
     }
     else
     return ( 
-           wmgt.convert.to_number(self.s1()) +
-           wmgt.convert.to_number(self.s2()) +
-           wmgt.convert.to_number(self.s3()) +
-           wmgt.convert.to_number(self.s4()) +
-           wmgt.convert.to_number(self.s5()) +
-           wmgt.convert.to_number(self.s6()) +
-           wmgt.convert.to_number(self.s7()) +
-           wmgt.convert.to_number(self.s8()) +
-           wmgt.convert.to_number(self.s9()) +
-           wmgt.convert.to_number(self.s10()) +
-           wmgt.convert.to_number(self.s11()) +
-           wmgt.convert.to_number(self.s12()) +
-           wmgt.convert.to_number(self.s13()) +
-           wmgt.convert.to_number(self.s14()) +
-           wmgt.convert.to_number(self.s15()) +
-           wmgt.convert.to_number(self.s16()) +
-           wmgt.convert.to_number(self.s17()) +
-           wmgt.convert.to_number(self.s18())
-           ) - wmgt.convert.to_number(self.par());
+           adjustedScore(self.s1, self.par1) +
+           adjustedScore(self.s2, self.par2) +
+           adjustedScore(self.s3, self.par3) +
+           adjustedScore(self.s4, self.par4) +
+           adjustedScore(self.s5, self.par5) +
+           adjustedScore(self.s6, self.par6) +
+           adjustedScore(self.s7, self.par7) +
+           adjustedScore(self.s8, self.par8) +
+           adjustedScore(self.s9, self.par9) +
+           adjustedScore(self.s10, self.par10) +
+           adjustedScore(self.s11, self.par11) +
+           adjustedScore(self.s12, self.par12) +
+           adjustedScore(self.s13, self.par13) +
+           adjustedScore(self.s14, self.par14) +
+           adjustedScore(self.s15, self.par15) +
+           adjustedScore(self.s16, self.par16) +
+           adjustedScore(self.s17, self.par17) +
+           adjustedScore(self.s18, self.par18)
+           );
   }, self);
 
   self.submissionMatches = ko.computed(function() {
@@ -69,6 +98,10 @@ function roundTotal() {
   }, self);
 
   self.scoreError = ko.computed(function() {
+    if ($v("P9_WHAT_IF") === "Y") {
+        return false;
+    }
+    else
     if (!!self.scoreOverride() || self.s18().length == 0 || self.score().length == 0) {
         return false;
     }
@@ -100,3 +133,5 @@ function viewH(el) {
 function qhide(pID) {
   $("[data-id=" + pID + "]").parents("tr").slideUp();
 }
+
+

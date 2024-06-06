@@ -30,8 +30,8 @@ begin
     "name": "Rising Star",
     "profile_class": "-wm-rank-rise-profile rank",
     "list_class": "-wm-rank-rise fa",
-    "active_ind": "Y",
-    "seq": 20
+    "active_ind": "N",
+    "seq": 50
   },
   {
     "code": "SEMI",
@@ -48,6 +48,14 @@ begin
     "list_class": "-wm-rank-pro fa",
     "active_ind": "Y",
     "seq": 40
+  },
+  {
+    "code": "ELITE",
+    "name": "Elite",
+    "profile_class": "-wm-rank-elite-profile rank",
+    "list_class": "-wm-rank-elite fa",
+    "active_ind": "Y",
+    "seq": 50
   }
 ]
 !';

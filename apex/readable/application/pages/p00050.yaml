@@ -7710,7 +7710,30 @@ processes:
     pl/sql-code: dbms_mview.refresh('wmg_rounds_unpivot_mv');
 
   execution: 
+    sequence: 20
+
+- # ====== Process: First Timeslot Finished Notification =======
+  id: 36760136957835931
+  identification: 
+    name: First Timeslot Finished Notification
+    type: Execute Code
+    execution-chain: Sync MV # 36052960626175840
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      wmg_notification.notify_first_timeslot_finish(
+          p_tournament_session_id  => :G_CURRENT_SESSION_ID
+        , p_player_id => :G_PLAYER_ID
+      );
+
+  execution: 
     sequence: 10
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_PLAYER_ID
 
 - # ====== Process: Verify Scorecard ===========================
   id: 46628720352602741

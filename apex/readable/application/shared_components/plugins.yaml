@@ -4911,6 +4911,492 @@
     settings: 
       type: Link
 
+- # ====== Plugin: UC - Drag and Drop ==========================
+  id: 151389359947781016
+  identification: 
+    name: UC - Drag and Drop
+    internal-name: UC_DRAG_AND_DROP_LIST
+    type: Dynamic Action
+
+  advanced: 
+    category: Effect
+    quick-pick: false
+
+  templates: 
+    default-escape-mode: HTML
+
+  source: 
+    pl/sql-code: |
+      function render
+        ( p_dynamic_action in apex_plugin.t_dynamic_action
+        , p_plugin         in apex_plugin.t_plugin
+        )
+      return apex_plugin.t_dynamic_action_render_result
+      as
+          l_result          apex_plugin.t_dynamic_action_render_result;
+      
+          l_ajax_id         varchar2(4000) := apex_plugin.get_ajax_identifier;
+      
+          --attributes
+          l_mode            p_dynamic_action.attribute_01%type := p_dynamic_action.attribute_01;
+          l_action          p_dynamic_action.attribute_02%type := p_dynamic_action.attribute_02;
+          l_items_to_submit varchar2(4000)                     := apex_plugin_util.page_item_names_to_jquery(p_dynamic_action.attribute_04);
+          l_js_fn           p_dynamic_action.attribute_02%type := p_dynamic_action.attribute_05;
+          l_js_fn_name      varchar2(100)                      := 'dd'||p_dynamic_action.id;
+      
+          l_init_js_fn      varchar2(32767)                    := nvl(apex_plugin_util.replace_substitutions(p_dynamic_action.init_javascript_code), 'undefined');
+      begin
+      
+          --debug
+          if apex_application.g_debug and substr(:DEBUG,6) >= 6
+          then
+              apex_plugin_util.debug_dynamic_action
+                ( p_plugin         => p_plugin
+                , p_dynamic_action => p_dynamic_action
+                );
+          end if;
+      
+          -- add css files
+          apex_css.add_file
+            ( p_name           => apex_plugin_util.replace_substitutions('style#MIN#.css')
+            , p_directory      => p_plugin.file_prefix || 'css/'
+            , p_skip_extension => true
+            );
+      
+          -- add needed libraries
+          apex_javascript.add_library
+            ( p_name      => 'draggable.bundle.min'
+            , p_directory => p_plugin.file_prefix||'js/'
+            );
+      
+          apex_json.initialize_clob_output;
+      
+          apex_json.open_object;
+          apex_json.write('ajaxId'       , l_ajax_id        );
+          apex_json.write('mode'         , lower(l_mode)    );
+          apex_json.write('action'       , l_action         );
+          apex_json.write('itemsToSubmit', l_items_to_submit);
+          apex_json.write('groupSelector', 'ul'             );
+          apex_json.write('itemSelector' , 'li'             );
+          apex_json.write('jsFn'         , l_js_fn_name     );
+          apex_json.close_object;
+      
+          l_result.javascript_function := 'function(){'||
+             case when l_action = 'javascript' then 'window.'||l_js_fn_name||' = '||l_js_fn||';' end ||
+             'uc.utils.enableDragDrop(this, ' || apex_json.get_clob_output|| ', '|| l_init_js_fn  || ');}';
+      
+          apex_json.free_output;
+      
+          -- all done, return l_result now containing the javascript function
+          return l_result;
+      end render;
+      
+      function ajax
+        ( p_dynamic_action in apex_plugin.t_dynamic_action
+        , p_plugin         in apex_plugin.t_plugin
+        )
+      return apex_plugin.t_dynamic_action_ajax_result
+      as
+          l_result apex_plugin.t_dynamic_action_ajax_result;
+      
+          l_statement         p_dynamic_action.attribute_03%type := p_dynamic_action.attribute_03;
+          l_sql_parameters    apex_exec.t_parameters;
+          l_drag_id           varchar2(2000);
+          l_drop_id           varchar2(2000);
+          l_before            varchar2(32000);
+          l_after             varchar2(32000);
+      begin
+      
+          --debug
+          if apex_application.g_debug and substr(:DEBUG,6) >= 6
+          then
+              apex_plugin_util.debug_dynamic_action
+                ( p_plugin         => p_plugin
+                , p_dynamic_action => p_dynamic_action
+                );
+          end if;
+      
+          apex_debug.info('clob %s',apex_application.g_clob_01);
+      
+          apex_json.parse(apex_application.g_clob_01);
+      
+          if apex_json.does_exist ('swapped')
+          then
+              l_drag_id := apex_json.get_varchar2('swapped.dragId');
+              l_drop_id := apex_json.get_varchar2('swapped.dropId');
+          else
+              l_drag_id := apex_json.get_varchar2('sorted.dragId');
+              l_drop_id := apex_json.get_varchar2('sorted.dropId');
+          end if;
+      
+          l_before := apex_json.get_varchar2('sequence.before');
+          l_after  := apex_json.get_varchar2('sequence.after');
+      
+          -- bind only those variables which actually exist in the statement, otherwise it errors out
+          if instr(upper(l_statement),':DRAG_ID')         > 0
+          then
+              apex_exec.add_parameter( l_sql_parameters, 'DRAG_ID'        ,  l_drag_id );
+          end if;
+      
+          if instr(upper(l_statement),':DROP_ID')         > 0
+          then
+              apex_exec.add_parameter( l_sql_parameters, 'DROP_ID'        ,  l_drop_id );
+          end if;
+      
+          if instr(upper(l_statement),':BEFORE_SEQUENCE') > 0
+          then
+              apex_exec.add_parameter( l_sql_parameters, 'BEFORE_SEQUENCE',  l_before );
+          end if;
+      
+          if instr(upper(l_statement),':AFTER_SEQUENCE') > 0
+          then
+              apex_exec.add_parameter( l_sql_parameters, 'AFTER_SEQUENCE' ,  l_after );
+          end if;
+      
+          ----------------------------------------------------------------------------
+          -- this now runs the actual PL/SQL code
+          ----------------------------------------------------------------------------
+          apex_exec.execute_plsql
+            ( p_plsql_code      => l_statement
+            , p_auto_bind_items => true
+            , p_sql_parameters  => l_sql_parameters
+            );
+      
+          -- prepare a json object as response for the client
+          apex_json.initialize_output;
+          apex_json.open_object;
+      
+          apex_json.write('status', 'success');
+      
+          apex_json.close_object;
+      
+          return l_result;
+      end ajax;
+      
+
+  callbacks: 
+    api-interface: Procedure
+    render-procedure/function-name: render
+    ajax-procedure/function-name: ajax
+
+  standard-attributes: 
+    attributes: 
+    - For Region
+    - Affected Element Required
+    - Has "Initialization JavaScript Code" Attribute
+
+  custom-attributes: 
+    substitute-attribute-values: true
+
+  javascript: 
+    file-urls: 
+    - '#PLUGIN_FILES#js/script#MIN#.js'
+
+  information: 
+    version: 23.1.0
+    about-url: 'https://plug-ins-pro.com'
+    help-text: |
+      <p>The <strong>UC - Drag and Drop</strong> dynamic action plug-in makes it possible to drag & drop elements inside a region. This could be a Cards region, a Badge list or basically everything that has a group of elements.</p>
+      <p>On every change of the order of items an event is fired passing the necessary change information accessible via "this.data" within your dynamic action handler. Additionally you can execute PL/SQL code to do an update of your database tables or execute some additional Javascript code.</p>
+      <p>The plug-in is built around Shopify's Draggable library (https://github.com/Shopify/draggable).</p>
+
+  standard-attributes: 
+  - # ====== Standard Attribute: INIT_JAVASCRIPT_CODE ============
+    id: 151397774828781012
+    identification: 
+      name: INIT_JAVASCRIPT_CODE
+
+    value: 
+      required: false
+
+    help: 
+      help-text: Javascript initialization function which allows you to override any settings right before the button is created
+
+    examples: 
+      examples: |
+        <pre>
+        function(config){
+        
+            // groupSelector = string
+            // The CSS selector which will be queried in this region and will server as the base for Drag & Drop. Only the children/descendants of this element will be draggable.
+            config.groupSelector = 'ul';
+        
+            // itemSelector = string
+            // The CSS selector which will be queried in the element(s) returned by the 'groupSelector'. The found elements will be the draggable elements.
+            config.itemSelector  = 'li';
+        
+            // handle = string
+            // The CSS selector which will be queried in the element(s) returned by the 'itemSelector'. The found elements will be the drag-handles by which you can reposition the items.
+            config.handle = null;
+        
+            // distance = number
+            // The distance the cursor has to move before the drag starts.
+            config.distance = 5;
+        
+            // dataIdFn = function
+            // A function to return the element's id. If not specified the element's data-id attribute is used.
+            config.dataIdFn = function (item) { return item.dataset.id }
+        
+            return config;
+        }
+        </pre>
+
+  custom-attributes: 
+  - # ====== Custom Attribute: Mode ==============================
+    id: 151389751559781016
+    identification: 
+      attribute: 1
+      name: Mode
+      scope: Component
+
+    layout: 
+      sequence: 10
+
+    settings: 
+      type: Select List
+      lov-type: Static
+      common: true
+      show-in-wizard: true
+      required: true
+      translatable: false
+
+    default: 
+      value: sort
+
+    help: 
+      help-text: <p>Specify how dragging an element should behave.</p>
+
+    entries: 
+    - # ====== Entry: Swap =========================================
+      id: 151390091729781015
+      entry: 
+        sequence: 10
+        display: Swap
+        return: swap
+
+      advanced: 
+        quick-pick: false
+
+      help: 
+        help-text: <p>The dragged element is changing place with the element it is being dropped on.</p>
+
+    - # ====== Entry: Sort =========================================
+      id: 151390642206781015
+      entry: 
+        sequence: 20
+        display: Sort
+        return: sort
+
+      advanced: 
+        quick-pick: false
+
+      help: 
+        help-text: <p>The dragged element will be placed before or after the element it is being dropped on.</p>
+
+  - # ====== Custom Attribute: Drop Action =======================
+    id: 151391113122781015
+    identification: 
+      attribute: 2
+      name: Drop Action
+      scope: Component
+
+    layout: 
+      sequence: 20
+
+    settings: 
+      type: Select List
+      lov-type: Static
+      common: true
+      show-in-wizard: true
+      required: false
+      translatable: false
+      lov-null-text: '- Select -'
+
+    help: 
+      help-text: <p>Define what should happen when an element is being dropped.</p>
+
+    entries: 
+    - # ====== Entry: Execute PL/SQL Code ==========================
+      id: 151391503632781015
+      entry: 
+        sequence: 10
+        display: Execute PL/SQL Code
+        return: plsql
+
+      advanced: 
+        quick-pick: false
+
+      help: 
+        help-text: <p>Run a PL/SQL Code and fire the <i>Update Complete</i> event.</p>
+
+    - # ====== Entry: Execute Javascript Code ======================
+      id: 151392004680781015
+      entry: 
+        sequence: 20
+        display: Execute Javascript Code
+        return: javascript
+
+      advanced: 
+        quick-pick: false
+
+      help: 
+        help-text: <p>Execute JavaScript Code on <i>Drop</i> event.</p>
+
+  - # ====== Custom Attribute: Execute PL/SQL Code ===============
+    id: 151392544664781015
+    identification: 
+      attribute: 3
+      name: Execute PL/SQL Code
+      scope: Component
+
+    layout: 
+      sequence: 30
+
+    settings: 
+      type: PL/SQL Code
+      common: true
+      show-in-wizard: true
+      required: true
+      translatable: false
+
+    condition: 
+      depending-on-custom-attribute: Drop Action # 151391113122781015
+      depending-on-condition-type: equal to
+      expression: plsql
+      always-evaluate: true
+
+    help: 
+      help-text: |
+        <p>A PL/SQL Code block that will be executed each time the order of items has changed (this is after dropping an element).</p>
+        <p>In PL/SQL you'll have access to the same JSON information as in the event by using apex_application.g_clob_01.</p>
+        <p>To make it more comfortable, you can also access these bind variables: :DRAG_ID, :DROP_ID, :BEFORE_SEQUENCE, and :AFTER_SEQUENCE. Those variables will provide the element-id's taken out of the data-id HTML attribute.</p>
+
+    examples: 
+      examples: |
+        <pre>
+        begin
+            apex_debug.info('drag and drop on sequence update at %s by %s',to_char(sysdate,'hh24:mi:ss'), :APP_USER);
+            apex_debug.info('input json=%s', apex_application.g_clob_01);    
+            apex_debug.info('substitution drag_id=%s',:DRAG_ID);
+            apex_debug.info('substitution drop_id=%s', :DROP_ID);
+            apex_debug.info('substitution before_sequence=%s',:BEFORE_SEQUENCE);
+            apex_debug.info('substitution after_sequence=%s',:AFTER_SEQUENCE);
+            --
+            -- now do your updates
+        end;
+        </pre>
+
+  - # ====== Custom Attribute: Page Items to Submit ==============
+    id: 151392899090781014
+    identification: 
+      attribute: 4
+      name: Page Items to Submit
+      scope: Component
+
+    layout: 
+      sequence: 40
+
+    settings: 
+      type: Page Items
+      common: true
+      show-in-wizard: true
+      required: false
+      translatable: false
+
+    condition: 
+      depending-on-custom-attribute: Drop Action # 151391113122781015
+      depending-on-condition-type: equal to
+      expression: plsql
+      always-evaluate: true
+
+    help: 
+      help-text: <p>List of Page Items that should be passed when running the Execute PL/SQL Code block.</p>
+
+  - # ====== Custom Attribute: Execute Javascript Code ===========
+    id: 151393332346781014
+    identification: 
+      attribute: 5
+      name: Execute Javascript Code
+      scope: Component
+
+    layout: 
+      sequence: 50
+
+    settings: 
+      type: JavaScript Code
+      common: true
+      show-in-wizard: true
+      required: true
+      translatable: false
+
+    condition: 
+      depending-on-custom-attribute: Drop Action # 151391113122781015
+      depending-on-condition-type: equal to
+      expression: javascript
+      always-evaluate: true
+
+    help: 
+      help-text: <p>Use the <i>this.data</i> object to access all the plug-in related information.</p>
+
+  events: 
+  - # ====== Event: uc-enabledraganddrop-sequence-update =========
+    id: 151398161813781011
+    identification: 
+      name: UC - Drag and Drop - Sequence update
+      internal-name: uc-enabledraganddrop-sequence-update
+
+  - # ====== Event: uc-enabledraganddrop-update-complete =========
+    id: 151398647351781011
+    identification: 
+      name: UC - Drag and Drop - Update complete
+      internal-name: uc-enabledraganddrop-update-complete
+
+  files: 
+  - # ====== File: css/style.css =================================
+    id: 152307486336284774
+    identification: 
+      file-name: css/style.css
+
+    attributes: 
+      mime-type: text/css
+      file-character-set: Unicode UTF-8
+
+  - # ====== File: css/style.min.css =============================
+    id: 152307833198284770
+    identification: 
+      file-name: css/style.min.css
+
+    attributes: 
+      mime-type: text/css
+      file-character-set: Unicode UTF-8
+
+  - # ====== File: js/draggable.bundle.min.js ====================
+    id: 152308522365283882
+    identification: 
+      file-name: js/draggable.bundle.min.js
+
+    attributes: 
+      mime-type: text/javascript
+      file-character-set: Unicode UTF-8
+
+  - # ====== File: js/script.js ==================================
+    id: 152308771902283877
+    identification: 
+      file-name: js/script.js
+
+    attributes: 
+      mime-type: text/javascript
+      file-character-set: Unicode UTF-8
+
+  - # ====== File: js/script.min.js ==============================
+    id: 152309208041283873
+    identification: 
+      file-name: js/script.min.js
+
+    attributes: 
+      mime-type: text/javascript
+      file-character-set: Unicode UTF-8
+
 - # ====== Plugin: United Codes List Extension =================
   id: 47918728746861852407
   identification: 

@@ -12,6 +12,7 @@ is
 -- CONSTANTS
  c_embed_color_green     number := 5832556;
  c_embed_color_lightblue number := 5814783;
+ c_embed_color_brightred number := 15605278;
  c_crlf varchar2(2) := chr(13)||chr(10);
  c_amp varchar2(2) := chr(38);
 
@@ -282,7 +283,7 @@ begin
 
     $IF env.wmgt $THEN
     wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'BEAR313'
+         p_webhook_code => 'STAFFWMGT'
        , p_content      => l_content
        , p_embeds       => l_embeds
     );
@@ -300,6 +301,337 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end new_player;
+
+
+
+
+
+
+/**
+ * Send a webhook notification after the first player for any 
+ * timeslot submits their scores
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 12, 2024
+ * @param p_player_id
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure notify_first_timeslot_finish(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_player_id              in wmg_players.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_first_timeslot_finish';
+
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+  l_time_slot      wmg_tournament_players.time_slot%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  for p in (
+
+    select tp.time_slot, count(*) n
+    from wmg_tournament_players tp
+    where tp.tournament_session_id = p_tournament_session_id
+     and tp.time_slot in (
+        -- find the player's time slot
+        select p.time_slot
+          from wmg_tournament_players p
+         where p.tournament_session_id = p_tournament_session_id
+           and p.player_id = p_player_id
+    )
+    and exists (
+        -- player must have entered rounds
+        select 1
+        from wmg_rounds r
+        where r.tournament_session_id = tp.tournament_session_id
+          and r.players_id = tp.player_id
+    )
+    group by tp.time_slot
+    having count(*) = 1  -- is this the first one for their time slot
+  )
+  loop
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The first player from __' || p.time_slot || '__ just entered their scores!';
+    l_embeds := '{}';
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'WMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    -- Add to the webhook for the staff channels
+    l_content := l_content
+          || c_crlf || 'time to verify some scorecards.';
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'STAFFWMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_first_timeslot_finish;
+
+
+
+
+
+/**
+ * Send a webhook notification after the first time slot closes
+ * with all the players that did not show up
+
+   The way to prevent being on the list is:
+     * scores need to be present (they don't need to be validated)
+     * an INFRACTION issue is specified
+        For example, they couldn't finish, and we specify an INFRACTION (rule violation) issue 
+     * They are unregistered by an Admin
+
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 17, 2024
+ * @param p_tournament_session_id
+ * @param p_time_slot
+ * @return
+ */
+procedure notify_channel_about_players(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+  , p_time_slot              in wmg_tournament_players.time_slot%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_channel_about_players';
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+
+  l_env     wmg_parameters.value%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  l_env := wmg_util.get_param('ENV');
+
+  for p in (
+    select tp.time_slot, listagg('<@' || tp.discord_id || '> (' || tp.player_name || ')', c_crlf) players
+      from wmg_tournament_results_v r
+         , wmg_tournament_player_v tp
+     where tp.week = r.week (+)
+       and tp.player_id = r.player_id (+)
+       and tp.tournament_session_id = p_tournament_session_id
+       and tp.time_slot = p_time_slot
+       and tp.active_ind = 'Y'
+       and r.total_scorecard is null      -- Anyone with no scores entered will be included.
+     group by tp.time_slot
+  )
+  loop
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The __' || p.time_slot || ' UTC __ time-slot is now closed!';
+    
+    l_embeds := json_array (
+              json_object(
+                'title' value 'The following players either did' || c_crlf 
+                || 'not show up :ghost:' 
+                || c_crlf || ' or ' || c_crlf 
+                || 'did not enter their scores :red_square::' || c_crlf,
+                'description' value p.players,
+                'color' value c_embed_color_brightred,
+                'fields' value json_array(
+                    json_object(
+                        'name' value 'ENV', 'value' value l_env
+                    )
+                )
+            )
+          );
+
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'WMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_channel_about_players;
+
+
+
+
+
+
+/**
+ * Send a webhook notification after the weekend tournament closes
+ * Include a brief recap of winners.
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 19, 2024
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure notify_channel_tournament_close(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'notify_channel_tournament_close';
+
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+
+  l_env     wmg_parameters.value%type;
+  -- l_body clob;
+  -- l_avatar_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  l_env := wmg_util.get_param('ENV');
+
+  for p in (
+    select s.prefix_tournament, s.round_num, s.week, to_char(s.session_date, 'YYYY-MM-DD') session_date_prepared
+         , (
+        select listagg(p.pos || ': ' || '<@' || p.discord_id || '> (' || p.player_name || ')' || '     **' || p.total_score || '**', chr(13)||chr(10))
+               within group (order by p.pos, decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4)) players
+          from wmg_tournament_session_points_v p
+         where p.tournament_session_id = s.tournament_session_id
+           and p.pos <= 3
+          ) podium_players
+      from wmg_tournament_sessions_v s
+     where s.tournament_session_id = p_tournament_session_id
+  )
+  loop
+
+    -- Construct the embeds JSON for the webhook
+    l_content := '## The Weekly Tournament is now closed!';
+
+    l_embeds := json_array (
+              json_object(
+                'title' value 'Congratulations!',
+                'description' value p.podium_players || c_crlf|| c_crlf || '__final recap coming later__' ,
+                'color' value c_embed_color_green,
+                -- 'image' value json_object('url' value l_avatar_image),
+                'fields' value json_array(
+                    json_object(
+                        'name' value 'Season', 'value' value p.prefix_tournament, 'inline' value true
+                    ),
+                    json_object(
+                        'name' value 'Week', 'value' value p.round_num, 'inline' value true
+                    ),
+                    json_object(
+                        'name' value 'Date', 'value' value p.session_date_prepared
+                    )
+                )
+            )
+          );
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'WMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end notify_channel_tournament_close;
+
 
 
 
@@ -602,7 +934,11 @@ begin
                            + decode(s18, 1, 1, 0)
                         ) total
                     from wmg_rounds_v r
+                       , wmg_tournament_players tp
                    where r.week = s.week
+                     and r.tournament_session_id = tp.tournament_session_id
+                     and tp.player_id = r.player_id
+                     and tp.issue_code is null  -- only players with no issues are eligible
                   group by r.account
                   ) aces
                   order by aces.who
@@ -638,9 +974,12 @@ begin
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
                     select course_mode, player_id, player_name, account, sum(under_par) total
-                      from wmg_rounds_v
-                      where week = s.week
-                        and course_mode = 'E'
+                      from wmg_rounds_v r
+                         , wmg_tournament_courses tc
+                      where r.week = s.week
+                        and r.tournament_session_id = tc.tournament_session_id
+                        and r.course_id = tc.course_id
+                        and tc.course_no = 1
                      group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
@@ -653,9 +992,12 @@ begin
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
                     select course_mode, player_id, player_name, account, sum(under_par) total
-                      from wmg_rounds_v
-                      where week = s.week
-                        and course_mode = 'H'
+                      from wmg_rounds_v r
+                         , wmg_tournament_courses tc
+                      where r.week = s.week
+                        and r.tournament_session_id = tc.tournament_session_id
+                        and r.course_id = tc.course_id
+                        and tc.course_no = 2
                      group by course_mode, player_id, player_name, account
                     ) r
                     order by course_mode, rn, r.player_name
@@ -1079,7 +1421,7 @@ is
            , courses_played cp
         group by cp.course_code, cp.real_play_count 
         union all
-        select 'For ' || course_code || ', played ' || real_play_count || ' times before, these are the uniconrs:' || chr(13)||chr(10)
+        select 'For ' || course_code || ', played ' || real_play_count || ' times before, these are the unicorns:' || chr(13)||chr(10)
                || listagg('* Hole ' || h || ' (' || week || ') by ' || ace_by , chr(13)||chr(10)) within group (order by h) unicorn_info
                , unicorn_status
           from (
@@ -1146,6 +1488,8 @@ begin
          , '' "NULL"
       from wmg_tournament_sessions_v
      where tournament_session_id = p_tournament_session_id
+       and easy_course_id is not null
+       and hard_course_id is not null
   )
   loop
 
@@ -1204,7 +1548,7 @@ begin
      where rn = 1
      group by course_id
     )
-    select listagg(score_type || ' ' || under_par, chr(13)||chr(10) )
+    select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_easy_top_scores
     from (
         select '- Leaderboard: ' score_type, r.scorecard_total under_par
@@ -1213,13 +1557,13 @@ begin
           and r.player_id = 0
           and r.week = 'S00W00' 
         union all
-        select '- Realistic: ' score_type, r.best_strokes - c.course_par under_par
+        select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r
         where r.course_id = c.course_id
           and c.course_id = new_session.easy_course_id
         union all
-        select '- Utopian: ' score_type, best_under under_par
+        select '- Utopian:     ' score_type, best_under under_par
         from wmg_courses_v
         where course_id = new_session.easy_course_id
           and best_under is not null
@@ -1243,7 +1587,7 @@ begin
      where rn = 1
      group by course_id
     )
-    select listagg(score_type || ' ' || under_par, chr(13)||chr(10))
+    select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_hard_top_scores
     from (
         select '- Leaderboard: ' score_type, r.scorecard_total under_par
@@ -1252,13 +1596,13 @@ begin
           and r.player_id = 0
           and r.week = 'S00W00' 
         union all
-        select '- Realistic: ' score_type, r.best_strokes - c.course_par under_par
+        select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r
         where r.course_id = c.course_id
           and c.course_id = new_session.hard_course_id
         union all
-        select '- Utopian: ' score_type, best_under under_par
+        select '- Utopian:     ' score_type, best_under under_par
         from wmg_courses_v
         where course_id = new_session.hard_course_id
           and best_under is not null
@@ -1281,7 +1625,7 @@ begin
     l_placeholders := '{' ||
       '    "SEASON":'         || apex_json.stringify( new_session.prefix_tournament ) ||
       '   ,"WEEK_NUM":'       || apex_json.stringify( new_session.round_num ) ||
-      '   ,"EASY_COURSE":'           || apex_json.stringify( new_session.easy_course_emoji || new_session.easy_course_name ) ||
+      '   ,"EASY_COURSE":'           || apex_json.stringify( ':' || new_session.easy_course_emoji || ': ' || new_session.easy_course_name ) ||
       '   ,"EASY_CODE":'             || apex_json.stringify( new_session.easy_course_code ) ||
       '   ,"EASY_RECORD":'           || apex_json.stringify( l_easy_record ) ||
       '   ,"EASY_TOP_SCORES":'       || apex_json.stringify( l_easy_top_scores ) ||
@@ -1290,7 +1634,7 @@ begin
       '   ,"EASY_EASY_HOLES":'       || apex_json.stringify( course_holes(new_session.easy_course_id, 'E' ) ) ||
       '   ,"UNICORNS_EASY_OK":'      || apex_json.stringify( l_unicorns_easy_ok ) || 
       '   ,"EASY_UNICORNS":'         || apex_json.stringify( l_unicorns_easy ) || 
-      '   ,"HARD_COURSE":'           || apex_json.stringify( new_session.hard_course_emoji || new_session.hard_course_name ) ||
+      '   ,"HARD_COURSE":'           || apex_json.stringify( ':' || new_session.hard_course_emoji || ': ' || new_session.hard_course_name ) ||
       '   ,"HARD_CODE":'             || apex_json.stringify( new_session.hard_course_code ) ||
       '   ,"HARD_RECORD":'           || apex_json.stringify( l_hard_record ) ||
       '   ,"HARD_TOP_SCORES":'       || apex_json.stringify( l_hard_top_scores ) ||

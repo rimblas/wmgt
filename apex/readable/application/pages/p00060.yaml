@@ -101,6 +101,7 @@ javascript:
             badgeMenuAction(btn, this, 'DUCK', btn.dataset.id);
           },
           hide: function () {
+              return true; // ducks are now automated. 
               var btn$ = $("button.is-active.js-menuButton");
               return hasIssue(btn$);
           }
@@ -176,6 +177,13 @@ css:
   - '&G_APP_FILES.css/week-lov#MIN#.css'
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    td.t-Report-cell[headers="PLAYER_NAME"] {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+        white-space: nowrap;
+    }
+    
     @media (max-width: 640px) {
     
         :root {
@@ -188,10 +196,7 @@ css:
         th#AVATAR {display: none;}
     
         td.t-Report-cell[headers="PLAYER_NAME"] {
-            overflow: hidden;
-            text-overflow: ellipsis;
             max-width: 128px;
-            white-space: nowrap;
        }
     
        .wm-search-item:first-child {
@@ -1620,7 +1625,11 @@ regions:
                    + decode(s18, 1, 1, 0)
                 ) total
             from wmg_rounds_v r
+               , wmg_tournament_players tp
            where r.week = :P60_WEEK
+            and r.tournament_session_id = tp.tournament_session_id
+            and tp.player_id = r.player_id
+            and tp.issue_code is null  -- only players with no issues are eligible
           group by r.player_name
           ) aces
           order by aces.who
@@ -3567,36 +3576,6 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
-- # ====== Page Item: P60_MODE =================================
-  id: 58999003206950516161
-  identification: 
-    name: P60_MODE
-    type: Hidden
-
-  settings: 
-    value-protected: false
-
-  layout: 
-    sequence: 60
-    region: '{items}' # 106632178401810217449
-    position: BODY
-
-  advanced: 
-    warn-on-unsaved-changes: Page Default
-
-  source: 
-    type: Null
-    used: Only when current value in session state is null
-
-  session-state: 
-    data-type: VARCHAR2
-    storage: Per Session (Persistent)
-
-  security: 
-    session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
-    restricted-characters: All characters can be saved.
-
 - # ====== Page Item: P60_EASY =================================
   id: 58999003526641516161
   identification: 
@@ -3776,7 +3755,7 @@ buttons:
     column: 10
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -4425,8 +4404,8 @@ computations:
   computation: 
     type: SQL Query (return single value)
     sql-query: |
-      select count(distinct week)
-      from  wmg_rounds
+      select count(*)
+      from  wmg_tournament_sessions
       
 
 processes: 

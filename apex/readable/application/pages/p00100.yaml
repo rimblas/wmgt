@@ -483,6 +483,235 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: Where were the <i class="em em-coconut" aria-
+  id: 32463122647429429
+  identification: 
+    title: Where were the <i class="em em-coconut" aria-role="presentation" aria-label="em-coconut" title="Coconuts"></i> coconuts lost?
+    type: Chart
+
+  layout: 
+    sequence: 61
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">* A coconut badge is lost when someone has an over par score on a whole. Those that manage to score par of better on both courses earn a coconut.<br>
+      * This chart show where people first lost their coconut.
+      </div>
+
+  security: 
+    escape-special-characters: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 32463259506429430
+    chart: 
+      type: Bar
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Coconuts Lost ===============================
+      id: 32463332910429431
+      identification: 
+        name: Coconuts Lost
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with coconut as (
+              select tc.tournament_session_id
+                   , tc.course_no
+                   , u.course_id
+                   , u.h
+                   , u.par
+                   , row_number() over (partition by u.player_id order by tc.course_no, u.h) rn
+                from wmg_rounds_unpivot_mv u
+                   , wmg_tournament_sessions ts
+                   , wmg_tournament_courses tc
+                   , wmg_tournament_players tp
+               where ts.week = u.week
+                 and ts.id = tp.tournament_session_id
+                 and ts.id = tc.tournament_session_id
+                 and tc.course_id = u.course_id
+                 and tp.player_id = u.player_id
+                 and u.week = :P100_WEEK
+                 and u.par > 0 -- coconut lost on a bogey
+          --       and u.player_id in (22, 24)
+          --     having sum(case when par <= 0 then 1 else 0 end) = 36
+          --     group by u.week, u.player_id
+          -- order by u.player_id, tc.course_no, u.h
+          )
+          , coconut_histogram as (
+            select c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+                 , count(*) lost_coconut
+              from coconut c
+             where rn = 1  -- first time the coconut was lost
+             group by c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+          )
+          , empty_holes as (
+              select level h
+              from dual
+              connect by level <= 18
+          )
+          , fill_in_all_holes as (
+          select tc.tournament_session_id
+               , tc.course_no
+               , tc.course_id
+               , e.h
+               , nvl(h.lost_coconut, 0) lost_coconut
+           from coconut_histogram h
+              , wmg_tournament_courses tc
+              , wmg_tournament_sessions ts
+              , empty_holes e
+          where ts.id = tc.tournament_session_id
+            and ts.week = :P100_WEEK
+            and tc.tournament_session_id = h.tournament_session_id (+)
+            and tc.course_no = h.course_no (+)
+            and tc.course_id = h.course_id (+)
+            and e.h = h.h (+)
+          )
+          select h.course_no
+               , c.code course_code
+               , e.h
+               , h.course_no || ' ' || c.code || ' ' || e.h label
+               , h.lost_coconut value
+          from fill_in_all_holes h
+             , wmg_courses c
+             , empty_holes e
+          where c.id = h.course_id
+            and e.h = h.h (+)
+          order by h.course_no, h.h
+          
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      label: 
+        show: true
+        position: Automatic
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 32463435293429432
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 32463566459429433
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
 - # ====== Region: Hole Preview ================================
   id: 20760560887699173455
   identification: 
@@ -995,7 +1224,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 81
+    sequence: 91
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -4513,7 +4742,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 61
+    sequence: 71
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -4729,6 +4958,7 @@ regions:
               , c.code                                       course_code
               , c.name                                       course_name
               , c.course_mode                                course_mode
+              , tc.course_no
               , r.week
             , nvl(r.s1 - cs.h1, 0) h1
             , nvl(r.s2 - cs.h2, 0) h2
@@ -4749,11 +4979,14 @@ regions:
             , nvl(r.s17 - cs.h17, 0) h17
             , nvl(r.s18 - cs.h18, 0) h18
           from wmg_rounds r
+             , wmg_tournament_courses tc
              , wmg_players_v p
              , wmg_courses c
              , wmg_course_strokes cs
           where r.players_id = p.id
             and r.course_id = c.id
+            and r.course_id = tc.course_id
+            and r.tournament_session_id = tc.tournament_session_id
             and cs.course_id(+) = c.id
           )
           , round_unpivot as (
@@ -4782,10 +5015,10 @@ regions:
             )
           )
           select player_name
-               , course_mode
+               , course_no
                , h
-               , course_mode || lpad(to_char(h), 2, '0') label
-               , sum(score * -1) over(partition by player_name order by course_mode, h range between unbounded preceding and current row) as value
+               , course_no || '_' || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by player_name order by course_no, h range between unbounded preceding and current row) as value
           from round_unpivot
           where round_id in (
               select r.id
@@ -4806,7 +5039,7 @@ regions:
               )
               and r.week =  :P100_WEEK
           )
-          order by course_mode, player_name, h
+          order by course_no, h, player_name
           
         page-items-to-submit: 
         - P100_WEEK
@@ -4853,6 +5086,7 @@ regions:
               , c.code                                       course_code
               , c.name                                       course_name
               , c.course_mode                                course_mode
+              , tc.course_no
               , r.week
             , nvl(r.s1 - cs.h1, 0) h1
             , nvl(r.s2 - cs.h2, 0) h2
@@ -4873,11 +5107,14 @@ regions:
             , nvl(r.s17 - cs.h17, 0) h17
             , nvl(r.s18 - cs.h18, 0) h18
           from wmg_rounds r
+             , wmg_tournament_courses tc
              , wmg_players_v p
              , wmg_courses c
              , wmg_course_strokes cs
           where r.players_id = p.id
             and r.course_id = c.id
+            and r.course_id = tc.course_id
+            and r.tournament_session_id = tc.tournament_session_id
             and cs.course_id(+) = c.id
           )
           , round_unpivot as (
@@ -4906,10 +5143,10 @@ regions:
             )
           )
           select player_name
-               , course_mode
+               , course_no
                , h
-               , course_mode || lpad(to_char(h), 2, '0') label
-               , sum(score * -1) over(partition by player_name order by course_mode, h range between unbounded preceding and current row) as value
+               , course_no || '_' || lpad(to_char(h), 2, '0') label
+               , sum(score * -1) over(partition by player_name order by course_no, h range between unbounded preceding and current row) as value
           from round_unpivot
           where round_id in (
               select r.id
@@ -4917,7 +5154,7 @@ regions:
                where r.players_id = :P100_PLAYER_ID
                  and r.week =  :P100_WEEK
             )
-          order by course_mode , h
+          order by course_no, h
         page-items-to-submit: 
         - P100_PLAYER_ID
         - P100_WEEK
@@ -5026,7 +5263,7 @@ regions:
     type: Chart
 
   layout: 
-    sequence: 71
+    sequence: 81
     parent-region: No Parent
     position: BODY
     start-new-layout: false

@@ -8,73 +8,17 @@
     location: Local Database
     type: SQL Query
     sql-query: |
-      select d country_name, r country_code, 'em-flag-' || r flag_class
+      select country_name, country_code, 'em-flag-' || country_code flag_class
       from (
-      select 'England' d, 'england' r from dual union all
-      select 'Scotland' d, 'scotland' r from dual union all
-      select 'Wales' d, 'wales' r from dual union all
-      select formatted_name d, lower(iso) r
-      from country
+      select name country_name, iso_code country_code
+      from wmg_country_iso_v
       )
       
 
   column-mapping: 
     return: COUNTRY_CODE
     display: COUNTRY_NAME
-    default-sort: COUNTRY_NAME
-    sort-direction: Ascending (Nulls Last)
-
-  columns: 
-  - # ====== Column: COUNTRY_CODE ================================
-    id: 11321147888629560
-    identification: 
-      column-name: COUNTRY_CODE
-      show: false
-
-    layout: 
-      sequence: 10
-
-    source: 
-      data-type: VARCHAR2
-
-    advanced: 
-      searchable: false
-
-  - # ====== Column: COUNTRY_NAME ================================
-    id: 11321595923629562
-    identification: 
-      column-name: COUNTRY_NAME
-      show: true
-
-    heading: 
-      heading: Country Name
-
-    layout: 
-      sequence: 20
-
-    source: 
-      data-type: VARCHAR2
-
-    advanced: 
-      searchable: true
-
-  - # ====== Column: FLAG_CLASS ==================================
-    id: 11321939519629562
-    identification: 
-      column-name: FLAG_CLASS
-      show: false
-
-    heading: 
-      heading: Flag
-
-    layout: 
-      sequence: 30
-
-    source: 
-      data-type: VARCHAR2
-
-    advanced: 
-      searchable: false
+    default-sort: Use Order By from Query
 
 - # ====== List of Values: ROOM_NAMES ==========================
   id: 12524554787466121
@@ -379,6 +323,10 @@
           from (
               select lpad( (n-1)*4,2,0) slot
               from slots_n
+              union all
+              select '02' from dual
+              union all
+              select '18' from dual
           )
       )
       select d, d r
@@ -770,6 +718,13 @@
       sequence: 12
       display: Point Scale
       return: POINTS
+
+  - # ====== Entry: Code of Conduct ==============================
+    id: 37203669000495606
+    entry: 
+      sequence: 10
+      display: Code of Conduct
+      return: CONDUCT
 
   - # ====== Entry: Player Ranks =================================
     id: 38342412041107990

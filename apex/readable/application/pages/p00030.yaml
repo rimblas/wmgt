@@ -67,6 +67,250 @@ server-cache:
   caching: Disabled
 
 regions: 
+- # ====== Region: Too Many No Shows ===========================
+  id: 478121103587212
+  identification: 
+    title: Too Many No Shows
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select case when noshow_registrations = 2 then 'danger' when noshow_registrations >= 3 then 'danger' end alert_type
+          , apex_escape.html(p.player_name) || ' you have ' || noshow_registrations || ' "No Shows" this season already!!' alert_title
+          , case when noshow_registrations = 2 then
+            '<br><b>One more unannounced</b> absence, and you will get a cool-down break for the rest of the season.' || '<br><br>'
+          || 'If you are not going to make it, let someone in the Staff know about it in advance so we can make the necessary room arrangements.' || '<br><br>'
+          || 'Your unannounced absence is disruptive to the tournament and to the other players.'
+          else
+            '<br>We are sorry, but you cannot register any more. Hopefully we will see you next season'
+          end  alert_desc
+          , '' alert_action
+      from (
+          select sum(decode(p.issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+           from wmg_tournament_players p
+          where p.active_ind = 'Y'
+            and p.player_id = :G_PLAYER_ID
+            and p.tournament_session_id in (
+            select ts.id
+              from wmg_tournament_sessions ts
+             where ts.tournament_id in (
+               select tournament_id from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID
+             )
+          )
+      )
+      , wmg_players_v p
+      where p.id = :G_PLAYER_ID
+
+  layout: 
+    sequence: 9
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Blank with Attributes # 46995040627542514343
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from (
+            select sum(decode(issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+               from wmg_tournament_players
+              where active_ind = 'Y'
+                and player_id = :G_PLAYER_ID
+      )
+      where noshow_registrations >= 2
+
+  security: 
+    authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Alerts # 46995120815121514375
+      template-options: 
+      - '#DEFAULT#'
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ALERT_TYPE ==================================
+    id: 478346587587214
+    identification: 
+      column-name: ALERT_TYPE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Type
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_TITLE =================================
+    id: 478471508587215
+    identification: 
+      column-name: ALERT_TITLE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Title
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_DESC ==================================
+    id: 478598850587216
+    identification: 
+      column-name: ALERT_DESC
+      type: Plain Text
+
+    heading: 
+      heading: Alert Desc
+      alignment: start
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
+  - # ====== Column: ALERT_ACTION ================================
+    id: 478701090587217
+    identification: 
+      column-name: ALERT_ACTION
+      type: Plain Text
+
+    heading: 
+      heading: Alert Action
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: {Rules Agreement} ===========================
   id: 28678223595250950
   identification: 
@@ -205,6 +449,61 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
+- # ====== Region: It you play #stroke-singles =================
+  id: 36760055193835930
+  identification: 
+    title: 'It you play #stroke-singles'
+    type: Static Content
+
+  source: 
+    html-code: |
+      If you play in #ranked-play or #stroke-singles, you can choose to play the current tournament courses<br>
+      <br>
+      
+
+  layout: 
+    sequence: 29
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 8
+
+  appearance: 
+    template: Hero # 46995073279292514356
+    template-options: 
+    - '#DEFAULT#'
+    - t-HeroRegion--featured
+    - t-HeroRegion--iconsCircle
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  image: 
+    file-url: '&BUCKET.ClassicGolfLogo.png'
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  comments: 
+    comments: '<img src="&BUCKET.strokesingleschoose.png" style="max-width:100%">'
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
 - # ====== Region: Registration ================================
   id: 24744259667333395558
   identification: 
@@ -269,6 +568,10 @@ regions:
           from (
               select lpad( (n-1)*4,2,0) slot
               from slots_n
+              union all
+              select '02' from dual
+              union all
+              select '18' from dual
           )
       )
       , ts as (
@@ -565,7 +868,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 19
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -593,6 +896,25 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: No Rows returned
+    sql-query: |
+      select 1
+      from (
+          select sum(decode(p.issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+           from wmg_tournament_players p
+          where p.active_ind = 'Y'
+            and p.player_id = :G_PLAYER_ID
+            and p.tournament_session_id in (
+            select ts.id
+              from wmg_tournament_sessions ts
+             where ts.tournament_id in (
+               select tournament_id from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID
+             )
+          )
+      )
+      where noshow_registrations > 2
 
   server-cache: 
     caching: Disabled

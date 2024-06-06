@@ -27,12 +27,7 @@ javascript:
   file-urls: 
   - '&G_APP_FILES.lib/knockout-3.5.0.js'
   - '&G_APP_FILES.lib/knockout-pre-rendered.min.js'
-  - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js'
-  function-and-global-variable-declaration: |
-    function qhide(pID) {
-      $("[data-id=" + pID + "]").parents("tr").slideUp();
-    }
-    
+  - '&G_APP_FILES.js/p&APP_PAGE_ID.#MIN#.js?v=#APP_VERSION#'
   execute-when-page-loads: |
     // start the knowckout viewModel to provide live SUM of scores
     var viewModel = new roundTotal();
@@ -3081,6 +3076,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par1"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3133,6 +3132,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par2"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3185,6 +3188,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par3"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3237,6 +3244,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par4"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3289,6 +3300,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par5"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3341,6 +3356,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par6"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3393,6 +3412,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par7"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3445,6 +3468,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par8"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3497,6 +3524,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par9"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3549,6 +3580,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par10"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3601,6 +3636,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par11"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3653,6 +3692,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par12"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3705,6 +3748,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par13"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3757,6 +3804,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par14"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3809,6 +3860,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par15"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3861,6 +3916,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par16"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3913,6 +3972,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par17"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -3965,6 +4028,10 @@ page-items:
     - '#DEFAULT#'
 
   advanced: 
+    custom-attributes: 
+    - data-bind="init,
+    - 'text:'
+    - par18"
     warn-on-unsaved-changes: Page Default
 
   source: 
@@ -5451,7 +5518,7 @@ processes:
       select id
       into :P9_COURSE_STROKE_ID
       from wmg_course_strokes
-      where course_id = :P9_COURSE_ID
+      where course_id = nvl(:P9_COURSE_ID,1)
       fetch first 1 rows only;
 
   execution: 
