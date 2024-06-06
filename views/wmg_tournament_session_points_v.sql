@@ -42,7 +42,7 @@ with rounds as (
 , results as (
   select p.tournament_session_id
        , p.week
-       , r.player_id, p.account
+       , r.player_id, p.account, p.discord_id
        , p.player_name, p.country_code
        , p.rank_code
        , r.easy_course_id, r.hard_course_id
@@ -69,7 +69,7 @@ with rounds as (
    where r.pos > 10
 )
 select ts.id tournament_session_id
-     , r.week, r.player_id, r.player_name, r.account, r.country_code
+     , r.week, r.player_id, r.player_name, r.account, r.discord_id, r.country_code
      , r.rank_code
      , r.easy_course_id, r.hard_course_id
      , r.easy, r.hard, r.total_score

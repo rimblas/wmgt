@@ -430,19 +430,6 @@ begin
 
   end loop; 
 
-  log('.. Add room', l_scope);
-  insert into wmg_tournament_rooms (
-      tournament_session_id
-    , time_slot
-    , room_no
-  )
-  select distinct tournament_session_id
-       , time_slot
-       , room_no
-    from wmg_tournament_players
-   where tournament_session_id = p_tournament_session_id
-     and active_ind = 'Y';
-
 
   log('.. Stamp room assignments date', l_scope);
   update wmg_tournament_sessions
@@ -456,6 +443,73 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end assign_rooms;
+
+
+
+
+
+
+/**
+ * Given a tournament session and after `assign_rooms` has been called
+ * it's time to:
+ *  * Open the rooms for all players
+ *  * Define any new rooms (in wmg_tournament_rooms) that may have been manually added. This is used for verification status
+ *  * Schedule the jobs that will close score entering
+ *  * Send out room assignment push notifications
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created May 26, 2024
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure open_rooms(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'open_rooms';
+begin
+
+  log('BEGIN', l_scope);
+
+
+  log('.. Add rooms for verification', l_scope);
+  insert into wmg_tournament_rooms (
+      tournament_session_id
+    , time_slot
+    , room_no
+  )
+  select distinct tournament_session_id
+       , time_slot
+       , room_no
+    from wmg_tournament_players
+   where tournament_session_id = p_tournament_session_id
+     and active_ind = 'Y';
+
+
+  update wmg_tournament_sessions
+     set rooms_open_flag = decode(rooms_open_flag, 'Y', null, 'Y')
+       , registration_closed_flag = decode(registration_closed_flag, 'Y', null, 'Y')
+    where id = p_tournament_session_id;
+
+  commit;  -- Make sure the room open up regardless or other errors
+
+  wmg_util.submit_close_scoring_jobs(p_tournament_session_id => p_tournament_session_id);
+
+  wmg_notification.notify_room_assignments(p_tournament_session_id => p_tournament_session_id);
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end open_rooms;
+
 
 
 

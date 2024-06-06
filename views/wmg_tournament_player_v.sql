@@ -30,6 +30,7 @@ select t.id                              tournament_id
      , tp.time_slot                      time_slot
      , tp.room_no                        room_no
      , tp.points                         points
+     , tp.total_score                    total_score
      , tp.discarded_points_flag          discarded_points_flag
      , tp.issue_code                     issue_code
      , tp.verified_score_flag

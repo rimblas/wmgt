@@ -45,6 +45,10 @@ procedure assign_rooms(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );
 
+procedure open_rooms(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+);
+
 procedure reset_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );

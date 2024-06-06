@@ -1,4 +1,4 @@
--- drop table wmg_stream_round cascade constraints purge;
+drop table wmg_stream_round cascade constraints purge;
 
 -- Keep table names under 24 characters
 --           1234567890123456789012345
