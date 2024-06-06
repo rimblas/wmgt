@@ -76,7 +76,7 @@ javascript:
     
     $( ".your-tzRoomTime" ).append( $(".tzRoomTime").eq(0).text() );
     // display google button
-    $("#R47630258423476981333").mouseenter(function(event) {
+    $("#R47652714716339594336").mouseenter(function(event) {
       if (event.metaKey) {
         $(".google-style").css("display", "block");
       }
@@ -89,7 +89,9 @@ css:
   - //emoji-css.afeld.me/emoji.css
   inline: |
     .t-HeroRegion-icon {background-color: whitesmoke;}
+    #nextSeasonRegion {--ut-xs-hero-region-icon-container-size: 5rem;}
     
+    .t-ImageRegion--stretch img {max-width:100%;}
     
     .t-Login-region:first-of-type .t-Login-header {padding-bottom: 0}
     .t-Login-logo {
@@ -296,6 +298,8 @@ css:
         --ut-timeline-border-color: #b7b7b7;
         --ut-component-inner-border-width: 2px;
     }
+    
+    #weekPromoRegion .a-CardView-media--body { margin: 0;}
 
 security: 
   authentication: Page Is Public
@@ -770,7 +774,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 50
+    sequence: 60
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -812,7 +816,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 29
+    sequence: 39
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -856,7 +860,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 39
+    sequence: 49
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -970,7 +974,7 @@ regions:
       
 
   layout: 
-    sequence: 20
+    sequence: 40
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -1764,7 +1768,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 60
+    sequence: 70
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -2531,7 +2535,7 @@ regions:
       
 
   layout: 
-    sequence: 1
+    sequence: 29
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -2568,6 +2572,9 @@ regions:
     comments: |
       For Halloween theme:
       <svg id="svg"></svg>
+      
+      IP tracker
+      <img src="https://tracker.iplocation.net/brpcv">
 
   attributes: 
     settings: 
@@ -2616,6 +2623,48 @@ regions:
 
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: {Buttons Region} ============================
+  id: 36758551995835915
+  identification: 
+    title: '{Buttons Region}'
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: For the rest of the story # 32463879325429436
+    position: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Buttons Container # 46995043489945514344
+    template-options: 
+    - '#DEFAULT#'
+    - t-ButtonRegion--noPadding
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
 
   server-cache: 
     caching: Disabled
@@ -3179,7 +3228,7 @@ regions:
       
 
   layout: 
-    sequence: 80
+    sequence: 90
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -4051,7 +4100,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 90
+    sequence: 100
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -4408,7 +4457,7 @@ regions:
       
 
   layout: 
-    sequence: 30
+    sequence: 50
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -4638,7 +4687,7 @@ regions:
       fetch first 1 rows only
 
   layout: 
-    sequence: 30
+    sequence: 40
     parent-region: '{Next Tournament Info}' # 9186482410315410
     position: BODY
     start-new-layout: false
@@ -5117,7 +5166,7 @@ regions:
     optimizer-hint: WITH_PLSQL
 
   layout: 
-    sequence: 70
+    sequence: 80
     parent-region: '{col2}' # 11993448770685629
     position: BODY
     start-new-layout: false
@@ -5842,12 +5891,12 @@ buttons:
   id: 23850630349801623
   identification: 
     button-name: CHANGE_REGISTRATION
-    label: Change Registration
+    label: Change Time
 
   layout: 
     sequence: 10
     region: You're Registered! # 8055004655938714
-    position: COPY
+    position: CHANGE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -5855,10 +5904,13 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Text with Icon # 46995174047152514400
     hot: false
     template-options: 
     - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--iconRight
+    - t-Button--hoverIconPush
     icon: fa-chevron-right
 
   behavior: 
@@ -5992,6 +6044,104 @@ buttons:
   server-side-condition: 
     type: Item is NULL
     item: G_PLAYER_ID
+
+- # ====== Button: DISMISS =====================================
+  id: 36758432005835914
+  identification: 
+    button-name: DISMISS
+    label: Dismiss
+
+  layout: 
+    sequence: 10
+    region: '{Buttons Region}' # 36758551995835915
+    position: PREVIOUS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconLeft
+    icon: fa-times
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: SHOW_ME_DRAMA ===============================
+  id: 36758634451835916
+  identification: 
+    button-name: SHOW_ME_DRAMA
+    label: Show me the story
+
+  layout: 
+    sequence: 20
+    region: '{Buttons Region}' # 36758551995835915
+    position: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: true
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--iconRight
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:313:&SESSION.::&DEBUG.:::'
+      page: 313 # The Rest of the Story
+
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: UNREGISTER ==================================
+  id: 36760224734835932
+  identification: 
+    button-name: UNREGISTER
+    label: Unregister
+
+  layout: 
+    sequence: 10
+    region: You're Registered! # 8055004655938714
+    position: HELP
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon # 46995174047152514400
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--tiny
+    - t-Button--danger
+    - t-Button--simple
+    - t-Button--iconLeft
+    - t-Button--hoverIconPush
+    icon: fa-chevron-left
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    warn-on-unsaved-changes: Do Not Check
+
+  confirmation: 
+    message: Are you sure? We will miss you.
+    style: Warning
 
 - # ====== Button: VIEW_ALL_ROOMS ==============================
   id: 38210461609520003
@@ -6251,6 +6401,37 @@ buttons:
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
+- # ====== Dynamic Action: Refresh On Close ====================
+  id: 481389774587244
+  identification: 
+    name: Refresh On Close
+
+  execution: 
+    sequence: 70
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    selection-type: Region
+    region: Promo # 480769978587238
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 481492500587245
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Promo # 480769978587238
+
+    execution: 
+      sequence: 10
+      event: Refresh On Close # 481389774587244
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Turn-on Tooltips ====================
   id: 23850337986801620
   identification: 
@@ -6548,6 +6729,75 @@ processes:
 
   security: 
     authorization-scheme: Tournament Admin # 55902033226819493948
+
+- # ====== Process: Dismiss Drama ==============================
+  id: 36758753818835917
+  identification: 
+    name: Dismiss Drama
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: apex_util.set_preference('NO_GOLFGATE_DRAMA','Y');
+
+  execution: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: DISMISS # 36758432005835914
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+- # ====== Process: Unregister =================================
+  id: 36760359394835933
+  identification: 
+    name: Unregister
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      update wmg_tournament_players p
+       set active_ind = 'N'
+      where tournament_session_id = :G_CURRENT_SESSION_ID 
+        and player_id = :G_PLAYER_ID;
+
+  execution: 
+    sequence: 10
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: You have successfully unregistered.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    when-button-pressed: UNREGISTER # 36760224734835932
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_players p
+         , wmg_tournament_sessions s
+      where p.tournament_session_id = s.id
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+        and p.player_id = :G_PLAYER_ID
+        and s.rooms_open_flag is null
+
+  comments: 
+    comments: The extra condition is to make absolutely sure, the room definition process has not started.
 
 - # ====== Process: Purge Regions ==============================
   id: 39136754329390018

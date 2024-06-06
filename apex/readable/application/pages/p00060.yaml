@@ -177,6 +177,13 @@ css:
   - '&G_APP_FILES.css/week-lov#MIN#.css'
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    td.t-Report-cell[headers="PLAYER_NAME"] {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+        white-space: nowrap;
+    }
+    
     @media (max-width: 640px) {
     
         :root {
@@ -189,10 +196,7 @@ css:
         th#AVATAR {display: none;}
     
         td.t-Report-cell[headers="PLAYER_NAME"] {
-            overflow: hidden;
-            text-overflow: ellipsis;
             max-width: 128px;
-            white-space: nowrap;
        }
     
        .wm-search-item:first-child {
@@ -3751,7 +3755,7 @@ buttons:
     column: 10
     new-column: true
     column-span: Automatic
-    alignment: Left center
+    alignment: Right
 
   appearance: 
     button-template: Text with Icon # 46995174047152514400
@@ -4400,8 +4404,8 @@ computations:
   computation: 
     type: SQL Query (return single value)
     sql-query: |
-      select count(distinct week)
-      from  wmg_rounds
+      select count(*)
+      from  wmg_tournament_sessions
       
 
 processes: 

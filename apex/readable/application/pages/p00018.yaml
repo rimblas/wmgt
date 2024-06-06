@@ -59,9 +59,9 @@ regions:
 
   source: 
     html-code: |
-      YOU MUST BE A MEMBER OF THE OFFICIAL WMG DISCORD SERVER TO PARTICIPATE<br>
+      YOU MUST BE A MEMBER OF THE Classic League Discord Server to participate<br>
       <br>
-      Join here <a href="https://discord.gg/wmg" target="_blank">discord.gg/wmg</a> now<br>
+      Join here <a href="https://discord.gg/theclassicgolfleague" target="_blank">discord.gg/theclassicgolfleague</a> now<br>
 
   layout: 
     sequence: 50
@@ -200,7 +200,7 @@ page-items:
     type: Checkbox
 
   label: 
-    label: Yes, I'm a member of the official Walkabout Discord Server
+    label: Yes, I'm a member of the The Classic Golf League Server
     alignment: Left
 
   settings: 
@@ -344,14 +344,8 @@ page-items:
   list-of-values: 
     type: SQL Query
     sql-query: |
-      select d, r
-      from (
-      select 'England' d, 'england' r from dual union all
-      select 'Scotland' d, 'scotland' r from dual union all
-      select 'Wales' d, 'wales' r from dual union all
-      select formatted_name d, lower(iso) r
-      from country
-      )
+      select name d, iso_code r
+      from wmg_country_iso_v
       order by 1
     display-extra-values: true
     display-null-value: true
@@ -445,6 +439,7 @@ page-items:
       select 'US/Central' tz from dual union all
       select 'US/Michigan' tz from dual union all
       select 'US/Eastern' tz from dual union all
+      select 'US/Mountain' tz from dual union all
       select 'US/Arizona' tz from dual union all
       select 'US/Pacific' tz from dual
       )

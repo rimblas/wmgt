@@ -2578,8 +2578,9 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    type: Request != Value
-    value: CLOSE_WEEKEND
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":REQUEST != 'CLOSE_WEEKEND' and :REQUEST != 'DELETE'"
 
 - # ====== Process: Initialize form Wmg Tournament Sessions ====
   id: 56158061000602236801
