@@ -12,6 +12,7 @@ create table wmg_tournament_players (
                                    check (time_slot in ('00:00','02:00','04:00','08:00','12:00','16:00','18:00','20:00')) not null
   , room_no                        number
   , points                         number
+  , total_score                    number
   , points_override                number
   , discarded_points_flag          varchar2(1)
   , verified_score_flag            varchar2(1)
