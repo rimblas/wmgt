@@ -1,5 +1,5 @@
 set define off
-alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
+-- alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
 create or replace package body wmg_discord
 is
 
@@ -147,6 +147,57 @@ exception
       log('Unhandled Exception', l_scope);
       raise;
 end avatar_link;
+
+
+
+
+/**
+ * Return the URL to a discord avatar
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created January 15, 2023
+ * @param p_discord_id
+ * @param p_avatar_uri
+ * @return
+ */
+function guild_link(
+    p_discord_id in wmg_guilds.discord_id%type
+  , p_avatar_uri in wmg_guilds.discord_avatar%type default null
+  , p_size_class in varchar2 default 'md')
+return varchar2
+is
+  l_scope  scope_t := gc_scope_prefix || 'guild_link';
+  l_guild_rec wmg_guilds%rowtype;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  $IF $$VERBOSE_OUTPUT $THEN
+  log('START', l_scope);
+  $END
+
+
+   if p_discord_id is null then
+     return '<img class="avatar ' || p_size_class || '" src="' || V('APP_IMAGES') || 'img/discord_mask.png' || '">';
+   else
+     select * into l_guild_rec from wmg_guilds where discord_id = p_discord_id;
+
+     -- return '<a class="-wm-discord-link" href="discord://discordapp.com/users/' || p_discord_id || '/">'
+     return '<a class="-wm-discord-link" href="https://discord.com/channels/' || p_discord_id || '/" target="discord" title="' || l_guild_rec.name || '">'
+          -- || '<img class="avatar ' || p_size_class || '" src="' || avatar(p_discord_id => p_discord_id, p_avatar_uri => p_avatar_uri) || '">'
+          || '<img class="avatar ' || p_size_class || '" src="' || 'https://cdn.discordapp.com/icons/' || p_discord_id || '/' || p_avatar_uri || '.webp?size=240' || '">'
+          || '</a>';
+   end if;
+
+exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end guild_link;
 
 
 

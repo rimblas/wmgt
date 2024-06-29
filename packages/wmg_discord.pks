@@ -20,6 +20,12 @@ function avatar_link(
   , p_size_class in varchar2 default 'md')
 return varchar2;
 
+function guild_link(
+    p_discord_id in wmg_guilds.discord_id%type
+  , p_avatar_uri in wmg_guilds.discord_avatar%type default null
+  , p_size_class in varchar2 default 'md')
+return varchar2;
+
 --------------------------------------------------------------------------------
 
 function render_profile(
