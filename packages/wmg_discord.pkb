@@ -189,7 +189,7 @@ begin
      -- return '<a class="-wm-discord-link" href="discord://discordapp.com/users/' || p_discord_id || '/">'
      return '<a class="-wm-discord-link" href="https://discord.com/channels/' || p_discord_id || '/" target="discord" title="' || l_guild_rec.name || '">'
           -- || '<img class="avatar ' || p_size_class || '" src="' || avatar(p_discord_id => p_discord_id, p_avatar_uri => p_avatar_uri) || '">'
-          || '<img class="avatar ' || p_size_class || '" src="' || 'https://cdn.discordapp.com/icons/' || p_discord_id || '/' || p_avatar_uri || '.webp?size=240' || '">'
+          || '<img class="avatar ' || p_size_class || '" src="' || 'https://cdn.discordapp.com/icons/' || p_discord_id || '/' || nvl(p_avatar_uri, l_guild_rec.discord_avatar) || '.webp?size=240' || '">'
           || '</a>';
    end if;
 
@@ -393,6 +393,22 @@ begin
 
   log('.. Move player unicorns', l_scope);
   update wmg_player_unicorns
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+  log('.. Move leaderboard', l_scope);
+  update wmg_leaderboards
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+  log('.. Move Race leaderboard', l_scope);
+  update wmg_race_leaderboards
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
+
+  log('.. Move leaderboard logs', l_scope);
+  update wmg_leaderboard_logs
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
 
