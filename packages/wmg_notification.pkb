@@ -1551,11 +1551,9 @@ begin
     select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_easy_top_scores
     from (
-        select '- Leaderboard: ' score_type, r.scorecard_total under_par
-        from wmg_rounds_v r
-        where r.course_id = new_session.easy_course_id
-          and r.player_id = 0
-          and r.week = 'S00W00' 
+        select '- Leaderboard: ' score_type, min(l.score) under_par
+          from wmg_leaderboards l
+         where l.course_id = new_session.easy_course_id
         union all
         select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
@@ -1590,11 +1588,9 @@ begin
     select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_hard_top_scores
     from (
-        select '- Leaderboard: ' score_type, r.scorecard_total under_par
-        from wmg_rounds_v r
-        where r.course_id = new_session.hard_course_id
-          and r.player_id = 0
-          and r.week = 'S00W00' 
+        select '- Leaderboard: ' score_type, min(l.score) under_par
+          from wmg_leaderboards l
+         where l.course_id = new_session.hard_course_id
         union all
         select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
