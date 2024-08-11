@@ -2123,12 +2123,12 @@ begin
       select *
         into l_issue_rec
         from wmg_issues
-       where code = c_issue_noshow;
+       where code = c_issue_noscore;
   exception 
     -- protect against errors in case the issue is gone
     when no_data_found then
-      l_issue_rec.code := c_issue_noshow;
-      l_issue_rec.description := 'No show or No Score';
+      l_issue_rec.code := c_issue_noscore;
+      l_issue_rec.description := 'Scores not entered in time';
   end;
 
   log('.. loop throough pending time entries', l_scope);
