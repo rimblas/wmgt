@@ -352,14 +352,16 @@ begin
          connect by level <= 6
         )
     , slots as (
-        select slot || ':00' d, slot t
+        select day_offset, slot || ':00' d, slot t
         from (
-            select lpad( (n-1)*4,2,0) slot
+            select lpad( (n-1)*4,2,0) slot, 0 day_offset
             from slots_n
             union all
-            select '02' from dual
+            select '22' slot, -1 day_offset from dual
             union all
-            select '18' from dual
+            select '02' slot, 0 day_offset from dual
+            union all
+            select '18' slot, 0 day_offset from dual
         )
     )
     select d time_slot, t
@@ -1497,18 +1499,27 @@ is
 
   l_leader_rec wmg_leaderboard_util.leader_rec_t;
 
+  procedure init_record
+  as
+  begin
+    -- reset for next record
+    l_leader_rec := null;
+
+    l_leader_rec.rec_type := wmg_leaderboard_util.c_type_standard;
+    l_leader_rec.tournament_flag := 'Y';
+    l_leader_rec.approved_flag := 'Y';
+    l_leader_rec.approved_on   := current_timestamp;
+    l_leader_rec.approved_by   := 'SYSTEM';
+  end init_record;
+
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
 
-  l_leader_rec.rec_type := wmg_leaderboard_util.c_type_standard;
-  l_leader_rec.approved_flag := 'Y';
-  l_leader_rec.approved_on   := current_timestamp;
-  l_leader_rec.approved_by   := 'SYSTEM';
   select id
     into l_leader_rec.guild_id
     from wmg_guilds
-   where code = 'WMG';
+   where code = 'CLASSIC';
 
   for e in (
     select p.player_id
@@ -1523,6 +1534,7 @@ begin
   )
   loop
 
+    init_record;
     -- Adding Easy Scores
     l_leader_rec.player_id := e.player_id;
     l_leader_rec.course_id := e.easy_course_id;
@@ -1533,6 +1545,7 @@ begin
 
     -- Adding Hard Scores
     if e.hard is not null then
+      init_record;
       l_leader_rec.player_id := e.player_id;
       l_leader_rec.course_id := e.hard_course_id;
       l_leader_rec.score := e.hard;
@@ -1540,11 +1553,12 @@ begin
 
       wmg_leaderboard_util.add_standard_entry(p_leader_rec => l_leader_rec);
     end if;
-    
+
   end loop;
 
 
   log('END', l_scope);
+
 
   exception
     when OTHERS then
