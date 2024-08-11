@@ -1233,44 +1233,24 @@ begin
 
 
   /*
-   *    RISING status can be achieved by the following:
+   *    SEMI-PRO status can be achieved by the following:
    *    (1x) Top 25  -or- .. TBD
    */
 
-  log('.. Advance to RISING', l_scope);
-  update wmg_players
-     set rank_code = 'RISING'
-   where id in (
-    select p.player_id
-      from wmg_tournament_session_points_v p
-     where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 25
-       and p.rank_code not in ('PRO', 'SEMI', 'RISING')
-   );
-
-  /*
-   *    SEMI-PRO status can be achieved by the following:
-   *    (1x) Top 10  -or- TBD
-   */
-
-  log('.. Advance to SEMI-PRO', l_scope);
+  log('.. Advance to SEMI', l_scope);
   update wmg_players
      set rank_code = 'SEMI'
    where id in (
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 10
-       and p.rank_code not in ('PRO', 'SEMI')
+       and p.pos <= 25
+       and p.rank_code not in ('PRO', 'SEMI', 'ELITE')
    );
-  
-  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
-
-
 
   /*
    *    PRO status can be achieved by the following:
-   *    (1x) Top 3 -or- TBD
+   *    (1x) Top 10  -or- TBD
    */
 
   log('.. Advance to PRO', l_scope);
@@ -1280,8 +1260,28 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 10
+       and p.rank_code not in ('PRO', 'ELITE')
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
+
+  /*
+   *    ELITE status can be achieved by the following:
+   *    (1x) Top 3 -or- TBD
+   */
+
+  log('.. Advance to ELITE', l_scope);
+  update wmg_players
+     set rank_code = 'ELITE'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
        and p.pos <= 3
-       and p.rank_code != 'PRO'
+       and p.rank_code != 'ELITE'
    );
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
