@@ -9,7 +9,7 @@ create table wmg_tournament_players (
                                    constraint wmg_tournament_pla_player_i_fk
                                    references wmg_players(id)
   , time_slot                      varchar2(5 char) constraint wmg_tournament_pla_time_slo_ck
-                                   check (time_slot in ('00:00','02:00','04:00','08:00','12:00','16:00','18:00','20:00')) not null
+                                   check (time_slot in ('00:00','02:00','04:00','08:00','12:00','16:00','18:00','20:00', '22:00')) not null
   , room_no                        number
   , points                         number
   , total_score                    number

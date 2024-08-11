@@ -364,9 +364,9 @@ begin
             select '18' slot, 0 day_offset from dual
         )
     )
-    select d time_slot, t
+    select day_offset, d time_slot, t
     from slots
-    order by t
+    order by day_offset, t
   )
   loop
 
@@ -2350,14 +2350,16 @@ begin
          connect by level <= 6
         )
     , slots as (
-        select slot || ':00' d, slot t
+        select day_offset, slot || ':00' d, slot t
         from (
-            select lpad( (n-1)*4,2,0) slot
+            select lpad( (n-1)*4,2,0) slot, 0 day_offset
             from slots_n
             union all
-            select '02' from dual
+            select '22' slot, -1 day_offset from dual
             union all
-            select '18' from dual
+            select '02' slot, 0 day_offset from dual
+            union all
+            select '18' slot, 0 day_offset from dual
         )
     )
     , ts as (
@@ -2367,11 +2369,11 @@ begin
     )
     select t
          , slots.t || ':00' time_slot
-         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
-         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') + INTERVAL '4' HOUR job_run
+         , to_utc_timestamp_tz(to_char(ts.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
+         , to_utc_timestamp_tz(to_char(ts.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') + INTERVAL '4' HOUR job_run
     from ts
        , slots
-    order by t
+    order by slots.day_offset, t
   )
   loop
     create_close_scoring_job(
