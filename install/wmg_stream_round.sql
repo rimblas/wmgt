@@ -9,8 +9,8 @@ create table wmg_stream_round (
                                    references wmg_streams(id) on delete cascade
   , current_round number default on null 0
   , current_course_id number
-  , current_hole  number default on null 1
-  , current_hole_par number default on null 3
+  , current_hole  number
+  , current_hole_par number
   , player1_round1_score number default on null 0
   , player2_round1_score number default on null 0
   , player1_round2_score number default on null 0
@@ -21,7 +21,7 @@ create table wmg_stream_round (
 enable primary key using index
 /
 
-comment on table wmg_stream_round is 'Stream Details';
+comment on table wmg_stream_round is 'Stream Running Details';
 
 comment on column wmg_stream_round.id is 'Primary Key ID';
 comment on column wmg_stream_round.stream_id is 'Stream info';

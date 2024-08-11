@@ -6,7 +6,7 @@ create table wmg_streams (
     id            number        generated always as identity (start with 1) primary key not null
   , player1_id    number        not null
   , player2_id    number        not null
-  , player1_gbcolor varchar2(20)
+  , player1_bgcolor varchar2(20)
   , player2_bgcolor varchar2(20)
   , player1_color varchar2(20)
   , player2_color varchar2(20)
