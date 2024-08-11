@@ -56,7 +56,23 @@ insert into wmg_parameters (
 values (
     'Notifications'   -- category
   , 'NEW_PLAYER_NOTIFICATION_EMAILS'   -- name_key
-  , 'jorge@rimblas.com,FugoHallahallarin@gmail.com'   -- value
+  , ''   -- value
   , 'Emails to notify when a new player signs up'   -- description
+)
+/
+
+delete from wmg_parameters where name_key = 'GLOBAL_APP_BANNER';
+insert into wmg_parameters (
+    category
+  , name_key
+  , value
+  , description
+)
+values (
+    'Notifications'   -- category
+  , 'GLOBAL_APP_BANNER'   -- name_key
+  , 'There was a Walkabout Mini Gold update on Thursday, June 13. You must be on this new version (v5.1) in order to play the tournament.<br>'
+  || 'Updating is slow, make sure you do it with plenty of time before the tournamnent.'   -- value
+  , 'Global Notification for the app. If set it will display in serverl pages as a global message.'   -- description
 )
 /
