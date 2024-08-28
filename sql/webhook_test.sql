@@ -11,7 +11,7 @@ declare
 begin
   l_time_slot := '00:00';
   for p in (
-    select p.* from wmg_players_v p where id = 62 -- p_player_id
+    select p.* from wmg_players_v p where id = 24 -- p_player_id
   )
   loop
     -- People with a default discord avatar use an internal image lacking the protocol
