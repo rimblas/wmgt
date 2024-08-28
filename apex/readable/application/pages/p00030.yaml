@@ -77,18 +77,30 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select case when noshow_registrations = 2 then 'danger' when noshow_registrations >= 3 then 'danger' end alert_type
-          , apex_escape.html(p.player_name) || ' you have ' || noshow_registrations || ' "No Shows" this season already!!' alert_title
-          , case when noshow_registrations = 2 then
-            '<br><b>One more unannounced</b> absence, and you will get a cool-down break for the rest of the season.' || '<br><br>'
-          || 'If you are not going to make it, let someone in the Staff know about it in advance so we can make the necessary room arrangements.' || '<br><br>'
-          || 'Your unannounced absence is disruptive to the tournament and to the other players.'
-          else
-            '<br>We are sorry, but you cannot register any more. Hopefully we will see you next season'
-          end  alert_desc
+      select 'danger' alert_type
+           , apex_escape.html(p.player_name) || ', ' 
+           || case when noshow_registrations >= 2 then
+                ' you have ' || noshow_registrations || ' "No Shows" this season already!!'  || case when noscore_participation >=2 then ' and ' end
+              end
+           || case when noscore_participation >= 2 then
+               ' you have played and skipped entering scores ' || noscore_participation || ' times this season ' ||  case when noshow_registrations >= 2 then ' also' else ' already!!'  end
+              end
+            alert_title
+           , case when noscore_participation = 2 then
+              '<br>We take this very seriously, <b>one more</b> skip, and you will get a cool-down break for the rest of the season.' || '<br><br>'
+             end
+            || case when noshow_registrations = 2 then
+                '<br><b>One more unannounced</b> absence, and you will get a cool-down break for the rest of the season.' || '<br><br>'
+              || 'If you are not going to make it, let someone in the Staff know about it in advance so we can make the necessary room arrangements.' || '<br><br>'
+              || 'Your unannounced absence is disruptive to the tournament and to the other players.'
+             end
+           || case when noshow_registrations > 2 or noscore_participation > 2 then
+            '<br>You cannot register any more. Hopefully we will see you next season'
+            end  alert_desc
           , '' alert_action
       from (
           select sum(decode(p.issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+               , sum(decode(issue_code, 'NOSCORE', 1, 0)) noscore_participation
            from wmg_tournament_players p
           where p.active_ind = 'Y'
             and p.player_id = :G_PLAYER_ID
@@ -102,6 +114,7 @@ regions:
       )
       , wmg_players_v p
       where p.id = :G_PLAYER_ID
+      
 
   layout: 
     sequence: 9
@@ -133,11 +146,19 @@ regions:
       select 1
       from (
             select sum(decode(issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+                 , sum(decode(issue_code, 'NOSCORE', 1, 0)) noscore_participation
                from wmg_tournament_players
               where active_ind = 'Y'
                 and player_id = :G_PLAYER_ID
+                and tournament_session_id in (
+                  select ts.id
+                    from wmg_tournament_sessions ts
+                   where ts.tournament_id in (
+                     select tournament_id from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID
+                   )
+                )
       )
-      where noshow_registrations >= 2
+      where noshow_registrations >= 2 or noscore_participation >=2
 
   security: 
     authorization-scheme: MODEL.LOV.NOT_W_ARGUMENT # 46995203801871514425
@@ -449,15 +470,15 @@ regions:
       output-as: HTML
       expand-shortcuts: false
 
-- # ====== Region: It you play #stroke-singles =================
+- # ====== Region: If you play #stroke-singles or #rank-singles 
   id: 36760055193835930
   identification: 
-    title: 'It you play #stroke-singles'
+    title: 'If you play #stroke-singles or #rank-singles'
     type: Static Content
 
   source: 
     html-code: |
-      If you play in #ranked-play or #stroke-singles, you can choose to play the current tournament courses<br>
+      If you play in #ranked-singles, #ranked-doubles or #stroke-singles, you can choose to play the current tournament courses<br>
       <br>
       
 
@@ -564,14 +585,16 @@ regions:
            connect by level <= 6
           )
       , slots as (
-          select slot || ':00' d, slot t
+          select day_offset, slot || ':00' d, slot t
           from (
-              select lpad( (n-1)*4,2,0) slot
+              select lpad( (n-1)*4,2,0) slot, 0 day_offset
               from slots_n
               union all
-              select '02' from dual
+              select '22' slot, -1 day_offset from dual
               union all
-              select '18' from dual
+              select '02' slot, 0 day_offset from dual
+              union all
+              select '18' slot, 0 day_offset from dual
           )
       )
       , ts as (
@@ -583,6 +606,7 @@ regions:
                where current_flag = 'Y'
           )
             and s.completed_ind = 'N'
+            and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
           order by s.session_date
           fetch first 1 rows only
       )
@@ -605,16 +629,17 @@ regions:
           , p_selected_value   => decode(slots.d, s.time_slot, slots.d, '')) selection
           , slots.d slot
           , slots.t
+          , slots.day_offset
           , tz.tz
-          , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
-          , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') at time zone tz.tz local_tz
+          , to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
+          , to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') at time zone tz.tz local_tz
       from ts s
          , tz
          , slots
          , (select time_slot from wmg_tournament_players tp where tp.tournament_session_id = :G_CURRENT_SESSION_ID and tp.player_id = :P30_PLAYER_ID and tp.active_ind = 'Y') s
       where slots.d = s.time_slot (+)
       )
-      order by t
+      order by day_offset, t
       
     page-items-to-submit: 
     - P30_TZ
@@ -903,6 +928,7 @@ regions:
       select 1
       from (
           select sum(decode(p.issue_code, 'NOSHOW', 1, 0)) noshow_registrations
+               , sum(decode(issue_code, 'NOSCORE', 1, 0)) noscore_participation
            from wmg_tournament_players p
           where p.active_ind = 'Y'
             and p.player_id = :G_PLAYER_ID
@@ -914,7 +940,7 @@ regions:
              )
           )
       )
-      where noshow_registrations > 2
+      where noshow_registrations > 2 or noscore_participation >2
 
   server-cache: 
     caching: Disabled
