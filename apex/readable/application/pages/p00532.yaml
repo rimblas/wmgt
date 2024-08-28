@@ -841,7 +841,7 @@ page-items:
     syntax-highlighting: true
 
   layout: 
-    sequence: 200
+    sequence: 160
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -916,6 +916,58 @@ page-items:
   session-state: 
     data-type: VARCHAR2
     storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_OPEN_NOTIFY_FLAG ====================
+  id: 32957786483648001
+  identification: 
+    name: P532_OPEN_NOTIFY_FLAG
+    type: Checkbox
+
+  label: 
+    label: Notify?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 130
+    region: Tournament Sessions # 56158045789158236792
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 2
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Above # 46995171350087514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P532_ID
 
   security: 
     session-state-protection: Unrestricted
@@ -1046,7 +1098,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 140
+    sequence: 150
     region: Tournament Sessions # 56158045789158236792
     position: BODY
 
@@ -1610,7 +1662,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 130
+    sequence: 140
     region: Tournament Sessions # 56158045789158236792
     position: BODY
     alignment: Left
@@ -2563,7 +2615,7 @@ processes:
       
       commit; -- Make sure everything up to now is saved.
       
-      if :REQUEST = 'CREATE' then
+      if :REQUEST = 'CREATE' or (:REQUEST = 'SAVE' and :P532_OPEN_NOTIFY_FLAG = 'Y') then
       -- apex_debug.message('[%s] %s', 'Save Courses & Push Notifications', 'P532_ID=' || :P532_ID);
       wmg_notification.notify_new_courses(p_tournament_session_id => :P532_ID);
       end if;

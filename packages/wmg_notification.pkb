@@ -465,6 +465,7 @@ begin
        and tp.time_slot = p_time_slot
        and tp.active_ind = 'Y'
        and r.total_scorecard is null      -- Anyone with no scores entered will be included.
+       and nvl(tp.issue_code, 'NOSCORES') != 'INFRACTION' -- exclude those with an infraction because this is for NOSHOW and NOSCORES
      group by tp.time_slot
   )
   loop

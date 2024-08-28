@@ -180,6 +180,66 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P135_POINTS_OVERRIDE =====================
+  id: 4294750405830700
+  identification: 
+    name: P135_POINTS_OVERRIDE
+    type: Number Field
+
+  label: 
+    label: Points Override
+    alignment: Left
+
+  settings: 
+    number-alignment: Start
+    virtual-keyboard: Decimal
+
+  layout: 
+    sequence: 90
+    region: Maintain Player Tournament Details # 57621134010206990
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 4
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+    width: 32
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    post-text-: <i class="fa cfa-warning_Y cfa-1_5x" title="Warning, this will force these points onto the player"></i>
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Maintain Player Tournament Details # 57621134010206990
+    column: POINTS_OVERRIDE
+    data-type: NUMBER
+    query-only: false
+    primary-key: false
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: At the time of tournament closing these are the points that will be applied to the player.
+
 - # ====== Page Item: P135_ID ==================================
   id: 57621458859206994
   identification: 
@@ -539,7 +599,7 @@ page-items:
     on-value: Y
 
   layout: 
-    sequence: 90
+    sequence: 100
     region: Maintain Player Tournament Details # 57621134010206990
     position: BODY
     alignment: Left

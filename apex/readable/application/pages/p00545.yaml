@@ -184,6 +184,64 @@ regions:
       expand-shortcuts: false
 
 page-items: 
+- # ====== Page Item: P545_NEW_MESSAGE_IND =====================
+  id: 19128854106158038
+  identification: 
+    name: P545_NEW_MESSAGE_IND
+    type: Switch
+
+  label: 
+    label: New Message?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 70
+    region: Maintain Messages # 49767973234984249
+    position: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating # 46995171503553514398
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Maintain Messages # 49767973234984249
+    column: NEW_MESSAGE_IND
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: As long as the message is set to "New" it will be displayed to the player.
+
 - # ====== Page Item: P545_ID ==================================
   id: 49768275138984249
   identification: 

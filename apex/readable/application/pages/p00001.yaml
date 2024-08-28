@@ -300,6 +300,14 @@ css:
     }
     
     #weekPromoRegion .a-CardView-media--body { margin: 0;}
+    
+    .--wmgt-excludedY {
+        text-decoration: line-through;
+        opacity: .4;
+    }
+    .--wmgt-excluded-legend {
+        color: var(--ut-palette-warning);
+    }
 
 security: 
   authentication: Page Is Public
@@ -494,12 +502,14 @@ regions:
             || ' ' || tz at_local_time
       from (
       select r.player
-           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || r.time_slot) at time zone r.tz local_tz
+           , to_utc_timestamp_tz(to_char(s.session_date + ts.day_offset, 'yyyy-mm-dd') || 'T' || r.time_slot) at time zone r.tz local_tz
            , r.tz
            , r.time_slot
       from wmg_tournament_sessions s
+         , wmg_time_slots_all_v ts
          , my_room r
       where s.id = r.tournament_session_id
+        and r.time_slot = ts.time_slot
       ) r
       
 
@@ -922,6 +932,7 @@ regions:
         where s.easy_course_id = ec.id (+)
           and s.hard_course_id = hc.id (+)
           and s.completed_ind = 'N'
+          and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
           and s.tournament_id in (
             select id
               from wmg_tournaments
@@ -930,37 +941,21 @@ regions:
         order by session_date desc
         fetch first 1 rows only
       )
-      , slots_n as (
-          select level n
-           from dual
-           connect by level <= 6
-          )
-      , slots as (
-          select slot || ':00' d, slot t
-          from (
-              select lpad( (n-1)*4,2,0) slot
-              from slots_n
-              union all
-              select '02' from dual
-              union all
-              select '18' from dual
-          )
-      )
       , next_room_timer as (
         select *
         from (
-        select to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d) session_date_utc
-             , to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d || '+00:00' session_date_utc_str
-             , decode(slots.t, '00', 'Next tournament starts in', 'UTC ' || slots.d || ' starts in') title
+        select to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.time_slot) session_date_utc
+             , to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.time_slot || '+00:00' session_date_utc_str
+             , decode(slots.seq, 1, 'Next tournament starts in', 'UTC ' || slots.time_slot || ' starts in') title
              , s.session_date
         from next_session s
-           , slots
+           , wmg_time_slots_all_v slots
         )
         where session_date_utc > systimestamp - NUMTODSINTERVAL(2, 'MINUTE')
         order by session_date_utc
         fetch first 1 rows only
       )
-      select ns.session_date
+      select ns.session_date -1 session_date
            , ns.easy_course
            , ns.hard_course
            , ns.players
@@ -1814,7 +1809,7 @@ regions:
     type: Static Content
 
   source: 
-    html-code: '<img class="seasonTrophy" src="&BUCKET.S11_CHAMPION.gif" style="width: 100%" title="Champion Trophy: his.Dudeness S11 Champion">'
+    html-code: '<img class="seasonTrophy" src="&BUCKET.S13_CHAMPION.gif" style="width: 100%" title="Champion Trophy: Outrider S13 Champion">'
 
   layout: 
     sequence: 50
@@ -2018,14 +2013,20 @@ regions:
                , s.easy_course_code
                , s.easy_course_name
                , to_char(apex_markdown.to_html(e.factoids, p_embedded_html_mode => 'PRESERVE')) easy_factoids
+               , '' easy_tournament_excluded_flag
                , s.hard_course_code
                , s.hard_course_name
                , to_char(apex_markdown.to_html(h.factoids, p_embedded_html_mode => 'PRESERVE')) hard_factoids
+               , '' hard_tournament_excluded_flag
                , s.easy_course_id
                , s.easy_release_order
                , s.hard_course_id
                , s.hard_release_order
-               , case when s.completed_ind = 'Y' then 'white_check_mark' else 'golf' end status
+               , case 
+                   when s.completed_ind = 'Y' then 'white_check_mark'
+                   when (s.open_registration_on is null or s.open_registration_on < localtimestamp) then 'golf'
+                    else 'clock1' 
+                 end status
             -- halloween
             --   , case when s.completed_ind = 'Y' then 'skull' else 'jack_o_lantern' end status
                , s.session_date
@@ -2046,6 +2047,7 @@ regions:
            , easy_course_group
            , easy_course
            , easy_name
+           , easy_tournament_excluded_flag
            , '' hard_course
            , '' hard_name
            , status
@@ -2059,6 +2061,7 @@ regions:
            , e.code easy_course
            , tce.easy_course_code
            , e.name easy_name
+           , e.tournament_excluded_flag easy_tournament_excluded_flag
           -- , case when e.release_order <= 8 then 'zzz' else 'lock' end status
            , 'lock' status
           -- halloween
@@ -2081,6 +2084,7 @@ regions:
              , '' easy_name
              , hard_course
              , hard_name
+             , hard_tournament_excluded_flag
              , status
              , order_by
              , release_order
@@ -2092,7 +2096,7 @@ regions:
                , h.code hard_course
                , h.name hard_name
                , tch.hard_course_code
-              -- , case when e.release_order <= 8 then 'zzz' else 'lock' end status
+               , h.tournament_excluded_flag hard_tournament_excluded_flag
                , 'lock' status
               -- halloween
               -- , 'skull_and_crossbones' status
@@ -2107,15 +2111,18 @@ regions:
         )
         where hard_course_code is null
       )
-      select e.round_num
+      select /* q("pending") */ e.round_num
            , '' url
            , e.easy_course
            , e.easy_name
+           , e.easy_tournament_excluded_flag
            , e.easy_factoids
            , h.hard_course
            , h.hard_name
+           , h.hard_tournament_excluded_flag
            , h.hard_factoids
            , coalesce(e.status, h.status) status
+           , '' current_status
            , case 
                when  coalesce(e.status, h.status) = 'lock' then 'Pending to be played'
                else 'Not eligible' end status_title
@@ -2129,17 +2136,24 @@ regions:
            , apex_page.get_url(p_page => 60, p_items => 'P60_WEEK', p_values => c.week) url
            , nvl(c.easy_course_code, '-?-') easy_course_code
            , nvl(c.easy_course_name, 'TBD') easy_name
+           , c.easy_tournament_excluded_flag
            , c.easy_factoids
            , nvl(c.hard_course_code, '-?-') hard_course_code
            , nvl(c.hard_course_name, 'TBD') hard_name
+           , c.hard_tournament_excluded_flag
            , c.hard_factoids
            , c.status
+           , decode(c.status
+                , 'golf', ' -wm-animate-glow-blue'
+                , 'jack_o_lantern', ' -wm-animate-glow-blue'
+                , '') current_status
            , decode(c.status
                 , 'white_medium_square', 'Pending to be played'
                 , 'white_check_mark', 'Already played'
                 , 'skull', 'Already played'
                 , 'golf', 'Current tournament courses'
                 , 'jack_o_lantern', 'Current tournament courses'
+                , 'clock1', 'Future week!'
                 , 'o', 'Not available', ''
                 ) status_title
            , 1 order_by
@@ -2151,11 +2165,14 @@ regions:
            , '' url
            , '-?-' easy_course
            , 'TBD' easy_name
+           , '' easy_tournament_excluded_flag
            , '' easy_factoids
            , '-?-' hard_course
            , 'TBD' hard_name
+           , '' hard_tournament_excluded_flag
            , '' hard_factoids
            , 'gift' status
+           , '' current_status
            , 'TBD' status_title
            , 1 order_by
            , 0 course_order     
@@ -2163,10 +2180,9 @@ regions:
        select nvl(max(c.round_num),0) + 1 next_round_num
        from tournament_courses c
       )
-      where next_round_num <= 12
+      where next_round_num <= 12 -- 12 week season
         and not exists (select 1 from tournament_courses where completed_ind = 'N') -- only add the TBD line when the current tournament is not finished
       order by order_by, round_num, course_order
-      
 
   layout: 
     sequence: 20
@@ -2259,6 +2275,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: EASY_TOURNAMENT_EXCLUDED_FLAG ===============
+    id: 29248714704467340
+    identification: 
+      column-name: EASY_TOURNAMENT_EXCLUDED_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_TOURNAMENT_EXCLUDED_FLAG ===============
+    id: 29248827208467341
+    identification: 
+      column-name: HARD_TOURNAMENT_EXCLUDED_FLAG
+      type: Hidden Column
+
+    layout: 
+      sequence: 140
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: ROUND_NUM ===================================
     id: 32751565109549206
     identification: 
@@ -2279,7 +2325,7 @@ regions:
     column-formatting: 
       html-expression: |
         {if URL/}
-        <a class="t-Button t-Button--icon t-Button--tiny -wm-round#ROUND_NUM#12" href="#URL#">
+        <a class="t-Button t-Button--icon t-Button--tiny -wm-round#ROUND_NUM#12 #CURRENT_STATUS#" href="#URL#">
           <span class="t-Button-label"><span class="hidden-xs-down">Week </span>#ROUND_NUM# of 12</span>
         </a>
         {else/}
@@ -2326,7 +2372,7 @@ regions:
       html-expression: |
         {case EASY_NAME/}
         {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
-        {otherwise/}<span class="tooltipImg" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">#EASY_COURSE#</span>{endcase/}
+        {otherwise/}<span class="tooltipImg --wmgt-excluded#EASY_TOURNAMENT_EXCLUDED_FLAG#" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">#EASY_COURSE#</span>{endcase/}
         
 
     sorting: 
@@ -2365,7 +2411,8 @@ regions:
       html-expression: |
         {case HARD_NAME/}
         {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
-        {otherwise/}<span class="tooltipImg" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">#HARD_COURSE#</span>{endcase/}
+        {otherwise/}<span class="tooltipImg --wmgt-excluded#HARD_TOURNAMENT_EXCLUDED_FLAG#" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">#HARD_COURSE#</span>{endcase/}
+        
 
     sorting: 
       sortable: false
@@ -2440,6 +2487,21 @@ regions:
 
     layout: 
       sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: CURRENT_STATUS ==============================
+    id: 32957903024648002
+    identification: 
+      column-name: CURRENT_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 150
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -3257,9 +3319,9 @@ regions:
   header-and-footer: 
     footer-text: |
       <div class="pro-legend row margin-sm u-justify-content-space-around">
-      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro player</div>
+      <div class="-wm-rank-elite fa margin-right-sm" title="Elite"> = Elite player</div>
+      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro </div>
       <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi-Pro</div>
-      <div class="-wm-rank-rise fa margin-right-sm" title="Rising Star"> = Rising Star</div>
       <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur</div>
       <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
       </div>
@@ -4417,8 +4479,11 @@ regions:
       with my_room as (
       select p.tournament_session_id, p.time_slot, p.room_no
            , nvl(p.prefered_tz, sessiontimezone) tz
+           , t.day_offset
       from wmg_tournament_player_v p
-      where p.active_ind = 'Y'
+         , wmg_time_slots_all_v t
+      where t.time_slot = p.time_slot
+        and p.active_ind = 'Y'
         and p.tournament_session_id = :G_CURRENT_SESSION_ID
         and p.player_id = :G_PLAYER_ID
       )
@@ -4439,7 +4504,7 @@ regions:
           || wmg_discord.avatar_link(p_discord_id => p.discord_id)
           || apex_escape.html(p.player_name)
           || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
-           , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || p.time_slot) at time zone r.tz local_tz
+           , to_utc_timestamp_tz(to_char(s.session_date + r.day_offset , 'yyyy-mm-dd') || 'T' || p.time_slot) at time zone r.tz local_tz
            , r.tz
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
@@ -4683,6 +4748,7 @@ regions:
            where current_flag = 'Y'
       )
       and session_date+1.01 >= sysdate
+      and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
       order by session_date desc
       fetch first 1 rows only
 
@@ -6535,17 +6601,24 @@ dynamic-actions:
               var description = $(this).attr("title");
               var fact = $(this).data("fact");
               var imgUrl = $(this).data("img-url");
+              var wmgtExcluded = $(this).hasClass("--wmgt-excludedY");
         
               // Create an HTML string to include the description and the image
               var tooltipContent = "<div>" + description + "</div>";
               tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
-              if (fact) {
-                  tooltipContent += "<div class='legend u-color-6-text'>" + fact + "</div>";
+              if (wmgtExcluded) {
+                 tooltipContent += "<div class='--wmgt-excluded-legend'>" + "This course will not be played in S14" + "</div>";
+              }
+              else {
+                if (fact) {
+                    tooltipContent += "<div class='legend u-color-6-text'>" + fact + "</div>";
+                }
               }
         
               return tooltipContent;
             }
         });
+        
 
     execution: 
       sequence: 10
@@ -6671,6 +6744,7 @@ computations:
       )
       and s.session_date+1 >= trunc(current_timestamp)
       and s.completed_ind = 'N'
+      and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
       order by s.session_date desc
       fetch first 1 rows only
       )
@@ -6981,6 +7055,7 @@ branches:
       from wmg_messages
       where to_player_id = :G_PLAYER_ID
       and new_message_ind = 'Y'
+      and display_mode = 'POPUP'
       and :P1_MESSAGE_FLAG is null
 
   security: 

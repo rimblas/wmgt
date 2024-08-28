@@ -313,30 +313,13 @@
     location: Local Database
     type: SQL Query
     sql-query: |
-      with slots_n as (
-          select level n
-           from dual
-           connect by level <= 6
-          )
-      , slots as (
-          select slot || ':00' d, slot t
-          from (
-              select lpad( (n-1)*4,2,0) slot
-              from slots_n
-              union all
-              select '02' from dual
-              union all
-              select '18' from dual
-          )
-      )
-      select d, d r
-      from slots
-      order by t
-      
+      select *
+      from wmg_time_slots_all_v
+      order by seq
 
   column-mapping: 
-    return: R
-    display: D
+    return: TIME_SLOT
+    display: PREPARED_TIME_SLOT
     default-sort: Use Order By from Query
 
 - # ====== List of Values: WEEKS ===============================
@@ -496,13 +479,83 @@
   source: 
     location: Local Database
     type: SQL Query
-    sql-query: select player_name, id from WMG_PLAYERS_V
+    sql-query: select player_name, account, discord_id, id from WMG_PLAYERS_V
 
   column-mapping: 
     return: ID
     display: PLAYER_NAME
     default-sort: PLAYER_NAME
     sort-direction: Ascending (Nulls Last)
+
+  columns: 
+  - # ====== Column: ID ==========================================
+    id: 38431133848307548
+    identification: 
+      column-name: ID
+      show: false
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: NUMBER
+
+    advanced: 
+      searchable: false
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 38431572390307549
+    identification: 
+      column-name: PLAYER_NAME
+      show: true
+
+    heading: 
+      heading: Player Name
+
+    layout: 
+      sequence: 20
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 38431974627307549
+    identification: 
+      column-name: ACCOUNT
+      show: false
+
+    heading: 
+      heading: Account
+
+    layout: 
+      sequence: 30
+
+    source: 
+      data-type: VARCHAR2
+
+    advanced: 
+      searchable: true
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 38432403352307549
+    identification: 
+      column-name: DISCORD_ID
+      show: false
+
+    heading: 
+      heading: Discord Id
+
+    layout: 
+      sequence: 40
+
+    source: 
+      data-type: NUMBER
+
+    advanced: 
+      searchable: true
 
 - # ====== List of Values: DESKTOP THEME STYLES ================
   id: 46995419489782515601

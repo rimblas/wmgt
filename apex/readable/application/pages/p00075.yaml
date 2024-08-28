@@ -162,6 +162,23 @@ css:
         height: 16px;
         width: 16px;
     }
+    
+    td[headers="TOTAL_SCORE"],
+    th#TOTAL_SCORE {border-left: 2px solid #555;}
+    
+    @media (max-width: 640px) {
+    
+        :root {
+            --ut-report-cell-padding-y:.2rem;
+            --ut-report-cell-padding-x:.4rem;
+    
+        }
+    
+        td[headers="TOTAL_SCORE"],
+        th#TOTAL_SCORE {display: none;}
+    
+    }
+    
 
 security: 
   authorization-scheme: Contribution Rights # 46995203801871514425
@@ -642,10 +659,27 @@ regions:
     id: 12000432398695377
     identification: 
       column-name: TOTAL_SCORE
-      type: Hidden Column
+      type: Plain Text
+
+    heading: 
+      heading: Total
+      alignment: center
 
     layout: 
       sequence: 160
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -1214,19 +1248,21 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select decode(:P75_SLOT, null, time_slot, null) split_group
-           , id
-           , time_slot
-           , room_no
+      select decode(:P75_SLOT, null, r.time_slot, null) split_group
+           , r.id
+           , r.time_slot
+           , r.room_no
            , case when to_number(:P75_ROOM default null on conversion error) = r.room_no then 'is-current' else '' end current_class
            , decode(r.verified_score_flag, null, 'NO', 'E', 'ERROR', 'YES') verified
-           , verified_score_flag
-           , verified_by
-           , verified_on
+           , r.verified_score_flag
+           , r.verified_by
+           , r.verified_on
         from wmg_tournament_rooms r
-       where r.tournament_session_id = (select id from wmg_tournament_sessions where week = :P75_WEEK)
+           , wmg_time_slots_all_v t
+       where r.time_slot = t.time_slot
+         and r.tournament_session_id = (select id from wmg_tournament_sessions where week = :P75_WEEK)
          and (:P75_SLOT is null or :P75_SLOT = r.time_slot)
-      order by r.time_slot, r.room_no
+      order by t.day_offset, r.time_slot, r.room_no
     page-items-to-submit: 
     - P75_WEEK
     - P75_ROOM

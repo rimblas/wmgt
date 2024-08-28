@@ -81,6 +81,14 @@ javascript:
       items: [
         {
           type: "action",
+          label: "Elite",
+          icon: "-wm-rank-elite fa",
+          action: function(menu, btn) {
+            rankMenuAction(btn, this, 'ELITE', btn.dataset.id);
+          }
+        },
+        {
+          type: "action",
           label: "Pro",
           icon: "-wm-rank-pro fa",
           action: function(menu, btn) {
@@ -93,14 +101,6 @@ javascript:
           icon: "-wm-rank-semi fa",
           action: function(menu, btn) {
             rankMenuAction(btn, this, 'SEMI', btn.dataset.id);
-          }
-        },
-        {
-          type: "action",
-          label: "Rising Star",
-          icon: "-wm-rank-rise fa",
-          action: function(menu, btn) {
-            rankMenuAction(btn, this, 'RISING', btn.dataset.id);
           }
         },
         {

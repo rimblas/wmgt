@@ -177,11 +177,23 @@ css:
   - '&G_APP_FILES.css/week-lov#MIN#.css'
   - //emoji-css.afeld.me/emoji.css
   inline: |
-    td.t-Report-cell[headers="PLAYER_NAME"] {
+    td.t-Report-cell[headers="PLAYER_NAME"] a {
+    display: flex;
+    flex-wrap: nowrap!important;
+    }
+    
+    .-wm-player-name,
+    td.t-Report-cell[headers="PLAYER_NAME"]{
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 150px;
         white-space: nowrap;
+    }
+    td.t-Report-cell[headers="PLAYER_NAME"]{
+        max-width: 160px;
+    }
+    .-wm-player-name {
+        max-width: 140px;
+        display: inline-block;
     }
     
     @media (max-width: 640px) {
@@ -196,8 +208,12 @@ css:
         th#AVATAR {display: none;}
     
         td.t-Report-cell[headers="PLAYER_NAME"] {
-            max-width: 128px;
+            max-width: 140px;
+    min-width: 140px;
        }
+        .-wm-player-name {
+            max-width: 114px;
+        }
     
        .wm-search-item:first-child {
          width: 100%;
@@ -1263,6 +1279,9 @@ regions:
            , nvl((select to_char(min(r.under_par)) from  wmg_rounds_v r where r.course_id = s.hard_course_id), 'TBD') hard_record
            , apex_page.get_url(p_page => 200,p_clear_cache => '200', p_items =>'P200_COURSE_ID,P200_TOURNAMENT_SESSION_ID', p_values => s.hard_course_id || ',' || s.tournament_session_id) hard_stats_url
            , case when ec.id is null then 'u-vh' else '' end tbd_class
+           , case 
+               when s.rooms_open_flag = 'Y' and s.completed_ind = 'N' then '<div class="u-danger margin-md padding-sm u-tC">In progress - Results not final</div>' 
+             end tournament_status
       from wmg_tournament_sessions_v s
          , wmg_courses ec
          , wmg_courses hc
@@ -1352,6 +1371,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: TOURNAMENT_STATUS ===========================
+    id: 32957999284648003
+    identification: 
+      column-name: TOURNAMENT_STATUS
+      type: Hidden Column
+
+    layout: 
+      sequence: 130
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
+
   - # ====== Column: EASY_RECORD =================================
     id: 44899554263786408
     identification: 
@@ -1405,11 +1439,14 @@ regions:
     column-formatting: 
       html-expression: |
         <div class="row">
-        <div class="col">
+        <div class="col col-7 col-xs-12 col-sm-12 col-md-12">
           <b>Season: </b>&P60_TOURNAMENT.<br>
           <b>Week: </b>&P60_WEEK. - #SESSION_DATE#<br>
           <b>Players: </b>&P60_TOTAL_PLAYERS. <i>(Played/Signup)</i><br>
           <br>
+        </div>
+        <div class="col col-4 col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            #TOURNAMENT_STATUS#
         </div>
         </div>
         <div class="row nextCourses">
@@ -2045,6 +2082,8 @@ regions:
            , wmg_discord.avatar_link(pp.discord_id, pp.discord_avatar) avatar
            , pp.country_code
            , pp.country
+           , pp.account
+           , pp.discord_id
            , pp.player_name
            , sp.easy
            , sp.hard
@@ -2164,6 +2203,7 @@ regions:
       template: Standard # 46995138939704514382
       template-options: 
       - '#DEFAULT#'
+      - t-Report--stretch
       - t-Report--staticRowColors
       - t-Report--rowHighlightOff
       - t-Report--verticalBorders
@@ -2273,6 +2313,36 @@ regions:
 
     security: 
       escape-special-characters: false
+
+  - # ====== Column: ACCOUNT =====================================
+    id: 32959011995648014
+    identification: 
+      column-name: ACCOUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 72
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 32959117583648015
+    identification: 
+      column-name: DISCORD_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 74
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
   - # ====== Column: ISSUE_CODE ==================================
     id: 36052635355175837
@@ -2788,7 +2858,7 @@ regions:
           p110_week: '&P60_WEEK.'
           p110_player_id: '#PLAYER_ID#'
 
-      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
+      link-text: '<div class="-wm-player-name">#PLAYER_NAME#<span class="u-vh">#DISCORD_ID# #ACCOUNT#</span></div> <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div><div class="w">#TROPHY#</div>'
 
     sorting: 
       sortable: false
@@ -3962,8 +4032,11 @@ dynamic-actions:
           // mark the search term and hide everything that didn't get marked
           $ctx.mark(term, {
             separateWordSearch: false,
+            caseSensitive: false,
+            acrossElements: true,
             diacritics: true,
             done: function() {
+        
               $ctx.not(":has(mark)").parents("tr").hide();
               if ($ctx.find("mark").length > 0 && apex.theme.mq("(max-width: 768px)")) {
                  // if something is found and we're on a small device, hide the other regions
