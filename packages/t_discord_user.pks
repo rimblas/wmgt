@@ -16,8 +16,10 @@ create or replace type t_discord_user as object (
   , premium_type           number
   , player_in_sync_flag    varchar2(1)
   , constructor function t_discord_user return self as result
+  , static function get_player(p_player in varchar2) return number
   , member procedure init_from_json(p_json in clob)
   , member procedure init_from_player(p_player_id in number)
+  , member procedure init_from_discord_id(p_discord_id in varchar2)
   , member procedure insert_player
   , member procedure sync_player
 )

@@ -117,6 +117,10 @@
 }
 
 /* Profiles */
+.-wm-rank-elite:before {
+  content:"\f005";
+  color: darkorange;
+}
 .-wm-rank-pro:before {
   content:"\f006";
   color: red;
@@ -140,14 +144,15 @@
 
 /* New Player Indicator */
 .-wm-rank-new:before {
- content: "\f069";
- color: #ffa200; /* gold*/
+ content: "\f06c";
+ color: green;
 }
 
 .rank {
     padding: 0.3em 1em;
 }
 
+.-wm-rank-elite-profile,
 .-wm-rank-pro-profile,
 .-wm-rank-semi-profile,
 .-wm-rank-rise-profile,
@@ -155,10 +160,18 @@
     display: inline-block;
     box-shadow: 0 4px 10px 1px rgb(0 0 0 / 0.2);
 }
+.-wm-rank-elite-profile {
+    font-weight: 600;
+    font-size: 1.2em;
+    background-image: linear-gradient(45deg, hsl(31deg 89% 95%) 6%, hsl(46deg 89% 50%) 25%, hsl(48deg 92% 51%) 50%, hsl(32deg 100% 70%) 75%,rgb(255, 136, 0) 100%);
+    border-radius: 7%;
+    color: #666666;
+}
+
 .-wm-rank-pro-profile {
     font-weight: 400;
     font-size: 1.2em;
-    background-image: linear-gradient( 45deg, hsl(240deg 4% 69%) 0%, hsl(270deg 4% 65%) 11%, hsl(307deg 3% 62%) 22%, hsl(333deg 3% 59%) 33%, hsl(350deg 3% 56%) 44%, hsl(3deg 3% 52%) 56%, hsl(14deg 3% 49%) 67%, hsl(24deg 4% 45%) 78%, hsl(34deg 3% 42%) 89%, hsl(48deg 3% 39%) 100% );
+    background-image: linear-gradient( 45deg, hsl(240deg 4% 69%) 0%, hsl(270deg 4% 65%) 11%, hsl(307deg 3% 62%) 22%, hsl(333deg 3% 59%) 33%, hsl(350deg 3% 56%) 44%, hsl(3deg 3% 52%) 56%, hsl(14deg 3% 49%) 67%, hsl(24deg 4% 45%) 78%, hsl(34deg 3% 42%) 89%, hsl(357.53deg 85.98% 56.82%) 100% );
     border-radius: 7%;
     color: whitesmoke;
 }
@@ -167,6 +180,7 @@
     font-size: 1.1em;
     color: navy;
     border: 1px solid navy;
+    background-image: linear-gradient(45deg, hsl(0deg 0% 95%) 0%, hsl(0deg 0% 85%) 25%, hsl(270deg 100% 95%) 50%, hsl(240deg 100% 80%) 75%, hsl(240deg 100% 65%) 100%);
     border-radius: 5%;
     display: inline-block;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);

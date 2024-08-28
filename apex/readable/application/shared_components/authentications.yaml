@@ -88,6 +88,33 @@
     map-additional-user-attributes-to: G_DISCORD_ID,G_DISCORD,G_DISCORD_NAME,G_DISCORD_AVATAR,G_DISCORD_DISCRIMINATOR,G_DISCORD_COLOR
     verify-attributes: false
 
+  source: 
+    pl/sql-code: |
+      procedure post_auth
+      as
+       l_clob clob;
+      begin
+        logger.log('POST_AUTH', 'POST_AUTH');
+        
+        logger.log('Guilds:' || apex_json.get_count('$'), 'POST_AUTH');
+      
+      -- l_clob := apex_json.get_clob_output;
+      
+        logger.log(apex_json.get_varchar2(p_path => 'username'));
+        logger.log(apex_json.get_varchar2(p_path => 'global_name'));
+        logger.log(apex_json.get_count('$'));
+      /*
+      
+      FOR i IN 1..apex_json.get_count('$') LOOP
+      
+        logger.log(i || ':' || apex_json.get_varchar2(p_path => 'guild[%d].name', p0 => i));
+        
+      END LOOP;
+      */
+      
+      end;
+      
+
   session-not-valid: 
     redirect-to: Login Page
 

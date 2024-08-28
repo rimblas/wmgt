@@ -1,4 +1,4 @@
-alter session set PLSQL_CCFLAGS='LOGGER:TRUE';
+-- alter session set PLSQL_CCFLAGS='NOLOGGER:TRUE';
 create or replace package body wmg_util
 is
 
@@ -45,11 +45,11 @@ procedure log(
 is
 begin
   -- $IF logger_logs.g_logger_version is not null $THEN
-  $IF $$LOGGER $THEN
-  logger.log(p_text => p_msg, p_scope => p_ctx);
-  $ELSE
+  $IF $$NOLOGGER $THEN
   dbms_output.put_line('[' || p_ctx || '] ' || p_msg);
   apex_debug.message('[%s] %s', p_ctx, p_msg);
+  $ELSE
+  logger.log(p_text => p_msg, p_scope => p_ctx);
   $END
 
 end log;
@@ -352,19 +352,21 @@ begin
          connect by level <= 6
         )
     , slots as (
-        select slot || ':00' d, slot t
+        select day_offset, slot || ':00' d, slot t
         from (
-            select lpad( (n-1)*4,2,0) slot
+            select lpad( (n-1)*4,2,0) slot, 0 day_offset
             from slots_n
             union all
-            select '02' from dual
+            select '22' slot, -1 day_offset from dual
             union all
-            select '18' from dual
+            select '02' slot, 0 day_offset from dual
+            union all
+            select '18' slot, 0 day_offset from dual
         )
     )
-    select d time_slot, t
+    select day_offset, d time_slot, t
     from slots
-    order by t
+    order by day_offset, t
   )
   loop
 
@@ -1064,7 +1066,7 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt $THEN
+               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
                $END
                $IF env.kwt $THEN
@@ -1122,7 +1124,7 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt $THEN
+               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
                $END  
                $IF env.kwt $THEN
@@ -1233,44 +1235,24 @@ begin
 
 
   /*
-   *    RISING status can be achieved by the following:
+   *    SEMI-PRO status can be achieved by the following:
    *    (1x) Top 25  -or- .. TBD
    */
 
-  log('.. Advance to RISING', l_scope);
-  update wmg_players
-     set rank_code = 'RISING'
-   where id in (
-    select p.player_id
-      from wmg_tournament_session_points_v p
-     where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 25
-       and p.rank_code not in ('PRO', 'SEMI', 'RISING')
-   );
-
-  /*
-   *    SEMI-PRO status can be achieved by the following:
-   *    (1x) Top 10  -or- TBD
-   */
-
-  log('.. Advance to SEMI-PRO', l_scope);
+  log('.. Advance to SEMI', l_scope);
   update wmg_players
      set rank_code = 'SEMI'
    where id in (
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
-       and p.pos <= 10
-       and p.rank_code not in ('PRO', 'SEMI')
+       and p.pos <= 25
+       and p.rank_code not in ('PRO', 'SEMI', 'ELITE')
    );
-  
-  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
-
-
 
   /*
    *    PRO status can be achieved by the following:
-   *    (1x) Top 3 -or- TBD
+   *    (1x) Top 10  -or- TBD
    */
 
   log('.. Advance to PRO', l_scope);
@@ -1280,8 +1262,28 @@ begin
     select p.player_id
       from wmg_tournament_session_points_v p
      where p.tournament_session_id = p_tournament_session_id
+       and p.pos <= 10
+       and p.rank_code not in ('PRO', 'ELITE')
+   );
+  
+  log(SQL%ROWCOUNT || ' rows updated.', l_scope);
+
+
+
+  /*
+   *    ELITE status can be achieved by the following:
+   *    (1x) Top 3 -or- TBD
+   */
+
+  log('.. Advance to ELITE', l_scope);
+  update wmg_players
+     set rank_code = 'ELITE'
+   where id in (
+    select p.player_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
        and p.pos <= 3
-       and p.rank_code != 'PRO'
+       and p.rank_code != 'ELITE'
    );
   
   log(SQL%ROWCOUNT || ' rows updated.', l_scope);
@@ -1291,6 +1293,279 @@ begin
   log('END', l_scope);
 
 end promote_players;
+
+
+
+
+
+/**
+ * Up to the given tournament_session, find the new unicorns
+ * Unicorn: Something rare and unique. In this case a unicorn is a 
+ * unique Hole in One made after 5 times a tournament was played
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 31, 2023
+ * @param x_result_status
+ * @return
+ */
+procedure add_unicorns(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'add_unicorns';
+  l_attempts number;
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  for u in (
+  with course_play_count as (
+        select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+        from wmg_tournament_courses c
+           , wmg_tournament_sessions s
+        where s.id = c.tournament_session_id
+          and c.course_id in (select course_id from wmg_tournament_courses where tournament_session_id = p_tournament_session_id)
+          and s.completed_ind = 'Y'
+        group by c.course_id
+  )
+  , courses_played as (
+      select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+      from wmg_courses_v  c
+         , course_play_count cc
+      where c.course_id = cc.course_id
+        and cc.play_count >= 5  -- filter qualifying courses. 5 x or more
+  )
+  select uni.course_name
+       , uni.course_id
+       , uni.play_count
+       , uni.h
+       , uni.week
+       , (select u.player_id
+        from wmg_rounds_unpivot_mv u
+       where u.course_id = uni.course_id
+         and u.h = uni.h
+         and u.week <= uni.week
+         and u.player_id != 0 -- skip system records
+         and u.score = 1) ace_by_player_id
+      /*
+        -- for debuging
+       , (select listagg(u.week || ' - ' || p.player_name, ',') player_name
+        from wmg_rounds_unpivot_mv u
+           , wmg_players_v p
+       where u.player_id = p.id
+         and u.course_id = uni.course_id
+         and u.h = uni.h
+         and u.week <= uni.week
+         and u.score = 1) ace_by
+        */
+  from (
+      select u.course_id, cp.course_name, cp.play_count, u.h
+           , max(u.week) week
+        from wmg_rounds_unpivot_mv u
+           , courses_played cp
+        where u.score = 1
+          and u.course_id = cp.course_id
+          and u.player_id != 0 -- skip system records
+          and cp.play_count >= 5
+          and u.week in (select ts.week from wmg_tournament_sessions ts where ts.session_date <= cp.session_date)
+          and (u.course_id, u.h) not in (select course_id, h from wmg_player_unicorns) -- eliminate previous unicorns
+        group by u.course_id, cp.course_name, cp.play_count, u.h
+       having count(*) = 1
+  ) uni
+  order by uni.course_name, uni.h
+  )
+  loop
+
+    -- count the number of attempts at the hole before the unicorn
+    select count(*) attempts
+      into l_attempts
+     from wmg_rounds_unpivot_mv a
+     where a.course_id = u.course_id
+       and a.h = u.h
+       and a.week in (
+          select ts.week                       -- collect all the weeks before the unicorn and including
+            from wmg_tournament_sessions ts 
+           where ts.session_date <= (          -- get all the sessions before that
+             select wts.session_date           -- date the unicorn was achived
+               from wmg_tournament_sessions wts 
+              where wts.week = u.week
+           )
+         );
+
+    insert into wmg_player_unicorns (
+       course_id
+     , player_id
+     , h
+     , attempt_count
+     , score_tournament_session_id
+     , award_tournament_session_id
+    )
+    select u.course_id
+       , u.ace_by_player_id
+       , u.h
+       , l_attempts
+       , ts.id                    score_tournament_session_id
+       , p_tournament_session_id  award_tournament_session_id
+     from wmg_tournament_sessions ts
+     where ts.week = u.week;
+
+    log('.. Added ' || SQL%ROWCOUNT, l_scope);
+  end loop;
+
+
+  log('.. Updating repeat unicorns, ie commoncorns', l_scope);
+  for courses in (
+    with course_play_count as (
+          select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
+          from wmg_tournament_courses c
+             , wmg_tournament_sessions s
+          where s.id = c.tournament_session_id
+            and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
+            and c.course_id in (
+              select c.course_id
+                from wmg_tournament_sessions ts
+                   , wmg_tournament_courses c
+                 where ts.id = c.tournament_session_id 
+                   and ts.id = p_tournament_session_id
+                )
+          group by c.course_id
+    )
+    , courses_played as (
+        select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
+        from wmg_courses_v  c
+           , course_play_count cc
+        where c.course_id = cc.course_id
+          and cc.play_count >= 5
+    )
+    select course_id
+      from courses_played
+  )
+  loop
+    -- for each course and for each hole, update the number of 
+    -- unicorn repeats
+    update wmg_player_unicorns pu
+    set pu.repeat_count = (
+       select case when n = 1 then null else n -1 end
+         from (
+          select count(*) n
+          from wmg_rounds_unpivot_mv u
+             , wmg_players_v p
+          where u.player_id = p.id
+            and u.course_id = pu.course_id
+            and u.h = pu.h
+            and u.score = 1
+      )
+    )
+    where pu.course_id = courses.course_id;
+    
+  end loop;
+
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end add_unicorns;
+
+
+
+
+
+
+
+/**
+ * After the tournament is closed add people's best scores to the leaderboards
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created June 29, 2024
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure add_leaderboard_entries(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'add_leaderboard_entries';
+
+  l_leader_rec wmg_leaderboard_util.leader_rec_t;
+
+  procedure init_record
+  as
+  begin
+    -- reset for next record
+    l_leader_rec := null;
+
+    l_leader_rec.rec_type := wmg_leaderboard_util.c_type_standard;
+    l_leader_rec.tournament_flag := 'Y';
+    l_leader_rec.approved_flag := 'Y';
+    l_leader_rec.approved_on   := current_timestamp;
+    l_leader_rec.approved_by   := 'SYSTEM';
+  end init_record;
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  select id
+    into l_leader_rec.guild_id
+    from wmg_guilds
+   where code = 'CLASSIC';
+
+  for e in (
+    select p.player_id
+         , p.easy_course_id
+         , p.easy_round_id
+         , p.easy
+         , p.hard_course_id
+         , p.hard
+         , p.hard_round_id
+      from wmg_tournament_session_points_v p
+     where p.tournament_session_id = p_tournament_session_id
+  )
+  loop
+
+    init_record;
+    -- Adding Easy Scores
+    l_leader_rec.player_id := e.player_id;
+    l_leader_rec.course_id := e.easy_course_id;
+    l_leader_rec.score := e.easy;
+    l_leader_rec.round_id := e.easy_round_id;
+
+    wmg_leaderboard_util.add_standard_entry(p_leader_rec => l_leader_rec);
+
+    -- Adding Hard Scores
+    if e.hard is not null then
+      init_record;
+      l_leader_rec.player_id := e.player_id;
+      l_leader_rec.course_id := e.hard_course_id;
+      l_leader_rec.score := e.hard;
+      l_leader_rec.round_id := e.hard_round_id;
+
+      wmg_leaderboard_util.add_standard_entry(p_leader_rec => l_leader_rec);
+    end if;
+
+  end loop;
+
+
+  log('END', l_scope);
+
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end add_leaderboard_entries;
+
 
 
 
@@ -1343,11 +1618,6 @@ begin
     , p_tournament_session_id => p_tournament_session_id
   );
 
-  log('.. Add Unicorns', l_scope);
-  add_unicorns(
-     p_tournament_session_id => p_tournament_session_id
-  );
-
   log('.. Add Badges', l_scope);
   snapshot_badges(
       p_tournament_id         => p_tournament_id
@@ -1372,6 +1642,21 @@ begin
      and ts.tournament_id = p_tournament_id;
 
   commit;
+
+  log('.. Add Unicorns', l_scope);
+  -- unicorns depend on the session being completed!
+  add_unicorns(
+     p_tournament_session_id => p_tournament_session_id
+  );
+
+  commit;
+
+  if env.wmgt then
+    add_leaderboard_entries(
+      p_tournament_session_id => p_tournament_session_id
+    );
+  end if;
+
 
   wmg_notification.notify_channel_tournament_close(
      p_tournament_session_id => p_tournament_session_id
@@ -1852,12 +2137,12 @@ begin
       select *
         into l_issue_rec
         from wmg_issues
-       where code = c_issue_noshow;
+       where code = c_issue_noscore;
   exception 
     -- protect against errors in case the issue is gone
     when no_data_found then
-      l_issue_rec.code := c_issue_noshow;
-      l_issue_rec.description := 'No show or No Score';
+      l_issue_rec.code := c_issue_noscore;
+      l_issue_rec.description := 'Scores not entered in time';
   end;
 
   log('.. loop throough pending time entries', l_scope);
@@ -2065,14 +2350,16 @@ begin
          connect by level <= 6
         )
     , slots as (
-        select slot || ':00' d, slot t
+        select day_offset, slot || ':00' d, slot t
         from (
-            select lpad( (n-1)*4,2,0) slot
+            select lpad( (n-1)*4,2,0) slot, 0 day_offset
             from slots_n
             union all
-            select '02' from dual
+            select '22' slot, -1 day_offset from dual
             union all
-            select '18' from dual
+            select '02' slot, 0 day_offset from dual
+            union all
+            select '18' slot, 0 day_offset from dual
         )
     )
     , ts as (
@@ -2082,11 +2369,11 @@ begin
     )
     select t
          , slots.t || ':00' time_slot
-         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
-         , to_utc_timestamp_tz(to_char(ts.session_date, 'yyyy-mm-dd') || 'T' || slots.t || ':00') + INTERVAL '4' HOUR job_run
+         , to_utc_timestamp_tz(to_char(ts.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') UTC
+         , to_utc_timestamp_tz(to_char(ts.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.t || ':00') + INTERVAL '4' HOUR job_run
     from ts
        , slots
-    order by t
+    order by slots.day_offset, t
   )
   loop
     create_close_scoring_job(
@@ -2104,184 +2391,6 @@ begin
       raise;
 end submit_close_scoring_jobs;
 
-
-
-
-
-/**
- * Up to the given tournament_session, find the new unicorns
- * Unicorn: Something rare and unique. In this case a unicorn is a 
- * unique Hole in One made after 5 times a tournament was played
- *
- * @example
- * 
- * @issue
- *
- * @author Jorge Rimblas
- * @created August 31, 2023
- * @param x_result_status
- * @return
- */
-procedure add_unicorns(
-    p_tournament_session_id in wmg_tournament_sessions.id%type
-)
-is
-  l_scope  scope_t := gc_scope_prefix || 'add_unicorns';
-  l_attempts number;
-begin
-  -- logger.append_param(l_params, 'p_param1', p_param1);
-  log('BEGIN', l_scope);
-
-  for u in (
-  with course_play_count as (
-        select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
-        from wmg_tournament_courses c
-           , wmg_tournament_sessions s
-        where s.id = c.tournament_session_id
-          and c.course_id in (select course_id from wmg_tournament_courses where tournament_session_id = p_tournament_session_id)
-          and s.completed_ind = 'Y'
-        group by c.course_id
-  )
-  , courses_played as (
-      select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
-      from wmg_courses_v  c
-         , course_play_count cc
-      where c.course_id = cc.course_id
-        and cc.play_count >= 5  -- filter qualifying courses. 5 x or more
-  )
-  select uni.course_name
-       , uni.course_id
-       , uni.play_count
-       , uni.h
-       , uni.week
-       , (select u.player_id
-        from wmg_rounds_unpivot_mv u
-       where u.course_id = uni.course_id
-         and u.h = uni.h
-         and u.week <= uni.week
-         and u.player_id != 0 -- skip system records
-         and u.score = 1) ace_by_player_id
-      /*
-        -- for debuging
-       , (select listagg(u.week || ' - ' || p.player_name, ',') player_name
-        from wmg_rounds_unpivot_mv u
-           , wmg_players_v p
-       where u.player_id = p.id
-         and u.course_id = uni.course_id
-         and u.h = uni.h
-         and u.week <= uni.week
-         and u.score = 1) ace_by
-        */
-  from (
-      select u.course_id, cp.course_name, cp.play_count, u.h
-           , max(u.week) week
-        from wmg_rounds_unpivot_mv u
-           , courses_played cp
-        where u.score = 1
-          and u.course_id = cp.course_id
-          and u.player_id != 0 -- skip system records
-          and cp.play_count >= 5
-          and u.week in (select ts.week from wmg_tournament_sessions ts where ts.session_date <= cp.session_date)
-          and (u.course_id, u.h) not in (select course_id, h from wmg_player_unicorns) -- eliminate previous unicorns
-        group by u.course_id, cp.course_name, cp.play_count, u.h
-       having count(*) = 1
-  ) uni
-  order by uni.course_name, uni.h
-  )
-  loop
-
-    -- count the number of attempts at the hole before the unicorn
-    select count(*) attempts
-      into l_attempts
-     from wmg_rounds_unpivot_mv a
-     where a.course_id = u.course_id
-       and a.h = u.h
-       and a.week in (
-          select ts.week                       -- collect all the weeks before the unicorn and including
-            from wmg_tournament_sessions ts 
-           where ts.session_date <= (          -- get all the sessions before that
-             select wts.session_date           -- date the unicorn was achived
-               from wmg_tournament_sessions wts 
-              where wts.week = u.week
-           )
-         );
-
-    insert into wmg_player_unicorns (
-       course_id
-     , player_id
-     , h
-     , attempt_count
-     , score_tournament_session_id
-     , award_tournament_session_id
-    )
-    select u.course_id
-       , u.ace_by_player_id
-       , u.h
-       , l_attempts
-       , ts.id                    score_tournament_session_id
-       , p_tournament_session_id  award_tournament_session_id
-     from wmg_tournament_sessions ts
-     where ts.week = u.week;
-
-    log('.. Added ' || SQL%ROWCOUNT, l_scope);
-  end loop;
-
-
-  log('.. Updating repeat unicorns, ie commoncorns', l_scope);
-  for courses in (
-    with course_play_count as (
-          select c.course_id, count(*) play_count, max(s.week) week, max(s.session_date) session_date
-          from wmg_tournament_courses c
-             , wmg_tournament_sessions s
-          where s.id = c.tournament_session_id
-            and s.session_date <= (select ts.session_date from wmg_tournament_sessions ts where ts.id = p_tournament_session_id)
-            and c.course_id in (
-              select c.course_id
-                from wmg_tournament_sessions ts
-                   , wmg_tournament_courses c
-                 where ts.id = c.tournament_session_id 
-                   and ts.id = p_tournament_session_id
-                )
-          group by c.course_id
-    )
-    , courses_played as (
-        select c.course_id, c.name course_name, cc.play_count, cc.week, cc.session_date
-        from wmg_courses_v  c
-           , course_play_count cc
-        where c.course_id = cc.course_id
-          and cc.play_count >= 5
-    )
-    select course_id
-      from courses_played
-  )
-  loop
-    -- for each course and for each hole, update the number of 
-    -- unicorn repeats
-    update wmg_player_unicorns pu
-    set pu.repeat_count = (
-       select case when n = 1 then null else n -1 end
-         from (
-          select count(*) n
-          from wmg_rounds_unpivot_mv u
-             , wmg_players_v p
-          where u.player_id = p.id
-            and u.course_id = pu.course_id
-            and u.h = pu.h
-            and u.score = 1
-      )
-    )
-    where pu.course_id = courses.course_id;
-    
-  end loop;
-
-
-  log('END', l_scope);
-
-  exception
-    when OTHERS then
-      log('Unhandled Exception', l_scope);
-      raise;
-end add_unicorns;
 
 
 

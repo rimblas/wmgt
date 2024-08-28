@@ -118,7 +118,6 @@ procedure add_unicorns(
     p_tournament_session_id in wmg_tournament_sessions.id%type
 );
 
-
 procedure unavailable_application (p_message in varchar2 default null);
 
 

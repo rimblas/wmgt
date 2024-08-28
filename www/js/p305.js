@@ -8,11 +8,15 @@ function adjustedScoreMatchPlay(p1Strokes, p2Strokes) {
     let p1strokes = wmgt.convert.to_number(p1Strokes());
     let p2strokes = wmgt.convert.to_number(p2Strokes());
 
-    if (p1strokes === undefined || p2strokes === undefined || p1strokes === p2strokes || p2strokes < p1strokes) {
+    if (p1strokes === 0 || p2strokes === 0 ) {  // without complete scores, do not count the point
         return 0;
-    } else if (p1strokes < p2strokes) {
-        // smaller values are less strokes and that wins the hole in match play
-        return 1;
+    } else {
+        if (p1strokes === undefined || p2strokes === undefined || p1strokes === p2strokes || p2strokes < p1strokes) {
+            return 0;
+        } else if (p1strokes < p2strokes) {
+            // smaller values are less strokes and that wins the hole in match play
+            return 1;
+        }
     }
 }
 
@@ -130,7 +134,9 @@ function roundTotal() {
   self.hardpar = ko.observable(0);
 
   self.setPlayMode = function (mode) {
+    console.log("New mode", {mode});
      self.playMode = mode;
+     console.log("mode set to ", self.playMode);
   }
   
   self.overrideOnEasy = ko.computed(function() {
@@ -155,7 +161,7 @@ function roundTotal() {
     if (!!self.scoreOverrideEasy()) {
         return wmgt.convert.to_number(self.scoreOverrideEasy());
     }
-    else if (playMode === cMatchPlay) {
+    else if (self.playMode === cMatchPlay) {
       return (
         adjustedScoreMatchPlay(self.es1, self.hs1) +
         adjustedScoreMatchPlay(self.es2, self.hs2) +
@@ -204,7 +210,7 @@ function roundTotal() {
     if (!!self.scoreOverrideHard()) {
         return wmgt.convert.to_number(self.scoreOverrideHard());
     }
-    else if (playMode === cMatchPlay) {
+    else if (self.playMode === cMatchPlay) {
       return (
         adjustedScoreMatchPlay(self.hs1, self.es1) +
         adjustedScoreMatchPlay(self.hs2, self.es2) +

@@ -29,6 +29,7 @@ begin
     self.locale                 := l_json_obj.get_string('locale');
     self.premium_type           := l_json_obj.get_number('premium_type');
     self.player_in_sync_flag    := null;
+
 end init_from_json;
 
 
@@ -55,6 +56,77 @@ begin
   self.player_in_sync_flag := 'Y'; -- avoid syncing since we just fetched this player
 
 end init_from_player;
+
+
+static function get_player(p_player in varchar2) return number
+is
+  l_player_id wmg_players.id%type;
+  l_error_message varchar2(255);
+begin
+  select id
+    into l_player_id
+    from (
+    select id, player_name, utl_match.jaro_winkler_similarity(player_name, replace(p_player, '@', '')) rn
+      from wmg_players_v
+     where utl_match.jaro_winkler_similarity(player_name, p_player) > 70
+    union
+    select id, player_name, utl_match.jaro_winkler_similarity(lower(player_name), replace(lower(p_player), '@', '')) rn
+      from wmg_players_v
+     where utl_match.jaro_winkler_similarity(lower(player_name), lower(p_player)) > 70
+    )
+    order by rn desc
+    fetch first 1 rows only;
+
+  return l_player_id;
+
+exception
+  when no_data_found then
+    l_error_message := 'could not find player in [' || p_player || ']';
+    logger.log(p_text => l_error_message, p_scope => 't_discord_user');
+    raise_application_error(-20001, l_error_message);
+end get_player;
+
+
+
+
+member procedure init_from_discord_id(p_discord_id in varchar2)
+is
+begin
+  if to_number(p_discord_id default null on conversion error) is null then
+    raise_application_error(-20000, 'Not a valid discord_id ' || p_discord_id);
+  else
+    begin
+      select p.id player_id
+           , p.discord_id
+           , p.account username
+           , p.player_name
+           , p.discord_avatar
+           , p.accent_color
+           , p.discord_discriminator
+        into self.player_id
+           , self.discord_id
+           , self.username
+           , self.global_name
+           , self.avatar
+           , self.accent_color
+           , self.discriminator
+       from wmg_players_v p
+      where p.discord_id = to_number(p_discord_id default null on conversion error);
+
+      logger.log(p_text => '.. found player_id ' || self.player_id, p_scope => 't_discord_user.init_from_discord_id');
+
+    exception
+      when no_data_found then -- need to create this player record
+        self.username := p_discord_id;
+        self.discord_id := p_discord_id;
+        self.insert_player;
+    end;
+
+    self.player_in_sync_flag := 'Y'; -- avoid syncing since we just fetched this player
+
+end if;
+
+end init_from_discord_id;
 
 
 

@@ -57,8 +57,8 @@ regions:
            , '<div class="p" data-id=' || p.tournament_player_id || '>' 
           -- || row_number() over (partition by p.room_no order by p.tournament_player_id) || ': '
           || apex_escape.html(p.player_name) 
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
           || '</div>' players
-      --    || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
       where s.id =  p.tournament_session_id
@@ -948,28 +948,8 @@ page-items:
     value-required: false
 
   list-of-values: 
-    type: SQL Query
-    sql-query: |
-      with slots_n as (
-          select level n
-           from dual
-           connect by level <= 6
-          )
-      , slots as (
-          select slot || ':00' d, slot t
-          from (
-              select lpad( (n-1)*4,2,0) slot
-              from slots_n
-              union all
-              select '02' from dual
-              union all
-              select '18' from dual
-          )
-      )
-      select d, d r
-      from slots
-      order by t
-      
+    type: Shared Component
+    list-of-values: TIME_SLOTS # 40414543942160352036
     display-extra-values: true
     display-null-value: true
     null-display-value: '- All -'

@@ -141,8 +141,9 @@ regions:
       We know there's a lot to take in, so here are the <u>3 most crucial</u> things to remember:<br>
       <br>
       <ul>
-      <li><b>Timeliness is Key:</b> Be on time, rounds start on the hour. Latecomers can't join in!</li>
-      <li><b>Score Submission:</b> Done playing? Submit your scores right away.</li>
+      <li><b>Timeliness is Key:</b> Be on time, rounds start on the hour. Two minutes late (ie :02) and the rounds will not count. Latecomers can't join a room in progress either!</li>
+      <li><b>Score Submission:</b> Done playing? Submit your scores right away.<br>Posting a picture of the scorecard <b>is not</b> submitting your scores, that's just for verification.<br>
+      <center>Come back to this site to enter your scores.</center></li>
       <li><b>Room Control:</b> It's best to let an experienced player manage the room your first time.</li>
       </ul>
       <br>
@@ -260,7 +261,7 @@ regions:
       
 
   layout: 
-    sequence: 109
+    sequence: 120
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -319,14 +320,16 @@ regions:
            connect by level <= 6
           )
       , slots as (
-          select slot || ':00' d, slot t
+          select day_offset, slot || ':00' d, slot t
           from (
-              select lpad( (n-1)*4,2,0) slot
+              select lpad( (n-1)*4,2,0) slot, 0 day_offset
               from slots_n
               union all
-              select '02' from dual
+              select '22' slot, -1 day_offset from dual
               union all
-              select '18' from dual
+              select '02' slot, 0 day_offset from dual
+              union all
+              select '18' slot, 0 day_offset from dual
           )
       )
       , ts as (
@@ -338,6 +341,7 @@ regions:
                where current_flag = 'Y'
           )
             and s.completed_ind = 'N'
+            and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
           order by s.session_date
           fetch first 1 rows only
       )
@@ -349,30 +353,32 @@ regions:
                else 
                  to_char(local_tz, 'HH24:MI')
                end
-              order by d)
+              order by day_offset, d)
               , tz
          into t, tz
         from (
           select s.session_date
                , slots.d
+               , slots.day_offset
                , tz.tz
-               , to_utc_timestamp_tz(to_char(s.session_date, 'yyyy-mm-dd') || 'T' || slots.d) at time zone tz.tz local_tz
+               , to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.d) at time zone tz.tz local_tz
           from ts s
              , tz
              , slots
          );
       
-      return '<script>var s = ' || nvl(t, '["","","","","","","",""]') || ', tz = "' || tz || '";</script>';
+      return '<script>var s = ' || nvl(t, '["","","","","","","","",""]') || ', tz = "' || tz || '";</script>';
+      
       exception
       when others then
-      return '<script>var s = ["","","","","",""], tz = "UTC";</script>';
+      return '<script>var s = ["","","","","","","","",""], tz = "UTC";</script>';
       end;
       
     page-items-to-submit: 
     - P40_TZ
 
   layout: 
-    sequence: 119
+    sequence: 130
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -407,6 +413,195 @@ regions:
   attributes: 
     performance: 
       lazy-loading: false
+
+- # ====== Region: 22:00 =======================================
+  id: 29248968913467342
+  identification: 
+    title: '22:00'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then nvl2(p.room_no, 'WMGT', '') || p.room_no else '' end room_no
+           , case when p.player_id = :G_PLAYER_ID then
+              '<mark class="player">'
+             end
+          || case when s.rooms_open_flag = 'Y' or s.rooms_defined_flag = 'Y' then '' else row_number() over (order by p.tournament_player_id) || ': ' end
+          || case when :P40_SHOW_AVATARS_IND = 'Y' then  wmg_discord.avatar_link(p_discord_id => p.discord_id) end 
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then
+              ' <a href="' ||
+                apex_page.get_url(
+                    p_page => 30
+                  , p_items => 'P30_PLAYER_ID,P30_PAGE_ID_PREV'
+                  , p_values => p.player_id || ',' || :APP_PAGE_ID
+                ) || '">' 
+             end
+          || apex_escape.html(p.player_name)
+          || case when (s.rooms_defined_flag is null and p.player_id = :G_PLAYER_ID) or :P40_TD_FLAG = 'Y' then '</a>' end
+          || case when p.player_id = :G_PLAYER_ID then
+              '</mark>'
+             end
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end players
+      from wmg_tournament_player_v p
+         , wmg_tournament_sessions s
+      where s.id =  p.tournament_session_id
+        and p.time_slot = '22:00'
+        and p.active_ind = 'Y'
+        and p.tournament_session_id = :G_CURRENT_SESSION_ID
+      order by case when s.rooms_open_flag = 'Y' or :P40_TD_FLAG = 'Y' then
+                 p.room_no 
+               else 0 end, p.tournament_player_id
+      
+    page-items-to-submit: 
+    - P40_TD_FLAG
+    - P40_SHOW_AVATARS_IND
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    position: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - room
+    - col-xxs-12
+    - col-xs-12
+    - col-sm-4
+    - col-md-3
+
+  appearance: 
+    template: Standard # 46995101107768514367
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--accent1
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: true
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 200
+
+    appearance: 
+      template-type: Theme
+      template: Standard # 46995138939704514382
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+      before-row: <hr>
+      column-break-format: 'WMGT #ROOM_NO#'
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ROOM_NO =====================================
+    id: 29249076547467343
+    identification: 
+      column-name: ROOM_NO
+      type: Plain Text
+
+    heading: 
+      heading: Room
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 29249145327467344
+    identification: 
+      column-name: PLAYERS
+      type: Plain Text
+
+    heading: 
+      heading: Players
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: false
 
 - # ====== Region: 02:00 =======================================
   id: 36757155006835901
@@ -453,7 +648,7 @@ regions:
     - P40_SHOW_AVATARS_IND
 
   layout: 
-    sequence: 30
+    sequence: 50
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -472,7 +667,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent2
+    - t-Region--accent3
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -640,7 +835,7 @@ regions:
     - P40_SHOW_AVATARS_IND
 
   layout: 
-    sequence: 89
+    sequence: 100
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -659,7 +854,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent7
+    - t-Region--accent8
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -879,13 +1074,16 @@ regions:
                  p.room_no 
                else 0 end, p.tournament_player_id
       
+    page-items-to-submit: 
+    - P40_TD_FLAG
+    - P40_SHOW_AVATARS_IND
 
   layout: 
-    sequence: 29
+    sequence: 30
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -900,7 +1098,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent1
+    - t-Region--accent2
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1067,7 +1265,7 @@ regions:
       
 
   layout: 
-    sequence: 39
+    sequence: 60
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1086,7 +1284,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent3
+    - t-Region--accent4
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1251,11 +1449,11 @@ regions:
       
 
   layout: 
-    sequence: 59
+    sequence: 70
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -1270,7 +1468,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent4
+    - t-Region--accent5
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1435,11 +1633,11 @@ regions:
       
 
   layout: 
-    sequence: 69
+    sequence: 80
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: true
+    start-new-row: false
     column: Automatic
     new-column: true
     column-span: Automatic
@@ -1454,7 +1652,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent5
+    - t-Region--accent6
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1619,7 +1817,7 @@ regions:
       
 
   layout: 
-    sequence: 79
+    sequence: 90
     parent-region: No Parent
     position: BODY
     start-new-layout: false
@@ -1638,7 +1836,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent6
+    - t-Region--accent7
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1803,14 +2001,14 @@ regions:
       
 
   layout: 
-    sequence: 99
+    sequence: 110
     parent-region: No Parent
     position: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
-    column-span: Automatic
+    column-span: 3
     column-css-classes: 
     - room
     - col-xxs-12
@@ -1822,7 +2020,7 @@ regions:
     template: Standard # 46995101107768514367
     template-options: 
     - '#DEFAULT#'
-    - t-Region--accent8
+    - t-Region--accent9
     - t-Region--scrollBody
     render-components: Above Content
 
@@ -1954,7 +2152,7 @@ regions:
   source: 
     location: Local Database
     type: SQL Query
-    sql-query: "select 'The 00:00, 02:00, 04:00, 08:00, 12:00, 16:00, 20:00 times are in UTC. The times above the time slots are in ' || :P40_TZ legend from dual "
+    sql-query: "select 'The 22:00, 00:00, 02:00, 04:00, 08:00, 12:00, 16:00, 20:00 times are in UTC. The times above the time slots are in ' || :P40_TZ legend from dual "
 
   layout: 
     sequence: 6
@@ -2110,7 +2308,7 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      select s.session_date
+      select s.session_date - 1 session_date
            , s.easy_course_code, nvl(ec.name, 'TBD -') easy_course
            , s.hard_course_code, nvl(hc.name, 'TBD -') hard_course
            , (select count(*) from wmg_tournament_players p where p.tournament_session_id = s.tournament_session_id and p.active_ind = 'Y') players
@@ -2128,7 +2326,7 @@ regions:
       )
       and session_date+1 > sysdate
       */
-      order by session_date
+      order by s.session_date
       fetch first 1 rows only
 
   layout: 
@@ -2208,93 +2406,18 @@ regions:
       enabled: false
 
   columns: 
-  - # ====== Column: PLAYERS =====================================
-    id: 40395056496679895466
-    identification: 
-      column-name: PLAYERS
-      type: Hidden Column
-
-    layout: 
-      sequence: 30
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: EASY_COURSE_CODE ============================
-    id: 40395056723824895467
-    identification: 
-      column-name: EASY_COURSE_CODE
-      type: Hidden Column
-
-    layout: 
-      sequence: 40
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HARD_COURSE_CODE ============================
-    id: 40395057219458895467
-    identification: 
-      column-name: HARD_COURSE_CODE
-      type: Hidden Column
-
-    layout: 
-      sequence: 50
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: EASY_COURSE =================================
-    id: 40395057592299895467
-    identification: 
-      column-name: EASY_COURSE
-      type: Hidden Column
-
-    layout: 
-      sequence: 60
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HARD_COURSE =================================
-    id: 40395057945361895468
-    identification: 
-      column-name: HARD_COURSE
-      type: Hidden Column
-
-    layout: 
-      sequence: 70
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: SESSION_DATE ================================
-    id: 40395058411956895468
+    id: 32957699805648000
     identification: 
       column-name: SESSION_DATE
       type: Plain Text
 
     heading: 
       heading: Session Date
-      alignment: center
+      alignment: start
 
     layout: 
-      sequence: 20
+      sequence: 10
       column-alignment: start
 
     accessibility: 
@@ -2310,6 +2433,7 @@ regions:
         The courses are:<br>
         • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
         • #HARD_COURSE_CODE# - #HARD_COURSE#
+        
 
     sorting: 
       sortable: false
@@ -2319,6 +2443,81 @@ regions:
 
     advanced: 
       compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYERS =====================================
+    id: 40395056496679895466
+    identification: 
+      column-name: PLAYERS
+      type: Hidden Column
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE_CODE ============================
+    id: 40395056723824895467
+    identification: 
+      column-name: EASY_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE_CODE ============================
+    id: 40395057219458895467
+    identification: 
+      column-name: HARD_COURSE_CODE
+      type: Hidden Column
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 40395057592299895467
+    identification: 
+      column-name: EASY_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 40395057945361895468
+    identification: 
+      column-name: HARD_COURSE
+      type: Hidden Column
+
+    layout: 
+      sequence: 60
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -2576,6 +2775,43 @@ buttons:
   server-side-condition: 
     type: Rows returned
     sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag is null"
+
+  security: 
+    authorization-scheme: Tournament Admin # 55902033226819493948
+
+- # ====== Button: EDIT_22 =====================================
+  id: 29249222799467345
+  identification: 
+    button-name: EDIT_22
+    label: 'Edit 22:00'
+
+  layout: 
+    sequence: 20
+    region: '22:00' # 29248968913467342
+    position: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon # 46995173311788514399
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    icon: fa-chevron-right
+
+  behavior: 
+    action: Redirect to Page in this Application
+    target: 
+      url: 'f?p=&APP_ID.:42:&SESSION.::&DEBUG.:42:P42_SLOT:\22:00\'
+      page: 42 # Change Rooms
+      clear-cache: 42
+      values: 
+        p42_slot: '22:00'
+
+    warn-on-unsaved-changes: Do Not Check
 
   security: 
     authorization-scheme: Tournament Admin # 55902033226819493948
@@ -3045,6 +3281,55 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+  - # ====== Action: Glow New Players ============================
+    id: 32957491106647998
+    identification: 
+      name: Glow New Players
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(".-wm-rank-new").addClass("fa-anim-flash");
+
+    execution: 
+      sequence: 30
+      event: Init Actions # 12528847877550025
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+    security: 
+      authorization-scheme: Tournament Admin # 55902033226819493948
+
+- # ====== Dynamic Action: Refresh on Dialog Close 22 ==========
+  id: 29249352638467346
+  identification: 
+    name: Refresh on Dialog Close 22
+
+  execution: 
+    sequence: 140
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    selection-type: Button
+    button: EDIT_22 # 29249222799467345
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 29249490789467347
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '22:00' # 29248968913467342
+
+    execution: 
+      sequence: 10
+      event: Refresh on Dialog Close 22 # 29249352638467346
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh on Dialog Close 02 ==========
   id: 36757992396835909
   identification: 
@@ -3179,10 +3464,10 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Refresh on Dialog Close =============
+- # ====== Dynamic Action: Refresh on Dialog Close 00 ==========
   id: 41138679865776035
   identification: 
-    name: Refresh on Dialog Close
+    name: Refresh on Dialog Close 00
 
   execution: 
     sequence: 50
@@ -3206,7 +3491,7 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Refresh on Dialog Close # 41138679865776035
+      event: Refresh on Dialog Close 00 # 41138679865776035
       fire-when-event-result-is: True
       fire-on-initialization: false
 

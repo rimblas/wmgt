@@ -60,6 +60,7 @@ regions:
       )
       select 
         tp.pos
+      , d.player_id
       , d.player_name
       , tp.points
       , d.rank_code
@@ -288,6 +289,38 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 32958982457648013
+    identification: 
+      column-name: PLAYER_ID
+      type: Plain Text
+
+    heading: 
+      heading: Player ID
+      alignment: end
+
+    layout: 
+      sequence: 10
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: POINTS ======================================
     id: 46934269510678620
     identification: 

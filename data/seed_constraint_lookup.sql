@@ -10,3 +10,4 @@ insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_TOURNA
 insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_PLAYERS_U03', 'That player is already in use.');
 
 insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_COURSE_PREVIEWS_U01', 'Hole preview already exists.');
+insert into wmg_constraint_lookup (constraint_name, message) values ('WMG_TOURNAMENT_ROOM_TEMPLATE_U1', 'Room No already exists.');

@@ -783,10 +783,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Promotion to <span class="fa -wm-rank-rise-pr
+- # ====== Region: Promotion to <span class="fa -wm-rank-semi-pr
   id: 47954179822518545
   identification: 
-    title: Promotion to <span class="fa -wm-rank-rise-profile -wm-rank-rise">Rising Star</span>
+    title: Promotion to <span class="fa -wm-rank-semi-profile -wm-rank-semi">Semi-Pro</span>
     type: Classic Report
 
   source: 
@@ -797,8 +797,8 @@ regions:
         from wmg_tournament_session_points_v p
        where p.tournament_session_id = :G_CURRENT_SESSION_ID
          and p.pos between 11 and 25
-         and p.rank_code not in ('PRO', 'SEMI', 'RISING')
-       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos
+         and p.rank_code not in ('PRO', 'SEMI', 'ELITE')
+       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 'PRO', 4), pos
       
 
   layout: 
@@ -873,6 +873,36 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: ACCOUNT =====================================
+    id: 29248196354467334
+    identification: 
+      column-name: ACCOUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 29248266934467335
+    identification: 
+      column-name: DISCORD_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: TOURNAMENT_SESSION_ID =======================
     id: 47954260906518546
     identification: 
@@ -1267,10 +1297,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Promotion to <span class="fa -wm-rank-pro-pro
+- # ====== Region: Promotion to <span class="fa -wm-rank-elite-p
   id: 47962095348877903
   identification: 
-    title: Promotion to <span class="fa -wm-rank-pro-profile -wm-rank-pro">Pro</span>
+    title: Promotion to <span class="fa -wm-rank-elite-profile -wm-rank-elite">Elite</span>
     type: Classic Report
 
   source: 
@@ -1281,8 +1311,8 @@ regions:
         from wmg_tournament_session_points_v p
        where p.tournament_session_id = :G_CURRENT_SESSION_ID
          and p.pos <= 3
-         and p.rank_code != 'PRO'
-       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos
+         and p.rank_code != 'ELITE'
+       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 'PRO', 4), pos
       
 
   layout: 
@@ -1357,6 +1387,36 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: ACCOUNT =====================================
+    id: 29248600312467338
+    identification: 
+      column-name: ACCOUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 29248644009467339
+    identification: 
+      column-name: DISCORD_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_COURSE_ID ==============================
     id: 47953320212518537
     identification: 
@@ -1751,10 +1811,10 @@ regions:
     security: 
       escape-special-characters: true
 
-- # ====== Region: Promotion to <span class="fa -wm-rank-semi-pr
+- # ====== Region: Promotion to <span class="fa -wm-rank-pro-pro
   id: 47963423161877917
   identification: 
-    title: Promotion to <span class="fa -wm-rank-semi-profile -wm-rank-semi">Semi-Pro</span>
+    title: Promotion to <span class="fa -wm-rank-pro-profile -wm-rank-pro">Pro</span>
     type: Classic Report
 
   source: 
@@ -1764,9 +1824,9 @@ regions:
       select p.*
         from wmg_tournament_session_points_v p
        where p.tournament_session_id = :G_CURRENT_SESSION_ID
-         and p.pos between 3 and 10
-         and p.rank_code not in ('PRO', 'SEMI')
-       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos
+         and p.pos between 4 and 10
+         and p.rank_code not in ('PRO', 'ELITE')
+       order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'SEMI', 3, 'PRO', 4), pos
       
 
   layout: 
@@ -1841,6 +1901,36 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: ACCOUNT =====================================
+    id: 29248318457467336
+    identification: 
+      column-name: ACCOUNT
+      type: Hidden Column
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: DISCORD_ID ==================================
+    id: 29248465405467337
+    identification: 
+      column-name: DISCORD_ID
+      type: Hidden Column
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_COURSE_ID ==============================
     id: 47953746424518541
     identification: 
