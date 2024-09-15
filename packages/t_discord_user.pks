@@ -2,7 +2,7 @@ create or replace type t_discord_user as object (
     discord_id             number
   , player_id              number
   , username               varchar2(32)
-  , global_name            varchar2(60)
+  , global_name            varchar2(100 char)
   , avatar                 varchar2(64)
   , accent_color           number
   , banner_color           varchar2(10)
