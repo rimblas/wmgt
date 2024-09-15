@@ -73,7 +73,8 @@ end log;
  * @return
  */
 procedure send_to_discord_webhook(
-    p_webhook_code    in wmg_webhooks.code%type
+    p_webhook_code    in wmg_webhooks.code%type        default null
+  , p_webhook_url     in wmg_webhooks.webhook_url%type default null
   , p_content         in clob
   , p_embeds          in clob default null
   , p_user_name       in wmg_players.account%type default null
@@ -90,6 +91,10 @@ begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
   
+  if p_webhook_code is null and p_webhook_url is null then
+    raise_application_error(-20000, 'Specify a webhook_code or webhook_url');
+  end if;
+
   if p_embeds is null then
     l_json_body := json_object('content' value p_content);
   else
@@ -108,14 +113,20 @@ begin
         p_value_01       => 'application/json'
   );
   for webhook in (
-    select h.*
+    select h.name webhook_name
+         , h.webhook_url
       from wmg_webhooks h
      where h.code = p_webhook_code
        and h.active_ind = 'Y'
        and (p_user_name is null or owner_username = p_user_name)
+    union all
+    select '- Direct URL -' webhook_name
+          , p_webhook_url webhook_url
+       from dual
+      where p_webhook_url is not null
   )
   loop
-    log('Found webhook:' || webhook.name, l_scope);  
+    log('Found webhook:' || webhook.webhook_name, l_scope);  
     l_response := apex_web_service.make_rest_request(
         p_url           => webhook.webhook_url
       , p_http_method   => 'POST'

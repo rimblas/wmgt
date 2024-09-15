@@ -10,7 +10,8 @@ is
 
 
 procedure send_to_discord_webhook(
-    p_webhook_code    in wmg_webhooks.code%type
+    p_webhook_code    in wmg_webhooks.code%type        default null
+  , p_webhook_url     in wmg_webhooks.webhook_url%type default null
   , p_content         in clob
   , p_embeds          in clob default null
   , p_user_name       in wmg_players.account%type default null
