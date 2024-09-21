@@ -1569,7 +1569,7 @@ end add_leaderboard_entries;
 
 
 
-
+$IF env.kwt $THEN
 /**
  * After the tournament is closed add people's best scores to the Montly
  *
@@ -1724,6 +1724,7 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end add_monthly_entries;
+$END
 
 
 
@@ -1816,11 +1817,11 @@ begin
     );
   end if;
 
-  if env.kwt then
+  $IF env.kwt $THEN
     add_monthly_entries(
       p_tournament_session_id => p_tournament_session_id
     );
-  end if;
+  $END
 
 
   wmg_notification.notify_channel_tournament_close(
@@ -2223,7 +2224,8 @@ begin
         select tournament_session_id, time_slot, room_no
           from wmg_tournament_players
          where id = p_tournament_player_id
-    );
+    )
+      and active_ind = 'Y';  -- include registered players only
 
   exception
   when TOO_MANY_ROWS then
