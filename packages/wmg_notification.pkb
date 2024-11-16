@@ -1210,9 +1210,16 @@ is
 
   function course_rank(p_course_id in wmg_courses.id%type) return varchar2
   as
+     l_course_info varchar2(250);
      l_course_rank_info varchar2(250);
      l_course_last_played_info varchar2(250);
   begin
+
+    select 'Released on ' || to_char(c.release_date, 'Month DD, YYYY')
+      into l_course_info
+      from wmg_courses c
+     where c.id = p_course_id;
+
     for rank_info in (
       with std_scale as (
         select max(std_dev) max_std_dev
@@ -1274,21 +1281,21 @@ is
                               when rank_info.easiest_rank = 1 then '' 
                               else ' ' || rank_info.easiest_rank_ordinal
                              end
-                          || ' easiest course, with a difficulty of ' || rank_info.difficulty || ' out of 100';
+                          || ' easiest course, with a difficulty/risk rating of ' || rank_info.difficulty || ' out of 100';
       elsif rank_info.hardest_rank <= 10 then
         l_course_rank_info := rank_info.course_code || ' is the' 
                           || case 
                               when rank_info.hardest_rank = 1 then '' 
                               else ' ' || rank_info.hardest_rank_ordinal
                              end
-                          || ' hardest course, with a difficulty of ' || rank_info.difficulty || ' out of 100';
+                          || ' riskiest/hardest course, with a difficulty/risk rating of ' || rank_info.difficulty || ' out of 100';
       else 
         l_course_rank_info := rank_info.course_code 
-           || ' is ' || rank_info.hardest_rank || ' in difficulty out of ' || rank_info.total_courses || ' courses with a rank '
+           || ' ranks ' || rank_info.hardest_rank || ' in risk out of ' || rank_info.total_courses || ' courses with a rank '
            || rank_info.difficulty || ' out of 100';
         if rank_info.mode_rank = 1 then
           l_course_rank_info := l_course_rank_info || c_crlf
-                           || 'But more important, ' || rank_info.course_code || ' is the hardest of all the easy courses!';
+                           || 'But more important, ' || rank_info.course_code || ' is the hardest and riskiest of all the easy courses!';
         end if;
       end if;
       
@@ -1296,7 +1303,7 @@ is
 
     begin
       select 'It was last played on ' || ts.week || ' on ' || to_char(ts.session_date, 'Month DD, YYYY')
-      || ' (' || apex_util.get_since(ts.session_date) || ')'
+          || ' (' || apex_util.get_since(ts.session_date) || ')'
         into l_course_last_played_info
       from wmg_tournament_sessions ts
          , wmg_tournament_courses tc
@@ -1315,7 +1322,7 @@ is
 
     end;
 
-    return l_course_rank_info || chr(13)||chr(10) || l_course_last_played_info;
+    return l_course_info || chr(13)||chr(10) || l_course_rank_info || chr(13)||chr(10) || l_course_last_played_info;
 
   end course_rank;
 
