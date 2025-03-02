@@ -1066,25 +1066,15 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
-               $END
-               $IF env.kwt $THEN
-               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
-               $END  
+               -- $IF env.kwt $THEN
+               -- , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
-               $IF env.kwt $THEN
-             , wmg_tournament_session_points_v sp
-               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
-            $IF env.kwt $THEN
-            and sp.week = ts.week
-            and sp.player_id = p.player_id
-            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
@@ -1124,25 +1114,13 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
-               $END  
-               $IF env.kwt $THEN
-               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
-               $END
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
-               $IF env.kwt $THEN
-             , wmg_tournament_session_points_v sp
-               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
-            $IF env.kwt $THEN
-            and sp.week = ts.week
-            and sp.player_id = p.player_id
-            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
