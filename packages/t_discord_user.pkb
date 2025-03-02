@@ -207,28 +207,53 @@ begin
      where discord_id = self.discord_id;
 
     -- finally add the player
+    -- but if we found a player_id, then we are syncing and not adding
     if l_player_id is null then
-      logger.log(p_text => '.. inserting player. discord_id ' || self.discord_id, p_scope => 't_discord_user');
 
-      insert into wmg_players (
-         discord_id
-       , account
-       , account_login
-       , discord_avatar
-       , accent_color
-       , name
-       , discord_discriminator
-      )
-      values (
-          self.discord_id
-        , self.username
-        , self.username || '  (discord)'
-        , self.avatar
-        , self.accent_color
-        , nvl(self.global_name, self.username)
-        , self.discriminator
-      )
-      returning id into l_player_id;
+      -- We require the lower(username) to be unique, so before inserting see an 
+      -- old user, without Discord ID, exists with the same username
+      -- Final attempt to find the player
+      select min(id)
+        into l_player_id
+        from wmg_players
+       where lower(account) = lowe(self.username)
+         and discord_id is null;
+
+      if l_player_id is not null then
+        logger.log(p_text => '.. syncing old player without discord_id to discord_id ' || self.discord_id, p_scope => 't_discord_user');
+
+        update wmg_players p
+           set p.account        = self.username
+             , p.account_login  = self.username || '  (discord)'
+             , p.discord_avatar = self.avatar
+             , p.accent_color   = self.accent_color
+             , p.name           = self.global_name
+             , p.discord_discriminator = self.discriminator
+          where id = l_player_id;
+
+      else
+        logger.log(p_text => '.. inserting player. discord_id ' || self.discord_id, p_scope => 't_discord_user');
+
+        insert into wmg_players (
+           discord_id
+         , account
+         , account_login
+         , discord_avatar
+         , accent_color
+         , name
+         , discord_discriminator
+        )
+        values (
+            self.discord_id
+          , self.username
+          , self.username || '  (discord)'
+          , self.avatar
+          , self.accent_color
+          , nvl(self.global_name, self.username)
+          , self.discriminator
+        )
+        returning id into l_player_id;
+      end if;
     end if; -- player insert
 
   end if;   -- find existing player
