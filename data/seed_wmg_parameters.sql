@@ -76,3 +76,37 @@ values (
   , 'Global Notification for the app. If set it will display in serverl pages as a global message.'   -- description
 )
 /
+
+
+delete from wmg_parameters where name_key = 'FHIT_DOUBLES_LIMITS';
+
+insert into wmg_parameters (
+    category
+  , name_key
+  , value
+  , description
+)
+values (
+    'FHIT'   -- category
+  , 'FHIT_DOUBLES_LIMITS'   -- name_key
+  , '32'   -- value
+  , 'FHIT Doubles Tournament Team Registration limit'   -- description
+)
+/
+
+
+delete from wmg_parameters where name_key = 'FHIT_DOUBLES_LIMITS';
+
+insert into wmg_parameters (
+    category
+  , name_key
+  , value
+  , description
+)
+values (
+    'FHIT'   -- category
+  , 'FHIT_DOUBLES_LIMITS'   -- name_key
+  , '32'   -- value
+  , 'FHIT Doubles Tournament Team Registration limit'   -- description
+)
+/
