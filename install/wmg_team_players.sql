@@ -7,7 +7,7 @@ create table wmg_team_players (
                                    references wmg_tournaments(id)
   , team_id                        number not null
                                    constraint wmg_teams_fk
-                                   references wmg_teams(id) cascade delete
+                                   references wmg_teams(id) on delete cascade
   , player_id                      number not null
                                    constraint wmg_teams_player_fk
                                    references wmg_players(id)
