@@ -397,9 +397,34 @@ begin
    where player_id = p_from_player_id;
 
   log('.. Move leaderboard', l_scope);
-  update wmg_leaderboards
-     set player_id = p_into_player_id
-   where player_id = p_from_player_id;
+  begin
+    update wmg_leaderboards
+       set player_id = p_into_player_id
+     where player_id = p_from_player_id;
+  exception
+    when others then
+        log('.. unable to move, so merge', l_scope);
+        merge into wmg_leaderboards t
+        using (
+          select *
+            from wmg_leaderboards
+           where player_id = p_from_player_id
+        ) s
+        on (
+             t.player_id   = p_into_player_id
+         and t.course_id   = s.course_id
+        )
+        when matched then update set
+            t.score    = s.score
+          , t.round_id = s.round_id
+          , t.guild_id = s.guild_id
+          , t.tournament_flag = s.tournament_flag; 
+        log('.. merged ' || sql%rowcount, l_scope);
+
+        log('.. deleting from ' || p_from_player_id, l_scope);
+        delete from wmg_leaderboards where player_id = p_from_player_id;
+        log('.. deleted ' || sql%rowcount, l_scope);
+  end;
 
   log('.. Move Race leaderboard', l_scope);
   update wmg_race_leaderboards

@@ -127,6 +127,9 @@ procedure save_stream_scores(
   , p_scores_json in out nocopy varchar2
 );
 
+procedure add_monthly_entries(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+);
 
 end wmg_util;
 /

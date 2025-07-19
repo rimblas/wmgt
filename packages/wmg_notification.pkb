@@ -73,7 +73,8 @@ end log;
  * @return
  */
 procedure send_to_discord_webhook(
-    p_webhook_code    in wmg_webhooks.code%type
+    p_webhook_code    in wmg_webhooks.code%type        default null
+  , p_webhook_url     in wmg_webhooks.webhook_url%type default null
   , p_content         in clob
   , p_embeds          in clob default null
   , p_user_name       in wmg_players.account%type default null
@@ -90,6 +91,10 @@ begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   log('BEGIN', l_scope);
   
+  if p_webhook_code is null and p_webhook_url is null then
+    raise_application_error(-20000, 'Specify a webhook_code or webhook_url');
+  end if;
+
   if p_embeds is null then
     l_json_body := json_object('content' value p_content);
   else
@@ -108,14 +113,20 @@ begin
         p_value_01       => 'application/json'
   );
   for webhook in (
-    select h.*
+    select h.name webhook_name
+         , h.webhook_url
       from wmg_webhooks h
      where h.code = p_webhook_code
        and h.active_ind = 'Y'
        and (p_user_name is null or owner_username = p_user_name)
+    union all
+    select '- Direct URL -' webhook_name
+          , p_webhook_url webhook_url
+       from dual
+      where p_webhook_url is not null
   )
   loop
-    log('Found webhook:' || webhook.name, l_scope);  
+    log('Found webhook:' || webhook.webhook_name, l_scope);  
     l_response := apex_web_service.make_rest_request(
         p_url           => webhook.webhook_url
       , p_http_method   => 'POST'
@@ -302,6 +313,112 @@ begin
       raise;
 end new_player;
 
+
+
+
+
+$IF env.fhit $THEN
+-- Only FHIT has the team feature
+/**
+ * Send a notification that a "New Team" just registered
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created March 2, 2025
+ * @param p_team_id
+ * @return
+ */
+procedure new_team(
+    p_team_id       in wmg_teams.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'new_team';
+
+  l_time_slot      wmg_tournament_players.time_slot%type;
+  l_registration_attempts number;
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+  l_team_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  -- no emails for teams
+  -- l_email_override :=  nvl(wmg_util.get_param('EMAIL_OVERRIDE'), wmg_util.get_param('NEW_PLAYER_NOTIFICATION_EMAILS'));
+  -- log('emails will be sent to: ' || l_email_override, l_scope);
+
+
+  for t in (
+    select t.* from wmg_team_players_pivot_v t where team_id = p_team_id
+  )
+  loop
+    -- People with a default discord avatar use an internal image lacking the protocol
+    -- if there's not protocol, add it
+    /*
+    l_team_image := case 
+                      when instr(p.avatar_image, 'http') = 0 then
+                         apex_util.host_url('SCRIPT')
+                      end || p.avatar_image;
+    */
+
+     -- Construct the embeds JSON for the webhook
+     l_content := 'New Team: __' || t.team_name || '__ just registered!';
+     l_embeds := json_array (
+               json_object(
+                 'title' value 'Team: ' || t.team_name,
+                 'description' value '[' || wmg_util.get_param('ENV') || ']',
+                 'color' value c_embed_color_green,
+                 'fields' value json_array(
+                     json_object(
+                         'name' value 'Player 1', 'value' value t.player_name1, 'inline' value false
+                     ),
+                     json_object(
+                         'name' value 'Player 2', 'value' value t.player_name2, 'inline' value true
+                     )
+                 )
+             )
+           );
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'STAFFWMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  apex_mail.push_queue;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end new_team;
+$END
 
 
 
@@ -1199,9 +1316,16 @@ is
 
   function course_rank(p_course_id in wmg_courses.id%type) return varchar2
   as
+     l_course_info varchar2(250);
      l_course_rank_info varchar2(250);
      l_course_last_played_info varchar2(250);
   begin
+
+    select 'Released on ' || to_char(c.release_date, 'Month DD, YYYY')
+      into l_course_info
+      from wmg_courses c
+     where c.id = p_course_id;
+
     for rank_info in (
       with std_scale as (
         select max(std_dev) max_std_dev
@@ -1263,21 +1387,21 @@ is
                               when rank_info.easiest_rank = 1 then '' 
                               else ' ' || rank_info.easiest_rank_ordinal
                              end
-                          || ' easiest course, with a difficulty of ' || rank_info.difficulty || ' out of 100';
+                          || ' easiest course, with a difficulty/risk rating of ' || rank_info.difficulty || ' out of 100';
       elsif rank_info.hardest_rank <= 10 then
         l_course_rank_info := rank_info.course_code || ' is the' 
                           || case 
                               when rank_info.hardest_rank = 1 then '' 
                               else ' ' || rank_info.hardest_rank_ordinal
                              end
-                          || ' hardest course, with a difficulty of ' || rank_info.difficulty || ' out of 100';
+                          || ' riskiest/hardest course, with a difficulty/risk rating of ' || rank_info.difficulty || ' out of 100';
       else 
         l_course_rank_info := rank_info.course_code 
-           || ' is ' || rank_info.hardest_rank || ' in difficulty out of ' || rank_info.total_courses || ' courses with a rank '
+           || ' ranks ' || rank_info.hardest_rank || ' in risk out of ' || rank_info.total_courses || ' courses with a rank '
            || rank_info.difficulty || ' out of 100';
         if rank_info.mode_rank = 1 then
           l_course_rank_info := l_course_rank_info || c_crlf
-                           || 'But more important, ' || rank_info.course_code || ' is the hardest of all the easy courses!';
+                           || 'But more important, ' || rank_info.course_code || ' is the hardest and riskiest of all the easy courses!';
         end if;
       end if;
       
@@ -1285,7 +1409,7 @@ is
 
     begin
       select 'It was last played on ' || ts.week || ' on ' || to_char(ts.session_date, 'Month DD, YYYY')
-      || ' (' || apex_util.get_since(ts.session_date) || ')'
+          || ' (' || apex_util.get_since(ts.session_date) || ')'
         into l_course_last_played_info
       from wmg_tournament_sessions ts
          , wmg_tournament_courses tc
@@ -1304,7 +1428,7 @@ is
 
     end;
 
-    return l_course_rank_info || chr(13)||chr(10) || l_course_last_played_info;
+    return l_course_info || chr(13)||chr(10) || l_course_rank_info || chr(13)||chr(10) || l_course_last_played_info;
 
   end course_rank;
 
@@ -1552,10 +1676,12 @@ begin
     select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_easy_top_scores
     from (
+        $IF env.wmgt $THEN
         select '- Leaderboard: ' score_type, min(l.score) under_par
           from wmg_leaderboards l
          where l.course_id = new_session.easy_course_id
         union all
+        $END
         select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r

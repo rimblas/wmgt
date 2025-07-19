@@ -23,8 +23,10 @@ select p.id
      , p.updated_on
      , p.updated_by
 from wmg_players p
-   , wmg_ranks r
-   , wmg_country_iso_v c
-where p.rank_code = r.code
-  and p.country_code = c.iso_code (+)
+   join wmg_ranks r on p.rank_code = r.code
+   left join wmg_country_iso_v c on p.country_code = c.iso_code
+   left join wmg_player_moderation m on p.id = m.player_id
+      and m.banned_flag = 'Y'
+      and m.active_ind = 'Y'
+where m.player_id is null
 /

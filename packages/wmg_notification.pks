@@ -10,17 +10,23 @@ is
 
 
 procedure send_to_discord_webhook(
-    p_webhook_code    in wmg_webhooks.code%type
+    p_webhook_code    in wmg_webhooks.code%type        default null
+  , p_webhook_url     in wmg_webhooks.webhook_url%type default null
   , p_content         in clob
   , p_embeds          in clob default null
   , p_user_name       in wmg_players.account%type default null
 );
 
 --------------------------------------------------------------------------------
-
+$IF env.fhit $THEN
 procedure new_player(
     p_player_id       in wmg_players.id%type
   , p_registration_id in wmg_tournament_players.id%type default null
+);
+$END
+
+procedure new_team(
+    p_team_id       in wmg_teams.id%type
 );
 
 procedure notify_first_timeslot_finish(

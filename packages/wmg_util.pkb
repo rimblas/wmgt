@@ -1066,25 +1066,15 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
-               $END
-               $IF env.kwt $THEN
-               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
-               $END  
+               -- $IF env.kwt $THEN
+               -- , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
-               $IF env.kwt $THEN
-             , wmg_tournament_session_points_v sp
-               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
-            $IF env.kwt $THEN
-            and sp.week = ts.week
-            and sp.player_id = p.player_id
-            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
@@ -1124,25 +1114,13 @@ begin
                , ts.week
                , ts.session_date
       --         , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
-               $IF env.wmgt or env.fhit $THEN
                , row_number() over (partition by p.player_id order by p.points nulls first, ts.session_date) discard_order
-               $END  
-               $IF env.kwt $THEN
-               , row_number() over (partition by p.player_id order by sp.total_score desc nulls last, ts.session_date) discard_order
-               $END
                , count(*) over (partition by p.player_id) sessions_played
           from wmg_tournament_sessions ts
              , wmg_tournament_players p
              , curr_tournament
-               $IF env.kwt $THEN
-             , wmg_tournament_session_points_v sp
-               $END  
           where ts.id = p.tournament_session_id
             and ts.tournament_id = curr_tournament.id
-            $IF env.kwt $THEN
-            and sp.week = ts.week
-            and sp.player_id = p.player_id
-            $END  
           -- and p.player_id in ( 22, 24, 26)
           order by p.player_id, ts.session_date
       )
@@ -1569,6 +1547,166 @@ end add_leaderboard_entries;
 
 
 
+$IF env.kwt $THEN
+/**
+ * After the tournament is closed add people's best scores to the Montly
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created September 8, 2024
+ * @param p_tournament_session_id
+ * @return
+ */
+procedure add_monthly_entries(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'add_monthly_entries';
+
+  l_m_score kw_monthly_results.score%type;
+  l_m_hn1 kw_monthly_results.hn1%type;
+  l_kwt_hn1 number;
+
+  add_kwt_score boolean;  -- determine if the scores needs to be added to the Monthly
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  -- loop though the courses for the current KWT week and match them to the monthly courses
+  -- if the courses match, we will process those
+  <<current_monthly>>
+  for curr_monthly in (
+    select mm.id monthly_id
+         , mc.course_id
+         , mc.course_mode
+      from kw_monthly_courses_v mc
+      join kw_monthly_months mm on mm.id = mc.monthly_id
+      join wmg_tournament_sessions_v ts on (mc.course_id = ts.easy_course_id or mc.course_id = ts.hard_course_id)
+    where mm.current_flag = 'Y'
+      and ts.tournament_session_id = p_tournament_session_id
+  )
+  loop
+
+    log('.. monthly_id:' || curr_monthly.monthly_id, l_scope);
+    log('.. course_id :' || curr_monthly.course_id, l_scope);
+
+    -- we have montly courses that match the KWT weekly, see whcih scores are better
+    <<kwt_player_scores>>
+    for kwt_scores in (
+      select p.player_id
+           , p.easy_course_id course_id
+           , p.easy_round_id  round_id
+           , p.easy           score
+           , p.week
+        from wmg_tournament_session_points_v p
+       where p.tournament_session_id = p_tournament_session_id
+         and curr_monthly.course_mode = 'E'
+       union all
+      select p.player_id
+           , p.hard_course_id course_id
+           , p.hard_round_id  round_id
+           , p.hard           score
+           , p.week
+        from wmg_tournament_session_points_v p
+       where p.tournament_session_id = p_tournament_session_id
+         and curr_monthly.course_mode = 'H'
+    )
+    loop
+      add_kwt_score := false;  -- new player, we don't know if we're adding
+      l_kwt_hn1 := 0;          -- reset aces
+
+      begin
+        -- find the current montly score for the player
+        select mr.score
+             , mr.hn1
+         into l_m_score
+            , l_m_hn1
+         from kw_monthly_courses mc
+            , kw_monthly_players mp
+            , kw_monthly_results mr
+        where mc.monthly_id = mp.monthly_id
+          and mc.monthly_id = curr_monthly.monthly_id
+          and mc.course_id =  kwt_scores.course_id
+          and mp.player_id =  kwt_scores.player_id
+          and mr.m_course_id = mc.id  -- m_course_id
+          and mr.m_player_id = mp.id; -- m_player_id
+      exception
+        when no_data_found then
+           -- they don't have one that's an automatic add
+           add_kwt_score := true;
+           l_m_score := null;
+           l_m_hn1 := null;
+      end;
+
+      if add_kwt_score or l_m_score >= kwt_scores.score then 
+        -- if we're adding or the new score better or equal, get the KWT hn1
+        select count(*)
+          into l_kwt_hn1
+          from wmg_rounds_unpivot_mv u
+         where u.week = kwt_scores.week
+           and u.player_id = kwt_scores.player_id
+           and u.course_id = kwt_scores.course_id
+           and u.score = 1;
+      end if;
+
+
+      -- decide if we're adding
+      if add_kwt_score  -- automatic add
+       or (l_m_score = kwt_scores.score and l_kwt_hn1 > l_m_hn1) -- same score, but improved aces
+       or (l_m_score > kwt_scores.score)   -- monthly is worse than KWT
+      then 
+        -- the current KWT is better than the Montly
+        log('..        player_id:' || kwt_scores.player_id, l_scope);
+        log('..        l_m_score:' || l_m_score, l_scope);
+        log('..          l_m_hn1:' || l_m_hn1, l_scope);
+        log('.. kwt_scores.score:' || kwt_scores.score, l_scope);
+        log('.. kwt_scores.hn1  :' || l_kwt_hn1, l_scope);
+
+
+        merge into kw_monthly_results mr
+        using (
+            select mc.id as m_course_id
+                 , mp.id as m_player_id
+                 , kwt_scores.score as score
+                 , l_kwt_hn1 as hn1
+             from kw_monthly_courses mc
+                , kw_monthly_players mp
+            where mc.monthly_id = mp.monthly_id
+              and mc.monthly_id = curr_monthly.monthly_id
+              and mc.course_id  = curr_monthly.course_id
+              and mp.player_id  = kwt_scores.player_id
+        ) src
+        on (mr.m_course_id = src.m_course_id and mr.m_player_id = src.m_player_id)
+        when matched then
+            update set mr.score = src.score
+                     , mr.hn1 = src.hn1
+        when not matched then
+            insert (m_course_id, m_player_id, score, hn1)
+            values (src.m_course_id, src.m_player_id, src.score, src.hn1);
+
+      end if; -- adding score
+
+    end loop kwt_player_scores;
+
+  end loop current_monthly;
+
+  log('END', l_scope);
+
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end add_monthly_entries;
+$END
+
+
+
+
 
 /**
  * Given a tournament ID perform the necessary steps to close the week
@@ -1656,6 +1794,12 @@ begin
       p_tournament_session_id => p_tournament_session_id
     );
   end if;
+
+  $IF env.kwt $THEN
+    add_monthly_entries(
+      p_tournament_session_id => p_tournament_session_id
+    );
+  $END
 
 
   wmg_notification.notify_channel_tournament_close(
@@ -2058,7 +2202,8 @@ begin
         select tournament_session_id, time_slot, room_no
           from wmg_tournament_players
          where id = p_tournament_player_id
-    );
+    )
+      and active_ind = 'Y';  -- include registered players only
 
   exception
   when TOO_MANY_ROWS then
