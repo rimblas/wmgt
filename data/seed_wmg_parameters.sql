@@ -77,6 +77,21 @@ values (
 )
 /
 
+delete from wmg_parameters where name_key = 'GLOBAL_APP_BANNER_ON';
+insert into wmg_parameters (
+    category
+  , name_key
+  , value
+  , description
+)
+values (
+    'Notifications'   -- category
+  , 'GLOBAL_APP_BANNER_ON'   -- name_key
+  , 'NO'   -- value
+  , 'Set to YES or NO to enable/disable the Global Notification Banner for the app. Use GLOBAL_APP_BANNER to set the banner text'   -- description
+)
+/
+
 
 delete from wmg_parameters where name_key = 'FHIT_DOUBLES_LIMITS';
 
