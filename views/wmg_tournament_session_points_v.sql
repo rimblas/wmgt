@@ -69,6 +69,7 @@ with rounds as (
    where r.pos > 10
 )
 select ts.id tournament_session_id
+     , ts.tournament_id
      , r.week, r.player_id, r.player_name, r.account, r.discord_id, r.country_code
      , r.rank_code
      , r.easy_course_id, r.hard_course_id

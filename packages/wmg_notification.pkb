@@ -317,6 +317,112 @@ end new_player;
 
 
 
+$IF env.fhit $THEN
+-- Only FHIT has the team feature
+/**
+ * Send a notification that a "New Team" just registered
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created March 2, 2025
+ * @param p_team_id
+ * @return
+ */
+procedure new_team(
+    p_team_id       in wmg_teams.id%type
+)
+is
+  l_scope  scope_t := gc_scope_prefix || 'new_team';
+
+  l_time_slot      wmg_tournament_players.time_slot%type;
+  l_registration_attempts number;
+
+  l_content varchar2(1000);
+  l_embeds  varchar2(1000);
+  l_team_image  varchar2(1000);
+
+begin
+  -- logger.append_param(l_params, 'p_param1', p_param1);
+  log('BEGIN', l_scope);
+
+  -- no emails for teams
+  -- l_email_override :=  nvl(wmg_util.get_param('EMAIL_OVERRIDE'), wmg_util.get_param('NEW_PLAYER_NOTIFICATION_EMAILS'));
+  -- log('emails will be sent to: ' || l_email_override, l_scope);
+
+
+  for t in (
+    select t.* from wmg_team_players_pivot_v t where team_id = p_team_id
+  )
+  loop
+    -- People with a default discord avatar use an internal image lacking the protocol
+    -- if there's not protocol, add it
+    /*
+    l_team_image := case 
+                      when instr(p.avatar_image, 'http') = 0 then
+                         apex_util.host_url('SCRIPT')
+                      end || p.avatar_image;
+    */
+
+     -- Construct the embeds JSON for the webhook
+     l_content := 'New Team: __' || t.team_name || '__ just registered!';
+     l_embeds := json_array (
+               json_object(
+                 'title' value 'Team: ' || t.team_name,
+                 'description' value '[' || wmg_util.get_param('ENV') || ']',
+                 'color' value c_embed_color_green,
+                 'fields' value json_array(
+                     json_object(
+                         'name' value 'Player 1', 'value' value t.player_name1, 'inline' value false
+                     ),
+                     json_object(
+                         'name' value 'Player 2', 'value' value t.player_name2, 'inline' value true
+                     )
+                 )
+             )
+           );
+
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'EL_JORGE'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+
+    $IF env.fhit $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'FHIT1'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+    $IF env.wmgt $THEN
+    wmg_notification.send_to_discord_webhook(
+         p_webhook_code => 'STAFFWMGT'
+       , p_content      => l_content
+       , p_embeds       => l_embeds
+    );
+    $END
+
+
+  end loop;
+
+  apex_mail.push_queue;
+
+  log('END', l_scope);
+
+  exception
+    when OTHERS then
+      log('Unhandled Exception', l_scope);
+      raise;
+end new_team;
+$END
+
+
+
+
 
 /**
  * Send a webhook notification after the first player for any 
@@ -1570,10 +1676,12 @@ begin
     select '```' || c_crlf || listagg(score_type || ' ' || under_par, c_crlf ) || c_crlf || '```'
       into l_easy_top_scores
     from (
+        $IF env.wmgt $THEN
         select '- Leaderboard: ' score_type, min(l.score) under_par
           from wmg_leaderboards l
          where l.course_id = new_session.easy_course_id
         union all
+        $END
         select '- Realistic:   ' score_type, r.best_strokes - c.course_par under_par
         from wmg_courses_v c
            ,  best_round r
