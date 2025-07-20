@@ -1,0 +1,698 @@
+---
+# ====== Page: Course Evolution ==============================
+id: 142
+identification: 
+  name: Course Evolution
+  alias: COURSE-EVOLUTION
+  title: Course Evolution
+
+appearance: 
+  page-mode: Modal Dialog
+  dialog-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+dialog: 
+  chained: true
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+security: 
+  authentication: Page Requires Authentication
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Hard Course Evolution =======================
+  id: 43140720455406710
+  identification: 
+    name: Hard Course Evolution
+    type: Chart
+
+  source: 
+    location: None
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 43140843228406711
+    chart: 
+      type: Line
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    advanced: 
+      initialization-javascript-function: |
+        function(options) {
+        
+          options.yAxis = {
+            title: '',
+            min: 0,
+            max: 30,
+          };
+        
+          options.dataLabel = function(context) {
+        //    console.log({context});
+            var l = -1 * context.value;
+            context.data.label = l + " ";
+              //return context.data.label;
+              return l + " ";
+          };
+        
+        /*
+         options.dataLabel = {
+            renderer: function(context) {
+              return {
+                insert: -1 * context.value
+              };
+            }
+          };
+        */
+          options.tooltip = {
+            renderer: function(context) {
+              var val = context.value;
+              var originalScore = -1 * val;
+        
+              // Return as an HTML string 
+              return 'Score: ' + originalScore;
+            }
+          };
+        
+          return options;
+        }
+        
+
+    series: 
+    - # ====== Series: Scores ======================================
+      id: 43140994527406712
+      identification: 
+        name: Scores
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select WEEK,
+                 SCORECARD_TOTAL,
+                 -1 * SCORECARD_TOTAL display_score
+            from WMG_ROUNDS_V
+           where course_id = (
+              select id 
+                from wmg_courses 
+                where course_group in
+                 (select course_group from wmg_courses where id = :P142_COURSE_ID)
+                 and course_mode = 'H'
+              )
+          and player_id = :P142_PLAYER_ID
+        page-items-to-submit: 
+        - P142_COURSE_ID
+
+      column-mapping: 
+        label: WEEK
+        value: DISPLAY_SCORE
+        label-tooltip: WEEK
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Automatic
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: true
+        position: Automatic
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 43141103448406713
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 43141125897406714
+      identification: 
+        name: y
+        show-axis: true
+        title: Score
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+- # ====== Region: Course Evolution ============================
+  id: 48074572873174621
+  identification: 
+    name: Course Evolution
+    type: Chart
+
+  source: 
+    location: None
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  security: 
+    escape-special-characters: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 48074997577174623
+    chart: 
+      type: Line
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    advanced: 
+      initialization-javascript-function: |
+        function(options) {
+        
+          options.yAxis = {
+            title: '',
+            min: 0,
+            max: 35,
+          };
+        
+          options.dataLabel = function(context) {
+        //    console.log({context});
+            var l = -1 * context.value;
+            context.data.label = l + " ";
+              //return context.data.label;
+              return l + " ";
+          };
+        
+        /*
+         options.dataLabel = {
+            renderer: function(context) {
+              return {
+                insert: -1 * context.value
+              };
+            }
+          };
+        */
+          options.tooltip = {
+            renderer: function(context) {
+              var val = context.value;
+              var originalScore = -1 * val;
+        
+              // Return as an HTML string 
+              return 'Score: ' + originalScore;
+            }
+          };
+        
+          return options;
+        }
+        
+
+    series: 
+    - # ====== Series: Scores ======================================
+      id: 48076680839174626
+      identification: 
+        name: Scores
+
+      execution: 
+        sequence: 10
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          select WEEK,
+                 SCORECARD_TOTAL,
+                 -1 * SCORECARD_TOTAL display_score
+           from WMG_ROUNDS_V
+           where course_id = :P142_COURSE_ID
+          and player_id = :P142_PLAYER_ID
+        page-items-to-submit: 
+        - P142_COURSE_ID
+
+      column-mapping: 
+        label: WEEK
+        value: DISPLAY_SCORE
+        label-tooltip: WEEK
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Automatic
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: true
+        position: Automatic
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 48075433212174625
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 48076106646174626
+      identification: 
+        name: y
+        show-axis: true
+        title: Score
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Automatic
+
+      minor-ticks: 
+
+      tick-label: 
+        show: true
+
+page-items: 
+- # ====== Page Item: P142_COURSE_ID ===========================
+  id: 43140382910406706
+  identification: 
+    name: P142_COURSE_ID
+    type: Select One
+
+  label: 
+    label: Course
+    alignment: Left
+
+  settings: 
+    fetch-on-search: true
+    use-cache: true
+
+  search: 
+    match-type: Contains
+    case-sensitive: false
+    minimum-characters: 0
+
+  layout: 
+    sequence: 10
+    region: Course Evolution # 48074572873174621
+    slot: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+    width: 30
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: COURSES # 46995231723178514881
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P142_PLAYER_ID ===========================
+  id: 43140493195406707
+  identification: 
+    name: P142_PLAYER_ID
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 20
+    region: Course Evolution # 48074572873174621
+    slot: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P142_COURSE_ID_HARD ======================
+  id: 43141254847406715
+  identification: 
+    name: P142_COURSE_ID_HARD
+    type: Display Only
+
+  label: 
+    label: Course
+    alignment: Left
+
+  settings: 
+    format: Plain Text
+    based-on: Display Value of List of Values
+    show-line-breaks: true
+    send-on-page-submit: true
+
+  layout: 
+    sequence: 10
+    region: Hard Course Evolution # 43140720455406710
+    slot: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+
+  list-of-values: 
+    type: Shared Component
+    list-of-values: COURSES # 46995231723178514881
+    display-extra-values: true
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: SQL Query (return single value)
+    sql-query: |
+      select id 
+            from wmg_courses 
+            where course_group in
+             (select course_group from wmg_courses where id = :P142_COURSE_ID)
+             and course_mode = 'H'
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Chart =======================
+  id: 43140550499406708
+  identification: 
+    name: Refresh Chart
+
+  execution: 
+    sequence: 10
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Change
+    selection-type: Item(s)
+    item(s): 
+    - P142_COURSE_ID
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 43140616375406709
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Course Evolution # 48074572873174621
+
+    execution: 
+      sequence: 10
+      event: Refresh Chart # 43140550499406708
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 43141331404406716
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select prepared_name
+        from wmg_courses_v
+        where course_id in (
+          select id 
+              from wmg_courses 
+              where course_group in
+               (select course_group from wmg_courses where id = :P142_COURSE_ID)
+               and course_mode = 'H'
+        )
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P142_COURSE_ID_HARD
+
+    execution: 
+      sequence: 30
+      event: Refresh Chart # 43140550499406708
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 43141424645406717
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Hard Course Evolution # 43140720455406710
+
+    execution: 
+      sequence: 20
+      event: Refresh Chart # 43140550499406708
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
