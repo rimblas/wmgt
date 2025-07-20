@@ -4,6 +4,9 @@
   identification: 
     name: BADGES_BY_STEVEN
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: HTML Text
     html-code: |
@@ -15,6 +18,9 @@
   id: 48547452211012998
   identification: 
     name: RANK_LEGEND
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: HTML Text
@@ -31,6 +37,9 @@
   id: 49635353929996308
   identification: 
     name: RANK_LEGEND_SEARCH
+
+  subscription: 
+    version-number: 2330541244
 
   source: 
     type: Function Body returning VARCHAR2
@@ -65,12 +74,21 @@
         <label for="f01_NEW"><div class="-wm-rank-new fa margin-right-sm" title="New player!"> New players!</div></label>
       </div>'
       end
+      || case when :APP_PAGE_ID in ( 60) then 
+      '<div class="wm-search-item">
+        <input type="radio" id="f01_CGA" value="CGA" name="f01" class="wm-search"> 
+        <label for="f01_CGA"><div class="cgabadge fa"><span class="cgabadge" title="CGA Team member"></span> CGA Team member</div></label>
+      </div>'
+      end
       || '</div>';
 
 - # ====== Shortcut: TOP_FINISHES_SEARCH =======================
   id: 49987731957689917
   identification: 
     name: TOP_FINISHES_SEARCH
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Function Body returning VARCHAR2
@@ -100,6 +118,9 @@
   id: 48045102356359420375
   identification: 
     name: CLEAR_BUTTON
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Function Body returning VARCHAR2

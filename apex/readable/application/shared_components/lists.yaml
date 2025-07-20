@@ -4,6 +4,9 @@
   identification: 
     name: User Settings
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -41,10 +44,47 @@
     configuration: 
       build-option: 'Feature: Push Notifications' # 18634749735748301
 
+- # ====== List: Hall of Fame Menu =============================
+  id: 28095722558484277
+  identification: 
+    name: Hall of Fame Menu
+
+  subscription: 
+    version-number: 2338612594
+
+  source: 
+    type: SQL Query
+    sql-query: |
+      select 1 lvl
+           , p.page_title label
+           , apex_page.get_url(p_page => p.page_id) target
+           , null is_current_list_entry
+           , '' image
+           , '' image_attribute
+           , '' image_alt_attribute
+           , case 
+              when p.page_id = 260 then 
+                'See previous Season winder who has won multiple-times'
+              when p.page_id = 270 then 
+                'Players that got a combined score of -50 or lower on a weekend'
+              when p.page_id = 280 then 
+                'Players with most aces on a weekend'
+              when p.page_id = 290 then 
+                'Players with most Winning and Podium Streaks'
+              end a1
+      from apex_application_pages p
+      where p.application_id = :APP_ID
+        and p.page_id between 251 and 299
+      order by p.page_id
+      
+
 - # ====== List: Badge Menu Popup ==============================
   id: 36345668175921283
   identification: 
     name: Badge Menu Popup
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: SQL Query
@@ -67,10 +107,55 @@
       order by display_seq
       
 
+- # ====== List: Job Reporting =================================
+  id: 45128963738444350
+  identification: 
+    name: Job Reporting
+
+  subscription: 
+    version-number: 1
+
+  source: 
+    type: Static Values
+
+  configuration: 
+    build-option: 'Feature: Job Reporting' # 45064408534444255
+
+  entries: 
+  - # ====== Entry: Job Reporting ================================
+    id: 45129320694444352
+    label: 
+      label: Job Reporting
+
+    icon: 
+      image/icon-css-classes: fa-user-chart
+
+    layout: 
+      sequence: 10
+
+    is-current: 
+      type: Target Page
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:10090:&APP_SESSION.::&DEBUG.:10090::'
+        page: 10090 # Job Reporting
+        clear-cache: 10090
+
+    click-counting: 
+      count-clicks: false
+
+    user-defined-attributes: 
+      translatable: false
+      1.: View status and run details of jobs supporting this application
+
 - # ====== List: System Maintenance ============================
   id: 50593107333401542
   identification: 
     name: System Maintenance
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Static Values
@@ -180,6 +265,9 @@
   id: 46995004465346514326
   identification: 
     name: Navigation Menu
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Static Values
@@ -823,6 +911,9 @@
   identification: 
     name: Navigation Bar
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1194,6 +1285,9 @@
   identification: 
     name: Page Navigation
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1337,6 +1431,9 @@
   identification: 
     name: Application Configuration
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1431,6 +1528,9 @@
   identification: 
     name: User Interface
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1472,6 +1572,9 @@
   id: 46995584959310516255
   identification: 
     name: Activity Reports
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Static Values
@@ -1655,6 +1758,9 @@
   identification: 
     name: Access Control
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1720,6 +1826,9 @@
   identification: 
     name: Feedback
 
+  subscription: 
+    version-number: 1
+
   source: 
     type: Static Values
 
@@ -1758,6 +1867,9 @@
   id: 55893111130016225986
   identification: 
     name: Tournament Options
+
+  subscription: 
+    version-number: 1
 
   source: 
     type: Static Values

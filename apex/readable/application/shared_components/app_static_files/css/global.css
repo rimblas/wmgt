@@ -116,6 +116,42 @@
  animation: -wm-glow-blue 1s infinite alternate;
 }
 
+/* credit: 
+https://www.youtube.com/watch?v=ezP4kbOvs_E
+*/
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+.wm-animate-border::after,.wm-animate-border::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    z-index: -1;
+    padding: 3px;
+    background-image: conic-gradient(from var(--angle), transparent 70%, #309fdb, #13b6cf, #2ebfbc, #3caf85, #81bb5f, #ddde53, #fbce4a, #ed813e);
+    border-radius: 10px;
+    animation: 4s spin linear infinite;
+}
+.wm-animate-border::before {
+    filter: blur(1.5rem);
+    opacity: 0.5;
+}
+
+@keyframes spin{
+    from {
+        --angle: 0deg;
+    }
+    to {
+        --angle: 360deg;
+    }
+}
+
 /* Profiles */
 .-wm-rank-elite:before {
   content:"\f005";
