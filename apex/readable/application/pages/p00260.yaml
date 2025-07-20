@@ -1,0 +1,579 @@
+---
+# ====== Page: Hall of Fame: Season Winners ==================
+id: 260
+identification: 
+  name: 'Hall of Fame: Season Winners'
+  alias: HALL-OF-FAME-SEASON-WINNERS
+  title: Season Winners
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: true
+
+css: 
+  inline: |
+    .winner {
+    font-weight: bold;
+    font-size: 1.5rem;
+    }
+    
+    #seasonWinners thead {display:none;}
+
+security: 
+  authentication: Page Is Public
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-meta-tags: false
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Multiple Season Wins ========================
+  id: 26402816726937826
+  identification: 
+    name: Multiple Season Wins
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with all_points as (
+              select ts.tournament_id 
+                   , p.player_id
+                   , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+              from wmg_tournaments t
+                 , wmg_tournament_sessions ts
+                 , wmg_tournament_players p
+              where t.id = ts.tournament_id
+                and ts.id = p.tournament_session_id
+                and p.active_ind = 'Y'
+                and t.active_ind = 'Y'
+                and t.current_flag is null
+             group by ts.tournament_id, p.player_id
+      )
+      , w_seasons_rank as (
+          select rank() over (partition by p.tournament_id order by p.season_total desc nulls last) pos
+               , p.*
+          from all_points p
+      )
+      select p.id player_id
+           , p.player_name
+           , p.avatar_image
+           , count(*) n
+        from w_seasons_rank sr
+           , wmg_tournaments t
+           , wmg_players_v p
+       where sr.tournament_id = t.id
+         and p.id = sr.player_id
+         and sr.pos = 1
+      group by p.id, p.player_name, p.avatar_image
+      having count(*)> 1
+      order by n desc
+      
+
+  layout: 
+    sequence: 20
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--horizontalBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 26402918997937827
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 26403061263937828
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <img src="#AVATAR_IMAGE#" class="avatar md"> <span class="">#PLAYER_NAME#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR_IMAGE ================================
+    id: 26403184690937829
+    identification: 
+      column-name: AVATAR_IMAGE
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: N ===========================================
+    id: 26403265976937830
+    identification: 
+      column-name: N
+      type: Plain Text
+
+    heading: 
+      heading: Winning Times
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Season Winners ==============================
+  id: 28108175923544349
+  identification: 
+    name: Season Winners
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with all_points as (
+              select ts.tournament_id 
+                   , p.player_id
+                   , sum(case when p.discarded_points_flag = 'Y' then 0 else p.points end) season_total
+              from wmg_tournaments t
+                 , wmg_tournament_sessions ts
+                 , wmg_tournament_players p
+              where t.id = ts.tournament_id
+                and ts.id = p.tournament_session_id
+                and p.active_ind = 'Y'
+                and t.active_ind = 'Y'
+                and t.current_flag is null
+             group by ts.tournament_id, p.player_id
+      )
+      , w_seasons_rank as (
+          select rank() over (partition by p.tournament_id order by p.season_total desc nulls last) pos
+               , p.*
+          from all_points p
+      )
+      select t.prefix_tournament
+           , t.id tournament_id
+           , p.id player_id
+           , p.player_name
+           , p.avatar_image
+           , sr.pos
+           , decode(sr.pos, 1, 'winner', '') style_class
+           , sr.season_total
+        from w_seasons_rank sr
+           , wmg_tournaments t
+           , wmg_players_v p
+       where sr.tournament_id = t.id
+         and p.id = sr.player_id
+         and sr.pos <= 3
+      order by t.start_date desc, sr.pos
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Region
+
+  advanced: 
+    static-id: seasonWinners
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 100
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--noBorders
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: First Column
+      style: Repeat Headings on Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PREFIX_TOURNAMENT ===========================
+    id: 26402102235937818
+    identification: 
+      column-name: PREFIX_TOURNAMENT
+      type: Plain Text
+
+    heading: 
+      heading: Prefix Tournament
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<h2>Season #PREFIX_TOURNAMENT#</h2>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_ID ===============================
+    id: 26402171070937819
+    identification: 
+      column-name: TOURNAMENT_ID
+      type: Hidden
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 26402283663937820
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 26402374318937821
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 50
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <img src="#AVATAR_IMAGE#" class="avatar md"> <span class="#STYLE_CLASS#">#PLAYER_NAME#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: AVATAR_IMAGE ================================
+    id: 26402471578937822
+    identification: 
+      column-name: AVATAR_IMAGE
+      type: Hidden
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: POS =========================================
+    id: 26402588737937823
+    identification: 
+      column-name: POS
+      type: Plain Text
+
+    heading: 
+      heading: Pos
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#STYLE_CLASS#">#POS#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: SEASON_TOTAL ================================
+    id: 26402642270937824
+    identification: 
+      column-name: SEASON_TOTAL
+      type: Plain Text
+
+    heading: 
+      heading: Season Total
+      alignment: end
+
+    layout: 
+      sequence: 80
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="#STYLE_CLASS#">#SEASON_TOTAL#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: STYLE_CLASS =================================
+    id: 26402715083937825
+    identification: 
+      column-name: STYLE_CLASS
+      type: Hidden
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+

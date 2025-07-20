@@ -1,0 +1,473 @@
+---
+# ====== Page: Hall of Fame: Most Aces Per Round =============
+id: 280
+identification: 
+  name: 'Hall of Fame: Most Aces Per Round'
+  alias: HALL-OF-FAME-MOST-ACES-PER-ROUND
+  title: Most Aces Per Round
+
+appearance: 
+  page-mode: Normal
+  page-template: Theme Default
+  template-options: 
+  - '#DEFAULT#'
+
+navigation-menu: 
+  override-user-interface-level: false
+
+navigation: 
+  cursor-focus: Do not focus cursor
+  warn-on-unsaved-changes: false
+
+security: 
+  authentication: Page Is Public
+  deep-linking: Application Default
+  page-access-protection: Arguments Must Have Checksum
+  form-auto-complete: Off
+  browser-cache: Application Default
+
+session-management: 
+  rejoin-sessions: Application Default
+
+advanced: 
+  enable-meta-tags: false
+  enable-duplicate-page-submissions: Yes - Enable page to be re-posted
+  reload-on-submit: Only for Success
+
+server-cache: 
+  caching: Disabled
+
+regions: 
+- # ====== Region: Most Aces Highlights ========================
+  id: 83483362886710235
+  identification: 
+    name: Most Aces Highlights
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select max(week) latest_week
+          , player_id, player_name, aces
+          , count(*) ace_count
+      from (
+          select u.week week, u.player_id, p.player_name,  count(*) aces
+          from wmg_rounds_unpivot_mv u
+             , wmg_players_v p
+          where u.player_id > 0
+            and u.player_id = p.id
+           and u.score = 1
+          group by u.week, u.player_id, p.player_name
+          having count(*)>= :P280_ACES
+      )
+      group by player_id, player_name, aces
+      order by aces desc, ace_count desc, latest_week desc
+    page-items-to-submit: 
+    - P280_ACES
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-md-12
+    - col-sm-12
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: acesHighlights
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 25
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: LATEST_WEEK =================================
+    id: 28076101605449229
+    identification: 
+      column-name: LATEST_WEEK
+      type: Plain Text
+
+    heading: 
+      heading: Latest Week
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_ID ===================================
+    id: 28076475371449229
+    identification: 
+      column-name: PLAYER_ID
+      type: Hidden
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 28076834489449229
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: center
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '#PLAYER_NAME#<span class="u-vh PLAYER_ID">#PLAYER_ID#</span>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACES ========================================
+    id: 28077272894449229
+    identification: 
+      column-name: ACES
+      type: Plain Text
+
+    heading: 
+      heading: Aces
+      alignment: center
+
+    layout: 
+      sequence: 50
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ACE_COUNT ===================================
+    id: 28077614900449229
+    identification: 
+      column-name: ACE_COUNT
+      type: Link
+
+    heading: 
+      heading: Times
+      alignment: end
+
+    layout: 
+      sequence: 60
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: '#0'
+      link-text: '#ACE_COUNT#'
+      link-attributes: class="aceHighlights t-Button"
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+page-items: 
+- # ====== Page Item: P280_ACES ================================
+  id: 83493636087710250
+  identification: 
+    name: P280_ACES
+    type: Radio Group
+
+  label: 
+    label: Aces
+    alignment: Left
+
+  settings: 
+    number-of-columns: 2
+    page-action-on-selection: None
+
+  layout: 
+    sequence: 10
+    region: Most Aces Highlights # 83483362886710235
+    slot: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--radioButtonGroup
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: Static Values
+    static-values: 'STATIC2:9 Aces or more;9,10 Aces or more;10'
+    display-extra-values: true
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: 10
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
+    restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Refresh Aces Results ================
+  id: 28078855467449231
+  identification: 
+    name: Refresh Aces Results
+
+  execution: 
+    sequence: 20
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Change
+    selection-type: Item(s)
+    item(s): 
+    - P280_ACES
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 28079329899449231
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Most Aces Highlights # 83483362886710235
+
+    execution: 
+      sequence: 10
+      event: Refresh Aces Results # 28078855467449231
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Nested Report Most Aces Weeks =======
+  id: 28079730224449232
+  identification: 
+    name: Nested Report Most Aces Weeks
+
+  execution: 
+    sequence: 30
+    event-scope: Dynamic
+    static-container-(jquery-selector): '#acesHighlights'
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: jQuery Selector
+    jquery-selector: .aceHighlights
+
+  actions: 
+  - # ====== Action: United Codes Nested Reports =================
+    id: 28080291312449232
+    identification: 
+      action: United Codes Nested Reports
+
+    settings: 
+      mode: Default template & default callback
+      default-callback-options: 'CR:AA:LI'
+      loading-indicator-style: Aligned to report
+      background-color: '#EBEBEB'
+      border-color: '#c5c5c5'
+      highlight-row-color: '#e3e3e3'
+      details-query: |
+        select week "Week"
+            , aces "Aces"
+        from (
+            select u.week week, u.player_id, p.player_name,  count(*) aces
+            from wmg_rounds_unpivot_mv u
+               , wmg_players_v p
+            where u.player_id > 0
+              and u.player_id = p.id
+             and u.score = 1
+             and u.player_id = #PLAYER_ID#
+            group by u.week, u.player_id, p.player_name
+            having count(*) = #ACES#
+        )
+        order by week desc
+      when-no-data-found: No data found
+
+    affected-elements: 
+      selection-type: Region
+      region: Most Aces Highlights # 83483362886710235
+
+    execution: 
+      sequence: 10
+      event: Nested Report Most Aces Weeks # 28079730224449232
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Nested Report Expand Player with Most
+  id: 28080688290449232
+  identification: 
+    name: Nested Report Expand Player with Most
+
+  execution: 
+    sequence: 10
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: jQuery Selector
+    jquery-selector: .playerDetailsMost
+
+- # ====== Dynamic Action: Nested Report Expand Player w/Lowest 
+  id: 28081515733449232
+  identification: 
+    name: Nested Report Expand Player w/Lowest
+
+  execution: 
+    sequence: 5
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: jQuery Selector
+    jquery-selector: .playerDetailsLowest
+
