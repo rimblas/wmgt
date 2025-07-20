@@ -45,7 +45,7 @@ regions:
 - # ====== Region: Discord Guilds ==============================
   id: 14036993213209804
   identification: 
-    title: Discord Guilds
+    name: Discord Guilds
     type: Interactive Report
 
   source: 
@@ -68,7 +68,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -76,7 +76,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -258,7 +258,7 @@ regions:
       id: 14037407282209807
       identification: 
         column-name: ID
-        type: Hidden Column
+        type: Hidden
 
       heading: 
         heading: ID
@@ -616,6 +616,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -666,7 +667,7 @@ buttons:
   layout: 
     sequence: 10
     region: Discord Guilds # 14036993213209804
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -674,7 +675,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -702,7 +703,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Discord Guilds # 14036993213209804
 

@@ -56,7 +56,7 @@ regions:
 - # ====== Region: Page Performance ============================
   id: 46995458111002515958
   identification: 
-    title: Page Performance
+    name: Page Performance
     type: Interactive Report
 
   source: 
@@ -91,7 +91,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -99,7 +99,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -800,6 +800,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -843,13 +844,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995458124533515958
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -857,7 +858,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--slimPadding
@@ -872,9 +873,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -897,12 +895,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Buttons # 46995458124533515958
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -912,7 +912,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -959,7 +959,7 @@ buttons:
   layout: 
     sequence: 20
     region: Page Performance # 46995458111002515958
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -967,7 +967,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -994,7 +994,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P10033_TIMEFRAME

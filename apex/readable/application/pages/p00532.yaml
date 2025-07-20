@@ -56,13 +56,13 @@ regions:
 - # ====== Region: Weekend Close ===============================
   id: 16730335059921830
   identification: 
-    title: Weekend Close
+    name: Weekend Close
     type: Static Content
 
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -70,7 +70,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -89,9 +89,6 @@ regions:
     item: P532_ROOMS_DEFINED_FLAG
     value: Y
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -103,13 +100,13 @@ regions:
 - # ====== Region: Tournament Recap ============================
   id: 36771251834880419
   identification: 
-    title: Tournament Recap
+    name: Tournament Recap
     type: Static Content
 
   layout: 
     sequence: 50
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -117,7 +114,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -135,9 +132,6 @@ regions:
     type: Rows returned
     sql-query: "select 1 from wmg_tournament_sessions where id = :P532_ID and rooms_defined_flag = 'Y' and rooms_open_flag = 'Y'"
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -149,7 +143,7 @@ regions:
 - # ====== Region: Last Played =================================
   id: 47964843790877931
   identification: 
-    title: Last Played
+    name: Last Played
     type: Classic Report
 
   source: 
@@ -175,7 +169,7 @@ regions:
   layout: 
     sequence: 100
     parent-region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -183,7 +177,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -213,7 +207,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--staticRowColors
@@ -252,7 +246,7 @@ regions:
     id: 9133916515384836
     identification: 
       column-name: COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -334,7 +328,7 @@ regions:
     id: 47965177547877934
     identification: 
       column-name: CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -349,7 +343,7 @@ regions:
     id: 47965273910877935
     identification: 
       column-name: NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 60
@@ -395,7 +389,7 @@ regions:
 - # ====== Region: Last Played =================================
   id: 47965682906877939
   identification: 
-    title: Last Played
+    name: Last Played
     type: Classic Report
 
   source: 
@@ -421,7 +415,7 @@ regions:
   layout: 
     sequence: 110
     parent-region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -429,7 +423,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -459,7 +453,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--staticRowColors
@@ -597,7 +591,7 @@ regions:
     id: 47966008515877943
     identification: 
       column-name: CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -612,7 +606,7 @@ regions:
     id: 47966112439877944
     identification: 
       column-name: NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -626,13 +620,13 @@ regions:
 - # ====== Region: Rooms =======================================
   id: 40389412381026769161
   identification: 
-    title: Rooms
+    name: Rooms
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -640,7 +634,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -659,9 +653,6 @@ regions:
     item: P532_ROOMS_DEFINED_FLAG
     value: Y
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -673,7 +664,7 @@ regions:
 - # ====== Region: Tournament Sessions =========================
   id: 56158045789158236792
   identification: 
-    title: Tournament Sessions
+    name: Tournament Sessions
     type: Form
 
   source: 
@@ -686,7 +677,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -694,7 +685,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -706,9 +697,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -725,13 +713,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 56158058004319236799
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -739,7 +727,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -751,9 +739,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -781,7 +766,7 @@ page-items:
   layout: 
     sequence: 30
     region: Tournament Recap # 36771251834880419
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -791,7 +776,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -843,7 +828,7 @@ page-items:
   layout: 
     sequence: 160
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -853,7 +838,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -904,7 +889,7 @@ page-items:
   layout: 
     sequence: 140
     region: Weekend Close # 16730335059921830
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -938,7 +923,7 @@ page-items:
   layout: 
     sequence: 130
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -948,7 +933,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
 
@@ -991,7 +976,7 @@ page-items:
   layout: 
     sequence: 10
     region: Tournament Recap # 36771251834880419
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1001,7 +986,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1055,7 +1040,7 @@ page-items:
   layout: 
     sequence: 10
     region: Rooms # 40389412381026769161
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1065,7 +1050,7 @@ page-items:
     label-column-span: 3
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -1100,7 +1085,7 @@ page-items:
   layout: 
     sequence: 150
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1140,7 +1125,7 @@ page-items:
   layout: 
     sequence: 20
     region: Rooms # 40389412381026769161
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1150,7 +1135,7 @@ page-items:
     label-column-span: 2
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
     format-mask: 'DD-MON-YYYY HH:MIPM'
@@ -1187,15 +1172,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 80
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1205,7 +1192,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1256,15 +1243,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 90
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1274,7 +1263,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1324,7 +1313,7 @@ page-items:
   layout: 
     sequence: 20
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1364,7 +1353,7 @@ page-items:
   layout: 
     sequence: 30
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1374,7 +1363,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1421,7 +1410,7 @@ page-items:
   layout: 
     sequence: 50
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1431,7 +1420,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 32
@@ -1482,7 +1471,7 @@ page-items:
   layout: 
     sequence: 70
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1492,7 +1481,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 32
@@ -1542,7 +1531,7 @@ page-items:
   layout: 
     sequence: 60
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1552,7 +1541,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 32
@@ -1603,7 +1592,7 @@ page-items:
   layout: 
     sequence: 120
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1613,7 +1602,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 32
@@ -1664,7 +1653,7 @@ page-items:
   layout: 
     sequence: 140
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1674,7 +1663,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 32
@@ -1724,7 +1713,7 @@ page-items:
   layout: 
     sequence: 110
     region: Weekend Close # 16730335059921830
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1734,7 +1723,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -1786,7 +1775,7 @@ page-items:
   layout: 
     sequence: 120
     region: Weekend Close # 16730335059921830
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1796,7 +1785,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
     format-mask: 'DD-MON-YYYY HH:MIPM'
@@ -1835,7 +1824,7 @@ buttons:
   layout: 
     sequence: 130
     region: Weekend Close # 16730335059921830
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: 3
@@ -1844,7 +1833,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1871,7 +1860,7 @@ buttons:
   layout: 
     sequence: 40
     region: Tournament Sessions # 56158045789158236792
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: 10
@@ -1880,7 +1869,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1912,7 +1901,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 56158058004319236799
-    position: CLOSE
+    slot: CLOSE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1920,7 +1909,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1939,7 +1928,7 @@ buttons:
   layout: 
     sequence: 20
     region: Buttons # 56158058004319236799
-    position: DELETE
+    slot: DELETE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1947,7 +1936,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1957,6 +1946,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: false
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL DELETE action
 
@@ -1984,7 +1974,7 @@ buttons:
   layout: 
     sequence: 30
     region: Buttons # 56158058004319236799
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1992,7 +1982,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -2002,6 +1992,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL UPDATE action
 
@@ -2018,7 +2009,7 @@ buttons:
   layout: 
     sequence: 40
     region: Buttons # 56158058004319236799
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2026,7 +2017,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -2036,6 +2027,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL INSERT action
 
@@ -2055,7 +2047,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CLOSE_WEEKEND # 16730497793921831
 
@@ -2125,7 +2117,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   client-side-condition: 
     type: Item = Value
@@ -2180,7 +2172,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P532_ROUND_NUM
@@ -2227,7 +2219,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P532_EASY_COURSE_ID
@@ -2297,7 +2289,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P532_HARD_COURSE_ID
@@ -2367,7 +2359,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 56158058401851236800
 
@@ -2467,10 +2459,16 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
+      begin
       with w_ts as (
           select max(id) tournament_session_id
             from wmg_tournament_sessions
-           where session_date = (select max(session_date) from wmg_tournament_sessions)
+           where session_date = (
+              select max(session_date)
+                from wmg_tournament_sessions
+               where tournament_id = :P532_TOURNAMENT_ID
+              )
+            and tournament_id = :P532_TOURNAMENT_ID
       )
       select case when ts.round_num = 12 then 1 else ts.round_num + 1 end new_round_num
            , ts.session_date + 7
@@ -2484,7 +2482,21 @@ processes:
       where ts.tournament_id = t.id
         and ts.id = w_ts.tournament_session_id;
       
-      
+      exception
+      when NO_DATA_FOUND then
+         if  :P532_TOURNAMENT_ID is not null then
+         select prefix_tournament || prefix_session || '01'
+              , start_date
+              , 1
+           into :P532_WEEK
+              , :P532_SESSION_DATE
+              , :P532_ROUND_NUM
+           from wmg_tournaments
+           where id = :P532_TOURNAMENT_ID;
+          else
+             :P532_ROUND_NUM := 1;
+          end if;
+      end;
 
   execution: 
     sequence: 20
@@ -2615,7 +2627,7 @@ processes:
       
       commit; -- Make sure everything up to now is saved.
       
-      if :REQUEST = 'CREATE' or (:REQUEST = 'SAVE' and :P532_OPEN_NOTIFY_FLAG = 'Y') then
+      if (:REQUEST = 'CREATE' and :P532_OPEN_REGISTRATION_ON is null) or (:REQUEST = 'SAVE' and :P532_OPEN_NOTIFY_FLAG = 'Y') then
       -- apex_debug.message('[%s] %s', 'Save Courses & Push Notifications', 'P532_ID=' || :P532_ID);
       wmg_notification.notify_new_courses(p_tournament_session_id => :P532_ID);
       end if;

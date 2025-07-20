@@ -9,7 +9,7 @@ identification:
 
 appearance: 
   page-mode: Modal Dialog
-  dialog-template: Drawer # 46995004786863514327
+  dialog-template: Drawer
   template-options: 
   - '#DEFAULT#'
   - js-dialog-class-t-Drawer--pullOutEnd
@@ -66,7 +66,7 @@ regions:
 - # ====== Region: Push Notifications Not Supported ============
   id: 18636144979748314
   identification: 
-    title: Push Notifications Not Supported
+    name: Push Notifications Not Supported
     type: Static Content
 
   source: 
@@ -75,7 +75,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -83,7 +83,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46995035459709514340
+    template: Alert
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -107,9 +107,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -121,7 +118,7 @@ regions:
 - # ====== Region: Push Notifications ==========================
   id: 18636498520748315
   identification: 
-    title: Push Notifications
+    name: Push Notifications
     type: Static Content
 
   source: 
@@ -130,7 +127,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -138,7 +135,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46995035459709514340
+    template: Alert
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -160,9 +157,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -174,7 +168,7 @@ regions:
 - # ====== Region: What ========================================
   id: 46629136044602745
   identification: 
-    title: What
+    name: What
     type: Static Content
 
   source: 
@@ -187,7 +181,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Push Notifications # 18636498520748315
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -195,7 +189,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -209,9 +203,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -238,7 +229,7 @@ page-items:
   layout: 
     sequence: 10
     region: Push Notifications # 18636498520748315
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -248,7 +239,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     - margin-top-sm
@@ -281,7 +272,7 @@ buttons:
   layout: 
     sequence: 10
     region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -290,7 +281,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -320,7 +311,7 @@ buttons:
   layout: 
     sequence: 10
     region: What # 46629136044602745
-    position: CHANGE
+    slot: CHANGE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -328,7 +319,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -341,6 +332,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
   advanced: 
@@ -360,7 +352,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P600_ENABLE_PUSH

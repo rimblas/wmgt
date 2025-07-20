@@ -58,7 +58,7 @@ regions:
 - # ====== Region: Manage User Access ==========================
   id: 46995512012549516027
   identification: 
-    title: Manage User Access
+    name: Manage User Access
     type: Interactive Report
 
   source: 
@@ -74,7 +74,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -82,7 +82,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -183,7 +183,7 @@ regions:
       id: 46995513172446516033
       identification: 
         column-name: ID
-        type: Hidden Column
+        type: Hidden
 
       heading: 
         heading: ID
@@ -281,6 +281,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -331,7 +332,7 @@ buttons:
   layout: 
     sequence: 20
     region: Manage User Access # 46995512012549516027
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -339,7 +340,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -364,7 +365,7 @@ buttons:
   layout: 
     sequence: 30
     region: Manage User Access # 46995512012549516027
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -372,7 +373,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -395,7 +396,7 @@ buttons:
   layout: 
     sequence: 40
     region: Manage User Access # 46995512012549516027
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -403,7 +404,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -429,7 +430,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Manage User Access # 46995512012549516027
 

@@ -53,13 +53,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995416209912515598
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -67,7 +67,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -80,9 +80,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -94,13 +91,13 @@ regions:
 - # ====== Region: Configure Appearance ========================
   id: 46995416277924515598
   identification: 
-    title: Configure Appearance
+    name: Configure Appearance
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -108,7 +105,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Below Content
@@ -120,9 +117,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -145,12 +139,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Configure Appearance # 46995416277924515598
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -160,7 +156,7 @@ page-items:
     label-column-span: 3
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -228,10 +224,14 @@ page-items:
   settings: 
     number-of-columns: 1
 
+  multiple-values: 
+    type: Delimited List
+    separator: ':'
+
   layout: 
     sequence: 30
     region: Configure Appearance # 46995416277924515598
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -241,7 +241,7 @@ page-items:
     label-column-span: 0
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
 
@@ -286,7 +286,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995416209912515598
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -294,7 +294,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -312,7 +312,7 @@ buttons:
   layout: 
     sequence: 20
     region: Buttons # 46995416209912515598
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -320,7 +320,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -328,6 +328,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 dynamic-actions: 
@@ -342,7 +343,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 46995417265785515600
 

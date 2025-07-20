@@ -49,7 +49,7 @@ regions:
 - # ====== Region: Tournament Issues ===========================
   id: 48063503660716020
   identification: 
-    title: Tournament Issues
+    name: Tournament Issues
     type: Classic Report
 
   source: 
@@ -83,7 +83,7 @@ regions:
   layout: 
     sequence: 9
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -91,7 +91,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader js-removeLandmark
@@ -120,7 +120,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -287,7 +287,7 @@ regions:
     id: 25653034329887596
     identification: 
       column-name: DESCRIPTION
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -376,14 +376,16 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Tournament Issues # 48063503660716020
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -393,7 +395,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -445,7 +447,7 @@ page-items:
   layout: 
     sequence: 20
     region: Tournament Issues # 48063503660716020
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -455,7 +457,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -490,15 +492,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 40
     region: Tournament Issues # 48063503660716020
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -510,7 +514,7 @@ page-items:
     - col-xs-8
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -561,7 +565,7 @@ page-items:
   layout: 
     sequence: 30
     region: Tournament Issues # 48063503660716020
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -571,7 +575,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--radioButtonGroup
@@ -617,7 +621,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P535_TOURNAMENT_SESSION_ID

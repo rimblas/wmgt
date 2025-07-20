@@ -57,13 +57,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995406772959515585
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -71,7 +71,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -84,9 +84,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -98,7 +95,7 @@ regions:
 - # ====== Region: Configuration Options =======================
   id: 46995406942833515585
   identification: 
-    title: Configuration Options
+    name: Configuration Options
     type: Interactive Report
 
   source: 
@@ -138,7 +135,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -146,7 +143,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -239,7 +236,7 @@ regions:
       id: 46995408141885515591
       identification: 
         column-name: ID
-        type: Hidden Column
+        type: Hidden
 
       heading: 
         heading: ID
@@ -505,6 +502,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -555,7 +553,7 @@ buttons:
   layout: 
     sequence: 20
     region: Configuration Options # 46995406942833515585
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -563,7 +561,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -587,7 +585,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995406772959515585
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -595,7 +593,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -603,6 +601,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 processes: 

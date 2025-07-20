@@ -49,13 +49,16 @@ regions:
 - # ====== Region: Hourly Page Events ==========================
   id: 46995421984300515608
   identification: 
-    title: Hourly Page Events
+    name: Hourly Page Events
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -63,7 +66,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -81,9 +84,6 @@ regions:
 
   security: 
     escape-special-characters: true
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -224,13 +224,16 @@ regions:
 - # ====== Region: Most Active Pages ===========================
   id: 46995422136987515608
   identification: 
-    title: Most Active Pages
+    name: Most Active Pages
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -238,7 +241,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -256,9 +259,6 @@ regions:
 
   security: 
     escape-special-characters: true
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -387,13 +387,16 @@ regions:
 - # ====== Region: Top Users ===================================
   id: 46995422329734515608
   identification: 
-    title: Top Users
+    name: Top Users
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -401,7 +404,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -419,9 +422,6 @@ regions:
 
   security: 
     escape-special-characters: true
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -546,7 +546,7 @@ regions:
 - # ====== Region: Recent Errors ===============================
   id: 46995422533953515608
   identification: 
-    title: Recent Errors
+    name: Recent Errors
     type: Classic Report
 
   source: 
@@ -566,7 +566,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -574,7 +574,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -603,7 +603,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -709,7 +709,7 @@ regions:
 - # ====== Region: Latest Activity =============================
   id: 46995422705360515608
   identification: 
-    title: Latest Activity
+    name: Latest Activity
     type: Classic Report
 
   source: 
@@ -730,7 +730,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -738,7 +738,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -767,7 +767,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -873,13 +873,13 @@ regions:
 - # ====== Region: Filters =====================================
   id: 46995422753587515608
   identification: 
-    title: Filters
+    name: Filters
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -887,7 +887,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--slimPadding
@@ -902,9 +902,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -927,12 +924,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Filters # 46995422753587515608
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -942,7 +941,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -989,7 +988,7 @@ buttons:
   layout: 
     sequence: 10
     region: Hourly Page Events # 46995421984300515608
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -997,7 +996,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1022,7 +1021,7 @@ buttons:
   layout: 
     sequence: 10
     region: Most Active Pages # 46995422136987515608
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1030,7 +1029,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1055,7 +1054,7 @@ buttons:
   layout: 
     sequence: 10
     region: Top Users # 46995422329734515608
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1063,7 +1062,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1088,7 +1087,7 @@ buttons:
   layout: 
     sequence: 10
     region: Recent Errors # 46995422533953515608
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1096,7 +1095,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1124,7 +1123,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P10030_TIMEFRAME

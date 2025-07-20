@@ -46,13 +46,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995525997438516047
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -60,7 +60,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -72,9 +72,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -87,13 +84,13 @@ regions:
 - # ====== Region: Wizard Container ============================
   id: 46995526077649516047
   identification: 
-    title: Wizard Container
+    name: Wizard Container
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -101,7 +98,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - t-Form--stretchInputs
@@ -114,9 +111,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -140,10 +134,14 @@ page-items:
   settings: 
     number-of-columns: 3
 
+  multiple-values: 
+    type: Delimited List
+    separator: ':'
+
   layout: 
     sequence: 20
     region: Wizard Container # 46995526077649516047
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -153,7 +151,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -204,7 +202,7 @@ page-items:
   layout: 
     sequence: 30
     region: Wizard Container # 46995526077649516047
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -214,7 +212,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 80
@@ -260,10 +258,14 @@ page-items:
   settings: 
     number-of-columns: 1
 
+  multiple-values: 
+    type: Delimited List
+    separator: ':'
+
   layout: 
     sequence: 40
     region: Wizard Container # 46995526077649516047
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -273,7 +275,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -311,7 +313,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995525997438516047
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -319,7 +321,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -329,6 +331,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: CANCEL ======================================
@@ -340,7 +343,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995525997438516047
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -348,7 +351,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -369,7 +372,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 46995528173476516049
 

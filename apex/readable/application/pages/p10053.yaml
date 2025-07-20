@@ -64,7 +64,7 @@ regions:
 - # ====== Region: Manage Feedback =============================
   id: 46995545338593516222
   identification: 
-    title: Manage Feedback
+    name: Manage Feedback
     type: Interactive Report
 
   source: 
@@ -94,7 +94,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -102,7 +102,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -203,7 +203,7 @@ regions:
       id: 46995565322954516241
       identification: 
         column-name: ID
-        type: Hidden Column
+        type: Hidden
 
       heading: 
         heading: ID
@@ -433,7 +433,7 @@ regions:
       id: 46995567660241516243
       identification: 
         column-name: RATING_ICON
-        type: Hidden Column
+        type: Hidden
 
       heading: 
         heading: RATING ICON
@@ -699,6 +699,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -749,7 +750,7 @@ buttons:
   layout: 
     sequence: 20
     region: Manage Feedback # 46995545338593516222
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -757,7 +758,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -784,7 +785,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Manage Feedback # 46995545338593516222
 

@@ -53,13 +53,13 @@ regions:
 - # ====== Region: Form on Feedback ============================
   id: 46995543434421516222
   identification: 
-    title: Form on Feedback
+    name: Form on Feedback
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -67,7 +67,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - t-Form--stretchInputs
@@ -81,9 +81,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -95,13 +92,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995543590390516222
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -109,7 +106,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -121,9 +118,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -146,7 +140,7 @@ page-items:
   layout: 
     sequence: 10
     region: Form on Feedback # 46995543434421516222
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -176,7 +170,7 @@ page-items:
   layout: 
     sequence: 20
     region: Form on Feedback # 46995543434421516222
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -206,7 +200,7 @@ page-items:
   layout: 
     sequence: 30
     region: Form on Feedback # 46995543434421516222
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -244,7 +238,7 @@ page-items:
   layout: 
     sequence: 35
     region: Form on Feedback # 46995543434421516222
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -254,7 +248,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--radioButtonGroup
@@ -303,7 +297,7 @@ page-items:
   layout: 
     sequence: 40
     region: Form on Feedback # 46995543434421516222
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -313,7 +307,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     width: 64
     height: 4
 
@@ -350,7 +344,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995543590390516222
-    position: CREATE
+    slot: CREATE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -358,7 +352,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -367,6 +361,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: CANCEL ======================================
@@ -378,7 +373,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995543590390516222
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -386,7 +381,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -407,7 +402,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 46995546646343516224
 

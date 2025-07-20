@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Left Side Column # 46995007703516514328
+  page-template: Left Side Column
   template-options: 
   - '#DEFAULT#'
 
@@ -45,7 +45,7 @@ regions:
 - # ====== Region: Week Promo ==================================
   id: 478866952587219
   identification: 
-    title: Week Promo
+    name: Week Promo
     type: Cards
 
   source: 
@@ -62,7 +62,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -70,7 +70,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Cards Container # 46995047792009514345
+    template: Cards Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -83,9 +83,6 @@ regions:
     static-id: weekPromoRegion
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -156,7 +153,7 @@ regions:
 - # ====== Region: {Issues Report} =============================
   id: 22411515589828432
   identification: 
-    title: '{Issues Report}'
+    name: '{Issues Report}'
     type: Classic Report
 
   source: 
@@ -193,7 +190,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Issues # 50458808686338243
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -201,7 +198,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -231,7 +228,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -366,7 +363,7 @@ regions:
     id: 22412252099828439
     identification: 
       column-name: DESCRIPTION
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -412,13 +409,13 @@ regions:
 - # ====== Region: Tournament Recap ============================
   id: 25635069668764334
   identification: 
-    title: Tournament Recap
+    name: Tournament Recap
     type: Static Content
 
   layout: 
     sequence: 80
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -426,7 +423,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -444,9 +441,6 @@ regions:
     type: Rows returned
     sql-query: "select 1 from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID and rooms_defined_flag = 'Y' and rooms_open_flag = 'Y'"
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -458,7 +452,7 @@ regions:
 - # ====== Region: Signups =====================================
   id: 32752353856549214
   identification: 
-    title: Signups
+    name: Signups
     type: Classic Report
 
   source: 
@@ -489,7 +483,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -502,7 +496,7 @@ regions:
     - col-xss-12
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -530,7 +524,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Contextual Info # 46995134732718514381
+      template: Contextual Info
       template-options: 
       - '#DEFAULT#'
       - t-ContextualInfo-label--stacked
@@ -627,7 +621,7 @@ regions:
 - # ====== Region: Scorecards ==================================
   id: 39560794133969830
   identification: 
-    title: Scorecards
+    name: Scorecards
     type: Classic Report
 
   source: 
@@ -668,7 +662,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -676,7 +670,7 @@ regions:
     column-span: 3
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -704,7 +698,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Contextual Info # 46995134732718514381
+      template: Contextual Info
       template-options: 
       - '#DEFAULT#'
       - t-ContextualInfo-label--stacked
@@ -772,7 +766,7 @@ regions:
     id: 39560922849969832
     identification: 
       column-name: TOTAL_PLAYERS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -786,7 +780,7 @@ regions:
 - # ====== Region: Promotion to <span class="fa -wm-rank-semi-pr
   id: 47954179822518545
   identification: 
-    title: Promotion to <span class="fa -wm-rank-semi-profile -wm-rank-semi">Semi-Pro</span>
+    name: Promotion to <span class="fa -wm-rank-semi-profile -wm-rank-semi">Semi-Pro</span>
     type: Classic Report
 
   source: 
@@ -804,7 +798,7 @@ regions:
   layout: 
     sequence: 70
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -812,7 +806,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -842,7 +836,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -877,7 +871,7 @@ regions:
     id: 29248196354467334
     identification: 
       column-name: ACCOUNT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 180
@@ -892,7 +886,7 @@ regions:
     id: 29248266934467335
     identification: 
       column-name: DISCORD_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 190
@@ -907,7 +901,7 @@ regions:
     id: 47954260906518546
     identification: 
       column-name: TOURNAMENT_SESSION_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -954,7 +948,7 @@ regions:
     id: 47954496891518548
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -1001,7 +995,7 @@ regions:
     id: 47954602569518550
     identification: 
       column-name: COUNTRY_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -1179,7 +1173,7 @@ regions:
     id: 50055814163137706
     identification: 
       column-name: PERCENT_RANK
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -1226,7 +1220,7 @@ regions:
     id: 50056063819137708
     identification: 
       column-name: COMPLETED_IND
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 130
@@ -1241,7 +1235,7 @@ regions:
     id: 50056183776137709
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 140
@@ -1256,7 +1250,7 @@ regions:
     id: 50056254708137710
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 150
@@ -1271,7 +1265,7 @@ regions:
     id: 50056394439137711
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 160
@@ -1286,7 +1280,7 @@ regions:
     id: 50056418939137712
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 170
@@ -1300,7 +1294,7 @@ regions:
 - # ====== Region: Promotion to <span class="fa -wm-rank-elite-p
   id: 47962095348877903
   identification: 
-    title: Promotion to <span class="fa -wm-rank-elite-profile -wm-rank-elite">Elite</span>
+    name: Promotion to <span class="fa -wm-rank-elite-profile -wm-rank-elite">Elite</span>
     type: Classic Report
 
   source: 
@@ -1318,7 +1312,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1326,7 +1320,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -1356,7 +1350,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -1391,7 +1385,7 @@ regions:
     id: 29248600312467338
     identification: 
       column-name: ACCOUNT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 180
@@ -1406,7 +1400,7 @@ regions:
     id: 29248644009467339
     identification: 
       column-name: DISCORD_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 190
@@ -1421,7 +1415,7 @@ regions:
     id: 47953320212518537
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 140
@@ -1436,7 +1430,7 @@ regions:
     id: 47953428340518538
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 150
@@ -1451,7 +1445,7 @@ regions:
     id: 47953591570518539
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 160
@@ -1466,7 +1460,7 @@ regions:
     id: 47953643131518540
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 170
@@ -1481,7 +1475,7 @@ regions:
     id: 47962188469877904
     identification: 
       column-name: TOURNAMENT_SESSION_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -1528,7 +1522,7 @@ regions:
     id: 47962366993877906
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -1575,7 +1569,7 @@ regions:
     id: 47962514309877908
     identification: 
       column-name: COUNTRY_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -1753,7 +1747,7 @@ regions:
     id: 47963106135877914
     identification: 
       column-name: PERCENT_RANK
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -1800,7 +1794,7 @@ regions:
     id: 47963352279877916
     identification: 
       column-name: COMPLETED_IND
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 130
@@ -1814,7 +1808,7 @@ regions:
 - # ====== Region: Promotion to <span class="fa -wm-rank-pro-pro
   id: 47963423161877917
   identification: 
-    title: Promotion to <span class="fa -wm-rank-pro-profile -wm-rank-pro">Pro</span>
+    name: Promotion to <span class="fa -wm-rank-pro-profile -wm-rank-pro">Pro</span>
     type: Classic Report
 
   source: 
@@ -1832,7 +1826,7 @@ regions:
   layout: 
     sequence: 60
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1840,7 +1834,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -1870,7 +1864,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -1905,7 +1899,7 @@ regions:
     id: 29248318457467336
     identification: 
       column-name: ACCOUNT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 180
@@ -1920,7 +1914,7 @@ regions:
     id: 29248465405467337
     identification: 
       column-name: DISCORD_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 190
@@ -1935,7 +1929,7 @@ regions:
     id: 47953746424518541
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 140
@@ -1950,7 +1944,7 @@ regions:
     id: 47953829149518542
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 150
@@ -1965,7 +1959,7 @@ regions:
     id: 47953934198518543
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 160
@@ -1980,7 +1974,7 @@ regions:
     id: 47954005577518544
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 170
@@ -1995,7 +1989,7 @@ regions:
     id: 47963579592877918
     identification: 
       column-name: TOURNAMENT_SESSION_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -2042,7 +2036,7 @@ regions:
     id: 47963782122877920
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -2089,7 +2083,7 @@ regions:
     id: 47963965500877922
     identification: 
       column-name: COUNTRY_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -2267,7 +2261,7 @@ regions:
     id: 47964549765877928
     identification: 
       column-name: PERCENT_RANK
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -2314,7 +2308,7 @@ regions:
     id: 47964737947877930
     identification: 
       column-name: COMPLETED_IND
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 130
@@ -2328,13 +2322,13 @@ regions:
 - # ====== Region: Messages ====================================
   id: 48744088232254446
   identification: 
-    title: Messages
+    name: Messages
     type: Static Content
 
   layout: 
     sequence: 30
     parent-region: '{col1}' # 48744215735254448
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2342,7 +2336,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2356,9 +2350,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -2370,13 +2361,13 @@ regions:
 - # ====== Region: {col1} ======================================
   id: 48744215735254448
   identification: 
-    title: '{col1}'
+    name: '{col1}'
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2384,7 +2375,7 @@ regions:
     column-span: 2
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -2396,9 +2387,6 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2414,13 +2402,13 @@ regions:
 - # ====== Region: Badges ======================================
   id: 50456516991338220
   identification: 
-    title: Badges
+    name: Badges
     type: Static Content
 
   layout: 
     sequence: 40
     parent-region: '{col1}' # 48744215735254448
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2428,7 +2416,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2441,9 +2429,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2456,13 +2441,13 @@ regions:
 - # ====== Region: System Parameters ===========================
   id: 50456699642338221
   identification: 
-    title: System Parameters
+    name: System Parameters
     type: Static Content
 
   layout: 
     sequence: 50
     parent-region: '{col1}' # 48744215735254448
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2470,7 +2455,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2484,9 +2469,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -2498,7 +2480,7 @@ regions:
 - # ====== Region: System Options Menu =========================
   id: 50456781372338222
   identification: 
-    title: System Options Menu
+    name: System Options Menu
     type: List
 
   source: 
@@ -2507,7 +2489,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: REGION_POSITION_02
+    slot: REGION_POSITION_02
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2529,7 +2511,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Links List # 46995155368298514390
+      list-template: Links List
       template-options: 
       - '#DEFAULT#'
       - t-LinksList--showBadge
@@ -2540,13 +2522,13 @@ regions:
 - # ====== Region: Issues ======================================
   id: 50458808686338243
   identification: 
-    title: Issues
+    name: Issues
     type: Static Content
 
   layout: 
     sequence: 90
     parent-region: Current  Session # 56178155412404412208
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2554,7 +2536,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2567,9 +2549,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2582,13 +2561,13 @@ regions:
 - # ====== Region: About & Rules ===============================
   id: 50437967039206816774
   identification: 
-    title: About & Rules
+    name: About & Rules
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: '{col1}' # 48744215735254448
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2596,7 +2575,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2610,9 +2589,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -2624,7 +2600,7 @@ regions:
 - # ====== Region: Season & Tournament Control =================
   id: 56024163957746751639
   identification: 
-    title: Season & Tournament Control
+    name: Season & Tournament Control
     type: Classic Report
 
   source: 
@@ -2641,15 +2617,15 @@ regions:
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
-    start-new-row: false
+    start-new-row: true
     column: Automatic
     new-column: true
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2676,7 +2652,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--staticRowColors
@@ -2759,7 +2735,7 @@ regions:
     id: 56024164219694751641
     identification: 
       column-name: CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -2815,7 +2791,7 @@ regions:
 - # ====== Region: Current  Session ============================
   id: 56178155412404412208
   identification: 
-    title: Current  Session
+    name: Current  Session
     type: Classic Report
 
   source: 
@@ -2853,7 +2829,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: Season & Tournament Control # 56024163957746751639
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2861,7 +2837,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -2897,7 +2873,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -2980,7 +2956,7 @@ regions:
     id: 20123486765175543
     identification: 
       column-name: TOURNAMENT_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 3
@@ -3335,7 +3311,7 @@ page-items:
   layout: 
     sequence: 30
     region: Season & Tournament Control # 56024163957746751639
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -3370,7 +3346,7 @@ page-items:
   layout: 
     sequence: 10
     region: '{Issues Report}' # 22411515589828432
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -3380,7 +3356,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--radioButtonGroup
@@ -3431,7 +3407,7 @@ page-items:
   layout: 
     sequence: 10
     region: Tournament Recap # 25635069668764334
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -3441,7 +3417,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -3493,7 +3469,7 @@ page-items:
   layout: 
     sequence: 20
     region: Issues # 50458808686338243
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -3503,7 +3479,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -3547,12 +3523,12 @@ buttons:
   id: 480490081587235
   identification: 
     button-name: UPLOAD
-    label: Upload New
+    label: Upload New Promo
 
   layout: 
     sequence: 10
     region: Week Promo # 478866952587219
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3561,7 +3537,7 @@ buttons:
     alignment: Left center
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3591,7 +3567,7 @@ buttons:
   layout: 
     sequence: 10
     region: Current  Session # 56178155412404412208
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3599,7 +3575,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3626,7 +3602,7 @@ buttons:
   layout: 
     sequence: 10
     region: Season & Tournament Control # 56024163957746751639
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3634,7 +3610,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3661,7 +3637,7 @@ buttons:
   layout: 
     sequence: 20
     region: Issues # 50458808686338243
-    position: COPY
+    slot: COPY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3669,7 +3645,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3693,7 +3669,7 @@ buttons:
   layout: 
     sequence: 10
     region: Signups # 32752353856549214
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3701,7 +3677,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3726,7 +3702,7 @@ buttons:
   layout: 
     sequence: 5
     region: Signups # 32752353856549214
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3734,7 +3710,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3759,7 +3735,7 @@ buttons:
   layout: 
     sequence: 10
     region: Badges # 50456516991338220
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3768,7 +3744,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3792,7 +3768,7 @@ buttons:
   layout: 
     sequence: 10
     region: Messages # 48744088232254446
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3801,7 +3777,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3825,7 +3801,7 @@ buttons:
   layout: 
     sequence: 10
     region: About & Rules # 50437967039206816774
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3834,7 +3810,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3858,7 +3834,7 @@ buttons:
   layout: 
     sequence: 20
     region: Season & Tournament Control # 56024163957746751639
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3866,7 +3842,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -3899,7 +3875,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSECANCELDIALOG
+    event: Dialog Closed or Canceled
     selection-type: Region
     region: Current  Session # 56178155412404412208
 
@@ -3930,7 +3906,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Button
     button: POP_WMG_TOURNAMENT_SESSIONS # 20127465655175550
 
@@ -3961,7 +3937,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P500_ISSUE_CODE
@@ -3993,7 +3969,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Button
     button: NEW_SEASON # 56024165352799751653
 
@@ -4024,7 +4000,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Season & Tournament Control # 56024163957746751639
 

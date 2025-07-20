@@ -56,13 +56,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995526297043516047
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -70,7 +70,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -83,9 +83,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -97,13 +94,13 @@ regions:
 - # ====== Region: Wizard Container ============================
   id: 46995526386579516047
   identification: 
-    title: Wizard Container
+    name: Wizard Container
     type: Static Content
 
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -111,7 +108,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - t-Form--stretchInputs
@@ -125,9 +122,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -139,7 +133,7 @@ regions:
 - # ====== Region: Exceptions ==================================
   id: 46995526542820516047
   identification: 
-    title: Exceptions
+    name: Exceptions
     type: Classic Report
 
   source: 
@@ -154,7 +148,7 @@ regions:
   layout: 
     sequence: 60
     parent-region: Wizard Container # 46995526386579516047
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -162,7 +156,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Collapsible # 46995059570249514350
+    template: Collapsible
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -199,7 +193,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - t-Report--stretch
       - t-Report--staticRowColors
@@ -300,7 +294,7 @@ regions:
 - # ====== Region: &P10044_VALID_COUNT. Users to Add ===========
   id: 46995526689968516047
   identification: 
-    title: '&P10044_VALID_COUNT. Users to Add'
+    name: '&P10044_VALID_COUNT. Users to Add'
     type: List View
 
   source: 
@@ -315,7 +309,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: Wizard Container # 46995526386579516047
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -323,7 +317,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -364,13 +358,13 @@ regions:
 - # ====== Region: Hidden Items ================================
   id: 46995526770417516047
   identification: 
-    title: Hidden Items
+    name: Hidden Items
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -378,7 +372,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -391,9 +385,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -405,7 +396,7 @@ regions:
 - # ====== Region: Valid Users Exist - Page Info ===============
   id: 46995538372647516219
   identification: 
-    title: Valid Users Exist - Page Info
+    name: Valid Users Exist - Page Info
     type: PL/SQL Dynamic Content [Legacy]
 
   source: 
@@ -420,7 +411,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -428,7 +419,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-sm
@@ -458,7 +449,7 @@ regions:
 - # ====== Region: No Valid Users Exist - Page Info ============
   id: 46995539109875516220
   identification: 
-    title: No Valid Users Exist - Page Info
+    name: No Valid Users Exist - Page Info
     type: Static Content
 
   source: 
@@ -467,7 +458,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -475,7 +466,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-sm
@@ -495,9 +486,6 @@ regions:
       select 1
         from apex_collections
        where collection_name = 'ACL_BULK_USER_VALID'
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -520,7 +508,7 @@ page-items:
   layout: 
     sequence: 10
     region: Hidden Items # 46995526770417516047
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -556,7 +544,7 @@ page-items:
   layout: 
     sequence: 20
     region: Hidden Items # 46995526770417516047
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -590,7 +578,7 @@ page-items:
   layout: 
     sequence: 30
     region: Hidden Items # 46995526770417516047
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -622,7 +610,7 @@ buttons:
   layout: 
     sequence: 20
     region: Buttons # 46995526297043516047
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -630,7 +618,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -638,6 +626,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
   server-side-condition: 
@@ -656,7 +645,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995526297043516047
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -664,7 +653,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -685,7 +674,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995526297043516047
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -693,7 +682,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -714,7 +703,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 46995540222641516221
 

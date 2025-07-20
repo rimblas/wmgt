@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Login # 46995015385203514332
+  page-template: Login
   template-options: 
   - '#DEFAULT#'
   - t-LoginPage--bg1
@@ -87,13 +87,13 @@ regions:
 - # ====== Region: About the Discord Login =====================
   id: 11994967224685644
   identification: 
-    title: About the Discord Login
+    name: About the Discord Login
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: Player's # 47585929551450469249
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -101,7 +101,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -117,9 +117,6 @@ regions:
   header-and-footer: 
     header-text: <div class="legend">As a player, use Discord to sign-in.<br></div>
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -131,7 +128,7 @@ regions:
 - # ====== Region: About Social Login ==========================
   id: 11995164792685646
   identification: 
-    title: About Social Login
+    name: About Social Login
     type: Static Content
 
   source: 
@@ -156,7 +153,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -164,7 +161,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Inline Popup # 46995091106884514363
+    template: Inline Popup
     template-options: 
     - '#DEFAULT#'
     - js-dialog-size600x400
@@ -179,9 +176,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -193,13 +187,13 @@ regions:
 - # ====== Region: Volunteer and Admin's Login =================
   id: 46995211417049514501
   identification: 
-    title: Volunteer and Admin's Login
+    name: Volunteer and Admin's Login
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -207,7 +201,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Login # 46995098614618514366
+    template: Login
     template-options: 
     - '#DEFAULT#'
     - t-Login-region--headerTitle js-removeLandmark
@@ -224,9 +218,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -238,7 +229,7 @@ regions:
 - # ====== Region: Player's ====================================
   id: 47585929551450469249
   identification: 
-    title: Player's
+    name: Player's
     type: Static Content
 
   source: 
@@ -251,7 +242,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -259,7 +250,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Login # 46995098614618514366
+    template: Login
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -275,9 +266,6 @@ regions:
     static-id: socialSigning
     region-display-selector: true
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -308,7 +296,7 @@ page-items:
   layout: 
     sequence: 10
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -318,7 +306,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     icon: fa-user
@@ -363,7 +351,7 @@ page-items:
   layout: 
     sequence: 20
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -373,7 +361,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     icon: fa-key
@@ -415,7 +403,7 @@ page-items:
   layout: 
     sequence: 30
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -425,7 +413,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
 
@@ -468,7 +456,7 @@ page-items:
   layout: 
     sequence: 30
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -478,7 +466,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
 
@@ -515,7 +503,7 @@ buttons:
   layout: 
     sequence: 10
     region: About the Discord Login # 11994967224685644
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     row-css-classes: 
@@ -527,7 +515,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -549,7 +537,7 @@ buttons:
   layout: 
     sequence: 100
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: CREATE
+    slot: CREATE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -557,7 +545,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -578,7 +566,7 @@ buttons:
   layout: 
     sequence: 40
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -586,7 +574,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -594,6 +582,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: LOGIN_GOOGLE ================================
@@ -605,7 +594,7 @@ buttons:
   layout: 
     sequence: 50
     region: Volunteer and Admin's Login # 46995211417049514501
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -613,7 +602,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -640,7 +629,7 @@ buttons:
   layout: 
     sequence: 5
     region: Player's # 47585929551450469249
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -648,7 +637,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -686,7 +675,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: LEARN_MORE # 11995058165685645
 
@@ -717,7 +706,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: SHOW_ADMIN # 39559174664969814
 
@@ -796,7 +785,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   actions: 
   - # ====== Action: Hide ========================================

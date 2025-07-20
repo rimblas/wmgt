@@ -66,7 +66,7 @@ regions:
 - # ====== Region: Top Users ===================================
   id: 46995478708396515976
   identification: 
-    title: Top Users
+    name: Top Users
     type: Interactive Report
 
   source: 
@@ -173,7 +173,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -181,7 +181,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     - t-IRR-region--noBorders
@@ -624,6 +624,7 @@ regions:
 
     printing: 
       output: 
+        layout: Default Report Layout
         view-file-as: Attachment
 
       page: 
@@ -667,13 +668,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995478776129515976
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -681,7 +682,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--slimPadding
@@ -697,9 +698,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -711,13 +709,16 @@ regions:
 - # ====== Region: Top Users Chart =============================
   id: 46995478955625515976
   identification: 
-    title: Top Users Chart
+    name: Top Users Chart
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -725,7 +726,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - t-Region--hideHeader
@@ -747,9 +748,6 @@ regions:
 
   security: 
     escape-special-characters: true
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -861,7 +859,7 @@ page-items:
   layout: 
     sequence: 20
     region: Buttons # 46995478776129515976
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -871,7 +869,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--radioButtonGroup
@@ -918,12 +916,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Buttons # 46995478776129515976
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -933,7 +933,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -980,7 +980,7 @@ buttons:
   layout: 
     sequence: 20
     region: Top Users # 46995478708396515976
-    position: RIGHT_OF_IR_SEARCH_BAR
+    slot: RIGHT_OF_IR_SEARCH_BAR
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -988,7 +988,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - t-Button--iconLeft
@@ -1015,7 +1015,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P10031_TIMEFRAME

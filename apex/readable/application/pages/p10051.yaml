@@ -45,13 +45,13 @@ regions:
 - # ====== Region: Feedback Submitted ==========================
   id: 46995544057047516222
   identification: 
-    title: Feedback Submitted
+    name: Feedback Submitted
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -59,7 +59,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46995035459709514340
+    template: Alert
     template-options: 
     - '#DEFAULT#'
     - t-Alert--wizard
@@ -75,9 +75,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -97,7 +94,7 @@ buttons:
   layout: 
     sequence: 20
     region: Feedback Submitted # 46995544057047516222
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -105,7 +102,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -128,7 +125,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CLOSE # 46995543969776516222
 
