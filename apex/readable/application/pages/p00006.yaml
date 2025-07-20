@@ -63,13 +63,13 @@ regions:
 - # ====== Region: {col2} ======================================
   id: 28677891608250946
   identification: 
-    title: '{col2}'
+    name: '{col2}'
     type: Static Content
 
   layout: 
     sequence: 50
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -77,7 +77,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -89,9 +89,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -104,7 +101,7 @@ regions:
 - # ====== Region: {filters} ===================================
   id: 28677998081250947
   identification: 
-    title: '{filters}'
+    name: '{filters}'
     type: Static Content
 
   source: 
@@ -113,7 +110,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: '{col2}' # 28677891608250946
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -121,7 +118,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template: Blank with Attributes (No Grid)
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -134,9 +131,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -148,7 +142,7 @@ regions:
 - # ====== Region: {Search} ====================================
   id: 43958007324790316
   identification: 
-    title: '{Search}'
+    name: '{Search}'
     type: Faceted Search
 
   source: 
@@ -157,7 +151,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -165,7 +159,7 @@ regions:
     column-span: 2
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Below Content
@@ -178,9 +172,6 @@ regions:
     static-id: facets
     region-display-selector: true
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -520,7 +511,7 @@ regions:
 - # ====== Region: Players =====================================
   id: 87882192386585391
   identification: 
-    title: Players
+    name: Players
     type: Classic Report
 
   source: 
@@ -567,7 +558,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: '{col2}' # 28677891608250946
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -575,7 +566,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader js-removeLandmark
@@ -615,7 +606,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -805,7 +796,7 @@ regions:
     id: 44154480578157945
     identification: 
       column-name: ACCOUNT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 80
@@ -820,7 +811,7 @@ regions:
     id: 44154826356157945
     identification: 
       column-name: NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -870,7 +861,7 @@ regions:
     id: 44155651746157947
     identification: 
       column-name: RANK_NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -885,7 +876,7 @@ regions:
     id: 44156073841157947
     identification: 
       column-name: RANK_LIST_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -900,7 +891,7 @@ regions:
     id: 44156456979157948
     identification: 
       column-name: RANK_PROFILE_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 120
@@ -915,7 +906,7 @@ regions:
     id: 44156849228157949
     identification: 
       column-name: ACCOUNT_LOGIN
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 130
@@ -1029,7 +1020,7 @@ regions:
     id: 44158413701157952
     identification: 
       column-name: DISCORD_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 140
@@ -1134,7 +1125,7 @@ page-items:
   layout: 
     sequence: 10
     region: '{filters}' # 28677998081250947
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1144,7 +1135,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     icon: fa-search
@@ -1184,7 +1175,7 @@ page-items:
   layout: 
     sequence: 30
     region: '{col2}' # 28677891608250946
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1214,7 +1205,7 @@ page-items:
   layout: 
     sequence: 40
     region: '{col2}' # 28677891608250946
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1242,7 +1233,7 @@ buttons:
   layout: 
     sequence: 10
     region: Breadcrumb # 59007190296908349363
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1250,7 +1241,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -1281,7 +1272,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Players # 87882192386585391
 
@@ -1312,7 +1303,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Players # 87882192386585391
 

@@ -59,7 +59,7 @@ javascript:
     }
 
 security: 
-  authentication: Page Is Public
+  authentication: Page Requires Authentication
   deep-linking: Application Default
   page-access-protection: Unrestricted
   form-auto-complete: Off
@@ -69,7 +69,6 @@ session-management:
   rejoin-sessions: Application Default
 
 advanced: 
-  enable-meta-tags: false
   enable-duplicate-page-submissions: Yes - Enable page to be re-posted
   reload-on-submit: Only for Success
 
@@ -80,7 +79,7 @@ regions:
 - # ====== Region: Compare Scores ==============================
   id: 57675336189599622
   identification: 
-    title: Compare Scores
+    name: Compare Scores
     type: Classic Report
 
   source: 
@@ -154,7 +153,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: '{col2}' # 57676372236599632
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -162,7 +161,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -191,7 +190,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -233,7 +232,7 @@ regions:
     id: 19784125556340335
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 80
@@ -248,7 +247,7 @@ regions:
     id: 19784233373340336
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -263,7 +262,7 @@ regions:
     id: 19784587562340339
     identification: 
       column-name: P1_EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 100
@@ -278,7 +277,7 @@ regions:
     id: 19784658429340340
     identification: 
       column-name: P1_HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -415,7 +414,7 @@ regions:
     id: 57675759560599626
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -430,7 +429,7 @@ regions:
     id: 57675820629599627
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -445,7 +444,7 @@ regions:
     id: 57677981399599648
     identification: 
       column-name: EASY_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 60
@@ -460,7 +459,7 @@ regions:
     id: 57678098494599649
     identification: 
       column-name: HARD_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -474,13 +473,13 @@ regions:
 - # ====== Region: {col1} ======================================
   id: 57676296522599631
   identification: 
-    title: '{col1}'
+    name: '{col1}'
     type: Static Content
 
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -488,7 +487,7 @@ regions:
     column-span: 6
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -500,9 +499,6 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -515,13 +511,13 @@ regions:
 - # ====== Region: {col2} ======================================
   id: 57676372236599632
   identification: 
-    title: '{col2}'
+    name: '{col2}'
     type: Static Content
 
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -529,7 +525,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -542,9 +538,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -556,7 +549,7 @@ regions:
 - # ====== Region: Best Scores =================================
   id: 61204151009493615
   identification: 
-    title: Best Scores
+    name: Best Scores
     type: Classic Report
 
   source: 
@@ -633,7 +626,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: '{col1}' # 57676296522599631
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -641,7 +634,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -671,7 +664,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -713,7 +706,7 @@ regions:
     id: 19780705227340301
     identification: 
       column-name: HARD_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 25
@@ -728,7 +721,7 @@ regions:
     id: 19784705184340341
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 35
@@ -743,7 +736,7 @@ regions:
     id: 19784885991340342
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 45
@@ -758,7 +751,7 @@ regions:
     id: 19784910975340343
     identification: 
       column-name: P2_EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 55
@@ -773,7 +766,7 @@ regions:
     id: 19785011277340344
     identification: 
       column-name: P2_HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 65
@@ -788,7 +781,7 @@ regions:
     id: 57678108052599650
     identification: 
       column-name: EASY_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 15
@@ -803,7 +796,7 @@ regions:
     id: 61204562476493623
     identification: 
       column-name: EASY_NAME
-      type: Plain Text
+      type: Link
 
     heading: 
       heading: Course
@@ -815,6 +808,17 @@ regions:
 
     accessibility: 
       value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:142:&SESSION.::&DEBUG.:142:P142_COURSE_ID,P142_PLAYER_ID:#EASY_COURSE_ID#,&P140_PLAYER_ID.'
+        page: 142 # Course Evolution
+        clear-cache: 142
+        values: 
+          p142_course_id: '#EASY_COURSE_ID#'
+          p142_player_id: '&P140_PLAYER_ID.'
+
+      link-text: '#EASY_NAME#'
 
     sorting: 
       sortable: false
@@ -925,7 +929,7 @@ regions:
     id: 61205722218493627
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 4
@@ -940,7 +944,7 @@ regions:
     id: 61206177780493629
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 5
@@ -965,15 +969,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: '{col2}' # 57676372236599632
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -985,7 +991,7 @@ page-items:
     - col-xs-8
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1031,15 +1037,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: '{col1}' # 57676296522599631
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1051,7 +1059,7 @@ page-items:
     - col-xs-8
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1093,7 +1101,7 @@ buttons:
   layout: 
     sequence: 20
     region: '{col2}' # 57676372236599632
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1102,7 +1110,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1137,7 +1145,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Best Scores # 61204151009493615
 
@@ -1171,7 +1179,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P140_PLAYER_ID
@@ -1218,7 +1226,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P140_PLAYER2_ID
@@ -1303,7 +1311,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Compare Scores # 57675336189599622
 

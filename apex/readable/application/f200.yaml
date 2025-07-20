@@ -8,6 +8,7 @@ identification:
 
 row-search: 
   tokenize: true
+  text-query-function: None
 
 availability: 
   status: Available with Developer Toolbar
@@ -25,7 +26,8 @@ advanced:
   allow-feedback: true
   logging: true
   debugging: true
-  compatibility-mode: 21.2 / 22.1 / 22.2
+  compatibility-mode: 21.2 to 24.1
+  accessible-read-only-items: false
   pass-ecid: N
 
 authentication: 
@@ -95,7 +97,7 @@ navigation:
     page: LOGIN
 
 navigation-menu: 
-  list-template: Top Navigation Mega Menu # 46995165177361514395
+  list-template: Top Navigation Mega Menu
   template-options: 
   - '#DEFAULT#'
   list-position: Top
@@ -104,7 +106,7 @@ navigation-menu:
 navigation-bar: 
   implementation: List
   list: Navigation Bar # 46995198593531514416
-  list-template: Navigation Bar # 46995161346826514393
+  list-template: Navigation Bar
   template-options: 
   - '#DEFAULT#'
 
@@ -122,6 +124,7 @@ attributes:
   global-page: 0
   enable-end-users-to-choose-theme-style: false
   add-"built-with-apex"-to-footer: true
+  auto-dismiss-success-messages: false
 
 substitutions: 
 - # ====== Substitution: APP_NAME ==============================
@@ -149,6 +152,39 @@ substitutions:
     static-value: 'https://objectstorage.us-ashburn-1.oraclecloud.com/n/idw1nygcxpvm/b/wmgt-assets/o/'
 
 component-settings: 
+- # ====== Component Setting: NATIVE_SELECT_MANY ===============
+  id: 20475488134415100
+  identification: 
+    name: NATIVE_SELECT_MANY
+    type: Item
+
+  settings: 
+    attribute-1: separated
+
+  subscription: 
+    version-number: 1936709557
+
+- # ====== Component Setting: NATIVE_GEOCODING =================
+  id: 20475386515415100
+  identification: 
+    name: NATIVE_GEOCODING
+    type: Process
+
+  settings: 
+    attribute-1: RELAX_HOUSE_NUMBER
+
+  subscription: 
+    version-number: 1936709557
+
+- # ====== Component Setting: NATIVE_OPEN_AI_ASSISTANT =========
+  id: 20475291702415100
+  identification: 
+    name: NATIVE_OPEN_AI_ASSISTANT
+    type: Dynamic Action
+
+  subscription: 
+    version-number: 1936709557
+
 - # ====== Component Setting: NATIVE_ADFBC =====================
   id: 8784700892657470
   identification: 
@@ -163,9 +199,6 @@ component-settings:
   identification: 
     name: NATIVE_MAP_REGION
     type: Region
-
-  settings: 
-    attribute-1: Y
 
   subscription: 
     version-number: 40348156184453
@@ -260,9 +293,6 @@ component-settings:
     name: NATIVE_DISPLAY_SELECTOR
     type: Region
 
-  settings: 
-    attribute-1: Y
-
   subscription: 
     version-number: 40348156184466
 
@@ -271,9 +301,6 @@ component-settings:
   identification: 
     name: NATIVE_IR
     type: Region
-
-  settings: 
-    attribute-1: IG
 
   subscription: 
     version-number: 40348156184470

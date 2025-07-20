@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Left Side Column # 46995007703516514328
+  page-template: Left Side Column
   template-options: 
   - '#DEFAULT#'
   - js-pageStickyMobileHeader
@@ -91,7 +91,7 @@ regions:
 - # ====== Region: Facets ======================================
   id: 24422635632050758645
   identification: 
-    title: Facets
+    name: Facets
     type: Faceted Search
 
   source: 
@@ -100,7 +100,7 @@ regions:
   layout: 
     sequence: 29
     parent-region: No Parent
-    position: REGION_POSITION_02
+    slot: REGION_POSITION_02
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -108,7 +108,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -120,9 +120,6 @@ regions:
   advanced: 
     region-display-selector: true
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -436,8 +433,8 @@ regions:
       type: No
 
     default: 
-      type: SQL Query
-      sql-query: 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
+      type: SQL Query (return single value)
+      sql-query-(return-single-value): 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
 
     security: 
       store-value-encrypted-in-session-state: true
@@ -799,8 +796,8 @@ regions:
       type: No
 
     default: 
-      type: SQL Query
-      sql-query: 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
+      type: SQL Query (return single value)
+      sql-query-(return-single-value): 'select week from wmg_tournament_sessions where id = :G_CURRENT_SESSION_ID'
 
     security: 
       store-value-encrypted-in-session-state: true
@@ -893,7 +890,7 @@ regions:
 - # ====== Region: Weekly Results ==============================
   id: 108352564477205647628
   identification: 
-    title: Weekly Results
+    name: Weekly Results
     type: Classic Report
 
   source: 
@@ -974,7 +971,7 @@ regions:
   layout: 
     sequence: 9
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -982,7 +979,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -1017,7 +1014,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--staticRowColors
@@ -1089,7 +1086,7 @@ regions:
     id: 47893557711349923
     identification: 
       column-name: ISSUE_ICON
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 300
@@ -1104,7 +1101,7 @@ regions:
     id: 47893982204349925
     identification: 
       column-name: ISSUE_DESCRIPTION
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 310
@@ -1119,7 +1116,7 @@ regions:
     id: 47894390921349926
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 280
@@ -1134,7 +1131,7 @@ regions:
     id: 47894796684349928
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 290
@@ -1149,7 +1146,7 @@ regions:
     id: 47895142066349929
     identification: 
       column-name: ISSUE_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 270
@@ -1201,7 +1198,7 @@ regions:
     id: 47896340942349935
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -1251,7 +1248,7 @@ regions:
     id: 47897124163349937
     identification: 
       column-name: COUNTRY_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -1497,7 +1494,7 @@ regions:
     id: 47899973803349947
     identification: 
       column-name: POINT_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 190
@@ -1512,7 +1509,7 @@ regions:
     id: 47900352433349948
     identification: 
       column-name: POINTS_TITLE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 200
@@ -1527,7 +1524,7 @@ regions:
     id: 47900738850349949
     identification: 
       column-name: SELECTED_PLAYER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 210
@@ -1542,7 +1539,7 @@ regions:
     id: 47901130140349950
     identification: 
       column-name: TROPHY
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 220
@@ -1557,7 +1554,7 @@ regions:
     id: 47901599120349953
     identification: 
       column-name: RANK_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 240
@@ -1572,7 +1569,7 @@ regions:
     id: 47901906554349954
     identification: 
       column-name: RANK_NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 250
@@ -1587,7 +1584,7 @@ regions:
     id: 47902396673349955
     identification: 
       column-name: RANK_LIST_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 260
@@ -1643,7 +1640,7 @@ regions:
     id: 47949993932518503
     identification: 
       column-name: EASY_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -1658,7 +1655,7 @@ regions:
     id: 47950033890518504
     identification: 
       column-name: HARD_COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -1708,7 +1705,7 @@ regions:
     id: 47950219035518506
     identification: 
       column-name: EASY_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -1758,7 +1755,7 @@ regions:
     id: 47950946901518513
     identification: 
       column-name: HARD_COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -1781,7 +1778,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Weekly Results # 108352564477205647628
 

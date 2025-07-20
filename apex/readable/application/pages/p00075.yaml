@@ -202,7 +202,7 @@ regions:
 - # ====== Region: Verify Results ==============================
   id: 11998064850694896
   identification: 
-    title: Verify Results
+    name: Verify Results
     type: Classic Report
 
   source: 
@@ -252,36 +252,36 @@ regions:
            and (:P75_SLOT is null or :P75_SLOT = p.time_slot)
            and (:P75_ROOM is null or to_number(:P75_ROOM default null on conversion error) = p.room_no)
       )
-      select pos
-           , time_slot
-           , room_no
-           , player_id
-           , tournament_player_id
-           , wmg_discord.avatar_link(p_discord_id => discord_id) avatar
-           , player_name
-           , player_rank
-           , easy_scorecard
-           , hard_scorecard
-           , total_scorecard
-           , easy_round_id
-           , hard_round_id
-           , round_created_on
-           , easy_par
-           , hard_par
-           , total_score
-           , easy_diff
-           , hard_diff
-           , verification_class
-           , verified
-           , verified_score_flag
-           , verified_note
-           , verified_by
-           , verified_on
-           , issue_code
+      select sc.pos
+           , sc.time_slot
+           , sc.room_no
+           , sc.player_id
+           , sc.tournament_player_id
+           , wmg_discord.avatar_link(p_discord_id => sc.discord_id) avatar
+           , sc.player_name
+           , sc.player_rank
+           , sc.easy_scorecard
+           , sc.hard_scorecard
+           , sc.total_scorecard
+           , sc.easy_round_id
+           , sc.hard_round_id
+           , sc.round_created_on
+           , sc.easy_par
+           , sc.hard_par
+           , sc.total_score
+           , sc.easy_diff
+           , sc.hard_diff
+           , sc.verification_class
+           , sc.verified
+           , sc.verified_score_flag
+           , sc.verified_note
+           , sc.verified_by
+           , sc.verified_on
+           , sc.issue_code
            , '' actions
-           , action_selected
-           , action_label
-           , action_icon
+           , sc.action_selected
+           , sc.action_label
+           , sc.action_icon
       from  (
           select s.pos
                , s.time_slot
@@ -327,13 +327,15 @@ regions:
                 , s.action_selected
                 , s.action_icon
             from scorecards s
-      )
-      where (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and issue_code = 'NOSHOW'))
-        and (:P75_DIFF_ONLY_FLAG = 'N' or (verification_class = 'N' or :P75_SHOW_NO_SHOWS_FLAG = 'Y' ))
-        and ((:P75_SHOW_MISSING_FLAG = 'N' and pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
-        and (( :P75_SHOW_VERYFIED_FLAG = 'N' and verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
-      order by time_slot, room_no, display_seq
-         , pos
+      ) sc
+      , wmg_time_slots_all_v t
+      where sc.time_slot = t.time_slot
+        and (:P75_SHOW_NO_SHOWS_FLAG = 'N' or (:P75_SHOW_NO_SHOWS_FLAG = 'Y' and sc.issue_code = 'NOSHOW'))
+        and (:P75_DIFF_ONLY_FLAG = 'N' or (sc.verification_class = 'N' or :P75_SHOW_NO_SHOWS_FLAG = 'Y' ))
+        and ((:P75_SHOW_MISSING_FLAG = 'N' and sc.pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
+        and (( :P75_SHOW_VERYFIED_FLAG = 'N' and sc.verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
+      order by t.day_offset, sc.time_slot, sc.room_no, sc.display_seq
+         , sc.pos
       
     page-items-to-submit: 
     - P75_WEEK
@@ -349,7 +351,7 @@ regions:
   layout: 
     sequence: 179
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: 2
@@ -362,7 +364,7 @@ regions:
     - col-sm-11
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -393,7 +395,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -584,7 +586,7 @@ regions:
     id: 11991790756685612
     identification: 
       column-name: EASY_DIFF
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 180
@@ -599,7 +601,7 @@ regions:
     id: 11991802664685613
     identification: 
       column-name: HARD_DIFF
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 190
@@ -614,7 +616,7 @@ regions:
     id: 11991953271685614
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 60
@@ -629,7 +631,7 @@ regions:
     id: 11992346297685618
     identification: 
       column-name: EASY_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 200
@@ -644,7 +646,7 @@ regions:
     id: 11992418507685619
     identification: 
       column-name: HARD_ROUND_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 210
@@ -673,7 +675,7 @@ regions:
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -740,7 +742,7 @@ regions:
     id: 22410880845828425
     identification: 
       column-name: ACTION_LABEL
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 270
@@ -755,7 +757,7 @@ regions:
     id: 22410968447828426
     identification: 
       column-name: ACTION_ICON
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 320
@@ -770,7 +772,7 @@ regions:
     id: 22411010136828427
     identification: 
       column-name: ACTION_SELECTED
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 330
@@ -785,7 +787,7 @@ regions:
     id: 22411438393828431
     identification: 
       column-name: ISSUE_CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 340
@@ -800,7 +802,7 @@ regions:
     id: 38738673678129119
     identification: 
       column-name: PLAYER_RANK
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 100
@@ -882,7 +884,7 @@ regions:
     id: 39562501245969848
     identification: 
       column-name: POS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -971,7 +973,7 @@ regions:
     id: 41135299322776001
     identification: 
       column-name: TOTAL_SCORECARD
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 130
@@ -986,7 +988,7 @@ regions:
     id: 41135619662776005
     identification: 
       column-name: VERIFIED_SCORE_FLAG
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 220
@@ -1001,7 +1003,7 @@ regions:
     id: 41135748965776006
     identification: 
       column-name: VERIFIED_BY
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 300
@@ -1086,7 +1088,7 @@ regions:
     id: 41136059348776009
     identification: 
       column-name: TOURNAMENT_PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -1199,13 +1201,13 @@ regions:
 - # ====== Region: Note ========================================
   id: 43960816507790344
   identification: 
-    title: Note
+    name: Note
     type: Static Content
 
   layout: 
     sequence: 189
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1213,7 +1215,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Inline Popup # 46995091106884514363
+    template: Inline Popup
     template-options: 
     - '#DEFAULT#'
     - js-dialog-size480x320
@@ -1227,9 +1229,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -1241,7 +1240,7 @@ regions:
 - # ====== Region: Rooms =======================================
   id: 48741676080254422
   identification: 
-    title: Rooms
+    name: Rooms
     type: Classic Report
 
   source: 
@@ -1271,7 +1270,7 @@ regions:
   layout: 
     sequence: 169
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1284,7 +1283,7 @@ regions:
     - col-sm-1
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-right-none
@@ -1312,7 +1311,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1350,7 +1349,7 @@ regions:
     id: 48741793860254423
     identification: 
       column-name: ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -1365,7 +1364,7 @@ regions:
     id: 48741833380254424
     identification: 
       column-name: TIME_SLOT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -1419,7 +1418,7 @@ regions:
     id: 48742013017254426
     identification: 
       column-name: VERIFIED_SCORE_FLAG
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -1434,7 +1433,7 @@ regions:
     id: 48742198049254427
     identification: 
       column-name: VERIFIED_BY
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 80
@@ -1449,7 +1448,7 @@ regions:
     id: 48742235526254428
     identification: 
       column-name: VERIFIED_ON
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -1464,7 +1463,7 @@ regions:
     id: 48742471310254430
     identification: 
       column-name: CURRENT_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -1479,7 +1478,7 @@ regions:
     id: 48742877604254434
     identification: 
       column-name: VERIFIED
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 60
@@ -1543,7 +1542,7 @@ page-items:
   layout: 
     sequence: 19
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1555,7 +1554,7 @@ page-items:
     - col-xxs-3
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1597,15 +1596,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 9
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1620,7 +1621,7 @@ page-items:
     - col-md-6
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1665,7 +1666,7 @@ page-items:
   layout: 
     sequence: 99
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1695,7 +1696,7 @@ page-items:
   layout: 
     sequence: 69
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1725,7 +1726,7 @@ page-items:
   layout: 
     sequence: 79
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1766,7 +1767,7 @@ page-items:
   layout: 
     sequence: 89
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -1807,12 +1808,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 129
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1825,7 +1828,7 @@ page-items:
     - col-sm-2
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -1875,7 +1878,7 @@ page-items:
   layout: 
     sequence: 139
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1888,7 +1891,7 @@ page-items:
     - col-sm-2
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1930,7 +1933,7 @@ page-items:
   layout: 
     sequence: 29
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1942,7 +1945,7 @@ page-items:
     - col-xxs-3
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1983,7 +1986,7 @@ page-items:
   layout: 
     sequence: 59
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -2021,7 +2024,7 @@ page-items:
   layout: 
     sequence: 149
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -2033,7 +2036,7 @@ page-items:
     - col-xxs-6
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--stretchInputs
@@ -2078,7 +2081,7 @@ page-items:
   layout: 
     sequence: 39
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -2090,7 +2093,7 @@ page-items:
     - col-xxs-3
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -2131,7 +2134,7 @@ page-items:
   layout: 
     sequence: 109
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -2172,7 +2175,7 @@ page-items:
   layout: 
     sequence: 10
     region: Note # 43960816507790344
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -2182,7 +2185,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -2226,7 +2229,7 @@ page-items:
   layout: 
     sequence: 49
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -2238,7 +2241,7 @@ page-items:
     - col-xxs-3
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -2286,7 +2289,7 @@ page-items:
   layout: 
     sequence: 119
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -2298,7 +2301,7 @@ page-items:
     - hidden-sm-down
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
 
@@ -2328,7 +2331,7 @@ buttons:
   layout: 
     sequence: 20
     region: Note # 43960816507790344
-    position: CREATE
+    slot: CREATE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2336,7 +2339,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -2356,7 +2359,7 @@ buttons:
   layout: 
     sequence: 30
     region: Note # 43960816507790344
-    position: CLOSE
+    slot: CLOSE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2364,7 +2367,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -2384,7 +2387,7 @@ buttons:
   layout: 
     sequence: 159
     region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -2396,7 +2399,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -2426,7 +2429,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P75_WEEK
@@ -2480,7 +2483,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: td[headers$=SCORECARD]
 
@@ -2513,7 +2516,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .verification
 
@@ -2654,7 +2657,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.KEYUP
+    event: Key Release
     selection-type: Item(s)
     item(s): 
     - P75_SEARCH
@@ -2706,7 +2709,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Verify Results # 11998064850694896
 
@@ -2742,7 +2745,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P75_SEARCH
@@ -2780,7 +2783,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P75_NEW_FLAG
@@ -2846,7 +2849,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL_NOTE # 43961464901790350
 
@@ -2877,7 +2880,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: ADD_NOTE # 43961015185790346
 
@@ -2950,7 +2953,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .wmg-action
 
@@ -3123,7 +3126,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Rooms # 48741676080254422
 
@@ -3157,7 +3160,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .roomVerification
 

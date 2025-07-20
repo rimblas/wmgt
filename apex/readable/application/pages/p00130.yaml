@@ -45,7 +45,7 @@ regions:
 - # ====== Region: Player Tournament Details ===================
   id: 20131217344284680
   identification: 
-    title: Player Tournament Details
+    name: Player Tournament Details
     type: Interactive Grid
 
   source: 
@@ -77,7 +77,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -85,7 +85,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -97,9 +97,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -268,9 +265,11 @@ regions:
     settings: 
       display-as: Inline Popup
       initial-fetch: Automatic
-      multiple-values: false
       manual-entry: false
       search-as-you-type: false
+
+    multiple-values: 
+      type: No
 
     layout: 
       sequence: 80
@@ -1105,7 +1104,7 @@ page-items:
   layout: 
     sequence: 10
     region: Player Tournament Details # 20131217344284680
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1115,7 +1114,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1152,7 +1151,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Region
     region: Player Tournament Details # 20131217344284680
 

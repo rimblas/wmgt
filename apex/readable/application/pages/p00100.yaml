@@ -20,8 +20,8 @@ navigation:
   warn-on-unsaved-changes: false
 
 javascript: 
-  function-and-global-variable-declaration: |
-    var isExpanding = false;
+  function-and-global-variable-declaration: |2
+        var isExpanding = false;
     function incrementHoleCounter(i) {
         var n;
         n= parseInt($v("P100_HN"));
@@ -83,6 +83,7 @@ css:
   - '#APP_FILES#css/week-lov#MIN#.css'
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    
     span.drill {
         cursor: pointer;
     }
@@ -203,7 +204,7 @@ regions:
 - # ====== Region: Badge Key ===================================
   id: 22130099293688040
   identification: 
-    title: Badge Key
+    name: Badge Key
     type: Classic Report
 
   source: 
@@ -221,7 +222,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Top Players # 49314170932528588530
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -229,7 +230,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noBorder
@@ -266,7 +267,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -302,7 +303,7 @@ regions:
     id: 22130102247688041
     identification: 
       column-name: ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -317,7 +318,7 @@ regions:
     id: 22130255936688042
     identification: 
       column-name: CODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -367,7 +368,7 @@ regions:
     id: 22130473121688044
     identification: 
       column-name: DISPLAY_SEQ
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -382,7 +383,7 @@ regions:
     id: 22130549535688045
     identification: 
       column-name: DESCRIPTION
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -397,7 +398,7 @@ regions:
     id: 22130647304688046
     identification: 
       column-name: ICON_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 60
@@ -412,7 +413,7 @@ regions:
     id: 22130729001688047
     identification: 
       column-name: ACTIVE_IND
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 70
@@ -427,7 +428,7 @@ regions:
     id: 22130881630688048
     identification: 
       column-name: CREATED_ON
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 80
@@ -442,7 +443,7 @@ regions:
     id: 22130949250688049
     identification: 
       column-name: CREATED_BY
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -457,7 +458,7 @@ regions:
     id: 22131027221688050
     identification: 
       column-name: UPDATED_ON
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 100
@@ -472,7 +473,7 @@ regions:
     id: 36324364721635101
     identification: 
       column-name: UPDATED_BY
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 110
@@ -486,13 +487,16 @@ regions:
 - # ====== Region: Where were the <i class="em em-coconut" aria-
   id: 32463122647429429
   identification: 
-    title: Where were the <i class="em em-coconut" aria-role="presentation" aria-label="em-coconut" title="Coconuts"></i> coconuts lost?
+    name: Where were the <i class="em em-coconut" aria-role="presentation" aria-label="em-coconut" title="Coconuts"></i> coconuts lost?
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 61
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -500,7 +504,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -523,11 +527,11 @@ regions:
   security: 
     escape-special-characters: true
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
 
   attributes: 
     id: 32463259506429430
@@ -712,10 +716,416 @@ regions:
       tick-label: 
         show: true
 
+- # ====== Region: Where were the <i class="em em-coconut" aria-
+  id: 32961913543648043
+  identification: 
+    name: Where were the <i class="em em-coconut" aria-role="presentation" aria-label="em-coconut" title="Coconuts"></i> coconuts lost?
+    type: Chart
+
+  source: 
+    location: None
+
+  layout: 
+    sequence: 60
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="legend">* A coconut badge is lost when someone has an over par score on a whole. Those that manage to score par of better on both courses earn a coconut.<br>
+      * This chart show where people first lost their coconut.
+      </div>
+
+  security: 
+    escape-special-characters: true
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    id: 32962086750648044
+    chart: 
+      type: Combination
+
+    appearance: 
+      orientation: Vertical
+      stack: false
+
+    layout: 
+      height: 400
+
+    data-cursor: 
+      cursor: Automatic
+      behavior: Automatic
+      dim-on-hover: true
+
+    multi-series-chart-data: 
+      fill-gaps-in-chart-data: true
+      sort-order: Label - Ascending
+      render-gap-as-zero: true
+
+    settings: 
+      zoom-and-scroll: No
+
+    animation: 
+      on-display: Automatic
+      on-data-change: Automatic
+
+    tooltip: 
+      show: true
+      show-series-name: true
+      show-group-name: true
+      show-value: true
+
+    legend: 
+      show: false
+
+    series: 
+    - # ====== Series: Remaining Coconuts ==========================
+      id: 17400134045035195
+      identification: 
+        name: Remaining Coconuts
+        type: Line with Area
+
+      execution: 
+        sequence: 20
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with tournament as (
+            select count(*) players
+                from wmg_tournament_sessions ts
+                   , wmg_tournament_players tp
+               where ts.id = tp.tournament_session_id
+                 and ts.week = :P100_WEEK
+                 and tp.active_ind = 'Y'
+          )
+          , coconut as (
+              select tc.tournament_session_id
+                   , tc.course_no
+                   , u.course_id
+                   , u.h
+                   , u.par
+                   , row_number() over (partition by u.player_id order by tc.course_no, u.h) rn
+                from wmg_rounds_unpivot_mv u
+                   , wmg_tournament_sessions ts
+                   , wmg_tournament_courses tc
+                   , wmg_tournament_players tp
+               where ts.week = u.week
+                 and ts.id = tp.tournament_session_id
+                 and ts.id = tc.tournament_session_id
+                 and tc.course_id = u.course_id
+                 and tp.player_id = u.player_id
+                 and u.week = :P100_WEEK
+                 and u.par > 0 -- coconut lost on a bogey
+          --       and u.player_id in (22, 24)
+          --     having sum(case when par <= 0 then 1 else 0 end) = 36
+          --     group by u.week, u.player_id
+          -- order by u.player_id, tc.course_no, u.h
+          )
+          , coconut_histogram as (
+            select c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+                 , count(*) lost_coconut
+              from coconut c
+             where rn = 1  -- first time the coconut was lost
+             group by c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+          )
+          , empty_holes as (
+              select level h
+              from dual
+              connect by level <= 18
+          )
+          , fill_in_all_holes as (
+          select tc.tournament_session_id
+               , tc.course_no
+               , tc.course_id
+               , e.h
+               , nvl(h.lost_coconut, 0) lost_coconut
+           from coconut_histogram h
+              , wmg_tournament_courses tc
+              , wmg_tournament_sessions ts
+              , empty_holes e
+          where ts.id = tc.tournament_session_id
+            and ts.week = :P100_WEEK
+            and tc.tournament_session_id = h.tournament_session_id (+)
+            and tc.course_no = h.course_no (+)
+            and tc.course_id = h.course_id (+)
+            and e.h = h.h (+)
+          )
+          , cumulative_coconuts as (
+            select f.tournament_session_id
+                 , f.course_no
+                 , f.course_id
+                 , f.h
+                 , f.lost_coconut
+                 , sum(f.lost_coconut) over (order by f.course_no, f.h) cumulative_lost_coconuts
+              from fill_in_all_holes f
+          )
+          select h.course_no
+               , c.code course_code
+               , e.h
+               , h.course_no || '-' || lpad(e.h,2, '0') label
+               , h.lost_coconut value
+               , tp.players - h.cumulative_lost_coconuts remaining_coconuts
+          from cumulative_coconuts h
+             , wmg_courses c
+             , empty_holes e
+             , tournament tp
+          where c.id = h.course_id
+            and e.h = h.h (+)
+          order by h.course_no, h.h
+          
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        label: LABEL
+        value: REMAINING_COCONUTS
+
+      appearance: 
+        assigned-to-y2-axis: false
+
+      line: 
+        style: Solid
+        type: Automatic
+
+      marker: 
+        show: Automatic
+        shape: Automatic
+
+      label: 
+        show: true
+        position: Above Marker
+
+    - # ====== Series: Lost Coconuts ===============================
+      id: 17400035668035194
+      identification: 
+        name: Lost Coconuts
+        type: Bar
+
+      execution: 
+        sequence: 30
+
+      source: 
+        location: Local Database
+        type: SQL Query
+        sql-query: |
+          with tournament as (
+            select count(*) players
+                from wmg_tournament_sessions ts
+                   , wmg_tournament_players tp
+               where ts.id = tp.tournament_session_id
+                 and ts.week = :P100_WEEK
+                 and tp.active_ind = 'Y'
+          )
+          , coconut as (
+              select tc.tournament_session_id
+                   , tc.course_no
+                   , u.course_id
+                   , u.h
+                   , u.par
+                   , row_number() over (partition by u.player_id order by tc.course_no, u.h) rn
+                from wmg_rounds_unpivot_mv u
+                   , wmg_tournament_sessions ts
+                   , wmg_tournament_courses tc
+                   , wmg_tournament_players tp
+               where ts.week = u.week
+                 and ts.id = tp.tournament_session_id
+                 and ts.id = tc.tournament_session_id
+                 and tc.course_id = u.course_id
+                 and tp.player_id = u.player_id
+                 and u.week = :P100_WEEK
+                 and u.par > 0 -- coconut lost on a bogey
+          --       and u.player_id in (22, 24)
+          --     having sum(case when par <= 0 then 1 else 0 end) = 36
+          --     group by u.week, u.player_id
+          -- order by u.player_id, tc.course_no, u.h
+          )
+          , coconut_histogram as (
+            select c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+                 , count(*) lost_coconut
+              from coconut c
+             where rn = 1  -- first time the coconut was lost
+             group by c.tournament_session_id
+                 , c.course_no
+                 , c.course_id
+                 , c.h
+          )
+          , empty_holes as (
+              select level h
+              from dual
+              connect by level <= 18
+          )
+          , fill_in_all_holes as (
+          select tc.tournament_session_id
+               , tc.course_no
+               , tc.course_id
+               , e.h
+               , nvl(h.lost_coconut, 0) lost_coconut
+           from coconut_histogram h
+              , wmg_tournament_courses tc
+              , wmg_tournament_sessions ts
+              , empty_holes e
+          where ts.id = tc.tournament_session_id
+            and ts.week = :P100_WEEK
+            and tc.tournament_session_id = h.tournament_session_id (+)
+            and tc.course_no = h.course_no (+)
+            and tc.course_id = h.course_id (+)
+            and e.h = h.h (+)
+          )
+          , cumulative_coconuts as (
+            select f.tournament_session_id
+                 , f.course_no
+                 , f.course_id
+                 , f.h
+                 , f.lost_coconut
+                 , sum(f.lost_coconut) over (order by f.course_no, f.h) cumulative_lost_coconuts
+              from fill_in_all_holes f
+          )
+          select h.course_no
+               , c.code course_code
+               , e.h
+               , h.course_no || '-' || lpad(e.h,2, '0') label
+               , h.lost_coconut value
+               , tp.players - h.cumulative_lost_coconuts remaining_coconuts
+          from cumulative_coconuts h
+             , wmg_courses c
+             , empty_holes e
+             , tournament tp
+          where c.id = h.course_id
+            and e.h = h.h (+)
+          order by h.course_no, h.h
+          
+        page-items-to-submit: 
+        - P100_WEEK
+
+      column-mapping: 
+        label: LABEL
+        value: VALUE
+
+      appearance: 
+        assigned-to-y2-axis: true
+
+      link: 
+        type: Redirect to URL
+        target: 'javascript:viewH2(#COURSE_NO#,#H#);'
+
+      line: 
+        style: Solid
+
+      label: 
+        show: true
+        position: Above Marker
+
+    axes: 
+    - # ====== Axis: x =============================================
+      id: 17400382077035197
+      identification: 
+        name: x
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+        rotation: true
+        position: Outside
+
+    - # ====== Axis: y =============================================
+      id: 17400226023035196
+      identification: 
+        name: y
+        show-axis: true
+
+      value: 
+        format: Decimal
+        decimal-places: 0
+        format-scaling: None
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+    - # ====== Axis: y2 ============================================
+      id: 17399914780035193
+      identification: 
+        name: y2
+        show-axis: true
+
+      value: 
+        format-scaling: Automatic
+        baseline-scaling: Zero
+        scale: Linear
+
+      appearance: 
+        position: Automatic
+
+      major-ticks: 
+        show: Yes
+
+      minor-ticks: 
+        show: false
+
+      tick-label: 
+        show: true
+
+      dual-y-axes: 
+        show: Automatic
+
 - # ====== Region: Hole Preview ================================
   id: 20760560887699173455
   identification: 
-    title: Hole Preview
+    name: Hole Preview
     type: Classic Report
 
   source: 
@@ -743,7 +1153,7 @@ regions:
   layout: 
     sequence: 1
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -751,7 +1161,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Inline Popup # 46995091106884514363
+    template: Inline Popup
     template-options: 
     - '#DEFAULT#'
     - js-dialog-autoheight
@@ -785,7 +1195,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -824,7 +1234,7 @@ regions:
     id: 8724869336818302
     identification: 
       column-name: URL
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -876,7 +1286,7 @@ regions:
     id: 40389412750426769165
     identification: 
       column-name: COURSE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -890,13 +1300,13 @@ regions:
 - # ====== Region: {Stats} =====================================
   id: 47495448429636845252
   identification: 
-    title: '{Stats}'
+    name: '{Stats}'
     type: Static Content
 
   layout: 
     sequence: 31
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -904,7 +1314,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -922,9 +1332,6 @@ regions:
     type: Item is NOT NULL
     item: P100_WEEK
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -936,7 +1343,7 @@ regions:
 - # ====== Region: Course Highlights ===========================
   id: 47585927906562469232
   identification: 
-    title: Course Highlights
+    name: Course Highlights
     type: Classic Report
 
   source: 
@@ -1045,7 +1452,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: Top Results # 49314171870793588539
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1057,7 +1464,7 @@ regions:
     - col-lg-12
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader js-removeLandmark
@@ -1086,7 +1493,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1220,13 +1627,16 @@ regions:
 - # ====== Region: &P100_HARD. =================================
   id: 47641696780488513230
   identification: 
-    title: '&P100_HARD.'
+    name: '&P100_HARD.'
     type: Chart
 
+  source: 
+    location: None
+
   layout: 
-    sequence: 91
+    sequence: 101
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1234,7 +1644,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -1253,9 +1663,6 @@ regions:
 
   security: 
     escape-special-characters: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1552,13 +1959,13 @@ regions:
 - # ====== Region: {items} =====================================
   id: 47641697605875513238
   identification: 
-    title: '{items}'
+    name: '{items}'
     type: Static Content
 
   layout: 
     sequence: 1
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1566,7 +1973,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -1580,9 +1987,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -1594,7 +1998,7 @@ regions:
 - # ====== Region: Top Players =================================
   id: 49314170932528588530
   identification: 
-    title: Top Players
+    name: Top Players
     type: Classic Report
 
   source: 
@@ -1680,7 +2084,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Top Results # 49314171870793588539
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1692,7 +2096,7 @@ regions:
     - col-lg-7
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -1724,7 +2128,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1833,7 +2237,7 @@ regions:
     id: 12340622127723537
     identification: 
       column-name: SELECTED_PLAYER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 90
@@ -1958,7 +2362,7 @@ regions:
     id: 49314172332956588544
     identification: 
       column-name: PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -2036,7 +2440,7 @@ regions:
 - # ====== Region: Highlights ==================================
   id: 49314171355998588534
   identification: 
-    title: Highlights
+    name: Highlights
     type: Classic Report
 
   source: 
@@ -2054,7 +2458,7 @@ regions:
                and tc.tournament_session_id = :P100_TOURNAMENT_SESSION_ID
                and r.score = 1
       )
-      select 'Best score ' || course_code result, listagg(player_name, ', ') who, total
+      select 100 + course_no display_seq, 'Best score ' || course_code result, listagg(player_name, ', ') who, total
       from (
             select r.*, rank() over (partition by course_no order by r.total) rn
             from (
@@ -2069,9 +2473,9 @@ regions:
             order by course_no, course_code, rn, r.player_name
       )
       where rn = 1
-      group by  course_code, total
+      group by  course_no, course_code, total
       union all
-      select result, listagg(who, ', ') who, total
+      select 200 display_seq, result, listagg(who, ', ') who, total
       from (
           select result, who, total, rank() over (order by total desc) rn
           from (
@@ -2104,9 +2508,9 @@ regions:
           order by aces.who
       )
       where rn = 1
-      group by  result, total
+      group by result, total
       union all
-      select '<i class="em em-coconut" title="Coconut"></i> Coconuts' result, ' - Listed in Results -' who,  count(*) total
+      select 300 display_seq, '<i class="em em-coconut" title="Coconut"></i> Coconuts' result, ' - Listed in Results -' who,  count(*) total
       from (
           select u.week
             from wmg_rounds_unpivot_mv u
@@ -2121,7 +2525,7 @@ regions:
            group by u.week, u.player_id
       )
       union all
-      select 'Players w/zero Aces on Course 1' result, '- Undisclosed -' who, count(*) total
+      select 400 display_seq, 'Players w/zero Aces on Course 1' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
@@ -2135,7 +2539,7 @@ regions:
          where course_no = 1
       )
       union all
-      select 'Players w/zero Aces on Course 2' result, '- Undisclosed -' who, count(*) total
+      select 410 display_seq, 'Players w/zero Aces on Course 2' result, '- Undisclosed -' who, count(*) total
       from ( 
          select player_id
           from wmg_rounds_v r
@@ -2148,7 +2552,7 @@ regions:
           from players_with_aces
          where course_no =2
       )
-      
+      order by display_seq
       
     page-items-to-submit: 
     - P100_WEEK
@@ -2157,7 +2561,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: Top Results # 49314171870793588539
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -2169,7 +2573,7 @@ regions:
     - null
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader js-removeLandmark
@@ -2200,7 +2604,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -2232,6 +2636,21 @@ regions:
       enabled: false
 
   columns: 
+  - # ====== Column: DISPLAY_SEQ =================================
+    id: 17396074595035154
+    identification: 
+      column-name: DISPLAY_SEQ
+      type: Hidden
+
+    layout: 
+      sequence: 10
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: TOTAL =======================================
     id: 47585928539590469239
     identification: 
@@ -2243,14 +2662,14 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 30
+      sequence: 40
       column-alignment: end
 
     accessibility: 
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2275,7 +2694,7 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 10
+      sequence: 20
       column-alignment: end
 
     accessibility: 
@@ -2307,14 +2726,14 @@ regions:
       alignment: center
 
     layout: 
-      sequence: 20
+      sequence: 30
       column-alignment: center
 
     accessibility: 
       value-identifies-row: false
 
     sorting: 
-      sortable: true
+      sortable: false
 
     export-/-printing: 
       include-in-export-/-print: true
@@ -2331,13 +2750,13 @@ regions:
 - # ====== Region: Top Results =================================
   id: 49314171870793588539
   identification: 
-    title: Top Results
+    name: Top Results
     type: Static Content
 
   layout: 
     sequence: 11
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2345,7 +2764,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -2360,9 +2779,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -2374,7 +2790,7 @@ regions:
 - # ====== Region: &P100_HARD. -  Stats ========================
   id: 49314174312946588563
   identification: 
-    title: '&P100_HARD. -  Stats'
+    name: '&P100_HARD. -  Stats'
     type: Classic Report
 
   source: 
@@ -2721,7 +3137,7 @@ regions:
   layout: 
     sequence: 15
     parent-region: '{Stats}' # 47495448429636845252
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -2729,7 +3145,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -2776,7 +3192,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -2812,7 +3228,7 @@ regions:
     id: 49314174392413588564
     identification: 
       column-name: DISPLAY_SEQ
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -2865,7 +3281,7 @@ regions:
     id: 49314174552864588566
     identification: 
       column-name: DATA_FILTER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -2880,7 +3296,7 @@ regions:
     id: 49314174772280588568
     identification: 
       column-name: DRILL_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -3556,7 +3972,7 @@ regions:
 - # ====== Region: &P100_EASY. - Stats =========================
   id: 94463329724515094660
   identification: 
-    title: '&P100_EASY. - Stats'
+    name: '&P100_EASY. - Stats'
     type: Classic Report
 
   source: 
@@ -3903,7 +4319,7 @@ regions:
   layout: 
     sequence: 5
     parent-region: '{Stats}' # 47495448429636845252
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3911,7 +4327,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -3958,7 +4374,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -4694,7 +5110,7 @@ regions:
     id: 47357082724164620475
     identification: 
       column-name: DISPLAY_SEQ
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -4709,7 +5125,7 @@ regions:
     id: 47495448208668845249
     identification: 
       column-name: DATA_FILTER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 30
@@ -4724,7 +5140,7 @@ regions:
     id: 47641697247948513235
     identification: 
       column-name: DRILL_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 36
@@ -4738,13 +5154,16 @@ regions:
 - # ====== Region: Participating Countries =====================
   id: 94944473398670145785
   identification: 
-    title: Participating Countries
+    name: Participating Countries
     type: Chart
 
+  source: 
+    location: None
+
   layout: 
-    sequence: 71
+    sequence: 81
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -4752,7 +5171,7 @@ regions:
     column-span: 6
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -4768,9 +5187,6 @@ regions:
 
   security: 
     escape-special-characters: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -4855,13 +5271,16 @@ regions:
 - # ====== Region: Cumulative Score ============================
   id: 94944476072445145786
   identification: 
-    title: Cumulative Score
+    name: Cumulative Score
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 41
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -4869,7 +5288,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - js-showMaximizeButton
@@ -4892,9 +5311,6 @@ regions:
 
   security: 
     escape-special-characters: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -5259,13 +5675,16 @@ regions:
 - # ====== Region: Stacked Shot Types ==========================
   id: 94944478854121145787
   identification: 
-    title: Stacked Shot Types
+    name: Stacked Shot Types
     type: Chart
 
+  source: 
+    location: None
+
   layout: 
-    sequence: 81
+    sequence: 91
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -5273,7 +5692,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -5292,9 +5711,6 @@ regions:
 
   security: 
     escape-special-characters: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -5820,13 +6236,16 @@ regions:
 - # ====== Region: Positions over time (scores relative to par) 
   id: 94944481498981145788
   identification: 
-    title: Positions over time (scores relative to par)
+    name: Positions over time (scores relative to par)
     type: Chart
+
+  source: 
+    location: None
 
   layout: 
     sequence: 51
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -5834,7 +6253,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - js-showMaximizeButton
@@ -5857,9 +6276,6 @@ regions:
 
   security: 
     escape-special-characters: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -6282,7 +6698,7 @@ page-items:
   layout: 
     sequence: 30
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6313,15 +6729,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: Cumulative Score # 94944476072445145786
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -6334,7 +6752,7 @@ page-items:
     - col-md-12
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -6382,7 +6800,7 @@ page-items:
   layout: 
     sequence: 90
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6412,7 +6830,7 @@ page-items:
   layout: 
     sequence: 120
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6442,7 +6860,7 @@ page-items:
   layout: 
     sequence: 80
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6472,7 +6890,7 @@ page-items:
   layout: 
     sequence: 110
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6503,15 +6921,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 20
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -6526,7 +6946,7 @@ page-items:
     - col-md-6
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -6571,7 +6991,7 @@ page-items:
   layout: 
     sequence: 60
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6601,7 +7021,7 @@ page-items:
   layout: 
     sequence: 50
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6638,7 +7058,7 @@ page-items:
   layout: 
     sequence: 40
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -6653,7 +7073,7 @@ page-items:
     - col-md-6
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     css-classes: 
@@ -6696,7 +7116,7 @@ page-items:
   layout: 
     sequence: 70
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6730,7 +7150,7 @@ page-items:
   layout: 
     sequence: 100
     region: '{items}' # 47641697605875513238
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6776,7 +7196,7 @@ page-items:
   layout: 
     sequence: 10
     region: Positions over time (scores relative to par) # 94944481498981145788
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -6786,7 +7206,7 @@ page-items:
     label-column-span: 0
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     - margin-top-none
@@ -6834,7 +7254,7 @@ page-items:
   layout: 
     sequence: 20
     region: Positions over time (scores relative to par) # 94944481498981145788
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -6866,7 +7286,7 @@ buttons:
   layout: 
     sequence: 10
     region: '&P100_EASY. - Stats' # 94463329724515094660
-    position: COPY
+    slot: COPY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -6874,7 +7294,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -6906,7 +7326,7 @@ buttons:
   layout: 
     sequence: 20
     region: '&P100_HARD. -  Stats' # 49314174312946588563
-    position: COPY
+    slot: COPY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -6914,7 +7334,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -6946,7 +7366,7 @@ buttons:
   layout: 
     sequence: 10
     region: Hole Preview # 20760560887699173455
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -6954,7 +7374,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -6974,7 +7394,7 @@ buttons:
   layout: 
     sequence: 20
     region: Positions over time (scores relative to par) # 94944481498981145788
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -6982,7 +7402,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -7002,7 +7422,7 @@ buttons:
   layout: 
     sequence: 10
     region: Top Players # 49314170932528588530
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -7011,7 +7431,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -7045,7 +7465,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Top Players # 49314170932528588530
 
@@ -7075,7 +7495,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P100_PLAYER_ID
@@ -7123,7 +7543,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: th
 
@@ -7153,7 +7573,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: OK # 40389412862425769166
 
@@ -7184,7 +7604,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P100_WEEK
@@ -7216,7 +7636,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: '&P100_EASY. - Stats' # 94463329724515094660
 
@@ -7251,7 +7671,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .drill
 
@@ -7415,7 +7835,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================
@@ -7482,7 +7902,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .hnSliderAdv
 
@@ -7521,7 +7941,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: TOGGLE_PLAYERS # 48044019556229678731
 
@@ -7576,7 +7996,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.MOUSEENTER
+    event: Mouse Enter
     selection-type: jQuery Selector
     jquery-selector: .drill
 
@@ -7770,7 +8190,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: .hnSliderRew
 

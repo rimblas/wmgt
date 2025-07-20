@@ -57,13 +57,13 @@ regions:
 - # ====== Region: {scores} ====================================
   id: 15143134088348735740
   identification: 
-    title: '{scores}'
+    name: '{scores}'
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: Course Stroke # 46995230884943514880
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -71,7 +71,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template: Blank with Attributes (No Grid)
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -85,9 +85,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -99,7 +96,7 @@ regions:
 - # ====== Region: Course Stroke ===============================
   id: 46995230884943514880
   identification: 
-    title: Course Stroke
+    name: Course Stroke
     type: Form
 
   source: 
@@ -112,7 +109,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -120,7 +117,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -132,9 +129,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -151,13 +145,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 46995245428554514889
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -165,7 +159,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -177,9 +171,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -207,7 +198,7 @@ page-items:
   layout: 
     sequence: 210
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -217,7 +208,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -258,7 +249,7 @@ page-items:
   layout: 
     sequence: 10
     region: Course Stroke # 46995230884943514880
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -291,12 +282,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 20
     region: Course Stroke # 46995230884943514880
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -306,7 +299,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -362,7 +355,7 @@ page-items:
   layout: 
     sequence: 30
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -372,7 +365,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -419,7 +412,7 @@ page-items:
   layout: 
     sequence: 40
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -429,7 +422,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -476,7 +469,7 @@ page-items:
   layout: 
     sequence: 50
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -486,7 +479,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -533,7 +526,7 @@ page-items:
   layout: 
     sequence: 60
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -543,7 +536,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -590,7 +583,7 @@ page-items:
   layout: 
     sequence: 70
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -600,7 +593,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -647,7 +640,7 @@ page-items:
   layout: 
     sequence: 80
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -657,7 +650,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -704,7 +697,7 @@ page-items:
   layout: 
     sequence: 90
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -714,7 +707,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -761,7 +754,7 @@ page-items:
   layout: 
     sequence: 100
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -771,7 +764,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -818,7 +811,7 @@ page-items:
   layout: 
     sequence: 110
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -828,7 +821,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -875,7 +868,7 @@ page-items:
   layout: 
     sequence: 120
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -885,7 +878,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -932,7 +925,7 @@ page-items:
   layout: 
     sequence: 130
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -942,7 +935,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -989,7 +982,7 @@ page-items:
   layout: 
     sequence: 140
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -999,7 +992,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1046,7 +1039,7 @@ page-items:
   layout: 
     sequence: 150
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1056,7 +1049,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1103,7 +1096,7 @@ page-items:
   layout: 
     sequence: 160
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1113,7 +1106,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1160,7 +1153,7 @@ page-items:
   layout: 
     sequence: 170
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1170,7 +1163,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1217,7 +1210,7 @@ page-items:
   layout: 
     sequence: 180
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1227,7 +1220,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1274,7 +1267,7 @@ page-items:
   layout: 
     sequence: 190
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1284,7 +1277,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1331,7 +1324,7 @@ page-items:
   layout: 
     sequence: 200
     region: '{scores}' # 15143134088348735740
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1341,7 +1334,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Above # 46995171350087514398
+    template: Optional - Above
     template-options: 
     - '#DEFAULT#'
     width: 1
@@ -1381,7 +1374,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 46995245428554514889
-    position: CLOSE
+    slot: CLOSE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1389,7 +1382,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1407,7 +1400,7 @@ buttons:
   layout: 
     sequence: 20
     region: Buttons # 46995245428554514889
-    position: DELETE
+    slot: DELETE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1415,7 +1408,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1425,6 +1418,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: false
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL DELETE action
 
@@ -1445,7 +1439,7 @@ buttons:
   layout: 
     sequence: 30
     region: Buttons # 46995245428554514889
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1453,7 +1447,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -1461,6 +1455,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL UPDATE action
 
@@ -1477,7 +1472,7 @@ buttons:
   layout: 
     sequence: 40
     region: Buttons # 46995245428554514889
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1485,7 +1480,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text # 46995173980623514400
+    button-template: Text
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -1493,6 +1488,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL INSERT action
 
@@ -1512,7 +1508,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 46995245824980514889
 

@@ -90,8 +90,10 @@ css:
         td[headers="COURSE_MODE"] {display: none;}
     
     }
-    
+    /*
     @media (max-width: 1199px) {
+    */
+    @media (max-width: 992px) {
     .hideFront #S1,
     .hideFront td[headers="S1"],
     .hideFront #S2,
@@ -218,13 +220,13 @@ regions:
 - # ====== Region: {Player Details} ============================
   id: 13433645010291510
   identification: 
-    title: '{Player Details}'
+    name: '{Player Details}'
     type: Static Content
 
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -232,7 +234,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -245,9 +247,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -259,7 +258,7 @@ regions:
 - # ====== Region: {player profile} ============================
   id: 22129874658688038
   identification: 
-    title: '{player profile}'
+    name: '{player profile}'
     type: Dynamic Content
 
   source: 
@@ -275,7 +274,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: '{Player Details}' # 13433645010291510
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: 9
@@ -283,7 +282,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-top-md
@@ -310,7 +309,7 @@ regions:
 - # ====== Region: Hole Preview ================================
   id: 42133603424743737506
   identification: 
-    title: Hole Preview
+    name: Hole Preview
     type: Dynamic Content
 
   source: 
@@ -344,7 +343,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -352,7 +351,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Inline Popup # 46995091106884514363
+    template: Inline Popup
     template-options: 
     - '#DEFAULT#'
     - js-dialog-size600x400
@@ -380,7 +379,7 @@ regions:
 - # ====== Region: Hard Stats ==================================
   id: 50437963587044816739
   identification: 
-    title: Hard Stats
+    name: Hard Stats
     type: Classic Report
 
   source: 
@@ -760,7 +759,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: '{Stats}' # 98307581329154170942
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -768,7 +767,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -801,7 +800,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -837,7 +836,7 @@ regions:
     id: 32462526931429423
     identification: 
       column-name: COURSE_NO
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -852,7 +851,7 @@ regions:
     id: 50437963658610816740
     identification: 
       column-name: DISPLAY_SEQ
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -905,7 +904,7 @@ regions:
     id: 50437963838655816742
     identification: 
       column-name: DATA_FILTER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -920,7 +919,7 @@ regions:
     id: 50437964070119816744
     identification: 
       column-name: DRILL_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -1596,13 +1595,13 @@ regions:
 - # ====== Region: {Stats} =====================================
   id: 98307581329154170942
   identification: 
-    title: '{Stats}'
+    name: '{Stats}'
     type: Static Content
 
   layout: 
     sequence: 40
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1610,7 +1609,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -1624,9 +1623,6 @@ regions:
     region-display-selector: true
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -1638,7 +1634,7 @@ regions:
 - # ====== Region: Player Round Details ========================
   id: 98808650782335523961
   identification: 
-    title: Player Round Details
+    name: Player Round Details
     type: Classic Report
 
   source: 
@@ -1702,7 +1698,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1710,7 +1706,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -1740,7 +1736,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1782,7 +1778,7 @@ regions:
     id: 49807481443068432
     identification: 
       column-name: S1_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 78
@@ -1797,7 +1793,7 @@ regions:
     id: 49807553399068433
     identification: 
       column-name: S2_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 88
@@ -1812,7 +1808,7 @@ regions:
     id: 49807608993068434
     identification: 
       column-name: S3_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 98
@@ -1827,7 +1823,7 @@ regions:
     id: 49807786214068435
     identification: 
       column-name: S4_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 108
@@ -1842,7 +1838,7 @@ regions:
     id: 49807820299068436
     identification: 
       column-name: S5_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 118
@@ -1857,7 +1853,7 @@ regions:
     id: 49807909939068437
     identification: 
       column-name: S6_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 128
@@ -1872,7 +1868,7 @@ regions:
     id: 49808020688068438
     identification: 
       column-name: S7_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 138
@@ -1887,7 +1883,7 @@ regions:
     id: 49808176066068439
     identification: 
       column-name: S8_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 148
@@ -1902,7 +1898,7 @@ regions:
     id: 49808231691068440
     identification: 
       column-name: S9_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 158
@@ -1917,7 +1913,7 @@ regions:
     id: 49808326266068441
     identification: 
       column-name: S10_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 168
@@ -1932,7 +1928,7 @@ regions:
     id: 49808480297068442
     identification: 
       column-name: S11_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 178
@@ -1947,7 +1943,7 @@ regions:
     id: 49808585452068443
     identification: 
       column-name: S12_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 188
@@ -1962,7 +1958,7 @@ regions:
     id: 49808604789068444
     identification: 
       column-name: S13_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 198
@@ -1977,7 +1973,7 @@ regions:
     id: 49808785184068445
     identification: 
       column-name: S14_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 208
@@ -1992,7 +1988,7 @@ regions:
     id: 49808833167068446
     identification: 
       column-name: S15_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 218
@@ -2007,7 +2003,7 @@ regions:
     id: 49808987700068447
     identification: 
       column-name: S16_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 228
@@ -2022,7 +2018,7 @@ regions:
     id: 49809044319068448
     identification: 
       column-name: S17_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 238
@@ -2037,7 +2033,7 @@ regions:
     id: 49809148878068449
     identification: 
       column-name: S18_STATUS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 248
@@ -2084,7 +2080,7 @@ regions:
     id: 49408616517577809867
     identification: 
       column-name: PLAYER_NAME
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 3
@@ -2099,7 +2095,7 @@ regions:
     id: 49408616907019809867
     identification: 
       column-name: COURSE_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 4
@@ -2822,7 +2818,7 @@ regions:
     id: 49408634833704809877
     identification: 
       column-name: ROUND_STROKES
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 49
@@ -2871,7 +2867,7 @@ regions:
 - # ====== Region: Easy Stats ==================================
   id: 145273183380964273152
   identification: 
-    title: Easy Stats
+    name: Easy Stats
     type: Classic Report
 
   source: 
@@ -3251,7 +3247,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: '{Stats}' # 98307581329154170942
-    position: SUB_REGIONS
+    slot: SUB_REGIONS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -3259,7 +3255,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -3292,7 +3288,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--altRowsDefault
@@ -3328,7 +3324,7 @@ regions:
     id: 32462470332429422
     identification: 
       column-name: COURSE_NO
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 20
@@ -4043,7 +4039,7 @@ regions:
     id: 50818383338949990442
     identification: 
       column-name: DISPLAY_SEQ
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 10
@@ -4058,7 +4054,7 @@ regions:
     id: 50818383728361990442
     identification: 
       column-name: DATA_FILTER
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 40
@@ -4073,7 +4069,7 @@ regions:
     id: 50818384565687990444
     identification: 
       column-name: DRILL_CLASS
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 50
@@ -4102,7 +4098,7 @@ page-items:
   layout: 
     sequence: 40
     region: '{Player Details}' # 13433645010291510
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -4115,7 +4111,7 @@ page-items:
     - hidden-lg-up
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--stretchInputs
@@ -4165,7 +4161,7 @@ page-items:
   layout: 
     sequence: 50
     region: '{Player Details}' # 13433645010291510
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -4195,7 +4191,7 @@ page-items:
   layout: 
     sequence: 50
     region: Player Round Details # 98808650782335523961
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -4225,7 +4221,7 @@ page-items:
   layout: 
     sequence: 60
     region: Player Round Details # 98808650782335523961
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -4255,7 +4251,7 @@ page-items:
   layout: 
     sequence: 40
     region: Player Round Details # 98808650782335523961
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -4285,7 +4281,7 @@ page-items:
   layout: 
     sequence: 30
     region: Player Round Details # 98808650782335523961
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -4322,7 +4318,7 @@ page-items:
   layout: 
     sequence: 10
     region: '{Player Details}' # 13433645010291510
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -4336,7 +4332,7 @@ page-items:
     - col-md-4
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -4369,15 +4365,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 20
     region: '{Player Details}' # 13433645010291510
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -4391,7 +4389,7 @@ page-items:
     - col-md-8
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -4433,7 +4431,7 @@ buttons:
   layout: 
     sequence: 10
     region: Hole Preview # 42133603424743737506
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -4441,7 +4439,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -4464,7 +4462,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P110_FRONT_BACK
@@ -4694,7 +4692,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   client-side-condition: 
     type: JavaScript expression
@@ -4735,7 +4733,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERREFRESH
+    event: After Refresh
     selection-type: Region
     region: Player Round Details # 98808650782335523961
 
@@ -4768,7 +4766,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: jQuery Selector
     jquery-selector: th
 
@@ -4798,7 +4796,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: OK # 40389413151862769169
 
@@ -4829,7 +4827,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P110_PLAYER_ID

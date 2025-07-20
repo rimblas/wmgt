@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Modal Dialog
-  dialog-template: Drawer # 46995004786863514327
+  dialog-template: Drawer
   template-options: 
   - '#DEFAULT#'
   - js-dialog-class-t-Drawer--pullOutEnd
@@ -49,13 +49,13 @@ regions:
 - # ====== Region: No preview available yet ====================
   id: 20760559262150173439
   identification: 
-    title: No preview available yet
+    name: No preview available yet
     type: Static Content
 
   layout: 
     sequence: 39
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -63,7 +63,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noBorder
@@ -85,9 +85,6 @@ regions:
       from wmg_course_previews_v
       where course_id = :P15_COURSE_ID
         and hole = :P15_HOLE
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -117,7 +114,7 @@ page-items:
   layout: 
     sequence: 9
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -129,7 +126,7 @@ page-items:
     - u-vh
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
 
@@ -166,7 +163,7 @@ page-items:
   layout: 
     sequence: 19
     region: No Parent
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -208,7 +205,7 @@ page-items:
   layout: 
     sequence: 29
     region: No Parent
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -218,7 +215,7 @@ page-items:
     label-column-span: 0
 
   appearance: 
-    template: Hidden # 46995171218955514398
+    template: Hidden
     template-options: 
     - '#DEFAULT#'
     - t-Form-fieldContainer--stretchInputs
@@ -248,7 +245,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   actions: 
   - # ====== Action: Execute JavaScript Code =====================

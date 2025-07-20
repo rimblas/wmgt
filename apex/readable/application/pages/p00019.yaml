@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Login # 46995015385203514332
+  page-template: Login
   template-options: 
   - '#DEFAULT#'
   - t-LoginPage--split
@@ -56,7 +56,7 @@ regions:
 - # ====== Region: You Have a New Message! =====================
   id: 49812257133092135
   identification: 
-    title: You Have a New Message!
+    name: You Have a New Message!
     type: Classic Report
 
   source: 
@@ -73,7 +73,7 @@ regions:
   layout: 
     sequence: 19
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -81,7 +81,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Login # 46995098614618514366
+    template: Login
     template-options: 
     - '#DEFAULT#'
     - t-Login-region--headerTitle js-removeLandmark
@@ -109,7 +109,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Value Attribute Pairs - Column # 46995141981277514384
+      template: Value Attribute Pairs - Column
       template-options: 
       - '#DEFAULT#'
       - t-AVPList--fixedLabelSmall
@@ -149,7 +149,7 @@ regions:
     id: 49812521452092712
     identification: 
       column-name: ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 0
@@ -164,7 +164,7 @@ regions:
     id: 49812924555092712
     identification: 
       column-name: TO_PLAYER_ID
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 2
@@ -241,7 +241,7 @@ regions:
     id: 49814161281092715
     identification: 
       column-name: DISPLAY_COUNT
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 5
@@ -256,7 +256,7 @@ regions:
     id: 49814517854092715
     identification: 
       column-name: DISPLAY_MODE
-      type: Hidden Column
+      type: Hidden
 
     layout: 
       sequence: 6
@@ -305,13 +305,13 @@ regions:
 - # ====== Region: {Info} ======================================
   id: 97719653396081590
   identification: 
-    title: '{Info}'
+    name: '{Info}'
     type: Static Content
 
   layout: 
     sequence: 29
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -319,7 +319,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--stickToBottom
@@ -333,9 +333,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -355,7 +352,7 @@ buttons:
   layout: 
     sequence: 30
     region: '{Info}' # 97719653396081590
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -363,7 +360,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -373,6 +370,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: SKIP ========================================
@@ -384,7 +382,7 @@ buttons:
   layout: 
     sequence: 20
     region: '{Info}' # 97719653396081590
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -392,7 +390,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'

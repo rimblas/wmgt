@@ -45,7 +45,7 @@ regions:
 - # ====== Region: Rooms =======================================
   id: 36760420013835934
   identification: 
-    title: Rooms
+    name: Rooms
     type: Cards
 
   source: 
@@ -77,7 +77,7 @@ regions:
   layout: 
     sequence: 5
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -85,7 +85,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Cards Container # 46995047792009514345
+    template: Cards Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -97,9 +97,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -144,7 +141,7 @@ regions:
 - # ====== Region: Change Rooms ================================
   id: 40411287845322970261
   identification: 
-    title: Change Rooms
+    name: Change Rooms
     type: Interactive Grid
 
   source: 
@@ -162,7 +159,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -170,7 +167,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Interactive Report # 46995096482313514365
+    template: Interactive Report
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -182,9 +179,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -924,12 +918,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 10
     region: Change Rooms # 40411287845322970261
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -939,7 +935,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -982,7 +978,7 @@ buttons:
   layout: 
     sequence: 20
     region: Change Rooms # 40411287845322970261
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -990,7 +986,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1007,11 +1003,11 @@ buttons:
 
   advanced: 
     static-id: ADD_REGISTRATION
-    custom-attributes: 
-    - 'style="display:none;"'
 
   comments: 
-    comments: Visually Hidden and called by IG Create button
+    comments: |
+      Visually Hidden and called by IG Create button
+      style="display:none;"
 
 - # ====== Button: REFRESH_ROOMS ===============================
   id: 36760887726835938
@@ -1022,7 +1018,7 @@ buttons:
   layout: 
     sequence: 10
     region: Rooms # 36760420013835934
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1031,7 +1027,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1052,7 +1048,7 @@ dynamic-actions:
     event-scope: Static
 
   when: 
-    event: EVENT.EVENT.BROWSER.READY
+    event: Page Load
 
   actions: 
   - # ====== Action: UC - Drag and Drop ==========================
@@ -1127,7 +1123,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: REFRESH_ROOMS # 36760887726835938
 
@@ -1158,7 +1154,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P42_SLOT

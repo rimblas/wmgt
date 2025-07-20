@@ -8,7 +8,7 @@ identification:
 
 appearance: 
   page-mode: Normal
-  page-template: Login # 46995015385203514332
+  page-template: Login
   template-options: 
   - '#DEFAULT#'
   - t-LoginPage--split
@@ -54,7 +54,7 @@ regions:
 - # ====== Region: {Must be a member legend} ===================
   id: 28675517886250923
   identification: 
-    title: '{Must be a member legend}'
+    name: '{Must be a member legend}'
     type: Static Content
 
   source: 
@@ -66,7 +66,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -74,7 +74,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Content Block # 46995069112127514354
+    template: Content Block
     template-options: 
     - '#DEFAULT#'
     - t-ContentBlock--h1
@@ -89,9 +89,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -103,13 +100,13 @@ regions:
 - # ====== Region: {Info} ======================================
   id: 47899094095970883
   identification: 
-    title: '{Info}'
+    name: '{Info}'
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -117,7 +114,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     - t-ButtonRegion--stickToBottom
@@ -132,9 +129,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -146,7 +140,7 @@ regions:
 - # ====== Region: Welcome &G_DISCORD.! ========================
   id: 59882845077489659
   identification: 
-    title: Welcome &G_DISCORD.!
+    name: Welcome &G_DISCORD.!
     type: Static Content
 
   source: 
@@ -155,7 +149,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -163,7 +157,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Hero # 46995073279292514356
+    template: Hero
     template-options: 
     - '#DEFAULT#'
     - t-HeroRegion--iconsCircle
@@ -180,9 +174,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -209,7 +200,7 @@ page-items:
   layout: 
     sequence: 40
     region: '{Must be a member legend}' # 28675517886250923
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -219,7 +210,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -253,7 +244,7 @@ page-items:
   layout: 
     sequence: 10
     region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -283,7 +274,7 @@ page-items:
   layout: 
     sequence: 60
     region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -314,15 +305,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -332,7 +325,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -401,12 +394,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 20
     region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -416,7 +411,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -456,8 +451,8 @@ page-items:
     used: Only when current value in session state is null
 
   default: 
-    type: SQL Query
-    sql-query: 'select sessiontimezone tz from dual '
+    type: SQL Query (return single value)
+    sql-query-(return-single-value): 'select sessiontimezone tz from dual '
 
   session-state: 
     storage: Per Session (Persistent)
@@ -482,7 +477,7 @@ page-items:
   layout: 
     sequence: 30
     region: Welcome &G_DISCORD.! # 59882845077489659
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -517,7 +512,7 @@ buttons:
   layout: 
     sequence: 30
     region: '{Info}' # 47899094095970883
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -525,7 +520,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -535,6 +530,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
 - # ====== Button: SKIP ========================================
@@ -546,7 +542,7 @@ buttons:
   layout: 
     sequence: 20
     region: '{Info}' # 47899094095970883
-    position: PREVIOUS
+    slot: PREVIOUS
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -554,7 +550,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -583,7 +579,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P18_WMG_DISCORD_MEMBER_IND
@@ -635,7 +631,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P18_MATCH_PLAYER_ID

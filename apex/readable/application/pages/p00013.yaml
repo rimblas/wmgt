@@ -43,7 +43,7 @@ regions:
 - # ====== Region: Preview Uploads =============================
   id: 20730474893316858533
   identification: 
-    title: Preview Uploads
+    name: Preview Uploads
     type: Form
 
   source: 
@@ -56,7 +56,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -64,7 +64,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -76,9 +76,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -95,13 +92,13 @@ regions:
 - # ====== Region: Buttons =====================================
   id: 20730484396667858542
   identification: 
-    title: Buttons
+    name: Buttons
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: REGION_POSITION_03
+    slot: REGION_POSITION_03
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -109,7 +106,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Buttons Container # 46995043489945514344
+    template: Buttons Container
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -122,9 +119,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -136,13 +130,13 @@ regions:
 - # ====== Region: Audit =======================================
   id: 76746486512443816611
   identification: 
-    title: Audit
+    name: Audit
     type: Static Content
 
   layout: 
     sequence: 30
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -150,7 +144,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Collapsible # 46995059570249514350
+    template: Collapsible
     template-options: 
     - '#DEFAULT#'
     - is-collapsed
@@ -168,9 +162,6 @@ regions:
   server-side-condition: 
     type: Item is NOT NULL
     item: P13_ID
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -197,7 +188,7 @@ page-items:
   layout: 
     sequence: 50
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -207,7 +198,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -257,7 +248,7 @@ page-items:
   layout: 
     sequence: 70
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -267,7 +258,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -305,7 +296,7 @@ page-items:
   layout: 
     sequence: 10
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -338,12 +329,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 20
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -353,7 +346,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -404,12 +397,14 @@ page-items:
 
   settings: 
     page-action-on-selection: None
-    allow-multi-selection: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 30
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -419,7 +414,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     height: 1
@@ -501,7 +496,7 @@ page-items:
   layout: 
     sequence: 60
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -511,7 +506,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 60
@@ -560,7 +555,7 @@ page-items:
   layout: 
     sequence: 80
     region: Audit # 76746486512443816611
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -570,7 +565,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -612,7 +607,7 @@ page-items:
   layout: 
     sequence: 90
     region: Audit # 76746486512443816611
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -622,7 +617,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -664,7 +659,7 @@ page-items:
   layout: 
     sequence: 100
     region: Audit # 76746486512443816611
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -674,7 +669,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -716,7 +711,7 @@ page-items:
   layout: 
     sequence: 110
     region: Audit # 76746486512443816611
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -726,7 +721,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional # 46995171305980514398
+    template: Optional
     template-options: 
     - '#DEFAULT#'
 
@@ -762,14 +757,16 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: false
+
+  multiple-values: 
+    type: No
 
   layout: 
     sequence: 40
     region: Preview Uploads # 20730474893316858533
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -779,7 +776,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -840,7 +837,7 @@ buttons:
   layout: 
     sequence: 50
     region: Buttons # 20730484396667858542
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -848,7 +845,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -858,6 +855,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL INSERT action
 
@@ -874,7 +872,7 @@ buttons:
   layout: 
     sequence: 10
     region: Buttons # 20730484396667858542
-    position: CLOSE
+    slot: CLOSE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -882,7 +880,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -901,7 +899,7 @@ buttons:
   layout: 
     sequence: 20
     region: Buttons # 20730484396667858542
-    position: DELETE
+    slot: DELETE
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -909,7 +907,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -922,6 +920,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: false
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL DELETE action
 
@@ -942,7 +941,7 @@ buttons:
   layout: 
     sequence: 30
     region: Buttons # 20730484396667858542
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -950,7 +949,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -960,6 +959,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL UPDATE action
 
@@ -976,7 +976,7 @@ buttons:
   layout: 
     sequence: 40
     region: Buttons # 20730484396667858542
-    position: NEXT
+    slot: NEXT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -984,7 +984,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: true
     template-options: 
     - '#DEFAULT#'
@@ -994,6 +994,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
     database-action: SQL INSERT action
 
@@ -1013,7 +1014,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P13_BATCH_UPLOAD
@@ -1075,7 +1076,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: CANCEL # 20730484819002858542
 
@@ -1102,7 +1103,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P13_SAME_AS_ID

@@ -41,13 +41,13 @@ regions:
 - # ====== Region: Merge Players ===============================
   id: 50056833214137716
   identification: 
-    title: Merge Players
+    name: Merge Players
     type: Static Content
 
   layout: 
     sequence: 9
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -55,7 +55,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--scrollBody
@@ -69,9 +69,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -83,7 +80,7 @@ regions:
 - # ====== Region: {From} ======================================
   id: 50057284904137720
   identification: 
-    title: '{From}'
+    name: '{From}'
     type: Static Content
 
   source: 
@@ -92,7 +89,7 @@ regions:
   layout: 
     sequence: 25
     parent-region: Merge Players # 50056833214137716
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -100,7 +97,7 @@ regions:
     column-span: 6
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Below Content
@@ -112,9 +109,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -127,7 +121,7 @@ regions:
 - # ====== Region: {Into} ======================================
   id: 50057365741137721
   identification: 
-    title: '{Into}'
+    name: '{Into}'
     type: Static Content
 
   source: 
@@ -136,7 +130,7 @@ regions:
   layout: 
     sequence: 35
     parent-region: Merge Players # 50056833214137716
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -144,7 +138,7 @@ regions:
     column-span: 5
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Below Content
@@ -157,9 +151,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -171,7 +162,7 @@ regions:
 - # ====== Region: {Options} ===================================
   id: 50057553180137723
   identification: 
-    title: '{Options}'
+    name: '{Options}'
     type: Static Content
 
   source: 
@@ -180,7 +171,7 @@ regions:
   layout: 
     sequence: 45
     parent-region: Merge Players # 50056833214137716
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -188,7 +179,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-top-sm
@@ -202,9 +193,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -216,7 +204,7 @@ regions:
 - # ====== Region: Stats =======================================
   id: 50058078467137728
   identification: 
-    title: Stats
+    name: Stats
     type: Classic Report
 
   source: 
@@ -233,7 +221,7 @@ regions:
   layout: 
     sequence: 60
     parent-region: '{From}' # 50057284904137720
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -241,7 +229,7 @@ regions:
     column-span: 10
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -267,7 +255,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -370,7 +358,7 @@ regions:
 - # ====== Region: Discord Stats ===============================
   id: 50058535991137733
   identification: 
-    title: Discord Stats
+    name: Discord Stats
     type: Classic Report
 
   source: 
@@ -409,7 +397,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: '{From}' # 50057284904137720
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -417,7 +405,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -443,7 +431,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Value Attribute Pairs - Column # 46995141981277514384
+      template: Value Attribute Pairs - Column
       template-options: 
       - '#DEFAULT#'
       - t-AVPList--leftAligned
@@ -703,7 +691,7 @@ regions:
 - # ====== Region: Discord Stats ===============================
   id: 50059493884137742
   identification: 
-    title: Discord Stats
+    name: Discord Stats
     type: Classic Report
 
   source: 
@@ -741,7 +729,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: '{Into}' # 50057365741137721
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -749,7 +737,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -775,7 +763,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Value Attribute Pairs - Column # 46995141981277514384
+      template: Value Attribute Pairs - Column
       template-options: 
       - '#DEFAULT#'
       - t-AVPList--leftAligned
@@ -1036,7 +1024,7 @@ regions:
 - # ====== Region: Stats =======================================
   id: 50060069970137748
   identification: 
-    title: Stats
+    name: Stats
     type: Classic Report
 
   source: 
@@ -1053,7 +1041,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: '{Into}' # 50057365741137721
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1061,7 +1049,7 @@ regions:
     column-span: 11
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -1087,7 +1075,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Standard # 46995138939704514382
+      template: Standard
       template-options: 
       - '#DEFAULT#'
       - t-Report--stretch
@@ -1190,7 +1178,7 @@ regions:
 - # ====== Region: Info ========================================
   id: 50454948575338204
   identification: 
-    title: Info
+    name: Info
     type: Static Content
 
   source: 
@@ -1199,7 +1187,7 @@ regions:
   layout: 
     sequence: 5
     parent-region: Merge Players # 50056833214137716
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1207,7 +1195,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     css-classes: 
@@ -1222,9 +1210,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -1236,13 +1221,13 @@ regions:
 - # ====== Region: Action ======================================
   id: 50455687938338211
   identification: 
-    title: Action
+    name: Action
     type: Static Content
 
   layout: 
     sequence: 90
     parent-region: Merge Players # 50056833214137716
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -1250,7 +1235,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-top-lg
@@ -1265,9 +1250,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1291,15 +1273,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: '{From}' # 50057284904137720
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1309,7 +1293,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1354,15 +1338,17 @@ page-items:
   settings: 
     display-as: Inline Popup
     initial-fetch: Automatic
-    multiple-values: false
     manual-entry: false
     search-as-you-type: true
     minimum-characters: No minimum (0)
 
+  multiple-values: 
+    type: No
+
   layout: 
     sequence: 10
     region: '{Into}' # 50057365741137721
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -1372,7 +1358,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Required - Floating # 46995172770404514399
+    template: Required - Floating
     template-options: 
     - '#DEFAULT#'
     width: 30
@@ -1420,7 +1406,7 @@ page-items:
   layout: 
     sequence: 20
     region: '{From}' # 50057284904137720
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: false
@@ -1430,7 +1416,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
 
@@ -1473,7 +1459,7 @@ buttons:
   layout: 
     sequence: 10
     region: '{Options}' # 50057553180137723
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1482,7 +1468,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Icon # 46995173311788514399
+    button-template: Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1502,7 +1488,7 @@ buttons:
   layout: 
     sequence: 20
     region: Action # 50455687938338211
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -1511,7 +1497,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1524,6 +1510,7 @@ buttons:
   behavior: 
     action: Submit Page
     execute-validations: true
+    show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
   confirmation: 
@@ -1539,7 +1526,7 @@ buttons:
   layout: 
     sequence: 10
     region: Action # 50455687938338211
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: 2
@@ -1548,7 +1535,7 @@ buttons:
     alignment: Right
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -1575,7 +1562,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CLICK
+    event: Click
     selection-type: Button
     button: SWAP # 50057176114137719
 
@@ -1611,7 +1598,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P80_FROM_PLAYER_ID
@@ -1658,7 +1645,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.BROWSER.CHANGE
+    event: Change
     selection-type: Item(s)
     item(s): 
     - P80_INTO_PLAYER_ID

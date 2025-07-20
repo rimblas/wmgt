@@ -8,7 +8,7 @@ regions:
 - # ====== Region: Tournament Navigation Tabs ==================
   id: 8056151933938725
   identification: 
-    title: Tournament Navigation Tabs
+    name: Tournament Navigation Tabs
     type: List
 
   source: 
@@ -17,7 +17,7 @@ regions:
   layout: 
     sequence: 1
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -25,7 +25,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     - margin-bottom-none
@@ -60,7 +60,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Top Navigation Tabs # 46995168148239514396
+      list-template: Top Navigation Tabs
       template-options: 
       - '#DEFAULT#'
       - t-NavTabs--inlineLabels-lg
@@ -69,7 +69,7 @@ regions:
 - # ====== Region: Discord Avatar ==============================
   id: 12529017432550027
   identification: 
-    title: Discord Avatar
+    name: Discord Avatar
     type: Static Content
 
   source: 
@@ -89,7 +89,7 @@ regions:
   layout: 
     sequence: -2
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -110,9 +110,6 @@ regions:
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -124,16 +121,16 @@ regions:
 - # ====== Region: {Global Message} ============================
   id: 16129826631878832
   identification: 
-    title: '{Global Message}'
+    name: '{Global Message}'
     type: Static Content
 
   source: 
-    html-code: As a tester, you need to be aware that this is not the official registration or submission of scores for the WMGT (Walkabout Mini Golf Tournament)
+    html-code: There was a Walkabout Mini Golf update on Thursday, June 26. You must be on this new version (v5.9) in order to play the tournament.<br>Updating is slow, make sure you do it with plenty of time before the tournament.
 
   layout: 
     sequence: 9
     parent-region: No Parent
-    position: REGION_POSITION_07
+    slot: REGION_POSITION_07
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -141,7 +138,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46995035459709514340
+    template: Alert
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -164,10 +161,9 @@ regions:
     exclude-title-from-translation: false
 
   server-side-condition: 
-    type: Never
-
-  server-cache: 
-    caching: Disabled
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: nvl(wmg_util.get_param('GLOBAL_APP_BANNER_ON'), 'NO') = 'YES'
 
   customization: 
     customizable: Not Customizable By End Users
@@ -180,13 +176,13 @@ regions:
 - # ====== Region: {Search} ====================================
   id: 38737496536129107
   identification: 
-    title: '{Search}'
+    name: '{Search}'
     type: Search
 
   layout: 
     sequence: 5
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -194,7 +190,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Search Results Container # 21396063053714921802
+    template: Search Results Container
     template-options: 
     - '#DEFAULT#'
     - t-ResultsRegion--boxed
@@ -216,15 +212,12 @@ regions:
       from apex_application_pages
       where application_id = :APP_ID
       and page_id = :APP_PAGE_ID
-      and page_id not in (6,12,17,18,19,30,32,50,60,61,63,80,100,200,313)
+      and page_id not in (6,12,17,18,19,30,32,50,60,61,63,80,100,200,313,404)
       and page_id <= 500
       and page_mode != 'Modal Dialog'
 
   security: 
     authorization-scheme: Contribution Rights # 46995203801871514425
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -271,7 +264,7 @@ regions:
 - # ====== Region: {Ko-Fi} =====================================
   id: 47951924553518523
   identification: 
-    title: '{Ko-Fi}'
+    name: '{Ko-Fi}'
     type: Static Content
 
   source: 
@@ -280,7 +273,7 @@ regions:
   layout: 
     sequence: 9
     parent-region: No Parent
-    position: REGION_POSITION_05
+    slot: REGION_POSITION_05
     start-new-layout: false
     start-new-row: false
     column: 10
@@ -288,7 +281,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -306,9 +299,6 @@ regions:
     language: PL/SQL
     pl/sql-expression: ":APP_PAGE_ID != 50 and :APP_PAGE_ID < 500 and mod(to_char(sysdate, 'SS') ,2) = 1"
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -323,7 +313,7 @@ regions:
 - # ====== Region: {AutoDetectTimeZone.js} =====================
   id: 47585929640078469250
   identification: 
-    title: '{AutoDetectTimeZone.js}'
+    name: '{AutoDetectTimeZone.js}'
     type: Static Content
 
   source: 
@@ -353,7 +343,7 @@ regions:
   layout: 
     sequence: -1
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -372,9 +362,6 @@ regions:
     language: PL/SQL
     pl/sql-expression: apex_util.get_session_time_zone() is null
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -386,7 +373,7 @@ regions:
 - # ====== Region: Breadcrumb ==================================
   id: 59007190296908349363
   identification: 
-    title: Breadcrumb
+    name: Breadcrumb
     type: Breadcrumb
 
   source: 
@@ -395,7 +382,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: No Parent
-    position: REGION_POSITION_01
+    slot: REGION_POSITION_01
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -403,7 +390,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Title Bar # 46995113482779514372
+    template: Title Bar
     template-options: 
     - '#DEFAULT#'
     - t-BreadcrumbRegion--compactTitle
@@ -428,19 +415,46 @@ regions:
       and page_id not in (1,30,32,50,51,60,61,63)
       and page_mode != 'Modal Dialog'
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
   attributes: 
     appearance: 
-      breadcrumb-template: Breadcrumb # 46995175568845514400
+      breadcrumb-template: Breadcrumb
       template-options: 
       - '#DEFAULT#'
 
 page-items: 
+- # ====== Page Item: P0_TZ ====================================
+  id: 17399868559035192
+  identification: 
+    name: P0_TZ
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 9
+    region: No Parent
+    slot: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P0_SEARCH ================================
   id: 38737609775129109
   identification: 
@@ -461,7 +475,7 @@ page-items:
   layout: 
     sequence: 10
     region: '{Search}' # 38737496536129107
-    position: BODY
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -471,7 +485,7 @@ page-items:
     label-column-span: Page Template Default
 
   appearance: 
-    template: Optional - Floating # 46995171503553514398
+    template: Optional - Floating
     template-options: 
     - '#DEFAULT#'
     icon: fa-search
@@ -497,4 +511,64 @@ page-items:
     session-state-protection: Unrestricted
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
+
+dynamic-actions: 
+- # ====== Dynamic Action: Set Timezone ========================
+  id: 17399786108035191
+  identification: 
+    name: Set Timezone
+
+  execution: 
+    sequence: 10
+    event-scope: Static
+
+  when: 
+    event: Page Load
+
+  client-side-condition: 
+    type: Item is null
+    item: P0_TZ
+
+  actions: 
+  - # ====== Action: Set Value ===================================
+    id: 17399668766035190
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: Intl.DateTimeFormat().resolvedOptions().timeZone
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P0_TZ
+
+    execution: 
+      sequence: 10
+      event: Set Timezone # 17399786108035191
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 17399550237035189
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: 'apex_util.set_session_time_zone(p_time_zone => :P0_TZ);'
+      items-to-submit: 
+      - P0_TZ
+
+    execution: 
+      sequence: 20
+      event: Set Timezone # 17399786108035191
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
 
