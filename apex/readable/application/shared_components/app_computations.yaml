@@ -46,6 +46,8 @@
   computation: 
     type: SQL Query (return single value)
     sql-query: |
+      select nvl(max(id),-1)
+      from (
       select s.id
       from wmg_tournament_sessions s
       where s.tournament_id in (
@@ -54,15 +56,18 @@
            where current_flag = 'Y'
       )
       and s.session_date+1 >= trunc(current_timestamp)
-      order by decode(s.completed_ind, 'N', 1, 2), s.session_date desc
+      and s.completed_ind = 'N'
+      and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
+      order by s.session_date desc
       fetch first 1 rows only
+      )
 
   server-side-condition: 
     type: Item is NULL
     item: G_CURRENT_SESSION_ID
 
   subscription: 
-    version-number: 40348156187271
+    version-number: 2192419095
 
 - # ====== Application Computation: G_PLAYER_ID ================
   id: 38238154652319070
