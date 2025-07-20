@@ -45,16 +45,19 @@ help:
     <p>Access to this page should be limited to Administrators only.</p>
 
 regions: 
-- # ====== Region: Column 1 ====================================
-  id: 46995589467899516257
+- # ====== Region: Job Reporting ===============================
+  id: 45129648746444353
   identification: 
-    title: Column 1
-    type: Static Content
+    name: Job Reporting
+    type: List
+
+  source: 
+    list: Job Reporting # 45128963738444350
 
   layout: 
     sequence: 10
-    parent-region: No Parent
-    position: BODY
+    parent-region: Column 2 # 46995591086381516258
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -62,9 +65,11 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template: Standard
     template-options: 
     - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--scrollBody
     render-components: Above Content
 
   accessibility: 
@@ -81,6 +86,49 @@ regions:
   customization: 
     customizable: Not Customizable By End Users
 
+  configuration: 
+    build-option: 'Feature: Job Reporting' # 45064408534444255
+
+  attributes: 
+    appearance: 
+      list-template: Media List
+      template-options: 
+      - '#DEFAULT#'
+      - u-colors
+
+- # ====== Region: Column 1 ====================================
+  id: 46995589467899516257
+  identification: 
+    name: Column 1
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Blank with Attributes (No Grid)
+    template-options: 
+    - '#DEFAULT#'
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
   attributes: 
     settings: 
       output-as: HTML
@@ -89,7 +137,7 @@ regions:
 - # ====== Region: Configuration ===============================
   id: 46995589828845516258
   identification: 
-    title: Configuration
+    name: Configuration
     type: List
 
   source: 
@@ -98,7 +146,7 @@ regions:
   layout: 
     sequence: 40
     parent-region: Column 1 # 46995589467899516257
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -106,7 +154,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -132,7 +180,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Media List # 46995156923520514391
+      list-template: Media List
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -140,7 +188,7 @@ regions:
 - # ====== Region: User Interface ==============================
   id: 46995590254287516258
   identification: 
-    title: User Interface
+    name: User Interface
     type: List
 
   source: 
@@ -149,7 +197,7 @@ regions:
   layout: 
     sequence: 50
     parent-region: Column 1 # 46995589467899516257
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -157,7 +205,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -183,7 +231,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Media List # 46995156923520514391
+      list-template: Media List
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -191,7 +239,7 @@ regions:
 - # ====== Region: Activity Reports ============================
   id: 46995590683185516258
   identification: 
-    title: Activity Reports
+    name: Activity Reports
     type: List
 
   source: 
@@ -200,7 +248,7 @@ regions:
   layout: 
     sequence: 60
     parent-region: Column 1 # 46995589467899516257
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -208,7 +256,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -234,7 +282,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Media List # 46995156923520514391
+      list-template: Media List
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -242,13 +290,13 @@ regions:
 - # ====== Region: Column 2 ====================================
   id: 46995591086381516258
   identification: 
-    title: Column 2
+    name: Column 2
     type: Static Content
 
   layout: 
     sequence: 20
     parent-region: No Parent
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: false
     column: Automatic
@@ -256,7 +304,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes (No Grid) # 46995042113021514343
+    template: Blank with Attributes (No Grid)
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -269,9 +317,6 @@ regions:
     region-display-selector: false
     exclude-title-from-translation: false
 
-  server-cache: 
-    caching: Disabled
-
   customization: 
     customizable: Not Customizable By End Users
 
@@ -283,13 +328,13 @@ regions:
 - # ====== Region: Access Control ==============================
   id: 46995591522172516258
   identification: 
-    title: Access Control
+    name: Access Control
     type: Static Content
 
   layout: 
-    sequence: 70
+    sequence: 20
     parent-region: Column 2 # 46995591086381516258
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -297,7 +342,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -311,9 +356,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -329,7 +371,7 @@ regions:
 - # ====== Region: ACL Information =============================
   id: 46995592281531516259
   identification: 
-    title: ACL Information
+    name: ACL Information
     type: PL/SQL Dynamic Content [Legacy]
 
   source: 
@@ -351,7 +393,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Access Control # 46995591522172516258
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -359,7 +401,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Alert # 46995035459709514340
+    template: Alert
     template-options: 
     - '#DEFAULT#'
     - t-Alert--colorBG
@@ -388,7 +430,7 @@ regions:
 - # ====== Region: User Counts Report ==========================
   id: 46995592705154516259
   identification: 
-    title: User Counts Report
+    name: User Counts Report
     type: Classic Report
 
   source: 
@@ -404,7 +446,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: Access Control # 46995591522172516258
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -412,7 +454,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader
@@ -442,7 +484,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Value Attribute Pairs - Row # 46995143935038514384
+      template: Value Attribute Pairs - Row
       template-options: 
       - '#DEFAULT#'
       - t-AVPList--rightAligned
@@ -577,7 +619,7 @@ regions:
 - # ====== Region: Access Control Actions ======================
   id: 46995597274058516410
   identification: 
-    title: Access Control Actions
+    name: Access Control Actions
     type: List
 
   source: 
@@ -586,7 +628,7 @@ regions:
   layout: 
     sequence: 30
     parent-region: Access Control # 46995591522172516258
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -594,7 +636,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -615,7 +657,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Media List # 46995156923520514391
+      list-template: Media List
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -623,13 +665,13 @@ regions:
 - # ====== Region: Feedback ====================================
   id: 46995597716584516410
   identification: 
-    title: Feedback
+    name: Feedback
     type: Static Content
 
   layout: 
-    sequence: 80
+    sequence: 30
     parent-region: Column 2 # 46995591086381516258
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -637,7 +679,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--noPadding
@@ -651,9 +693,6 @@ regions:
   advanced: 
     region-display-selector: false
     exclude-title-from-translation: false
-
-  server-cache: 
-    caching: Disabled
 
   customization: 
     customizable: Not Customizable By End Users
@@ -669,7 +708,7 @@ regions:
 - # ====== Region: Report ======================================
   id: 46995598102371516411
   identification: 
-    title: Report
+    name: Report
     type: Classic Report
 
   source: 
@@ -686,7 +725,7 @@ regions:
   layout: 
     sequence: 10
     parent-region: Feedback # 46995597716584516410
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -694,7 +733,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Standard # 46995101107768514367
+    template: Standard
     template-options: 
     - '#DEFAULT#'
     - t-Region--removeHeader
@@ -724,7 +763,7 @@ regions:
 
     appearance: 
       template-type: Theme
-      template: Value Attribute Pairs - Row # 46995143935038514384
+      template: Value Attribute Pairs - Row
       template-options: 
       - '#DEFAULT#'
       - t-AVPList--rightAligned
@@ -827,7 +866,7 @@ regions:
 - # ====== Region: Feedback ====================================
   id: 46995600974937516574
   identification: 
-    title: Feedback
+    name: Feedback
     type: List
 
   source: 
@@ -836,7 +875,7 @@ regions:
   layout: 
     sequence: 20
     parent-region: Feedback # 46995597716584516410
-    position: BODY
+    slot: BODY
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -844,7 +883,7 @@ regions:
     column-span: Automatic
 
   appearance: 
-    template: Blank with Attributes # 46995040627542514343
+    template: Blank with Attributes
     template-options: 
     - '#DEFAULT#'
     render-components: Above Content
@@ -865,7 +904,7 @@ regions:
 
   attributes: 
     appearance: 
-      list-template: Media List # 46995156923520514391
+      list-template: Media List
       template-options: 
       - '#DEFAULT#'
       - u-colors
@@ -880,7 +919,7 @@ buttons:
   layout: 
     sequence: 10
     region: Access Control # 46995591522172516258
-    position: EDIT
+    slot: EDIT
     start-new-layout: false
     start-new-row: true
     column: Automatic
@@ -888,7 +927,7 @@ buttons:
     column-span: Automatic
 
   appearance: 
-    button-template: Text with Icon # 46995174047152514400
+    button-template: Text with Icon
     hot: false
     template-options: 
     - '#DEFAULT#'
@@ -917,7 +956,7 @@ dynamic-actions:
     type: Immediate
 
   when: 
-    event: EVENT.EVENT.FAMEWORK.APEXAFTERCLOSEDIALOG
+    event: Dialog Closed
     selection-type: Button
     button: ADD_USER # 46995591903881516259
 
