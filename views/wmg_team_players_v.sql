@@ -22,4 +22,5 @@ select t.tournament_id
   from wmg_teams t
   join wmg_team_players tp on t.id = tp.team_id
   join wmg_players_v p on tp.player_id = p.id
+  where t.team_complete_ind = 'Y'
 /
