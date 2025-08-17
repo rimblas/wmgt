@@ -438,8 +438,117 @@ from wmg_courses_v c
  order by c.release_order, c.course_mode
 ');
 
-    
+
+  -- Template: /current_tournament
+  ORDS.DEFINE_TEMPLATE(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'current_tournament',
+      p_priority       => 0,
+      p_etag_type      => 'HASH',
+      p_etag_query     => NULL,
+      p_comments       => 'Get current active tournament with sessions and courses');
+
+  -- Handler: GET /api/tournaments/current
+  ORDS.DEFINE_HANDLER(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'current_tournament',
+      p_method         => 'GET',
+      p_source_type    => 'plsql/block',
+      p_items_per_page => 0,
+      p_mimes_allowed  => NULL,
+      p_comments       => 'Returns current active tournament with available sessions and courses',
+      p_source         => 
+'declare
+  l_clob clob;
+  l_scope logger_logs.scope%type := ''REST:current_tournament'';
+begin
+  logger.log(p_text => ''START'', p_scope => l_scope);
+
+  select json_object(
+    ''tournament'' value json_object(
+      ''id'' value t.tournament_id,
+      ''name'' value t.name,
+      ''code'' value t.code
+    )
+    ,''sessions'' value json_object(
+          ''id'' value t.tournament_session_id,
+          ''week'' value t.week,
+          ''session_date'' value to_char(t.session_date, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
+          ''open_registration_on'' value to_char(t.open_registration_on, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
+          ''close_registration_on'' value to_char(t.close_registration_on, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
+          ''registration_open'' value case 
+            when current_timestamp between t.open_registration_on and t.close_registration_on 
+            then ''true'' else ''false'' end
+            ,''available_time_slots'' value (
+            select json_arrayagg(
+              j' || 'son_object(
+                ''time_slot'' value ts.time_slot,
+                ''day_offset'' value ts.day_offset,
+                ''display'' value ts.prepared_time_slot
+              ) order by ts.seq
+            )
+            from wmg_time_slots_all_v ts
+          )
+          ,''courses'' value (
+            select json_arrayagg(
+              json_object(
+                ''course_no'' value case when tc.course_no = 1 then 1 else 2 end,
+                ''course_name'' value c.name,
+                ''course_code'' value c.code,
+                ''difficulty'' value case when tc.course_no = 1 then ''Easy'' else ''Hard'' end
+              )
+            )
+            from wmg_tournament_courses tc
+            join wmg_courses c on tc.course_id = c.id
+            where tc.tournament_session_id = t.tournament_session_id
+          )
+        -- returning clob
+      )
+    )
+    -- returning clob
+  into l_clob
+  from (
+    select t.id tournament_id, t.name, t.code
+    , s.tournament_ses' || 'sion_id
+    , s.week
+    , s.session_date
+    , s.open_registration_on
+    , s.close_registration_on
+    from wmg_tournaments t
+        , wmg_tournament_sessions_v s
+    where s.tournament_id = t.id
+      and t.current_flag = ''Y''
+      and t.active_ind = ''Y''
+        and s.session_date + 1 >= trunc(current_timestamp)
+        and s.completed_ind = ''N''
+    fetch first 1 rows only
+  ) t;
+
+  if l_clob is null then
+    l_clob := ''{}'';
+    /*
+    json_object(
+      ''tournament'' value null,
+      ''sessions'' value json_array()
+    );
+    */
+  end if;
+
+ sys.owa_util.mime_header(''application/json'', true);
+  apex_util.prn(
+    p_clob   => l_clob,
+    p_escape => false
+  );
+
+  logger.log(p_text => ''END'', p_scope => l_scope);
+exception
+  when others then
+    logger.log_error(p_text => sqlerrm, p_scope => l_scope);
+    raise;
+end;');
+
         
 COMMIT;
 
 END;
+/

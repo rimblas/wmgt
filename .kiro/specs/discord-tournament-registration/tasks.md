@@ -59,7 +59,7 @@
   - Handle Discord API rate limiting and interaction timeouts
   - _Requirements: 1.5, 3.4, 5.4, 6.3_
 
-- [ ] 10. Create backend API endpoints for tournament registration
+- [x] 10. Create backend API endpoints for tournament registration
   - Implement GET /api/tournaments/current endpoint returning active tournaments with courses
   - Create POST /api/tournaments/register endpoint accepting Discord user data
   - Implement POST /api/tournaments/unregister endpoint for removing registrations
