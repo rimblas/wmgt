@@ -29,7 +29,12 @@ export default {
       await interaction.deferReply({ ephemeral: true });
 
       // Get user's timezone preference
-      let userTimezone = interaction.options.getString('timezone') || 'UTC';
+      let userTimezone = interaction.options.getString('timezone');
+      
+      // If no timezone provided, try to get stored preference
+      if (!userTimezone) {
+        userTimezone = await timezoneService.getUserTimezone(registrationService, interaction.user.id, 'UTC');
+      }
       
       // Validate timezone if provided
       if (!timezoneService.validateTimezone(userTimezone)) {

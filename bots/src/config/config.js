@@ -15,7 +15,8 @@ export const config = {
       currentTournament: '/api/tournaments/current',
       register: '/api/tournaments/register',
       unregister: '/api/tournaments/unregister',
-      playerRegistrations: '/api/players/registrations'
+      playerRegistrations: '/api/players/registrations',
+      setTimezone: '/api/players/timezone'
     }
   },
   bot: {

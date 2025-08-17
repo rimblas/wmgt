@@ -212,6 +212,67 @@ export class RegistrationService {
   }
 
   /**
+   * Set timezone preference for a player
+   * @param {string} discordId - Discord user ID
+   * @param {string} timezone - IANA timezone name
+   * @param {Object} discordUser - Full Discord user data for synchronization
+   * @returns {Promise<Object>} Success confirmation
+   */
+  async setPlayerTimezone(discordId, timezone, discordUser) {
+    try {
+      const requestData = {
+        discord_id: discordId,
+        timezone: timezone,
+        discord_user: {
+          id: discordUser.id,
+          username: discordUser.username,
+          global_name: discordUser.globalName || discordUser.username,
+          avatar: discordUser.avatar,
+          accent_color: discordUser.accentColor,
+          banner: discordUser.banner,
+          discriminator: discordUser.discriminator || '0',
+          avatar_decoration_data: discordUser.avatarDecorationData
+        }
+      };
+
+      const response = await this.apiClient.post(config.api.endpoints.setTimezone, requestData);
+      
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || 'Failed to set timezone preference');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Error setting player timezone:', error);
+      
+      if (error.response?.status >= 500) {
+        throw new Error('Timezone service is temporarily unavailable');
+      }
+      
+      throw new Error(`Failed to set timezone: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get timezone preference for a player
+   * @param {string} discordId - Discord user ID
+   * @returns {Promise<string|null>} Player's timezone preference or null if not set
+   */
+  async getPlayerTimezone(discordId) {
+    try {
+      const registrationData = await this.getPlayerRegistrations(discordId);
+      
+      // Return timezone from player data if available
+      return registrationData.player?.timezone || null;
+    } catch (error) {
+      console.error('Error fetching player timezone:', error);
+      
+      // Return null if we can't fetch timezone (don't throw error)
+      return null;
+    }
+  }
+
+  /**
    * Retry API calls with exponential backoff
    * @param {Function} apiCall - The API call function to retry
    * @param {number} maxRetries - Maximum number of retries (default: 3)

@@ -61,7 +61,7 @@ describe('Discord Bot Foundation', () => {
       expect(() => timezoneCommand.data.toJSON()).not.toThrow();
       const json = timezoneCommand.data.toJSON();
       expect(json.name).toBe('timezone');
-      expect(json.description).toBe('Set your preferred timezone');
+      expect(json.description).toBe('Set your preferred timezone for tournament time displays');
     });
   });
 
@@ -79,17 +79,21 @@ describe('Discord Bot Foundation', () => {
       expect(json.options).toBeDefined();
       expect(json.options.length).toBe(1);
       expect(json.options[0].name).toBe('timezone');
-      expect(json.options[0].required).toBe(true);
+      expect(json.options[0].required).toBe(false);
     });
 
-    it('should have no options for unregister command', () => {
+    it('should have optional timezone parameter for unregister command', () => {
       const json = unregisterCommand.data.toJSON();
-      expect(json.options).toEqual([]);
+      expect(json.options).toHaveLength(1);
+      expect(json.options[0].name).toBe('timezone');
+      expect(json.options[0].required).toBe(false);
     });
 
-    it('should have no options for mystatus command', () => {
+    it('should have optional timezone parameter for mystatus command', () => {
       const json = mystatusCommand.data.toJSON();
-      expect(json.options).toEqual([]);
+      expect(json.options).toHaveLength(1);
+      expect(json.options[0].name).toBe('timezone');
+      expect(json.options[0].required).toBe(false);
     });
   });
 });

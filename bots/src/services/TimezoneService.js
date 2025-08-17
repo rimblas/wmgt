@@ -230,4 +230,62 @@ export class TimezoneService {
       };
     });
   }
+
+  /**
+   * Get user's preferred timezone or fallback to UTC
+   * @param {RegistrationService} registrationService - Service to fetch user preferences
+   * @param {string} discordId - Discord user ID
+   * @param {string} fallbackTimezone - Fallback timezone if none is set (default: UTC)
+   * @returns {Promise<string>} User's timezone preference or fallback
+   */
+  async getUserTimezone(registrationService, discordId, fallbackTimezone = 'UTC') {
+    try {
+      const userTimezone = await registrationService.getPlayerTimezone(discordId);
+      
+      if (userTimezone && this.validateTimezone(userTimezone)) {
+        return userTimezone;
+      }
+      
+      return fallbackTimezone;
+    } catch (error) {
+      console.error('Error fetching user timezone:', error);
+      return fallbackTimezone;
+    }
+  }
+
+  /**
+   * Suggest timezone based on partial input
+   * @param {string} input - Partial timezone input
+   * @param {number} maxSuggestions - Maximum number of suggestions (default: 5)
+   * @returns {Array} Array of suggested timezone objects
+   */
+  suggestTimezones(input, maxSuggestions = 5) {
+    if (!input || typeof input !== 'string') {
+      return this.getCommonTimezones().slice(0, maxSuggestions);
+    }
+
+    const inputLower = input.toLowerCase();
+    const commonTimezones = this.getCommonTimezones();
+    
+    // First, check for exact matches in aliases
+    const aliasMatch = this.timezoneAliases[input.toUpperCase()];
+    if (aliasMatch) {
+      const matchingCommon = commonTimezones.find(tz => tz.value === aliasMatch);
+      if (matchingCommon) {
+        return [matchingCommon];
+      }
+    }
+
+    // Then find partial matches
+    const matches = commonTimezones.filter(tz => {
+      const valueLower = tz.value.toLowerCase();
+      const labelLower = tz.label.toLowerCase();
+      
+      return valueLower.includes(inputLower) || 
+             labelLower.includes(inputLower) ||
+             valueLower.split('/').some(part => part.includes(inputLower));
+    });
+
+    return matches.slice(0, maxSuggestions);
+  }
 }
