@@ -9,9 +9,13 @@ import {
 } from 'discord.js';
 import { RegistrationService } from '../services/RegistrationService.js';
 import { TimezoneService } from '../services/TimezoneService.js';
+import { logger } from '../utils/Logger.js';
+import { ErrorHandler } from '../utils/ErrorHandler.js';
 
 const registrationService = new RegistrationService();
 const timezoneService = new TimezoneService();
+const commandLogger = logger.child({ command: 'register' });
+const errorHandler = new ErrorHandler(commandLogger);
 
 export default {
   data: new SlashCommandBuilder()
@@ -243,19 +247,15 @@ export default {
       });
 
     } catch (error) {
-      console.error('Error in register command:', error);
+      commandLogger.error('Error in register command', {
+        error: error.message,
+        stack: error.stack,
+        userId: interaction.user.id,
+        guildId: interaction.guildId
+      });
       
-      const errorEmbed = new EmbedBuilder()
-        .setColor(0xFF0000)
-        .setTitle('❌ Registration Error')
-        .setDescription('An unexpected error occurred while processing your registration.')
-        .setFooter({ text: 'Please try again later or contact support.' });
-
-      if (interaction.deferred) {
-        await interaction.editReply({ embeds: [errorEmbed] });
-      } else {
-        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-      }
+      // Use error handler to create appropriate response
+      await errorHandler.handleInteractionError(error, interaction, 'register_command');
     }
   }
 };
