@@ -34,7 +34,7 @@
   - Handle registration confirmation and display success/error messages
   - _Requirements: 1.1, 1.2, 1.4, 2.1, 2.2, 6.2_
 
-- [ ] 6. Implement /unregister command functionality
+- [x] 6. Implement /unregister command functionality
   - Create unregister command handler that displays user's current registrations
   - Build interactive selection for choosing which registration to cancel
   - Handle unregistration API calls and display confirmation messages
