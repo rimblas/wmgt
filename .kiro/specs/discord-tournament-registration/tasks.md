@@ -19,7 +19,7 @@
   - Write unit tests for timezone conversion accuracy across major timezones
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 7.1, 7.3, 7.5_
 
-- [ ] 4. Build registration service for API communication
+- [x] 4. Build registration service for API communication
   - Create RegistrationService class with HTTP client for backend API calls
   - Implement getCurrentTournament method to fetch active tournaments and sessions
   - Add registerPlayer method that sends Discord user data and registration details
