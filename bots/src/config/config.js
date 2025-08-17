@@ -12,9 +12,9 @@ export const config = {
   api: {
     baseUrl: process.env.API_BASE_URL || 'http://localhost:8080',
     endpoints: {
-      currentTournament: '/api/tournaments/current',
-      register: '/api/tournaments/register',
-      unregister: '/api/tournaments/unregister',
+      currentTournament: '/tournament/current_tournament',
+      register: '/tournament/register',
+      unregister: '/tournament/unregister',
       playerRegistrations: '/api/players/registrations',
       setTimezone: '/api/players/timezone'
     },
