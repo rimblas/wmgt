@@ -27,7 +27,7 @@
   - Add getPlayerRegistrations method to fetch user's current registrations
   - _Requirements: 1.3, 3.2, 5.2, 5.3, 6.4_
 
-- [ ] 5. Implement /register command with timezone-aware time slot selection
+- [x] 5. Implement /register command with timezone-aware time slot selection
   - Create register command handler that fetches current tournament data
   - Build interactive time slot selection with Discord select menus
   - Display time slots in both UTC and user's preferred timezone
