@@ -1,6 +1,15 @@
-// My status command implementation
-// This file will be implemented in task 7
+import { SlashCommandBuilder } from 'discord.js';
+
 export default {
-  name: 'mystatus',
-  description: 'View your current tournament registrations'
+  data: new SlashCommandBuilder()
+    .setName('mystatus')
+    .setDescription('View your current tournament registrations'),
+  
+  async execute(interaction) {
+    // Placeholder implementation - will be completed in task 7
+    await interaction.reply({
+      content: '🚧 My status command is under development. This will be implemented in task 7.',
+      ephemeral: true
+    });
+  }
 };

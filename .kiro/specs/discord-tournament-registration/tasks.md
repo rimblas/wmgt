@@ -6,13 +6,13 @@
   - Create environment configuration for Discord bot token and API endpoints
   - _Requirements: 1.1, 5.1_
 
-- [ ] 2. Implement Discord bot foundation and command registration
+- [x] 2. Implement Discord bot foundation and command registration
   - Create main bot application with Discord.js client initialization
   - Implement slash command registration system for /register, /unregister, /mystatus, /timezone commands
   - Set up basic command handler with interaction response framework
   - _Requirements: 1.1, 1.2, 3.1, 6.1_
 
-- [ ] 3. Create timezone service for time conversion functionality
+- [x] 3. Create timezone service for time conversion functionality
   - Implement TimezoneService class with UTC to local time conversion methods
   - Add timezone validation using moment-timezone library
   - Create time display formatting that shows both UTC and local times

@@ -1,6 +1,15 @@
-// Unregister command implementation
-// This file will be implemented in task 6
+import { SlashCommandBuilder } from 'discord.js';
+
 export default {
-  name: 'unregister',
-  description: 'Unregister from a tournament session'
+  data: new SlashCommandBuilder()
+    .setName('unregister')
+    .setDescription('Unregister from a tournament session'),
+  
+  async execute(interaction) {
+    // Placeholder implementation - will be completed in task 6
+    await interaction.reply({
+      content: '🚧 Unregister command is under development. This will be implemented in task 6.',
+      ephemeral: true
+    });
+  }
 };
