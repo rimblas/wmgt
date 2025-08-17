@@ -113,7 +113,7 @@ class RegistrationService {
 
 ### API Endpoints
 
-#### 1. GET /api/tournaments/current
+#### 1. GET /current_tournament
 Returns current active tournament with available sessions, time slots, and course information.
 
 **Response:**
@@ -133,9 +133,53 @@ Returns current active tournament with available sessions, time slots, and cours
       "close_registration_on": "2024-08-17T22:00:00Z",
       "registration_open": true,
       "available_time_slots": [
-        "22:00", "00:00", "02:00", "04:00", "08:00", "12:00", "16:00", "18:00", "20:00"
-      ],
-      "courses": [
+            {
+              "time_slot": "22:00",
+              "day_offset": -1,
+              "display": "22:00 -1"
+            },
+            {
+              "time_slot": "00:00",
+              "day_offset": 0,
+              "display": "00:00"
+            },
+            {
+              "time_slot": "02:00",
+              "day_offset": 0,
+              "display": "02:00"
+            },
+            {
+              "time_slot": "04:00",
+              "day_offset": 0,
+              "display": "04:00"
+            },
+            {
+              "time_slot": "08:00",
+              "day_offset": 0,
+              "display": "08:00"
+            },
+            {
+              "time_slot": "12:00",
+              "day_offset": 0,
+              "display": "12:00"
+            },
+            {
+              "time_slot": "16:00",
+              "day_offset": 0,
+              "display": "16:00"
+            },
+            {
+              "time_slot": "18:00",
+              "day_offset": 0,
+              "display": "18:00"
+            },
+            {
+              "time_slot": "20:00",
+              "day_offset": 0,
+              "display": "20:00"
+            }
+    ],
+    "courses": [
         {
           "course_no": 1,
           "course_name": "Atlantis",
@@ -154,7 +198,7 @@ Returns current active tournament with available sessions, time slots, and cours
 }
 ```
 
-#### 2. POST /api/tournaments/register
+#### 2. POST /register
 Registers a player for a specific tournament session and time slot, including full Discord user data for synchronization.
 
 **Request:**
@@ -189,7 +233,7 @@ Registers a player for a specific tournament session and time slot, including fu
 }
 ```
 
-#### 3. POST /api/tournaments/unregister
+#### 3. POST /unregister
 Removes a player's registration from a tournament session.
 
 **Request:**

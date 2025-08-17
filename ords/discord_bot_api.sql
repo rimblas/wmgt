@@ -39,7 +39,7 @@ BEGIN
       p_source         => 
 'declare
   l_clob clob;
-  l_scope logger_logs.scope%type := ''REST:api/tournaments/current'';
+  l_scope logger_logs.scope%type := ''REST:current_tournament'';
 begin
   logger.log(p_text => ''START'', p_scope => l_scope);
 
@@ -179,11 +179,14 @@ begin
   where id = l_session_id;
   
   if l_registration_open = ''N'' then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''REGISTRATION_CLOSED'',
-      ''message'' value ''Registration for this tournament session has closed''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''REGISTRATION_CLOSED'');
+    apex_json.write(''message'', ''Registration for this tournament session has closed'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     goto output_response;
   end if;
   
@@ -203,11 +206,14 @@ begin
     and active_ind = ''Y'';
     
   if l_existing_registration > 0 then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''ALREADY_REGISTERED'',
-      ''message'' value ''Player is already registered for this tournament session''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''ALREADY_REGISTERED'');
+    apex_json.write(''message'', ''Player is already registered for this tournament session'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     goto output_response;
   end if;
   
@@ -221,11 +227,14 @@ begin
     where time_slot = l_time_slot;
     
     if l_valid_slot_count = 0 then
-      l_response := json_object(
-        ''success'' value false,
-        ''error_code'' value ''INVALID_TIME_SLOT'',
-        ''message'' value ''Selected time slot is not available''
-      );
+      apex_json.initialize_clob_output;
+      apex_json.open_object;
+      apex_json.write(''success'', false);
+      apex_json.write(''error_code'', ''INVALID_TIME_SLOT'');
+      apex_json.write(''message'', ''Selected time slot is not available'');
+      apex_json.close_object;
+      l_response := apex_json.get_clob_output;
+      apex_json.free_output;
       goto output_response;
     end if;
   end;
@@ -245,16 +254,19 @@ begin
   
   commit;
   
-  l_response := json_object(
-    ''success'' value true,
-    ''message'' value ''Successfully registered for '' || l_week || '' at '' || l_time_slot || '' UTC'',
-    ''registration'' value json_object(
-      ''session_id'' value l_session_id,
-      ''week'' value l_week,
-      ''time_slot'' value l_time_slot,
-      ''room_no'' value null
-    )
-  );
+  apex_json.initialize_clob_output;
+  apex_json.open_object;
+  apex_json.write(''success'', true);
+  apex_json.write(''message'', ''Successfully registered for '' || l_week || '' at '' || l_time_slot || '' UTC'');
+  apex_json.open_object(''registration'');
+  apex_json.write(''session_id'', l_session_id);
+  apex_json.write(''week'', l_week);
+  apex_json.write(''time_slot'', l_time_slot);
+  apex_json.write(''room_no'', null);
+  apex_json.close_object;
+  apex_json.close_object;
+  l_response := apex_json.get_clob_output;
+  apex_json.free_output;
   
   <<output_response>>
   apex_util.prn(
@@ -265,20 +277,26 @@ begin
   logger.log(p_text => ''END'', p_scope => l_scope);
 exception
   when no_data_found then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''SESSION_NOT_FOUND'',
-      ''message'' value ''Tournament session does not exist''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''SESSION_NOT_FOUND'');
+    apex_json.write(''message'', ''Tournament session does not exist'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     apex_util.prn(p_clob => l_response, p_escape => false);
     logger.log_error(p_text => ''Session not found: '' || l_session_id, p_scope => l_scope);
   when others then
     rollback;
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''REGISTRATION_FAILED'',
-      ''message'' value ''Registration failed: '' || sqlerrm
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''REGISTRATION_FAILED'');
+    apex_json.write(''message'', ''Registration failed: '' || sqlerrm);
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     apex_util.prn(p_clob => l_response, p_escape => false);
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
 end;');
@@ -340,11 +358,14 @@ begin
   
   -- Check if tournament has started
   if l_session_started = ''Y'' then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''UNREGISTRATION_FAILED'',
-      ''message'' value ''Cannot unregister after tournament has started''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''UNREGISTRATION_FAILED'');
+    apex_json.write(''message'', ''Cannot unregister after tournament has started'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     goto output_response;
   end if;
   
@@ -357,11 +378,14 @@ begin
     and active_ind = ''Y'';
     
   if l_existing_registration = 0 then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''NOT_REGISTERED'',
-      ''message'' value ''Player is not registered for this tournament session''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''NOT_REGISTERED'');
+    apex_json.write(''message'', ''Player is not registered for this tournament session'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     goto output_response;
   end if;
   
@@ -374,10 +398,13 @@ begin
   
   commit;
   
-  l_response := json_object(
-    ''success'' value true,
-    ''message'' value ''Successfully unregistered from '' || l_week
-  );
+  apex_json.initialize_clob_output;
+  apex_json.open_object;
+  apex_json.write(''success'', true);
+  apex_json.write(''message'', ''Successfully unregistered from '' || l_week);
+  apex_json.close_object;
+  l_response := apex_json.get_clob_output;
+  apex_json.free_output;
   
   <<output_response>>
   apex_util.prn(
@@ -388,20 +415,26 @@ begin
   logger.log(p_text => ''END'', p_scope => l_scope);
 exception
   when no_data_found then
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''SESSION_NOT_FOUND'',
-      ''message'' value ''Tournament session does not exist''
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''SESSION_NOT_FOUND'');
+    apex_json.write(''message'', ''Tournament session does not exist'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     apex_util.prn(p_clob => l_response, p_escape => false);
     logger.log_error(p_text => ''Session not found: '' || l_session_id, p_scope => l_scope);
   when others then
     rollback;
-    l_response := json_object(
-      ''success'' value false,
-      ''error_code'' value ''UNREGISTRATION_FAILED'',
-      ''message'' value ''Unregistration failed: '' || sqlerrm
-    );
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''UNREGISTRATION_FAILED'');
+    apex_json.write(''message'', ''Unregistration failed: '' || sqlerrm);
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
     apex_util.prn(p_clob => l_response, p_escape => false);
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
 end;');

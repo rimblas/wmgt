@@ -60,9 +60,9 @@
   - _Requirements: 1.5, 3.4, 5.4, 6.3_
 
 - [x] 10. Create backend API endpoints for tournament registration
-  - Implement GET /api/tournaments/current endpoint returning active tournaments with courses
-  - Create POST /api/tournaments/register endpoint accepting Discord user data
-  - Implement POST /api/tournaments/unregister endpoint for removing registrations
+  - Implement GET /current_tournament endpoint returning active tournaments with courses
+  - Create POST /register endpoint accepting Discord user data
+  - Implement POST /unregister endpoint for removing registrations
   - Add GET /api/players/registrations/:discord_id endpoint for fetching user registrations
   - _Requirements: 5.2, 5.3_
 
