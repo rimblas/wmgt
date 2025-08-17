@@ -216,7 +216,7 @@ begin
       select min(id)
         into l_player_id
         from wmg_players
-       where lower(account) = lowe(self.username)
+       where lower(account) = lower(self.username)
          and discord_id is null;
 
       if l_player_id is not null then
