@@ -40,7 +40,7 @@
   - Handle unregistration API calls and display confirmation messages
   - _Requirements: 3.1, 3.3, 3.5_
 
-- [ ] 7. Implement /mystatus command for registration viewing
+- [x] 7. Implement /mystatus command for registration viewing
   - Create mystatus command handler that fetches and displays user registrations
   - Format registration display with tournament details, time slots, and local times
   - Handle cases where user has no active registrations
