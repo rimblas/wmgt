@@ -4,7 +4,7 @@ Application for running and analysising the weekly [Walkabout Mini Golf](https:/
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z8Z5NO80A)
 
-[Live site on OCI](https://rimblas.com/wmgt)
+[MyWMGT](https://MyWMGT.com)
 
 ## Tech Details
 
