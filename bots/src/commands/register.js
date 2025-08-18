@@ -209,6 +209,9 @@ export default {
 
       collector.on('collect', async (selectInteraction) => {
         if (selectInteraction.customId.startsWith('register_timeslot_')) {
+          // Stop collectors to prevent interference with subsequent interactions
+          collector.stop();
+          buttonCollector.stop();
           await handleTimeSlotSelection(selectInteraction, session, userTimezone, tournamentData);
         }
       });
@@ -368,15 +371,20 @@ async function handleTimeSlotSelection(interaction, session, userTimezone, tourn
   } catch (error) {
     console.error('Error handling time slot selection:', error);
 
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(0xFF0000)
-          .setTitle('❌ Selection Error')
-          .setDescription('An error occurred while processing your time slot selection.')
-      ],
-      components: []
-    });
+    // Try to update the interaction, but ignore errors if it's already been handled
+    try {
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle('❌ Selection Error')
+            .setDescription('An error occurred while processing your time slot selection.')
+        ],
+        components: []
+      });
+    } catch (editError) {
+      console.error('Could not edit reply (interaction may already be handled):', editError.message);
+    }
   }
 }
 
@@ -472,14 +480,19 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
   } catch (error) {
     console.error('Error handling registration confirmation:', error);
 
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(0xFF0000)
-          .setTitle('❌ Registration Error')
-          .setDescription('An unexpected error occurred during registration.')
-      ],
-      components: []
-    });
+    // Try to update the interaction, but ignore errors if it's already been handled
+    try {
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle('❌ Registration Error')
+            .setDescription('An unexpected error occurred during registration.')
+        ],
+        components: []
+      });
+    } catch (editError) {
+      console.error('Could not edit reply (interaction may already be handled):', editError.message);
+    }
   }
 }
