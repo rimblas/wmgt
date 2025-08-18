@@ -8,7 +8,7 @@ export class TimezoneService {
   constructor() {
     // Cache of valid timezone names for performance
     this.validTimezones = moment.tz.names();
-    
+
     // Common timezone aliases for user-friendly input
     this.timezoneAliases = {
       'EST': 'America/New_York',
@@ -189,8 +189,36 @@ export class TimezoneService {
   }
 
   /**
+   * Convert a simple time slot string to the full time slot object format
+   * @param {string|Object} timeSlot - Time slot string (e.g., "22:00") or time slot object
+   * @returns {Object} Time slot object with time_slot, day_offset, and display properties
+   */
+  normalizeTimeSlot(timeSlot) {
+    // If it's already an object with the required properties, return as-is
+    if (typeof timeSlot === 'object' && timeSlot.time_slot) {
+      return timeSlot;
+    }
+
+    // If it's a string, convert to object format
+    if (typeof timeSlot === 'string') {
+      // Default day_offset based on common tournament patterns
+      // 22:00 is typically the day before, others are same day
+      const day_offset = timeSlot === '22:00' ? -1 : 0;
+      const display = day_offset === -1 ? `${timeSlot} -1` : timeSlot;
+
+      return {
+        time_slot: timeSlot,
+        day_offset: day_offset,
+        display: display
+      };
+    }
+
+    throw new Error('Invalid time slot format');
+  }
+
+  /**
    * Format tournament time slots with timezone conversion
-   * @param {Array} timeSlots - Array of time slot strings (e.g., ["22:00", "00:00"])
+   * @param {Array} timeSlots - Array of time slot objects with time_slot, day_offset, and display properties, or time slot strings
    * @param {string} sessionDate - Session date in ISO format
    * @param {string} userTimezone - User's timezone
    * @returns {Array} Array of formatted time slot objects
@@ -202,15 +230,19 @@ export class TimezoneService {
 
     const normalizedTimezone = this.normalizeTimezone(userTimezone);
     const sessionMoment = moment.utc(sessionDate);
+    return timeSlots.map(slot => {
+      // Normalize the time slot to ensure it has the required properties
+      const timeSlot = this.normalizeTimeSlot(slot);
 
-    return timeSlots.map(timeSlot => {
-      // Create UTC moment for this time slot on the session date
-      const utcTime = sessionMoment.clone().set({
-        hour: parseInt(timeSlot.split(':')[0]),
-        minute: parseInt(timeSlot.split(':')[1]),
-        second: 0,
-        millisecond: 0
-      });
+      // Create UTC moment for this time slot, accounting for day_offset
+      const utcTime = sessionMoment.clone()
+        .add(timeSlot.day_offset || 0, 'days')
+        .set({
+          hour: parseInt(timeSlot.time_slot.split(':')[0]),
+          minute: parseInt(timeSlot.time_slot.split(':')[1]),
+          second: 0,
+          millisecond: 0
+        });
 
       const localTime = utcTime.clone().tz(normalizedTimezone);
 
@@ -222,10 +254,10 @@ export class TimezoneService {
         localDate: localTime.format('MMM D'),
         localTimezone: localTime.format('z'),
         dateChanged: utcTime.format('YYYY-MM-DD') !== localTime.format('YYYY-MM-DD'),
-        display: this.formatTimeDisplay(utcTime, normalizedTimezone, { 
-          showDate: true, 
-          format12Hour: true, 
-          showTimezone: true 
+        display: this.formatTimeDisplay(utcTime, normalizedTimezone, {
+          showDate: true,
+          format12Hour: true,
+          showTimezone: true
         })
       };
     });
@@ -241,11 +273,11 @@ export class TimezoneService {
   async getUserTimezone(registrationService, discordId, fallbackTimezone = 'UTC') {
     try {
       const userTimezone = await registrationService.getPlayerTimezone(discordId);
-      
+
       if (userTimezone && this.validateTimezone(userTimezone)) {
         return userTimezone;
       }
-      
+
       return fallbackTimezone;
     } catch (error) {
       console.error('Error fetching user timezone:', error);
@@ -266,7 +298,7 @@ export class TimezoneService {
 
     const inputLower = input.toLowerCase();
     const commonTimezones = this.getCommonTimezones();
-    
+
     // First, check for exact matches in aliases
     const aliasMatch = this.timezoneAliases[input.toUpperCase()];
     if (aliasMatch) {
@@ -280,10 +312,10 @@ export class TimezoneService {
     const matches = commonTimezones.filter(tz => {
       const valueLower = tz.value.toLowerCase();
       const labelLower = tz.label.toLowerCase();
-      
-      return valueLower.includes(inputLower) || 
-             labelLower.includes(inputLower) ||
-             valueLower.split('/').some(part => part.includes(inputLower));
+
+      return valueLower.includes(inputLower) ||
+        labelLower.includes(inputLower) ||
+        valueLower.split('/').some(part => part.includes(inputLower));
     });
 
     return matches.slice(0, maxSuggestions);

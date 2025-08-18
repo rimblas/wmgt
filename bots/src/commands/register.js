@@ -1,7 +1,7 @@
-import { 
-  SlashCommandBuilder, 
-  EmbedBuilder, 
-  ActionRowBuilder, 
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
   StringSelectMenuBuilder,
   ButtonBuilder,
   ButtonStyle,
@@ -26,7 +26,7 @@ export default {
         .setDescription('Your timezone (e.g., America/New_York, Europe/London)')
         .setRequired(false)
     ),
-  
+
   async execute(interaction) {
     try {
       // Defer reply to allow time for API calls
@@ -34,17 +34,17 @@ export default {
 
       // Get user's timezone preference
       let userTimezone = interaction.options.getString('timezone');
-      
+
       // If no timezone provided, try to get stored preference
       if (!userTimezone) {
         userTimezone = await timezoneService.getUserTimezone(registrationService, interaction.user.id, 'UTC');
       }
-      
+
       // Validate timezone if provided
       if (!timezoneService.validateTimezone(userTimezone)) {
         const commonTimezones = timezoneService.getCommonTimezones();
         const timezoneList = commonTimezones.map(tz => `• ${tz.value} - ${tz.label}`).join('\n');
-        
+
         const errorEmbed = new EmbedBuilder()
           .setColor(0xFF0000)
           .setTitle('❌ Invalid Timezone')
@@ -85,8 +85,10 @@ export default {
       }
 
       // Filter for sessions with open registration
-      const openSessions = tournamentData.sessions.filter(session => session.registration_open);
-      
+      //      console.log(tournamentData.sessions);
+      //      const openSessions = tournamentData.sessions.filter(session => session.registration_open);
+      const openSessions = tournamentData.sessions;
+
       if (openSessions.length === 0) {
         const closedEmbed = new EmbedBuilder()
           .setColor(0xFFA500)
@@ -99,7 +101,8 @@ export default {
 
       // For now, handle single session (most common case)
       // TODO: In future, add session selection if multiple sessions are available
-      const session = openSessions[0];
+      // const session = openSessions[0];
+      const session = openSessions; // for now no session array
 
       // Format time slots with timezone conversion
       let formattedTimeSlots;
@@ -137,8 +140,8 @@ export default {
           },
           {
             name: '⏰ Registration Closes',
-            value: session.close_registration_on ? 
-              `<t:${Math.floor(new Date(session.close_registration_on).getTime() / 1000)}:R>` : 
+            value: session.close_registration_on ?
+              `<t:${Math.floor(new Date(session.close_registration_on).getTime() / 1000)}:R>` :
               'TBD',
             inline: true
           }
@@ -146,10 +149,10 @@ export default {
 
       // Add course information if available
       if (session.courses && session.courses.length > 0) {
-        const courseList = session.courses.map(course => 
+        const courseList = session.courses.map(course =>
           `• **${course.course_name}** (${course.course_code}) - ${course.difficulty}`
         ).join('\n');
-        
+
         tournamentEmbed.addFields({
           name: '🏌️ Courses',
           value: courseList,
@@ -160,10 +163,10 @@ export default {
       // Create time slot selection menu
       const timeSlotOptions = formattedTimeSlots.map(slot => ({
         label: `${slot.utcTime} UTC → ${slot.localTime} ${slot.localTimezone}`,
-        description: slot.dateChanged ? 
-          `UTC: ${slot.utcDate}, Local: ${slot.localDate}` : 
+        description: slot.dateChanged ?
+          `UTC: ${slot.utcDate}, Local: ${slot.localDate}` :
           `${slot.utcDate}`,
-        value: slot.value
+        value: slot.value.time_slot // Extract just the time_slot string for Discord
       }));
 
       // Split options into chunks of 25 (Discord limit)
@@ -173,6 +176,7 @@ export default {
       }
 
       const selectMenus = optionChunks.map((chunk, index) => {
+
         return new StringSelectMenuBuilder()
           .setCustomId(`register_timeslot_${index}`)
           .setPlaceholder(`Choose a time slot ${optionChunks.length > 1 ? `(${index + 1}/${optionChunks.length})` : ''}`)
@@ -242,7 +246,7 @@ export default {
                 .setDescription('Registration timed out. Please run the command again to register.')
             ],
             components: []
-          }).catch(() => {}); // Ignore errors if interaction is already handled
+          }).catch(() => { }); // Ignore errors if interaction is already handled
         }
       });
 
@@ -253,7 +257,7 @@ export default {
         userId: interaction.user.id,
         guildId: interaction.guildId
       });
-      
+
       // Use error handler to create appropriate response
       await errorHandler.handleInteractionError(error, interaction, 'register_command');
     }
@@ -268,7 +272,7 @@ async function handleTimeSlotSelection(interaction, session, userTimezone, tourn
     await interaction.deferUpdate();
 
     const selectedTimeSlot = interaction.values[0];
-    
+
     // Format the selected time slot for display
     const formattedSlot = timezoneService.formatTournamentTimeSlots(
       [selectedTimeSlot],
@@ -294,7 +298,7 @@ async function handleTimeSlotSelection(interaction, session, userTimezone, tourn
         },
         {
           name: '📅 Date',
-          value: formattedSlot.dateChanged ? 
+          value: formattedSlot.dateChanged ?
             `UTC: ${formattedSlot.utcDate}\nLocal: ${formattedSlot.localDate}` :
             formattedSlot.utcDate,
           inline: true
@@ -357,13 +361,13 @@ async function handleTimeSlotSelection(interaction, session, userTimezone, tourn
               .setDescription('Registration confirmation timed out. Please run the command again to register.')
           ],
           components: []
-        }).catch(() => {}); // Ignore errors if interaction is already handled
+        }).catch(() => { }); // Ignore errors if interaction is already handled
       }
     });
 
   } catch (error) {
     console.error('Error handling time slot selection:', error);
-    
+
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
@@ -427,7 +431,7 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
           },
           {
             name: '📅 Date',
-            value: formattedSlot.dateChanged ? 
+            value: formattedSlot.dateChanged ?
               `UTC: ${formattedSlot.utcDate}\nLocal: ${formattedSlot.localDate}` :
               formattedSlot.utcDate,
             inline: true
@@ -443,8 +447,8 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
         });
       }
 
-      successEmbed.setFooter({ 
-        text: 'Use /mystatus to view all your registrations or /unregister to cancel.' 
+      successEmbed.setFooter({
+        text: 'Use /mystatus to view all your registrations or /unregister to cancel.'
       });
 
       await interaction.editReply({
@@ -453,7 +457,7 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
 
     } catch (registrationError) {
       console.error('Registration API error:', registrationError);
-      
+
       const errorEmbed = new EmbedBuilder()
         .setColor(0xFF0000)
         .setTitle('❌ Registration Failed')
@@ -467,7 +471,7 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
 
   } catch (error) {
     console.error('Error handling registration confirmation:', error);
-    
+
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
