@@ -4,7 +4,7 @@ This document describes the REST API endpoints created for the Discord Tournamen
 
 ## Base URL
 
-All endpoints are available under the base path: `/ords/wmgt/api/`
+All endpoints are available under the base path: `/ords/wmgt/`
 
 ## Authentication
 
@@ -14,7 +14,7 @@ Currently, these endpoints do not require authentication. In a production enviro
 
 ### 1. Get Current Tournament
 
-**Endpoint:** `GET /api/tournaments/current`
+**Endpoint:** `GET /current_tournament`
 
 **Description:** Returns the current active tournament with available sessions and courses.
 
@@ -72,12 +72,12 @@ Currently, these endpoints do not require authentication. In a production enviro
 
 **Example Request:**
 ```bash
-curl -X GET "http://your-server/ords/wmgt/api/tournaments/current"
+curl -X GET "http://your-server/ords/wmgt/tournament/current_tournament"
 ```
 
 ### 2. Register Player
 
-**Endpoint:** `POST /api/tournaments/register`
+**Endpoint:** `POST /register`
 
 **Description:** Registers a Discord user for a specific tournament session and time slot.
 
@@ -131,7 +131,7 @@ curl -X GET "http://your-server/ords/wmgt/api/tournaments/current"
 
 **Example Request:**
 ```bash
-curl -X POST "http://your-server/ords/wmgt/api/tournaments/register" \
+curl -X POST "http://your-server/ords/wmgt/tournament/register" \
   -H "Content-Type: application/json" \
   -d '{
     "session_id": 456,
@@ -151,7 +151,7 @@ curl -X POST "http://your-server/ords/wmgt/api/tournaments/register" \
 
 ### 3. Unregister Player
 
-**Endpoint:** `POST /api/tournaments/unregister`
+**Endpoint:** `POST /unregister`
 
 **Description:** Removes a player's registration from a tournament session.
 
@@ -196,7 +196,7 @@ curl -X POST "http://your-server/ords/wmgt/api/tournaments/register" \
 
 **Example Request:**
 ```bash
-curl -X POST "http://your-server/ords/wmgt/api/tournaments/unregister" \
+curl -X POST "http://your-server/ords/wmgt/tournament/unregister" \
   -H "Content-Type: application/json" \
   -d '{
     "session_id": 456,
@@ -215,7 +215,7 @@ curl -X POST "http://your-server/ords/wmgt/api/tournaments/unregister" \
 
 ### 4. Get Player Registrations
 
-**Endpoint:** `GET /api/players/registrations/{discord_id}`
+**Endpoint:** `GET /players/registrations/{discord_id}`
 
 **Description:** Returns all active registrations for a player by Discord ID.
 
@@ -253,7 +253,7 @@ curl -X POST "http://your-server/ords/wmgt/api/tournaments/unregister" \
 
 **Example Request:**
 ```bash
-curl -X GET "http://your-server/ords/wmgt/api/players/registrations/864988785888329748"
+curl -X GET "http://your-server/ords/wmgt/players/registrations/864988785888329748"
 ```
 
 ## Time Slots

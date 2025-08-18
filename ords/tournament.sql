@@ -664,7 +664,7 @@ ORDS.DEFINE_PARAMETER(
   -- Template: /tournaments/register
   ORDS.DEFINE_TEMPLATE(
       p_module_name    => 'WMGT Tournament',
-      p_pattern        => 'tournaments/register',
+      p_pattern        => 'register',
       p_priority       => 0,
       p_etag_type      => 'HASH',
       p_etag_query     => NULL,
@@ -673,7 +673,7 @@ ORDS.DEFINE_PARAMETER(
   -- Handler: POST /tournaments/register
   ORDS.DEFINE_HANDLER(
       p_module_name    => 'WMGT Tournament',
-      p_pattern        => 'tournaments/register',
+      p_pattern        => 'register',
       p_method         => 'POST',
       p_source_type    => 'plsql/block',
       p_items_per_page => 0,
@@ -836,19 +836,19 @@ exception
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
 end;');
 
-  -- Template: /api/tournaments/unregister
+  -- Template: /tournament/unregister
   ORDS.DEFINE_TEMPLATE(
       p_module_name    => 'WMGT Tournament',
-      p_pattern        => 'tournaments/unregister',
+      p_pattern        => 'unregister',
       p_priority       => 0,
       p_etag_type      => 'HASH',
       p_etag_query     => NULL,
       p_comments       => 'Unregister player from tournament session');
 
-  -- Handler: POST /api/tournaments/unregister
+  -- Handler: POST /tournament/unregister
   ORDS.DEFINE_HANDLER(
       p_module_name    => 'WMGT Tournament',
-      p_pattern        => 'tournaments/unregister',
+      p_pattern        => 'unregister',
       p_method         => 'POST',
       p_source_type    => 'plsql/block',
       p_items_per_page => 0,
