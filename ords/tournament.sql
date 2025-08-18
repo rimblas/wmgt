@@ -547,7 +547,113 @@ exception
     raise;
 end;');
 
-        
+
+  -- Template: /players/registrations/{discord_id}
+  ORDS.DEFINE_TEMPLATE(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'players/registrations/:discord_id',
+      p_priority       => 0,
+      p_etag_type      => 'HASH',
+      p_etag_query     => NULL,
+      p_comments       => 'Get player registrations by Discord ID');
+
+  -- Handler: GET /api/players/registrations/{discord_id}
+  ORDS.DEFINE_HANDLER(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'players/registrations/:discord_id',
+      p_method         => 'GET',
+      p_source_type    => 'plsql/block',
+      p_items_per_page => 0,
+      p_mimes_allowed  => NULL,
+      p_comments       => 'Returns all active registrations for a player by Discord ID',
+      p_source         => 
+'declare
+  l_clob clob;
+  l_discord_id varchar2(50);
+  l_player_id number;
+  l_player_name varchar2(100);
+  l_scope logger_logs.scope%type := ''REST:/players/registrations'';
+begin
+  logger.log(p_text => ''START'', p_scope => l_scope);
+  
+  l_discord_id := :discord_id;
+  logger.log(p_text => ''discord_id: '' || l_discord_id, p_scope => l_scope);
+  
+  -- Get player info
+  select id, player_name
+  into l_player_id, l_player_name
+  from wmg_players_v
+  where discord_id = to_number(l_discord_id default null on conversion error);
+  
+  -- Build response
+  select json_object(
+    ''player'' value json_object(
+      ''id'' value l_player_id,
+      ''name'' value l_player_name,
+      ''discord_id'' value l_discord_id
+    ),
+    ''registrations'' value (
+      select json_arrayagg(
+        json_object(
+          ''session_id'' value tp.tournament_session_id,
+          ''week'' value ts.week,
+          ''time_slot'' value tp.time_slot,
+          ''session_date'' value to_char(ts.session_date, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
+          ''room_no'' value tp.room_no
+        ) returning clob
+      )
+      from wmg_tournament_players tp
+      join wmg_tournament_sessions ts on tp.tournament_session_id = ts.id
+      where tp.player_id = l_player_id
+        and tp.active_ind = ''Y''
+        and ts.session_date + 1 >= trunc(current_timestamp)
+      order by ts.session_date
+    ) returning clob
+  ) into l_clob;
+
+  if l_clob is null then
+    l_clob := json_object(
+      ''player'' value json_object(
+        ''id'' value l_player_id,
+        ''name'' value l_player_name,
+        ''discord_id'' value l_discord_id
+      ),
+      ''registrations'' value json_array()
+    );
+  end if;
+
+  apex_util.prn(
+    p_clob   => l_clob,
+    p_escape => false
+  );
+
+  logger.log(p_text => ''END'', p_scope => l_scope);
+exception
+  when no_data_found then
+    l_clob := json_object(
+      ''success'' value false,
+      ''error_code'' value ''PLAYER_NOT_FOUND'',
+      ''message'' value ''Discord user not linked to WMGT player account''
+    );
+    apex_util.prn(p_clob => l_clob, p_escape => false);
+    logger.log_error(p_text => ''Player not found: '' || l_discord_id, p_scope => l_scope);
+  when others then
+    logger.log_error(p_text => sqlerrm, p_scope => l_scope);
+    raise;
+end;');
+
+  -- Define parameter for discord_id
+  ORDS.DEFINE_PARAMETER(
+      p_module_name        => 'WMGT Tournament',
+      p_pattern            => 'players/registrations/:discord_id',
+      p_method             => 'GET',
+      p_name               => 'discord_id',
+      p_bind_variable_name => 'discord_id',
+      p_source_type        => 'URI',
+      p_param_type         => 'STRING',
+      p_access_method      => 'IN',
+      p_comments           => 'Discord user ID');
+
 COMMIT;
 
 END;

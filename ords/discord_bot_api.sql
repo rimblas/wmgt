@@ -439,9 +439,10 @@ exception
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
 end;');
 
-  -- Template: /api/players/registrations/{discord_id}
+  -- Template: /players/registrations/{discord_id}
+ -- Template: /players/registrations/{discord_id}
   ORDS.DEFINE_TEMPLATE(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'players/registrations/:discord_id',
       p_priority       => 0,
       p_etag_type      => 'HASH',
@@ -450,7 +451,7 @@ end;');
 
   -- Handler: GET /api/players/registrations/{discord_id}
   ORDS.DEFINE_HANDLER(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'players/registrations/:discord_id',
       p_method         => 'GET',
       p_source_type    => 'plsql/block',
@@ -463,7 +464,7 @@ end;');
   l_discord_id varchar2(50);
   l_player_id number;
   l_player_name varchar2(100);
-  l_scope logger_logs.scope%type := ''REST:api/players/registrations'';
+  l_scope logger_logs.scope%type := ''REST:/players/registrations'';
 begin
   logger.log(p_text => ''START'', p_scope => l_scope);
   
@@ -535,7 +536,7 @@ end;');
 
   -- Define parameter for discord_id
   ORDS.DEFINE_PARAMETER(
-      p_module_name        => 'Discord Bot API',
+      p_module_name        => 'WMGT Tournament',
       p_pattern            => 'players/registrations/:discord_id',
       p_method             => 'GET',
       p_name               => 'discord_id',
