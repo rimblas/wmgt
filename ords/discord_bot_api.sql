@@ -56,8 +56,9 @@ begin
           ''open_registration_on'' value to_char(t.open_registration_on, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
           ''close_registration_on'' value to_char(t.close_registration_on, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
           ''registration_open'' value case 
-            when current_timestamp between t.open_registration_on and t.close_registration_on 
-            then ''true'' else ''false'' end
+            when t.open_registration_on is null or t.open_registration_on < localtimestamp
+            then ''true'' else ''false''
+            end format json
             ,''available_time_slots'' value (
             select json_arrayagg(
               j' || 'son_object(
@@ -126,18 +127,18 @@ exception
     raise;
 end;');
 
-  -- Template: /api/tournaments/register
+  -- Template: /tournaments/register
   ORDS.DEFINE_TEMPLATE(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'tournaments/register',
       p_priority       => 0,
       p_etag_type      => 'HASH',
       p_etag_query     => NULL,
       p_comments       => 'Register player for tournament session');
 
-  -- Handler: POST /api/tournaments/register
+  -- Handler: POST /tournaments/register
   ORDS.DEFINE_HANDLER(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'tournaments/register',
       p_method         => 'POST',
       p_source_type    => 'plsql/block',
@@ -303,7 +304,7 @@ end;');
 
   -- Template: /api/tournaments/unregister
   ORDS.DEFINE_TEMPLATE(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'tournaments/unregister',
       p_priority       => 0,
       p_etag_type      => 'HASH',
@@ -312,7 +313,7 @@ end;');
 
   -- Handler: POST /api/tournaments/unregister
   ORDS.DEFINE_HANDLER(
-      p_module_name    => 'Discord Bot API',
+      p_module_name    => 'WMGT Tournament',
       p_pattern        => 'tournaments/unregister',
       p_method         => 'POST',
       p_source_type    => 'plsql/block',
@@ -449,7 +450,6 @@ end;');
       p_etag_query     => NULL,
       p_comments       => 'Get player registrations by Discord ID');
 
-  -- Handler: GET /api/players/registrations/{discord_id}
   ORDS.DEFINE_HANDLER(
       p_module_name    => 'WMGT Tournament',
       p_pattern        => 'players/registrations/:discord_id',
@@ -467,51 +467,56 @@ end;');
   l_scope logger_logs.scope%type := ''REST:/players/registrations'';
 begin
   logger.log(p_text => ''START'', p_scope => l_scope);
-  
+
   l_discord_id := :discord_id;
   logger.log(p_text => ''discord_id: '' || l_discord_id, p_scope => l_scope);
-  
+
   -- Get player info
   select id, player_name
   into l_player_id, l_player_name
   from wmg_players_v
   where discord_id = to_number(l_discord_id default null on conversion error);
-  
+
   -- Build response
   select json_object(
-    ''player'' value json_object(
-      ''id'' value l_player_id,
-      ''name'' value l_player_name,
-      ''discord_id'' value l_discord_id
-    ),
-    ''registrations'' value (
-      select json_arrayagg(
-        json_object(
-          ''session_id'' value tp.tournament_session_id,
-          ''week'' value ts.week,
-          ''time_slot'' value tp.time_slot,
-          ''session_date'' value to_char(ts.session_date, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
-          ''room_no'' value tp.room_no
-        ) returning clob
-      )
-      from wmg_tournament_players tp
-      join wmg_tournament_sessions ts on tp.tournament_session_id = ts.id
-      where tp.player_id = l_player_id
-        and tp.active_ind = ''Y''
-        and ts.session_date + 1 >= trunc(current_timestamp)
-      order by ts.session_date
-    ) returning clob
-  ) into l_clob;
+         ''player'' value json_object(
+            ''id'' value l_player_id,
+            ''name'' value l_player_name,
+            ''discord_id'' value l_discord_id
+         ),
+         ''registrations'' value (
+            select json_arrayagg(
+                     json_object(
+                        ''session_id''   value tp.tournament_session_id,
+                        ''week''         value ts.week,
+            ' || '            ''time_slot''    value tp.time_slot,
+                        ''session_date'' value to_char(ts.session_date, ''YYYY-MM-DD"T"HH24:MI:SS"Z"''),
+                        ''room_no''      value tp.room_no
+                     )
+                     order by ts.session_date
+                     returning clob
+                   )
+              from wmg_tournament_players tp
+                   join wmg_tournament_sessions ts 
+                     on tp.tournament_session_id = ts.id
+             where tp.player_id = l_player_id
+               and tp.active_ind = ''Y''
+               and ts.session_date + 1 >= trunc(current_timestamp)
+               and ts.completed_ind = ''N''
+         ) returning clob
+       )
+into l_clob
+from dual;
 
   if l_clob is null then
-    l_clob := json_object(
-      ''player'' value json_object(
-        ''id'' value l_player_id,
-        ''name'' value l_player_name,
-        ''discord_id'' value l_discord_id
-      ),
-      ''registrations'' value json_array()
-    );
+    apex_json.open_object(''player'');
+    apex_json.write(''id'', l_player_id);
+    apex_json.write(''name'', l_player_name);
+    apex_json.write(''discord_id'', l_discord_id);
+    apex_json.open_object(''registrations'');
+' || '
+    apex_json.close_object;
+    apex_json.close_object;
   end if;
 
   apex_util.prn(
