@@ -66,7 +66,7 @@
   - Add GET /api/players/registrations/:discord_id endpoint for fetching user registrations
   - _Requirements: 5.2, 5.3_
 
-- [ ] 11. Integrate with existing t_discord_user functionality
+- [x] 11. Integrate with existing t_discord_user functionality
   - Modify registration endpoints to use existing t_discord_user package for user synchronization
   - Ensure Discord user data (username, global_name, avatar) is properly synced on registration
   - Test integration with existing player management system

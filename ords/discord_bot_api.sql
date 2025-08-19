@@ -459,6 +459,7 @@ end;');
   l_discord_id varchar2(50);
   l_player_id number;
   l_player_name varchar2(100);
+  l_player_timezone varchar2(100);
   l_scope logger_logs.scope%type := ''REST:/players/registrations'';
 begin
   logger.log(p_text => ''START'', p_scope => l_scope);
@@ -467,8 +468,8 @@ begin
   logger.log(p_text => ''discord_id: '' || l_discord_id, p_scope => l_scope);
 
   -- Get player info
-  select id, player_name
-  into l_player_id, l_player_name
+  select id, player_name, prefered_tz
+  into l_player_id, l_player_name, l_player_timezone
   from wmg_players_v
   where discord_id = to_number(l_discord_id default null on conversion error);
 
@@ -477,7 +478,8 @@ begin
          ''player'' value json_object(
             ''id'' value l_player_id,
             ''name'' value l_player_name,
-            ''discord_id'' value l_discord_id
+            ''discord_id'' value l_discord_id,
+            ''timezone'' value l_player_timezone
          ),
          ''registrations'' value (
             select json_arrayagg(
@@ -504,14 +506,19 @@ into l_clob
 from dual;
 
   if l_clob is null then
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
     apex_json.open_object(''player'');
     apex_json.write(''id'', l_player_id);
     apex_json.write(''name'', l_player_name);
     apex_json.write(''discord_id'', l_discord_id);
-    apex_json.open_object(''registrations'');
-' || '
+    apex_json.write(''timezone'', l_player_timezone);
     apex_json.close_object;
+    apex_json.open_array(''registrations'');
+    apex_json.close_array;
     apex_json.close_object;
+    l_clob := apex_json.get_clob_output;
+    apex_json.free_output;
   end if;
 
   apex_util.prn(
@@ -545,6 +552,103 @@ end;');
       p_param_type         => 'STRING',
       p_access_method      => 'IN',
       p_comments           => 'Discord user ID');
+
+  -- Template: /players/timezone
+  ORDS.DEFINE_TEMPLATE(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'players/timezone',
+      p_priority       => 0,
+      p_etag_type      => 'HASH',
+      p_etag_query     => NULL,
+      p_comments       => 'Set player timezone preference');
+
+  -- Handler: POST /players/timezone
+  ORDS.DEFINE_HANDLER(
+      p_module_name    => 'WMGT Tournament',
+      p_pattern        => 'players/timezone',
+      p_method         => 'POST',
+      p_source_type    => 'plsql/block',
+      p_items_per_page => 0,
+      p_mimes_allowed  => 'application/json',
+      p_comments       => 'Set timezone preference for a Discord user',
+      p_source         => 
+'declare
+  l_body clob;
+  l_json json_object_t;
+  l_discord_user t_discord_user;
+  l_discord_id varchar2(50);
+  l_timezone varchar2(100);
+  l_response clob;
+  l_scope logger_logs.scope%type := ''REST:api/players/timezone'';
+begin
+  logger.log(p_text => ''START'', p_scope => l_scope);
+  
+  -- Get request body
+  l_body := :body_text;
+  l_json := json_object_t.parse(l_body);
+  
+  -- Extract parameters
+  l_discord_id := l_json.get_string(''discord_id'');
+  l_timezone := l_json.get_string(''timezone'');
+  
+  logger.log(p_text => ''discord_id: '' || l_discord_id || '', timezone: '' || l_timezone, p_scope => l_scope);
+  
+  -- Initialize Discord user from JSON and sync
+  l_discord_user := t_discord_user();
+  l_discord_user.init_from_json(l_json.get_object(''discord_user'').to_clob());
+  l_discord_user.sync_player();
+  
+  logger.log(p_text => ''player_id: '' || l_discord_user.player_id, p_scope => l_scope);
+  
+  -- Update timezone preference
+  update wmg_players
+     set prefered_tz = l_timezone
+   where id = l_discord_user.player_id;
+  
+  if sql%rowcount = 0 then
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''PLAYER_NOT_FOUND'');
+    apex_json.write(''message'', ''Discord user not linked to WMGT player account'');
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
+    goto output_response;
+  end if;
+  
+  commit;
+  
+  apex_json.initialize_clob_output;
+  apex_json.open_object;
+  apex_json.write(''success'', true);
+  apex_json.write(''message'', ''Timezone preference updated successfully'');
+  apex_json.write(''timezone'', l_timezone);
+  apex_json.close_object;
+  l_response := apex_json.get_clob_output;
+  apex_json.free_output;
+  
+  <<output_response>>
+  apex_util.prn(
+    p_clob   => l_response,
+    p_escape => false
+  );
+  
+  logger.log(p_text => ''END'', p_scope => l_scope);
+exception
+  when others then
+    rollback;
+    apex_json.initialize_clob_output;
+    apex_json.open_object;
+    apex_json.write(''success'', false);
+    apex_json.write(''error_code'', ''TIMEZONE_UPDATE_FAILED'');
+    apex_json.write(''message'', ''Failed to update timezone preference: '' || sqlerrm);
+    apex_json.close_object;
+    l_response := apex_json.get_clob_output;
+    apex_json.free_output;
+    apex_util.prn(p_clob => l_response, p_escape => false);
+    logger.log_error(p_text => sqlerrm, p_scope => l_scope);
+end;');
 
 COMMIT;
 

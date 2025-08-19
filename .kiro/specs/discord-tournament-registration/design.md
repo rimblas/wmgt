@@ -24,9 +24,9 @@ graph TB
     end
     
     subgraph "API Endpoints"
-        C1[/api/tournaments/current]
-        C2[/api/tournaments/register]
-        C3[/api/tournaments/unregister]
+        C1[/tournament/current]
+        C2[/tournament/register]
+        C3[/tournament/unregister]
         C4[/api/players/registrations]
     end
     
