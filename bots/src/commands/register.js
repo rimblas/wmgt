@@ -11,6 +11,7 @@ import { RegistrationService } from '../services/RegistrationService.js';
 import { TimezoneService } from '../services/TimezoneService.js';
 import { logger } from '../utils/Logger.js';
 import { ErrorHandler } from '../utils/ErrorHandler.js';
+import { config } from '../config/config.js';
 
 const registrationService = new RegistrationService();
 const timezoneService = new TimezoneService();
@@ -20,7 +21,7 @@ const errorHandler = new ErrorHandler(commandLogger);
 export default {
   data: new SlashCommandBuilder()
     .setName('register')
-    .setDescription('Register for a tournament session')
+    .setDescription('Register for the ' + config.bot.tournament + ' tournament')
     .addStringOption(option =>
       option.setName('timezone')
         .setDescription('Your timezone (e.g., America/New_York, Europe/London)')

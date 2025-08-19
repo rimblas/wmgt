@@ -23,7 +23,8 @@ export const config = {
   },
   bot: {
     name: 'WMGT Tournament Bot',
-    version: '1.0.0'
+    version: '1.0.0',
+    tournament: 'WMGT'
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',
