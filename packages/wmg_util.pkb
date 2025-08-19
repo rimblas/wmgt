@@ -1964,6 +1964,106 @@ end score_points;
 
 
 
+/**
+ * Process a player registration. Either Signup or Unregister by specifying
+ * the correct p_action parameter.
+ * Unregistering does not delete the record, instead the active_ind is set to N
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 18, 2025
+ * @param p_tournament_session_id
+ * @param p_player_id
+ * @param p_action SIGNUP | UNREGISTER
+ * @param p_time_slot OPTIONAL
+ * @return
+ */
+procedure process_registration(
+    p_tournament_session_id in wmg_tournament_players.tournament_session_id%type
+  , p_player_id   in wmg_tournament_players.player_id%type
+  , p_action      in varchar2
+  , p_time_slot   in wmg_tournament_players.time_slot%type
+)
+is
+  l_scope  logger_logs.scope%type := gc_scope_prefix || 'process_registration';
+  l_params logger.tab_param;
+
+  l_valid_time_slot integer;
+  l_player_name wmg_players_v.player_name%type;
+begin
+  logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
+  logger.append_param(l_params, 'p_player_id', p_player_id);
+  logger.append_param(l_params, 'p_action', p_action);
+  logger.append_param(l_params, 'p_time_slot', p_time_slot);
+  logger.log('BEGIN', l_scope, null, l_params);
+
+  if p_action not in ('SIGNUP', 'UNREGISTER') then
+    raise_application_error(-20002, 'Unknown action "' || p_action || '" expected SIGNUP or UNREGISTER');
+  end if;
+
+  if p_action = 'SIGNUP' then
+    select count(*)
+      into l_valid_time_slot
+      from wmg_time_slots_all_v
+     where time_slot = p_time_slot;
+
+    if l_valid_time_slot = 0 then
+      raise_application_error(-20003, 'Invalid time_slot "' || p_time_slot || '"');
+    end if;
+  end if;
+
+  select player_name
+    into l_player_name
+    from wmg_players_v
+   where id = p_player_id;
+
+  merge into wmg_tournament_players p
+   using (
+     select p_tournament_session_id tournament_session_id
+          , p_player_id player_id
+          , decode(p_action, 'UNREGISTER', 'N', 'Y') active_ind
+          , p_time_slot time_slot
+       from dual
+    ) np
+   on (p.tournament_session_id = np.tournament_session_id
+    and p.player_id = np.player_id
+   )
+  when matched then
+    update
+       set time_slot = nvl(np.time_slot, p.time_slot)
+         , active_ind = np.active_ind
+  when not matched then
+    insert (
+        tournament_session_id
+      , player_id
+      , time_slot
+      , active_ind
+    )
+    values (
+        np.tournament_session_id
+      , np.player_id
+      , np.time_slot
+      , np.active_ind
+    );
+
+  log('.. ' || p_action || ' player ' || l_player_name || case when p_action = 'SIGNUP' then ' for ' else ' from ' end || p_time_slot, l_scope);
+
+  logger.log('END', l_scope, null, l_params);
+
+  exception
+    when OTHERS then
+      logger.log_error('Unhandled Exception', l_scope, null, l_params);
+      raise;
+end process_registration;
+
+
+
+
+
+
 
 /**
  * Given a player keep track if their easy or hard score card is missing

@@ -83,6 +83,13 @@ function score_points(
 )
 return number;
 
+procedure process_registration(
+    p_tournament_session_id in wmg_tournament_players.tournament_session_id%type
+  , p_player_id   in wmg_tournament_players.player_id%type
+  , p_action      in varchar2
+  , p_time_slot   in wmg_tournament_players.time_slot%type default null
+);
+
 --------------------------------------------------------------------------------
 procedure score_entry_verification(
    p_week      in wmg_rounds.week%type
@@ -127,9 +134,11 @@ procedure save_stream_scores(
   , p_scores_json in out nocopy varchar2
 );
 
+$IF env.kwt $THEN
 procedure add_monthly_entries(
     p_tournament_session_id in wmg_tournament_sessions.id%type
 );
+$END
 
 end wmg_util;
 /

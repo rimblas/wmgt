@@ -775,16 +775,11 @@ begin
   end;
   
   -- Register player
-  insert into wmg_tournament_players (
-    tournament_session_id,
-    player_id,
-    time_slot,
-    active_ind
-  ) values (
-    l_session_id,
-    l_discord_user.player_id,
-    l_time_slot,
-    ''Y''
+  wmg_util.process_registration(
+    p_tournament_session_id => l_session_id
+  , p_player_id   => l_discord_user.player_id
+  , p_action      => ''SIGNUP''
+  , p_time_slot   => l_time_slot
   );
   
   commit;
@@ -925,11 +920,11 @@ begin
   end if;
   
   -- Unregister player (set active_ind to N)
-  update wmg_tournament_players
-  set active_ind = ''N''
-  where tournament_session_id = l_session_id
-    and player_id = l_discord_user.player_id
-    and active_ind = ''Y'';
+  wmg_util.process_registration(
+    p_tournament_session_id => l_session_id
+  , p_player_id   => l_discord_user.player_id
+  , p_action      => ''UNREGISTER''
+  );
   
   commit;
   
