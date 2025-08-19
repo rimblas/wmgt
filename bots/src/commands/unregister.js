@@ -81,7 +81,7 @@ export default {
       const registrationsEmbed = new EmbedBuilder()
         .setColor(0x00AE86)
         .setTitle('📋 Your Tournament Registrations')
-        .setDescription('Select a registration to cancel:')
+        .setDescription('Confirm you want to cancel:')
         .addFields({
           name: '🌍 Timezone',
           value: userTimezone,
@@ -144,25 +144,48 @@ export default {
         registrationsEmbed.setFooter({ text: 'Showing first 25 registrations. Contact support if you need to cancel others.' });
       }
 
-      const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId('unregister_selection')
-        .setPlaceholder('Choose a registration to cancel')
-        .addOptions(registrationOptions);
-
-      const selectRow = new ActionRowBuilder().addComponents(selectMenu);
-
-      // Add cancel button
+       // Add cancel button
       const cancelButton = new ButtonBuilder()
         .setCustomId('unregister_cancel')
         .setLabel('Cancel')
         .setStyle(ButtonStyle.Secondary)
         .setEmoji('❌');
 
+      // Confirm Button
+      const confirmButton = new ButtonBuilder()
+//      .setCustomId(`confirm_unregister_${sessionId}_${timeSlot}`)
+      .setCustomId(`confirm_unregister`)
+      .setLabel('Confirm Unregistration')
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji('⚠️');
+
+
       const buttonRow = new ActionRowBuilder().addComponents(cancelButton);
+
+      let components = [buttonRow]; // default
+
+      if (registrationOptions.length > 1) {
+        const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('unregister_selection')
+        .setPlaceholder('Choose a registration to cancel')
+        .addOptions(registrationOptions);
+
+        const selectRow = new ActionRowBuilder().addComponents(selectMenu);
+        components = [selectRow, buttonRow];
+      }
+      else {
+        registrationsEmbed.addFields({
+          name: "Registration",
+          value: registrationOptions[0].label,
+          inline: false
+        });
+
+        buttonRow.addComponents(confirmButton);
+      }
 
       await interaction.editReply({
         embeds: [registrationsEmbed],
-        components: [selectRow, buttonRow]
+        components
       });
 
       // Handle registration selection
@@ -175,7 +198,10 @@ export default {
 
       collector.on('collect', async (selectInteraction) => {
         if (selectInteraction.customId === 'unregister_selection') {
-          await handleUnregistrationSelection(selectInteraction, registrationData, userTimezone);
+                    // Stop collectors to prevent interference with subsequent interactions
+                    collector.stop();
+                    buttonCollector.stop();          
+          await handleUnregistrationSelection(selectInteraction, registrationData);
         }
       });
 
@@ -187,6 +213,12 @@ export default {
       });
 
       buttonCollector.on('collect', async (buttonInteraction) => {
+        console.log(buttonInteraction);
+        if (buttonInteraction.customId === 'confirm_unregister') {
+console.log(registrationData.registrations);
+           await handleUnregistrationConfirmation(buttonInteraction, registrationData.registrations[0], userTimezone);
+        }
+        else
         if (buttonInteraction.customId === 'unregister_cancel') {
           await buttonInteraction.update({
             embeds: [
@@ -237,7 +269,7 @@ export default {
 /**
  * Handle unregistration selection and confirmation
  */
-async function handleUnregistrationSelection(interaction, registrationData, userTimezone) {
+async function handleUnregistrationSelection(interaction, registrationData) {
   try {
     await interaction.deferUpdate();
 
