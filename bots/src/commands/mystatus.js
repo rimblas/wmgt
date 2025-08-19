@@ -5,12 +5,7 @@ import { TimezoneService } from '../services/TimezoneService.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('mystatus')
-    .setDescription('View your current tournament registrations')
-    .addStringOption(option =>
-      option.setName('timezone')
-        .setDescription('Your timezone (e.g., America/New_York, EST, UTC)')
-        .setRequired(false)
-    ),
+    .setDescription('View your current tournament registrations'),
   
   async execute(interaction) {
     const registrationService = new RegistrationService();

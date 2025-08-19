@@ -9,6 +9,8 @@ import {
 } from 'discord.js';
 import { RegistrationService } from '../services/RegistrationService.js';
 import { TimezoneService } from '../services/TimezoneService.js';
+import { config } from '../config/config.js';
+
 
 const registrationService = new RegistrationService();
 const timezoneService = new TimezoneService();
@@ -16,12 +18,7 @@ const timezoneService = new TimezoneService();
 export default {
   data: new SlashCommandBuilder()
     .setName('unregister')
-    .setDescription('Unregister from a tournament session')
-    .addStringOption(option =>
-      option.setName('timezone')
-        .setDescription('Your timezone for time display (e.g., America/New_York, Europe/London)')
-        .setRequired(false)
-    ),
+    .setDescription('Unregister from the ' + config.bot.tournament + ' tournament'),
 
   async execute(interaction) {
     try {
