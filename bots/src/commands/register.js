@@ -69,7 +69,7 @@ export default {
           .setColor(0xFF0000)
           .setTitle('❌ Tournament Data Error')
           .setDescription(error.message)
-          .setFooter({ text: 'Please try again later or contact support.' });
+          .setFooter({ text: 'Please try again later or contact an Admin.' });
 
         return await interaction.editReply({ embeds: [errorEmbed] });
       }
@@ -163,9 +163,9 @@ export default {
 
       // Create time slot selection menu
       const timeSlotOptions = formattedTimeSlots.map(slot => ({
-        label: `${slot.utcTime} UTC → ${slot.localTime} ${slot.localTimezone}`,
+        label: `${slot.localTime} ${slot.localTimezone} → (${slot.utcTime} UTC)`,
         description: slot.dateChanged ?
-          `UTC: ${slot.utcDate}, Local: ${slot.localDate}` :
+          `${slot.localDate}` :
           `${slot.utcDate}`,
         value: slot.value.time_slot // Extract just the time_slot string for Discord
       }));
@@ -230,8 +230,8 @@ export default {
             embeds: [
               new EmbedBuilder()
                 .setColor(0x808080)
-                .setTitle('❌ Registration Cancelled')
-                .setDescription('Tournament registration has been cancelled.')
+                .setTitle('❌ Registration stopped')
+                .setDescription('Tournament registration has been stopped.')
             ],
             components: []
           });
@@ -297,18 +297,18 @@ async function handleTimeSlotSelection(interaction, session, userTimezone, tourn
         },
         {
           name: '⏰ Time Slot',
-          value: `${formattedSlot.utcTime} UTC\n${formattedSlot.localTime} ${formattedSlot.localTimezone}`,
+          value: `${formattedSlot.localTime} ${formattedSlot.localTimezone}\n(${formattedSlot.utcTime} UTC)`,
           inline: true
         },
         {
           name: '📅 Date',
           value: formattedSlot.dateChanged ?
-            `UTC: ${formattedSlot.utcDate}\nLocal: ${formattedSlot.localDate}` :
+            `Local: ${formattedSlot.localDate} ${formattedSlot.localTimezone}` :
             formattedSlot.utcDate,
           inline: true
         }
       )
-      .setFooter({ text: 'This action cannot be undone easily. Make sure the time works for you!' });
+      .setFooter({ text: 'You are commiting to plating at this time. Make sure the time works for you!' });
 
     // Create confirmation buttons
     const confirmButton = new ButtonBuilder()
