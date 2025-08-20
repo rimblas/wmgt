@@ -16,7 +16,8 @@ export const config = {
       register: '/tournament/register',
       unregister: '/tournament/unregister',
       playerRegistrations: '/tournament/players/registrations',
-      setTimezone: '/tournament/players/timezone'
+      setTimezone: '/tournament/players/timezone',
+      votes: '/tournament/votes'
     },
     timeout: parseInt(process.env.API_TIMEOUT) || 15000,
     retries: parseInt(process.env.API_RETRIES) || 3,
