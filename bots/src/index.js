@@ -8,6 +8,7 @@ import registerCommand from './commands/register.js';
 import unregisterCommand from './commands/unregister.js';
 import mystatusCommand from './commands/mystatus.js';
 import timezoneCommand from './commands/timezone.js';
+import votesCommand from './commands/votes.js';
 
 export class DiscordTournamentBot {
   constructor() {
@@ -50,7 +51,8 @@ export class DiscordTournamentBot {
       registerCommand,
       unregisterCommand,
       mystatusCommand,
-      timezoneCommand
+      timezoneCommand,
+      votesCommand
     ];
 
     for (const command of commands) {

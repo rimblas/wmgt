@@ -7,14 +7,14 @@
   - Include health check method for monitoring
   - _Requirements: 1.1, 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 2. Implement data processing utilities
+- [x] 2. Implement data processing utilities
   - Create functions to parse API response and extract course data
   - Implement logic to separate easy and hard courses into columns
   - Add formatting functions to create display strings for embed fields
   - Handle edge cases like null hard courses and zero/negative votes
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 3. Create votes slash command
+- [x] 3. Create votes slash command
   - Create `bots/src/commands/votes.js` with SlashCommandBuilder configuration
   - Implement command execution logic to fetch and display voting results
   - Create Discord embed with two-column layout showing Easy and Hard courses
