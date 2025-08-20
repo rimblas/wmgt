@@ -1992,7 +1992,9 @@ is
   l_params logger.tab_param;
 
   l_valid_time_slot integer;
-  l_player_name wmg_players_v.player_name%type;
+  l_player_name     wmg_players_v.player_name%type;
+  l_rank_code       wmg_players_v.rank_code%type;
+  l_registration_id wmg_tournament_players.id%type;
 begin
   logger.append_param(l_params, 'p_tournament_session_id', p_tournament_session_id);
   logger.append_param(l_params, 'p_player_id', p_player_id);
@@ -2050,6 +2052,32 @@ begin
     );
 
   log('.. ' || p_action || ' player ' || l_player_name || case when p_action = 'SIGNUP' then ' for ' else ' from ' end || p_time_slot, l_scope);
+
+  begin
+    -- find the registration to determine if this is a branch new player
+    select tp.id
+         , p.rank_code
+      into l_registration_id
+         , l_rank_code
+    from wmg_tournament_players tp
+       , wmg_players_v p
+    where tp.player_id = p.id
+      and tp.tournament_session_id = p_tournament_session_id
+      and p.id = p_player_id
+      and tp.active_ind = 'Y';
+   exception
+    when no_data_found then
+      -- this should not happen but lets protect
+      l_registration_id := null;
+   end;
+
+   if l_rank_code = 'NEW' then
+       -- send a notification
+       wmg_notification.new_player(
+          p_player_id => p_player_id
+        , p_registration_id => l_registration_id
+      );
+    end if;
 
   logger.log('END', l_scope, null, l_params);
 

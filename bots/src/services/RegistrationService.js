@@ -118,14 +118,16 @@ export class RegistrationService {
    * @param {Object} discordUser - Discord user data
    * @param {number} sessionId - Tournament session ID
    * @param {string} timeSlot - Time slot (e.g., "22:00")
+   * @param {string} timeZone - 'America/Central'
    * @returns {Promise<Object>} Registration confirmation
    */
-  async registerPlayer(discordUser, sessionId, timeSlot) {
+  async registerPlayer(discordUser, sessionId, timeSlot, timeZone) {
     return this.retryHandler.executeWithRetry(
       async () => {
         const requestData = {
           session_id: sessionId,
           time_slot: timeSlot,
+          time_zone: timeZone,
           discord_user: {
             id: discordUser.id,
             username: discordUser.username,

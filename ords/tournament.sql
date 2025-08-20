@@ -572,7 +572,8 @@ end;');
   l_clob clob;
   l_discord_id varchar2(50);
   l_player_id number;
-  l_player_name varchar2(100);
+  l_player_name wmg_players_v.player_name%type;
+  l_player_timezone wmg_players_v.prefered_tz%type;
   l_scope logger_logs.scope%type := ''REST:/players/registrations'';
 begin
   logger.log(p_text => ''START'', p_scope => l_scope);
@@ -581,8 +582,8 @@ begin
   logger.log(p_text => ''discord_id: '' || l_discord_id, p_scope => l_scope);
 
   -- Get player info
-  select id, player_name
-  into l_player_id, l_player_name
+  select id, player_name, prefered_tz
+  into l_player_id, l_player_name, l_player_timezone
   from wmg_players_v
   where discord_id = to_number(l_discord_id default null on conversion error);
 
@@ -591,7 +592,8 @@ begin
          ''player'' value json_object(
             ''id'' value l_player_id,
             ''name'' value l_player_name,
-            ''discord_id'' value l_discord_id
+            ''discord_id'' value l_discord_id,
+            ''timezone'' value l_player_timezone
          ),
          ''registrations'' value (
             select json_arrayagg(
@@ -686,6 +688,7 @@ ORDS.DEFINE_PARAMETER(
   l_discord_user t_discord_user;
   l_session_id number;
   l_time_slot varchar2(5);
+  l_timezone wmg_players.prefered_tz%type;
   l_existing_registration number;
   l_registration_open varchar2(1);
   l_week varchar2(10);
@@ -701,6 +704,7 @@ begin
   -- Extract parameters
   l_session_id := l_json.get_number(''session_id'');
   l_time_slot := l_json.get_string(''time_slot'');
+  l_timezone  := l_json.get_string(''time_zone'');
   
   logger.log(p_text => ''session_id: '' || l_session_id || '', time_slot: '' || l_time_slot, p_scope => l_scope);
   
@@ -730,6 +734,12 @@ begin
   l_discord_user.init_from_json(l_json.get_object(''discord_user'').to_clob());
   l_discord_user.sync_player();
   
+  if l_timezone is not null then
+    update wmg_players
+        set prefered_tz = l_timezone
+      where id = l_discord_user.player_id;
+  end if;
+
   logger.log(p_text => ''player_id: '' || l_discord_user.player_id, p_scope => l_scope);
   
   -- Check if already registered for this session
@@ -741,15 +751,7 @@ begin
     and active_ind = ''Y'';
     
   if l_existing_registration > 0 then
-    apex_json.initialize_clob_output;
-    apex_json.open_object;
-    apex_json.write(''success'', false);
-    apex_json.write(''error_code'', ''ALREADY_REGISTERED'');
-    apex_json.write(''message'', ''Player is already registered for this tournament session'');
-    apex_json.close_object;
-    l_response := apex_json.get_clob_output;
-    apex_json.free_output;
-    goto output_response;
+    logger.log(p_text => ''.. already registered. maybe changing time_slot'', p_scope => l_scope);
   end if;
   
   -- Validate time slot

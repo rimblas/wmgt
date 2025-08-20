@@ -16,6 +16,8 @@ is
  c_crlf varchar2(2) := chr(13)||chr(10);
  c_amp varchar2(2) := chr(38);
 
+ g_apex_session         number                 := sys_context('APEX$SESSION','APP_SESSION');   -- A handle to the APEX session. We need to know if there is one.
+
 /**
  * @constant gc_scope_prefix Standard logger package name
  */
@@ -240,11 +242,15 @@ begin
         '}' ;
 
     log(l_body, l_scope);
-    apex_mail.send (
-        p_to                 => l_email_override,
-        p_from               => wmg_util.get_param('FROM_EMAIL'),
-        p_template_static_id => 'NEW_PLAYER_REGISTRATION',
-        p_placeholders       => l_body);
+    if g_apex_session is null then
+      log('.. skipping mail because we are not in an APEX session', l_scope);
+    else
+      apex_mail.send (
+          p_to                 => l_email_override,
+          p_from               => wmg_util.get_param('FROM_EMAIL'),
+          p_template_static_id => 'NEW_PLAYER_REGISTRATION',
+          p_placeholders       => l_body);
+    end if;
 
      -- Construct the embeds JSON for the webhook
      l_content := 'New Player: __' || p.player_name || '__ just registered for __' || l_time_slot || '__'
@@ -269,7 +275,7 @@ begin
                          'name' value 'Discord ID', 'value' value p.discord_id
                      ),
                      json_object(
-                         'name' value 'Country', 'value' value p.country, 'inline' value true
+                         'name' value 'Country', 'value' value nvl(p.country, 'TBD'), 'inline' value true
                      ),
                      json_object(
                          'name' value 'Timezone', 'value' value p.prefered_tz, 'inline' value true
