@@ -90,6 +90,12 @@ procedure process_registration(
   , p_time_slot   in wmg_tournament_players.time_slot%type default null
 );
 
+procedure cast_player_vote(
+    p_player_id   in wmg_tournament_players.player_id%type
+  , p_course_code in wmg_courses.code%type
+  , p_vote        in number
+);
+
 --------------------------------------------------------------------------------
 procedure score_entry_verification(
    p_week      in wmg_rounds.week%type

@@ -2089,6 +2089,76 @@ end process_registration;
 
 
 
+/**
+ * Cast a player vote for the current week
+ *
+ *
+ * @example
+ * 
+ * @issue
+ *
+ * @author Jorge Rimblas
+ * @created August 20, 2025
+ * @param p_player_id:   player voting
+ * @param p_course_code: course code
+ * @param p_vote: vote, either +1 or -1
+ * @return
+ */
+procedure cast_player_vote(
+    p_player_id   in wmg_tournament_players.player_id%type
+  , p_course_code in wmg_courses.code%type
+  , p_vote        in number
+)
+is
+  l_scope  logger_logs.scope%type := gc_scope_prefix || 'cast_player_vote';
+  l_params logger.tab_param;
+begin
+  logger.append_param(l_params, 'p_player_id', p_player_id);
+  logger.append_param(l_params, 'p_course_code', p_course_code);
+  logger.append_param(l_params, 'p_vote', p_vote);
+  logger.log('BEGIN', l_scope, null, l_params);
+
+  if p_player_id is null or p_course_code is null or p_vote is null then
+    return;
+  end if;
+
+  if p_vote = -1 or p_vote = 1 then
+    null; -- good vote
+  else
+    raise_application_error(-20000, 'Can only vote +1 or -1');
+  end if;
+
+  merge into wmg_course_vote v
+  using (
+    select c.id course_id
+         , p_vote vote
+         , p_player_id player_id
+      from wmg_courses c
+     where c.code = p_course_code
+  ) src
+  on (v.course_id = src.course_id and v.player_id = src.player_id)
+  when matched then
+    update set v.vote = 
+           case 
+              when v.vote + src.vote = 0 then 0 -- flip flop the vote
+              else src.vote
+           end
+  when not matched then
+    insert (course_id, vote, player_id)
+    values (src.course_id, src.vote, src.player_id);
+
+
+  logger.log('END', l_scope, null, l_params);
+
+  exception
+    when OTHERS then
+      logger.log_error('Unhandled Exception', l_scope, null, l_params);
+      -- x_result_status := mm_api.g_ret_sts_unexp_error;
+      raise;
+end cast_player_vote;
+
+
+
 
 
 
