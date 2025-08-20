@@ -1,14 +1,22 @@
 {
   "name": "discord-tournament-bot",
   "version": "1.0.0",
-  "description": "Discord bot for WMGT tournament registration",
+  "description": "Discord bot for WMGT tournament",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "test": "node test-setup.js",
-    "test:vitest": "vitest --run"
+    "test:vitest": "vitest --run",
+    "build": "echo 'No build step required for Node.js'",
+    "deploy": "./scripts/deploy.sh deploy",
+    "deploy:compose": "./scripts/deploy.sh compose",
+    "status": "./scripts/deploy.sh status",
+    "logs": "./scripts/deploy.sh logs",
+    "health": "./scripts/deploy.sh health",
+    "backup": "./scripts/backup.sh",
+    "monitor": "./scripts/monitor.sh monitor"
   },
   "keywords": [
     "discord",

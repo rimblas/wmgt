@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: wmgt-discord-bot-monitor
+  namespace: wmgt-bot
+  labels:
+    app: wmgt-discord-bot
+spec:
+  selector:
+    matchLabels:
+      app: wmgt-discord-bot
+  endpoints:
+  - port: health
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s

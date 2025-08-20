@@ -3,6 +3,7 @@ import { config } from './config/config.js';
 import { logger } from './utils/Logger.js';
 import { ErrorHandler } from './utils/ErrorHandler.js';
 import { DiscordRateLimitHandler } from './utils/DiscordRateLimitHandler.js';
+import { HealthCheckServer, ProcessMonitor } from './utils/HealthCheck.js';
 import registerCommand from './commands/register.js';
 import unregisterCommand from './commands/unregister.js';
 import mystatusCommand from './commands/mystatus.js';
@@ -14,6 +15,10 @@ export class DiscordTournamentBot {
     this.logger = logger.child({ component: 'DiscordTournamentBot' });
     this.errorHandler = new ErrorHandler(this.logger);
     this.rateLimitHandler = new DiscordRateLimitHandler(this.logger);
+
+    // Initialize monitoring
+    this.processMonitor = new ProcessMonitor();
+    this.healthCheckServer = new HealthCheckServer(this);
 
     // Initialize Discord client with required intents
     this.client = new Client({
@@ -29,13 +34,13 @@ export class DiscordTournamentBot {
 
     // Collection to store commands
     this.client.commands = new Collection();
-    
+
     // Track interaction timeouts
     this.activeInteractions = new Map();
-    
+
     // Load commands
     this.loadCommands();
-    
+
     // Set up event handlers
     this.setupEventHandlers();
   }
@@ -109,6 +114,10 @@ export class DiscordTournamentBot {
           }
         );
 
+        // Increment monitoring counters
+        this.processMonitor.incrementRequests();
+        this.processMonitor.incrementCommand(interaction.commandName);
+
         // Execute command with rate limiting
         await this.rateLimitHandler.executeRequest(
           () => command.execute(interaction),
@@ -124,6 +133,9 @@ export class DiscordTournamentBot {
         // Clear timeout on error
         clearTimeout(timeoutId);
         this.activeInteractions.delete(interactionId);
+
+        // Increment error counter
+        this.processMonitor.incrementErrors();
 
         // Handle the error using our error handler
         await this.errorHandler.handleInteractionError(
@@ -208,7 +220,7 @@ export class DiscordTournamentBot {
 
   async registerSlashCommands() {
     const commands = [];
-    
+
     // Collect command data for registration
     for (const command of this.client.commands.values()) {
       commands.push(command.data.toJSON());
@@ -273,16 +285,22 @@ export class DiscordTournamentBot {
         nodeVersion: process.version,
         environment: process.env.NODE_ENV || 'development'
       });
-      
+
+      // Start monitoring
+      this.processMonitor.start();
+
+      // Start health check server
+      this.healthCheckServer.start();
+
       // Register slash commands
       await this.registerSlashCommands();
-      
+
       // Login to Discord with rate limiting
       await this.rateLimitHandler.executeRequest(
         () => this.client.login(config.discord.token),
         'bot_login'
       );
-      
+
     } catch (error) {
       this.logger.error('Failed to start bot', {
         error: error.message,
@@ -296,8 +314,12 @@ export class DiscordTournamentBot {
     this.logger.info('Shutting down Discord Tournament Bot', {
       uptime: process.uptime(),
       activeInteractions: this.activeInteractions.size,
-      rateLimitStatus: this.rateLimitHandler.getStatus()
+      rateLimitStatus: this.rateLimitHandler.getStatus(),
+      metrics: this.processMonitor.getMetrics()
     });
+
+    // Stop health check server
+    this.healthCheckServer.stop();
 
     // Clear any active interaction timeouts
     this.activeInteractions.clear();
@@ -322,7 +344,8 @@ export class DiscordTournamentBot {
       users: this.client.users.cache.size,
       activeInteractions: this.activeInteractions.size,
       rateLimitStatus: this.rateLimitHandler.getStatus(),
-      lastReady: this.client.readyAt?.toISOString()
+      lastReady: this.client.readyAt?.toISOString(),
+      metrics: this.processMonitor.getMetrics()
     };
   }
 }
