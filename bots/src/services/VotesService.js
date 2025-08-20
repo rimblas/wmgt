@@ -142,6 +142,146 @@ export class VotesService {
   }
 
   /**
+   * Parse API response and extract course data into structured format
+   * @param {Object} apiResponse - Raw API response from votes endpoint
+   * @returns {Object} Processed data with easyCourses and hardCourses arrays
+   */
+  formatVotingData(apiResponse) {
+    if (!apiResponse || !apiResponse.items || !Array.isArray(apiResponse.items)) {
+      this.logger.warn('Invalid API response structure for formatting', { apiResponse });
+      return { easyCourses: [], hardCourses: [] };
+    }
+
+    const easyCourses = [];
+    const hardCourses = [];
+
+    apiResponse.items.forEach(item => {
+      // Process easy course data
+      if (item.easy_course && item.easy_name) {
+        easyCourses.push({
+          code: item.easy_course,
+          name: item.easy_name,
+          votes: item.easy_votes || 0,
+          isTop: item.easy_votes_top === 'Y',
+          order: item.easy_vote_order || 0
+        });
+      }
+
+      // Process hard course data (handle null hard courses)
+      if (item.hard_course && item.hard_name) {
+        hardCourses.push({
+          code: item.hard_course,
+          name: item.hard_name,
+          votes: item.hard_votes || 0,
+          isTop: item.hard_votes_top === 'Y',
+          order: item.hard_vote_order || 0
+        });
+      }
+    });
+
+    // Sort courses by vote order (maintaining API ordering)
+    easyCourses.sort((a, b) => a.order - b.order);
+    hardCourses.sort((a, b) => a.order - b.order);
+
+    this.logger.debug('Voting data formatted successfully', {
+      easyCoursesCount: easyCourses.length,
+      hardCoursesCount: hardCourses.length
+    });
+
+    return { easyCourses, hardCourses };
+  }
+
+  /**
+   * Create formatted display strings for Discord embed fields
+   * @param {Array} courses - Array of course objects with code, name, votes, isTop
+   * @returns {string} Formatted string for Discord embed field
+   */
+  formatCoursesForDisplay(courses) {
+    if (!courses || courses.length === 0) {
+      return 'No courses available';
+    }
+
+    const formattedCourses = courses.map(course => {
+      // Handle zero and negative votes display
+      const voteDisplay = course.votes.toString();
+      
+      // Add visual indicator for top courses
+      const topIndicator = course.isTop ? '🏆 ' : '';
+      
+      // Format: "🏆 ABC (123) - Course Name" or "ABC (123) - Course Name"
+      return `${topIndicator}${course.code} (${voteDisplay}) - ${course.name}`;
+    });
+
+    let result = formattedCourses.join('\n');
+    
+    // Handle Discord character limits (1024 per field)
+    if (result.length > 1024) {
+      this.logger.warn('Course display string exceeds Discord field limit', {
+        length: result.length,
+        coursesCount: courses.length
+      });
+      
+      // Truncate and add indicator
+      result = result.substring(0, 1000) + '\n... (truncated)';
+    }
+
+    return result;
+  }
+
+  /**
+   * Split courses into Easy and Hard columns with proper formatting
+   * @param {Object} formattedData - Data from formatVotingData()
+   * @returns {Object} Object with formatted easy and hard course strings
+   */
+  splitIntoColumns(formattedData) {
+    const { easyCourses, hardCourses } = formattedData;
+
+    return {
+      easyColumn: this.formatCoursesForDisplay(easyCourses),
+      hardColumn: this.formatCoursesForDisplay(hardCourses)
+    };
+  }
+
+  /**
+   * Create complete Discord embed data structure for voting results
+   * @param {Object} apiResponse - Raw API response from votes endpoint
+   * @returns {Object} Discord embed object ready for sending
+   */
+  createVotesEmbed(apiResponse) {
+    const formattedData = this.formatVotingData(apiResponse);
+    const columns = this.splitIntoColumns(formattedData);
+
+    const embed = {
+      title: '🏆 Course Voting Results',
+      color: 0x00AE86,
+      fields: [
+        {
+          name: 'Easy Courses',
+          value: columns.easyColumn,
+          inline: true
+        },
+        {
+          name: 'Hard Courses',
+          value: columns.hardColumn,
+          inline: true
+        }
+      ],
+      footer: {
+        text: 'Vote counts updated in real-time'
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    this.logger.debug('Votes embed created successfully', {
+      fieldsCount: embed.fields.length,
+      easyCoursesLength: columns.easyColumn.length,
+      hardCoursesLength: columns.hardColumn.length
+    });
+
+    return embed;
+  }
+
+  /**
    * Get service health status
    * @returns {Promise<Object>} Service health information
    */
