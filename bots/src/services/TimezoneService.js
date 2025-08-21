@@ -156,9 +156,9 @@ export class TimezoneService {
       const dateChanged = utcDate !== localDate;
 
       if (dateChanged && showDate) {
-        return `${utcDisplay} (${localDisplay})`;
+        return `${localDisplay} (${utcDisplay})`;
       } else {
-        return `${utcDisplay} (${localDisplay})`;
+        return `${localDisplay} (${utcDisplay})`;
       }
     } catch (error) {
       throw new Error(`Failed to format time display: ${error.message}`);
