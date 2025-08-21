@@ -55,3 +55,24 @@ src/
 - Node.js 18.0.0 or higher
 - Discord bot token
 - Access to WMGT backend APIs
+
+## NAS Install
+
+### Log Cleanup
+
+File: `/etc/logrotate.d/discordbot`
+
+```
+/root/.forever/*.log
+/volume1/repos/wmgt/bots/logs/log.txt
+/volume1/repos/wmgt/bots/logs/output.txt
+/volume1/repos/wmgt/bots/logs/bot.log {
+    daily
+    rotate 30
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}
+```

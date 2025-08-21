@@ -74,8 +74,10 @@ export default {
         return await interaction.editReply({ embeds: [noDataEmbed] });
       }
 
-      // Create voting results embed
+      // Create voting results embed with fallback to text display
       let votesEmbed;
+      let fallbackToText = false;
+      
       try {
         const embedData = votesService.createVotesEmbed(votingData);
         
@@ -107,17 +109,57 @@ export default {
           votingDataItems: votingData.items?.length || 0
         });
 
-        const errorEmbed = new EmbedBuilder()
-          .setColor(0xFF0000)
-          .setTitle('❌ Data Processing Error')
-          .setDescription('Unable to process the voting data for display. The data may be in an unexpected format.')
-          .setFooter({ text: 'Please try again later or contact an Admin.' });
-
-        return await interaction.editReply({ embeds: [errorEmbed] });
+        // Set flag to use text fallback
+        fallbackToText = true;
+        
+        commandLogger.info('Attempting fallback to text-based display', {
+          userId: interaction.user.id,
+          reason: 'embed_creation_failed'
+        });
       }
 
-      // Send the voting results embed
-      await interaction.editReply({ embeds: [votesEmbed] });
+      // Try to send the voting results embed, with fallback to text
+      try {
+        if (!fallbackToText) {
+          await interaction.editReply({ embeds: [votesEmbed] });
+        } else {
+          // Fallback to text-based display
+          const textDisplay = votesService.createTextDisplay(votingData);
+          await interaction.editReply({ 
+            content: textDisplay,
+            embeds: [] // Clear any existing embeds
+          });
+          
+          commandLogger.info('Successfully sent text-based voting results', {
+            userId: interaction.user.id,
+            textLength: textDisplay.length
+          });
+        }
+      } catch (sendError) {
+        commandLogger.error('Failed to send voting results (both embed and text)', {
+          error: sendError.message,
+          stack: sendError.stack,
+          userId: interaction.user.id,
+          wasUsingFallback: fallbackToText
+        });
+
+        // Final fallback - simple error message
+        const errorMessage = '❌ **Voting Results Unavailable**\n\nUnable to display voting results due to a technical issue. Please try again later or contact support.';
+        
+        try {
+          await interaction.editReply({ 
+            content: errorMessage,
+            embeds: []
+          });
+        } catch (finalError) {
+          commandLogger.error('Failed to send final error message', {
+            error: finalError.message,
+            userId: interaction.user.id
+          });
+        }
+        
+        return;
+      }
 
       commandLogger.info('Votes command completed successfully', {
         userId: interaction.user.id,
