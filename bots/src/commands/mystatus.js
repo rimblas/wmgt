@@ -11,8 +11,9 @@ export default {
     const registrationService = new RegistrationService();
     const timezoneService = new TimezoneService();
     
-    // Get user's timezone preference (from command option or default to UTC)
-    const userTimezone = interaction.options.getString('timezone') || 'UTC';
+    // Try to get stored timeszone preference
+    let userTimezone = await timezoneService.getUserTimezone(registrationService, interaction.user.id, 'UTC');
+    
     
     try {
       // Validate timezone if provided
