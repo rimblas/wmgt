@@ -62,7 +62,7 @@ export class DiscordTournamentBot {
 
   setupEventHandlers() {
     // Bot ready event
-    this.client.once('ready', () => {
+    this.client.once('clientReady', () => {
       this.logger.info(`${config.bot.name} v${config.bot.version} is online!`, {
         guilds: this.client.guilds.cache.size,
         users: this.client.users.cache.size,
