@@ -339,7 +339,7 @@ describe('VotesService', () => {
 
       const result = votesService.formatCoursesForDisplay(courses);
 
-      expect(result).toBe('🏆 ALE (5) - Alfheim Easy\nBBE (2) - Bogey Bayou Easy');
+      expect(result).toBe('🏆 **ALE** (5) - Alfheim Easy\n**BBE** (2) - Bogey Bayou Easy');
     });
 
     it('should handle zero and negative votes display', () => {
@@ -362,7 +362,7 @@ describe('VotesService', () => {
 
       const result = votesService.formatCoursesForDisplay(courses);
 
-      expect(result).toBe('ZER (0) - Zero Course\nNEG (-3) - Negative Course');
+      expect(result).toBe('**ZER** (0) - Zero Course\n**NEG** (-3) - Negative Course');
     });
 
     it('should return "No courses available" for empty array', () => {
@@ -389,7 +389,7 @@ describe('VotesService', () => {
       const result = votesService.formatCoursesForDisplay(courses);
 
       expect(result.length).toBeLessThanOrEqual(1024);
-      expect(result).toContain('... (truncated)');
+      expect(result).toContain('*... and more courses*');
     });
   });
 
@@ -418,8 +418,8 @@ describe('VotesService', () => {
 
       const result = votesService.splitIntoColumns(formattedData);
 
-      expect(result.easyColumn).toBe('🏆 ALE (5) - Alfheim Easy');
-      expect(result.hardColumn).toBe('ALH (3) - Alfheim Hard');
+      expect(result.easyColumn).toBe('🏆 **ALE** (5) - Alfheim Easy');
+      expect(result.hardColumn).toBe('**ALH** (3) - Alfheim Hard');
     });
 
     it('should handle empty courses arrays', () => {
@@ -461,13 +461,13 @@ describe('VotesService', () => {
       
       expect(result.fields[0]).toEqual({
         name: 'Easy Courses',
-        value: '🏆 ALE (5) - Alfheim Easy',
+        value: '🏆 **ALE** (5) - Alfheim Easy',
         inline: true
       });
       
       expect(result.fields[1]).toEqual({
         name: 'Hard Courses',
-        value: 'ALH (3) - Alfheim Hard',
+        value: '**ALH** (3) - Alfheim Hard',
         inline: true
       });
 

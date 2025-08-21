@@ -21,13 +21,13 @@
   - Add proper error handling for API failures and malformed data
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 4. Integrate votes command into bot
+- [x] 4. Integrate votes command into bot
   - Add votes command to the commands array in `bots/src/index.js`
   - Update configuration to include votes API endpoint
   - Test command registration and slash command availability
   - _Requirements: 1.1, 1.5_
 
-- [ ] 5. Implement embed formatting and visual indicators
+- [x] 5. Implement embed formatting and visual indicators
   - Format course display with vote counts and course codes
   - Add visual highlighting for "top" voted courses
   - Ensure proper sorting by vote count within each column

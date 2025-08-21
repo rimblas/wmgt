@@ -202,27 +202,43 @@ export class VotesService {
     }
 
     const formattedCourses = courses.map(course => {
-      // Handle zero and negative votes display
+      // Handle zero and negative votes display clearly (Requirements 3.2, 3.3)
       const voteDisplay = course.votes.toString();
       
-      // Add visual indicator for top courses
+      // Add visual indicator for top courses (Requirement 2.5)
       const topIndicator = course.isTop ? '🏆 ' : '';
       
-      // Format: "🏆 ABC (123) - Course Name" or "ABC (123) - Course Name"
-      return `${topIndicator}${course.code} (${voteDisplay}) - ${course.name}`;
+      // Enhanced format with better visual hierarchy
+      // Format: "🏆 **ABC** (123) - Course Name" for top courses
+      // Format: "**ABC** (123) - Course Name" for regular courses
+      return `${topIndicator}**${course.code}** (${voteDisplay}) - ${course.name}`;
     });
 
     let result = formattedCourses.join('\n');
     
-    // Handle Discord character limits (1024 per field)
+    // Handle Discord character limits (1024 per field) with better truncation
     if (result.length > 1024) {
       this.logger.warn('Course display string exceeds Discord field limit', {
         length: result.length,
         coursesCount: courses.length
       });
       
-      // Truncate and add indicator
-      result = result.substring(0, 1000) + '\n... (truncated)';
+      // Try to truncate at a course boundary to avoid cutting off course names
+      const lines = result.split('\n');
+      let truncatedResult = '';
+      let currentLength = 0;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const lineWithNewline = lines[i] + (i < lines.length - 1 ? '\n' : '');
+        if (currentLength + lineWithNewline.length + 20 > 1024) { // Leave room for truncation message
+          truncatedResult += '\n*... and more courses*';
+          break;
+        }
+        truncatedResult += lineWithNewline;
+        currentLength += lineWithNewline.length;
+      }
+      
+      result = truncatedResult;
     }
 
     return result;
