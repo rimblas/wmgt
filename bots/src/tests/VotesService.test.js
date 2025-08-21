@@ -300,21 +300,10 @@ describe('VotesService', () => {
       });
     });
 
-    it('should return empty arrays for invalid input', () => {
-      expect(votesService.formatVotingData(null)).toEqual({
-        easyCourses: [],
-        hardCourses: []
-      });
-
-      expect(votesService.formatVotingData({})).toEqual({
-        easyCourses: [],
-        hardCourses: []
-      });
-
-      expect(votesService.formatVotingData({ items: null })).toEqual({
-        easyCourses: [],
-        hardCourses: []
-      });
+    it('should throw errors for invalid input', () => {
+      expect(() => votesService.formatVotingData(null)).toThrow('No voting data provided for formatting');
+      expect(() => votesService.formatVotingData({})).toThrow('Invalid voting data format - missing items');
+      expect(() => votesService.formatVotingData({ items: null })).toThrow('Invalid voting data format - missing items');
     });
   });
 
@@ -482,6 +471,272 @@ describe('VotesService', () => {
 
       expect(result.fields[0].value).toBe('No courses available');
       expect(result.fields[1].value).toBe('No courses available');
+    });
+  });
+
+  describe('createTextDisplay', () => {
+    it('should create text-based display as fallback', () => {
+      const apiResponse = {
+        items: [
+          {
+            easy_vote_order: 1,
+            easy_votes: 5,
+            easy_votes_top: 'Y',
+            easy_course: 'ALE',
+            easy_name: 'Alfheim Easy',
+            hard_course: 'ALH',
+            hard_name: 'Alfheim Hard',
+            hard_votes: 3,
+            hard_votes_top: null
+          }
+        ]
+      };
+
+      const result = votesService.createTextDisplay(apiResponse);
+
+      expect(result).toContain('🏆 **Course Voting Results**');
+      expect(result).toContain('**Easy Courses:**');
+      expect(result).toContain('🏆 **ALE** (5) - Alfheim Easy');
+      expect(result).toContain('**Hard Courses:**');
+      expect(result).toContain('**ALH** (3) - Alfheim Hard');
+      expect(result).toContain('*Vote counts updated in real-time*');
+    });
+
+    it('should handle empty courses in text display', () => {
+      const apiResponse = { items: [] };
+
+      const result = votesService.createTextDisplay(apiResponse);
+
+      expect(result).toContain('No easy courses available');
+      expect(result).toContain('No hard courses available');
+    });
+
+    it('should truncate text display if too long', () => {
+      // Create a response with many courses to exceed character limit
+      const items = [];
+      for (let i = 0; i < 50; i++) {
+        items.push({
+          easy_vote_order: i,
+          easy_votes: i,
+          easy_course: `COURSE${i}`,
+          easy_name: `Very Long Course Name That Takes Up Space ${i}`.repeat(3),
+          hard_course: `HARD${i}`,
+          hard_name: `Very Long Hard Course Name That Takes Up Space ${i}`.repeat(3),
+          hard_votes: i
+        });
+      }
+
+      const result = votesService.createTextDisplay({ items });
+
+      expect(result.length).toBeLessThanOrEqual(1950); // Allow some buffer for the truncation message
+      expect(result).toContain('*... and more courses*');
+    });
+
+    it('should return error message when processing fails', () => {
+      // Mock formatVotingData to throw an error
+      const originalFormatVotingData = votesService.formatVotingData;
+      votesService.formatVotingData = vi.fn().mockImplementation(() => {
+        throw new Error('Processing failed');
+      });
+
+      const result = votesService.createTextDisplay({ items: [] });
+
+      expect(result).toContain('❌ **Voting Results Unavailable**');
+      expect(result).toContain('Unable to process voting data for display');
+
+      // Restore original method
+      votesService.formatVotingData = originalFormatVotingData;
+    });
+  });
+
+  describe('Error Handling Scenarios', () => {
+    describe('API Unavailability', () => {
+      it('should handle connection refused errors', async () => {
+        const error = new Error('Connection refused');
+        error.code = 'ECONNREFUSED';
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.message).toContain('tournament service');
+      });
+
+      it('should handle DNS resolution errors', async () => {
+        const error = new Error('DNS lookup failed');
+        error.code = 'ENOTFOUND';
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.message).toContain('tournament service');
+      });
+
+      it('should handle timeout errors', async () => {
+        const error = new Error('Request timeout');
+        error.code = 'ETIMEDOUT';
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.message).toContain('took too long');
+      });
+    });
+
+    describe('HTTP Status Errors', () => {
+      it('should handle 429 rate limiting', async () => {
+        const error = new Error('Rate limited');
+        error.response = { 
+          status: 429,
+          statusText: 'Too Many Requests',
+          headers: { 'retry-after': '60' }
+        };
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.retryAfter).toBeDefined();
+      });
+
+      it('should handle 500 server errors', async () => {
+        const error = new Error('Internal server error');
+        error.response = { 
+          status: 500,
+          statusText: 'Internal Server Error'
+        };
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.message).toContain('unavailable');
+      });
+
+      it('should handle 404 not found errors', async () => {
+        const error = new Error('Not found');
+        error.response = { 
+          status: 404,
+          statusText: 'Not Found'
+        };
+        mockAxiosInstance.get.mockRejectedValue(error);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow();
+        
+        const processedError = votesService.handleApiError(error, 'test');
+        expect(processedError.message).toContain('could not be found');
+      });
+    });
+
+    describe('Malformed Response Handling', () => {
+      it('should handle null response', async () => {
+        mockAxiosInstance.get.mockResolvedValue(null);
+
+        await expect(votesService.getVotingResults()).rejects.toThrow('No response received');
+      });
+
+      it('should handle response with wrong data type', async () => {
+        mockAxiosInstance.get.mockResolvedValue({ data: 'invalid string' });
+
+        await expect(votesService.getVotingResults()).rejects.toThrow('Invalid voting data format');
+      });
+
+      it('should handle response with invalid items structure', async () => {
+        mockAxiosInstance.get.mockResolvedValue({ 
+          data: { items: { notAnArray: true } }
+        });
+
+        await expect(votesService.getVotingResults()).rejects.toThrow('items not array');
+      });
+    });
+
+    describe('Data Processing Error Handling', () => {
+      it('should handle invalid vote count types', () => {
+        expect(votesService.validateVoteCount('invalid', 'test')).toBe(0);
+        expect(votesService.validateVoteCount(NaN, 'test')).toBe(0);
+        expect(votesService.validateVoteCount(Infinity, 'test')).toBe(0);
+        expect(votesService.validateVoteCount({}, 'test')).toBe(0);
+      });
+
+      it('should handle invalid order types', () => {
+        expect(votesService.validateOrder('invalid', 'test')).toBe(0);
+        expect(votesService.validateOrder(NaN, 'test')).toBe(0);
+        expect(votesService.validateOrder(Infinity, 'test')).toBe(0);
+        expect(votesService.validateOrder([], 'test')).toBe(0);
+      });
+
+      it('should handle malformed course items gracefully', () => {
+        const apiResponse = {
+          items: [
+            null, // null item
+            'invalid', // string instead of object
+            {}, // empty object
+            { easy_course: 'ALE' }, // missing name
+            { easy_name: 'Alfheim' }, // missing code
+            {
+              easy_course: 123, // wrong type
+              easy_name: ['array'], // wrong type
+              easy_votes: 'invalid'
+            }
+          ]
+        };
+
+        const result = votesService.formatVotingData(apiResponse);
+        
+        // Should return empty arrays since no valid courses
+        expect(result.easyCourses).toHaveLength(0);
+        expect(result.hardCourses).toHaveLength(0);
+      });
+
+      it('should handle mixed valid and invalid items', () => {
+        const apiResponse = {
+          items: [
+            {
+              easy_vote_order: 1,
+              easy_votes: 5,
+              easy_course: 'ALE',
+              easy_name: 'Alfheim Easy'
+            },
+            null, // invalid item
+            {
+              easy_vote_order: 2,
+              easy_votes: 3,
+              easy_course: 'BBE',
+              easy_name: 'Bogey Bayou Easy'
+            }
+          ]
+        };
+
+        const result = votesService.formatVotingData(apiResponse);
+        
+        // Should process valid items and skip invalid ones
+        expect(result.easyCourses).toHaveLength(2);
+        expect(result.easyCourses[0].code).toBe('ALE');
+        expect(result.easyCourses[1].code).toBe('BBE');
+      });
+    });
+
+    describe('Graceful Degradation', () => {
+      it('should throw error when all processing fails', () => {
+        expect(() => votesService.formatVotingData(null)).toThrow('No voting data provided for formatting');
+      });
+
+      it('should handle formatVotingData throwing errors', () => {
+        expect(() => {
+          votesService.formatVotingData({ items: 'invalid' });
+        }).toThrow('Invalid voting data format');
+      });
+
+      it('should provide fallback text when embed creation fails', () => {
+        const apiResponse = { items: [] };
+        const textDisplay = votesService.createTextDisplay(apiResponse);
+        
+        expect(textDisplay).toContain('Course Voting Results');
+        expect(textDisplay).toContain('No easy courses available');
+        expect(textDisplay).toContain('No hard courses available');
+      });
     });
   });
 });

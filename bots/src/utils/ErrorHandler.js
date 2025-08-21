@@ -102,6 +102,44 @@ export class ErrorHandler {
         suggestion: 'Please check your input and try again.'
       },
       
+      // Votes API Specific Errors
+      'VOTES_API_UNAVAILABLE': {
+        title: '📊 Voting Service Unavailable',
+        message: 'The voting service is temporarily unavailable.',
+        color: 0xFF6B6B,
+        suggestion: 'Please try again in a few minutes. If the problem persists, contact support.'
+      },
+      'VOTES_DATA_INVALID': {
+        title: '📊 Invalid Voting Data',
+        message: 'The voting data received is in an unexpected format.',
+        color: 0xFF0000,
+        suggestion: 'This may be a temporary issue. Please try again later.'
+      },
+      'VOTES_NO_DATA': {
+        title: '📊 No Voting Data',
+        message: 'No voting data is currently available.',
+        color: 0xFFA500,
+        suggestion: 'Voting may not have started yet or no courses are available for voting.'
+      },
+      'VOTES_PROCESSING_ERROR': {
+        title: '📊 Data Processing Error',
+        message: 'Unable to process the voting data for display.',
+        color: 0xFF0000,
+        suggestion: 'The data may be corrupted or in an unexpected format. Please try again later.'
+      },
+      'EMBED_CREATION_FAILED': {
+        title: '🤖 Display Error',
+        message: 'Unable to create the voting results display.',
+        color: 0xFF6B6B,
+        suggestion: 'This may be due to Discord limitations. Trying text-based display...'
+      },
+      'EMBED_PERMISSION_ERROR': {
+        title: '🔒 Permission Error',
+        message: 'The bot lacks permission to send embedded messages.',
+        color: 0xFFA500,
+        suggestion: 'Using text-based display instead. Contact an admin to grant embed permissions.'
+      },
+
       // Generic Errors
       'UNKNOWN_ERROR': {
         title: '❌ Unexpected Error',
@@ -205,6 +243,27 @@ export class ErrorHandler {
     // Check error message content
     const message = error.message?.toLowerCase() || '';
     
+    // Votes API specific errors
+    if (message.includes('voting data') && message.includes('invalid')) {
+      return 'VOTES_DATA_INVALID';
+    }
+    if (message.includes('no voting data') || message.includes('voting data') && message.includes('empty')) {
+      return 'VOTES_NO_DATA';
+    }
+    if (message.includes('voting') && (message.includes('process') || message.includes('format'))) {
+      return 'VOTES_PROCESSING_ERROR';
+    }
+    if (message.includes('voting') && message.includes('unavailable')) {
+      return 'VOTES_API_UNAVAILABLE';
+    }
+    if (message.includes('embed') && (message.includes('permission') || message.includes('forbidden'))) {
+      return 'EMBED_PERMISSION_ERROR';
+    }
+    if (message.includes('embed') && message.includes('failed')) {
+      return 'EMBED_CREATION_FAILED';
+    }
+    
+    // Existing error classifications
     if (message.includes('registration') && message.includes('closed')) {
       return 'REGISTRATION_CLOSED';
     }
