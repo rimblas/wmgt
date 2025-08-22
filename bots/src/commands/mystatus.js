@@ -75,9 +75,26 @@ export default {
               }
             );
 
-            // Build registration details
-            let registrationDetails = `**Time:** ${formattedTime}\n`;
+
+            // Build registration details stating with the course
+            // Add course information if available
+            // Format:
+            // • CLE Crystal Lair
+            // • CLH Crystal Lair - Hard
+            //
+            let registrationDetails = 
+            registration.courses && registration.courses.length > 0 
+              ? registration.courses.map(course =>
+                  `• **${course.course_code}** - ${course.course_name}`
+                ).join('\n')
+              : 'TBD'
+
+            // Add empty line
+              registrationDetails += '\n\n';
+            // Now add the time
+            registrationDetails += `**Time:** ${formattedTime}\n`;
             
+            // Add the room
             if (registration.room_no) {
               registrationDetails += `**Room:** ${registration.room_no}\n`;
             } else {
@@ -91,6 +108,7 @@ export default {
               value: registrationDetails,
               inline: false
             });
+
           } catch (timeError) {
             console.error('Error formatting time for registration:', timeError);
             // Fallback display without timezone conversion
