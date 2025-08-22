@@ -38,6 +38,7 @@ A Discord bot for WMGT tournament registration that allows players to register f
 - `/register` - Register for a tournament session
 - `/unregister` - Unregister from a tournament session  
 - `/mystatus` - View current registrations
+- `/votes` - View current votes on courses
 - `/timezone` - Set preferred timezone
 
 ## Project Structure
@@ -60,7 +61,7 @@ src/
 
 ### Log Cleanup
 
-File: `/etc/logrotate.d/discordbot`
+Setup logrotate `/etc/logrotate.d/discordbot`
 
 ```
 /root/.forever/*.log
