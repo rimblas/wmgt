@@ -65,15 +65,21 @@ export default {
             
             // Create a moment for the time slot on the session date
             const utcDateTime = `${sessionDate.split('T')[0]}T${timeSlot}:00.000Z`;
-            const formattedTime = timezoneService.formatTimeDisplay(
-              utcDateTime, 
-              userTimezone, 
-              { 
-                showDate: true, 
-                format12Hour: true, 
-                showTimezone: true 
-              }
-            );
+            // const formattedTime = registration.session_local_tz;
+            // utcDateTime, 
+            // userTimezone, 
+            // const formattedTime = `${registration.session_local_tz} (${registration.session_date_formatted})`;
+            const formattedTime = `<t:${registration.session_date_epoch}:F> (${registration.session_date_formatted})`;
+
+            // const formattedTime = timezoneService.formatTimeDisplay(
+            //   registration.session_local_tz, 
+            //   userTimezone, 
+            //   { 
+            //     showDate: true, 
+            //     format12Hour: true, 
+            //     showTimezone: true 
+            //   }
+            // );
 
 
             // Build registration details stating with the course
@@ -90,7 +96,7 @@ export default {
               : 'TBD'
 
             // Add empty line
-              registrationDetails += '\n\n';
+            registrationDetails += '\n\n';
             // Now add the time
             registrationDetails += `**Time:** ${formattedTime}\n`;
             
@@ -120,9 +126,10 @@ export default {
           }
         }
 
+        // text: `Times shown in ${userTimezone} | Use /timezone to change your preference`
         // Add footer with timezone info
         embed.setFooter({
-          text: `Times shown in ${userTimezone} | Use /timezone to change your preference`
+          text: `Times shown in ${userTimezone} | Go to MyWMGT.com to change your preference`
         });
       }
 
