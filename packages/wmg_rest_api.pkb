@@ -428,5 +428,148 @@ end player_registrations;
 
 
 
+
+
+procedure handle_registration(
+    p_body in clob
+)
+is
+  l_scope scope_t := gc_scope_prefix || 'handle_registration';
+  
+  l_json json_object_t;
+  l_discord_user t_discord_user;
+  l_session_id number;
+  l_time_slot varchar2(5);
+  l_timezone wmg_players.prefered_tz%type;
+  l_existing_registration number;
+  l_registration_open varchar2(1);
+  l_week varchar2(10);
+  l_response clob;
+  l_player_rank_code wmg_players.rank_code%type;
+  l_valid_slot_count number;
+begin
+  logger.log(p_text => 'START', p_scope => l_scope);
+
+  -- Get request body
+  l_json := json_object_t.parse(p_body);
+
+  -- Extract parameters
+  l_session_id := l_json.get_number('session_id');
+  l_time_slot := l_json.get_string('time_slot');
+  l_timezone  := l_json.get_string('time_zone');
+
+  logger.log(p_text => 'session_id: ' || l_session_id || ', time_slot: ' || l_time_slot || ', timezone: ' || l_timezone, p_scope => l_scope);
+
+  -- Validate session exists and registration is open
+  select case 
+    when open_registration_on is null or open_registration_on < localtimestamp
+    then 'Y' else 'N' end,
+    week
+  into l_registration_open, l_week
+  from wmg_tournament_sessions
+  where id = l_session_id;
+
+  if l_registration_open = 'N' then
+    error_response(
+        p_error_code => 'REGISTRATION_CLOSED'
+      , p_message => 'Registration for this tournament session has closed'
+  );
+    return;
+  end if;
+
+  -- Initialize Discord user from JSON
+  l_discord_user := t_discord_user();
+  l_discord_user.init_from_json(l_json.get_object('discord_user').to_clob());
+  l_discord_user.sync_player();
+
+  if l_timezone is not null then
+      update wmg_players
+         set prefered_tz = l_timezone
+       where id = l_discord_user.player_id;
+  end if;
+
+  logger.log(p_text => 'player_id: ' || l_discord_user.player_id, p_scope => l_scope);
+
+  -- Check if this a brand new player, new players need to finish their registration on the website
+  select rank_code
+  into l_player_rank_code
+  from wmg_players
+  where id = l_discord_user.player_id;
+
+  if l_player_rank_code = 'NEW' then
+    error_response(
+        p_error_code => 'NEW_PLAYER_NEEDS_SETUP'
+      , p_message => 'Apologies, as a new player please visit [MyWMGT.com](https://mywmgt.com) to register'
+  );
+    return;
+  end if;
+
+  -- Check if already registered for this session
+  select count(*)
+  into l_existing_registration
+  from wmg_tournament_players
+  where tournament_session_id = l_session_id
+    and player_id = l_discord_user.player_id
+    and active_ind = 'Y';
+
+  if l_existing_registration > 0 then
+    logger.log(p_text => '.. already registered. maybe changing time_slot', p_scope => l_scope);
+  end if;
+
+  -- Validate time slot
+  select count(*)
+  into l_valid_slot_count
+  from wmg_time_slots_all_v
+  where time_slot = l_time_slot;
+
+  if l_valid_slot_count = 0 then
+    error_response(
+        p_error_code => 'INVALID_TIME_SLOT'
+      , p_message => 'Selected time slot is not available'
+    );
+    return;
+  end if;
+
+  -- Register player
+  wmg_util.process_registration(
+    p_tournament_session_id => l_session_id
+  , p_player_id   => l_discord_user.player_id
+  , p_action      => 'SIGNUP'
+  , p_time_slot   => l_time_slot
+  );
+
+  commit;
+
+  success_response(
+      p_message => 'Successfully registered for ' || l_week || ' at ' || l_time_slot || ' UTC'
+    , p_data => json_object(
+          'registration' value json_object(
+              'session_id' value l_session_id
+            , 'week' value l_week
+            , 'time_slot' value l_time_slot
+          )
+        )
+  );
+
+  logger.log(p_text => 'END', p_scope => l_scope);
+
+exception
+  when no_data_found then
+    error_response(
+        p_error_code => 'SESSION_NOT_FOUND'
+      , p_message => 'Tournament session does not exist'
+    );
+    logger.log_error(p_text => 'Session not found: ' || l_session_id, p_scope => l_scope);
+  when others then
+    rollback;
+    error_response(
+        p_error_code => 'REGISTRATION_FAILED'
+      , p_message => 'Registration failed: ' || sqlerrm
+    );
+    logger.log_error(p_text => sqlerrm, p_scope => l_scope);
+end handle_registration;
+
+
+
 end wmg_rest_api;
 /

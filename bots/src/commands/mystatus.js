@@ -42,6 +42,18 @@ export default {
         .setTimestamp();
 
       // Check if user has any registrations
+      if (registrationData.error_code) {
+        if (registrationData.error_code === 'PLAYER_NOT_FOUND') {
+          embed.setDescription('📭 You are not currently registered for any tournaments.')
+            .addFields({
+              name: '💡 Want to register?',
+              value: 'As a new player you visit [MyWMGT.com](https://mywmgt.com) to setup your account.',
+              inline: false
+            });
+        }
+      } 
+      else
+      // Check if user has any registrations
       if (!registrationData.registrations || registrationData.registrations.length === 0) {
         embed.setDescription('📭 You are not currently registered for any tournaments.')
           .addFields({
@@ -66,9 +78,6 @@ export default {
             // Create a moment for the time slot on the session date
             const utcDateTime = `${sessionDate.split('T')[0]}T${timeSlot}:00.000Z`;
             // const formattedTime = registration.session_local_tz;
-            // utcDateTime, 
-            // userTimezone, 
-            // const formattedTime = `${registration.session_local_tz} (${registration.session_date_formatted})`;
             const formattedTime = `<t:${registration.session_date_epoch}:F> (${registration.session_date_formatted})`;
 
             // const formattedTime = timezoneService.formatTimeDisplay(

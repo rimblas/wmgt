@@ -19,27 +19,6 @@ c_error_unregistration_failed constant varchar2(30) := 'UNREGISTRATION_FAILED';
 c_error_not_registered       constant varchar2(30) := 'NOT_REGISTERED';
 c_error_timezone_update_failed constant varchar2(30) := 'TIMEZONE_UPDATE_FAILED';
 
---------------------------------------------------------------------------------
--- Response generation procedures
---------------------------------------------------------------------------------
-
-procedure player_registrations(
-    p_discord_id in varchar2
-);
-
-procedure current_tournament(
-    p_output out clob
-);
-
-procedure success_response(
-    p_message in varchar2
-  , p_data in clob default null
-);
-
-procedure error_response(
-    p_error_code in varchar2
-  , p_message in varchar2
-);
 
 --------------------------------------------------------------------------------
 -- Utility functions
@@ -67,6 +46,33 @@ function format_session_date_epoch(
 ) return number;
 
 function build_courses_json(p_session_id in number) return clob;
+
+--------------------------------------------------------------------------------
+-- Response generation procedures
+--------------------------------------------------------------------------------
+
+procedure current_tournament(
+    p_output out clob
+);
+
+procedure success_response(
+    p_message in varchar2
+  , p_data in clob default null
+);
+
+procedure error_response(
+    p_error_code in varchar2
+  , p_message in varchar2
+);
+
+procedure player_registrations(
+    p_discord_id in varchar2
+);
+
+procedure handle_registration(
+    p_body in clob
+);
+
 
 end wmg_rest_api;
 /
