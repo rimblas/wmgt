@@ -412,7 +412,8 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
       const registrationResult = await registrationService.registerPlayer(
         interaction.user,
         session.id,
-        timeSlot
+        timeSlot,
+        userTimezone
       );
 
       // Format the time slot for success message
