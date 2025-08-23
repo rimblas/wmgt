@@ -27,7 +27,13 @@ export default {
 
       // Get user's timezone preference
       let userTimezone = interaction.options.getString('timezone') || 'UTC';
-      
+      let formattedTime;
+
+      if (!userTimezone) {
+        userTimezone = await timezoneService.getUserTimezone(registrationService, interaction.user.id, 'UTC');
+      }
+
+
       // Validate timezone if provided
       if (!timezoneService.validateTimezone(userTimezone)) {
         const commonTimezones = timezoneService.getCommonTimezones();
@@ -81,43 +87,22 @@ export default {
       const registrationsEmbed = new EmbedBuilder()
         .setColor(0x00AE86)
         .setTitle('📋 Your Tournament Registrations')
-        .setDescription('Confirm you want to cancel:')
-        .addFields({
-          name: '🌍 Timezone',
-          value: userTimezone,
-          inline: true
-        });
+        .setDescription('Confirm you want to cancel:');
 
       // Format registrations for display and selection
       const registrationOptions = [];
       const registrationDetails = [];
 
       for (const registration of registrationData.registrations) {
+
         // Format time slot with timezone conversion
-        let formattedTime;
-        try {
-          const formattedSlots = timezoneService.formatTournamentTimeSlots(
-            [registration.time_slot],
-            registration.session_date,
-            userTimezone
-          );
-          formattedTime = formattedSlots[0];
-        } catch (error) {
-          console.error('Error formatting time slot:', error);
-          formattedTime = {
-            utcTime: registration.time_slot,
-            localTime: registration.time_slot,
-            localTimezone: 'UTC',
-            utcDate: new Date(registration.session_date).toDateString(),
-            localDate: new Date(registration.session_date).toDateString(),
-            dateChanged: false
-          };
-        }
+        formattedTime = `<t:${registration.session_date_epoch}:F> (${registration.session_date_formatted})`;
+
 
         // Create option for select menu
-        const optionLabel = `${registration.week} - ${formattedTime.utcTime} UTC`;
-        const optionDescription = `Local: ${formattedTime.localTime} ${formattedTime.localTimezone}${registration.room_no ? ` | Room ${registration.room_no}` : ''}`;
-        
+        const optionLabel = `${registration.week} - ${registration.time_slot} UTC`;
+        const optionDescription = `**Time:** ${formattedTime}\n${registration.room_no ? ` | Room ${registration.room_no}` : ''}`;
+
         registrationOptions.push({
           label: optionLabel.length > 100 ? optionLabel.substring(0, 97) + '...' : optionLabel,
           description: optionDescription.length > 100 ? optionDescription.substring(0, 97) + '...' : optionDescription,
@@ -127,8 +112,7 @@ export default {
         // Add to embed details
         const registrationDetail = {
           name: `🏆 ${registration.week}`,
-          value: `**Time:** ${formattedTime.utcTime} UTC → ${formattedTime.localTime} ${formattedTime.localTimezone}\n` +
-                 `**Date:** ${formattedTime.dateChanged ? `UTC: ${formattedTime.utcDate}, Local: ${formattedTime.localDate}` : formattedTime.utcDate}` +
+          value: `**Date:** ${formattedTime}` +
                  `${registration.room_no ? `\n**Room:** ${registration.room_no}` : ''}`,
           inline: false
         };
@@ -201,7 +185,7 @@ export default {
                     // Stop collectors to prevent interference with subsequent interactions
                     collector.stop();
                     buttonCollector.stop();          
-          await handleUnregistrationSelection(selectInteraction, registrationData);
+          await handleUnregistrationSelection(selectInteraction, registrationData, formattedTime);
         }
       });
 
@@ -215,8 +199,8 @@ export default {
       buttonCollector.on('collect', async (buttonInteraction) => {
         console.log(buttonInteraction);
         if (buttonInteraction.customId === 'confirm_unregister') {
-console.log(registrationData.registrations);
-           await handleUnregistrationConfirmation(buttonInteraction, registrationData.registrations[0], userTimezone);
+
+           await handleUnregistrationConfirmation(buttonInteraction, registrationData.registrations[0], formattedTime);
         }
         else
         if (buttonInteraction.customId === 'unregister_cancel') {
@@ -269,7 +253,7 @@ console.log(registrationData.registrations);
 /**
  * Handle unregistration selection and confirmation
  */
-async function handleUnregistrationSelection(interaction, registrationData) {
+async function handleUnregistrationSelection(interaction, registrationData, formattedTime) {
   try {
     await interaction.deferUpdate();
 
@@ -294,27 +278,6 @@ async function handleUnregistrationSelection(interaction, registrationData) {
       return;
     }
 
-    // Format the selected registration for display
-    let formattedTime;
-    try {
-      const formattedSlots = timezoneService.formatTournamentTimeSlots(
-        [selectedRegistration.time_slot],
-        selectedRegistration.session_date,
-        userTimezone
-      );
-      formattedTime = formattedSlots[0];
-    } catch (error) {
-      console.error('Error formatting time slot:', error);
-      formattedTime = {
-        utcTime: selectedRegistration.time_slot,
-        localTime: selectedRegistration.time_slot,
-        localTimezone: 'UTC',
-        utcDate: new Date(selectedRegistration.session_date).toDateString(),
-        localDate: new Date(selectedRegistration.session_date).toDateString(),
-        dateChanged: false
-      };
-    }
-
     // Create confirmation embed
     const confirmEmbed = new EmbedBuilder()
       .setColor(0xFFA500)
@@ -323,14 +286,12 @@ async function handleUnregistrationSelection(interaction, registrationData) {
       .addFields(
         {
           name: '⏰ Time Slot',
-          value: `${formattedTime.utcTime} UTC\n${formattedTime.localTime} ${formattedTime.localTimezone}`,
+          value: `${registrationData.time_slot}`,
           inline: true
         },
         {
           name: '📅 Date',
-          value: formattedTime.dateChanged ? 
-            `UTC: ${formattedTime.utcDate}\nLocal: ${formattedTime.localDate}` :
-            formattedTime.utcDate,
+          value: `${formattedTime}`,
           inline: true
         }
       );
@@ -375,7 +336,7 @@ async function handleUnregistrationSelection(interaction, registrationData) {
 
     confirmCollector.on('collect', async (confirmInteraction) => {
       if (confirmInteraction.customId.startsWith('confirm_unregister_')) {
-        await handleUnregistrationConfirmation(confirmInteraction, selectedRegistration, userTimezone);
+        await handleUnregistrationConfirmation(confirmInteraction, selectedRegistration, formattedTime);
       } else if (confirmInteraction.customId === 'unregister_cancel_confirm') {
         await confirmInteraction.update({
           embeds: [
@@ -422,7 +383,7 @@ async function handleUnregistrationSelection(interaction, registrationData) {
 /**
  * Handle final unregistration confirmation and API call
  */
-async function handleUnregistrationConfirmation(interaction, registration, userTimezone) {
+async function handleUnregistrationConfirmation(interaction, registration, formattedTime) {
   try {
     await interaction.deferUpdate();
 
@@ -444,27 +405,6 @@ async function handleUnregistrationConfirmation(interaction, registration, userT
         registration.session_id
       );
 
-      // Format the time slot for success message
-      let formattedTime;
-      try {
-        const formattedSlots = timezoneService.formatTournamentTimeSlots(
-          [registration.time_slot],
-          registration.session_date,
-          userTimezone
-        );
-        formattedTime = formattedSlots[0];
-      } catch (error) {
-        console.error('Error formatting time slot:', error);
-        formattedTime = {
-          utcTime: registration.time_slot,
-          localTime: registration.time_slot,
-          localTimezone: 'UTC',
-          utcDate: new Date(registration.session_date).toDateString(),
-          localDate: new Date(registration.session_date).toDateString(),
-          dateChanged: false
-        };
-      }
-
       // Create success embed
       const successEmbed = new EmbedBuilder()
         .setColor(0x00FF00)
@@ -473,14 +413,12 @@ async function handleUnregistrationConfirmation(interaction, registration, userT
         .addFields(
           {
             name: '⏰ Time Slot',
-            value: `${formattedTime.utcTime} UTC\n${formattedTime.localTime} ${formattedTime.localTimezone}`,
+            value: `${registration.time_slot}`,
             inline: true
           },
           {
             name: '📅 Date',
-            value: formattedTime.dateChanged ? 
-              `UTC: ${formattedTime.utcDate}\nLocal: ${formattedTime.localDate}` :
-              formattedTime.utcDate,
+            value: `${formattedTime}`,
             inline: true
           }
         );
