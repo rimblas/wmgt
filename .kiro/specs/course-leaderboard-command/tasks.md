@@ -64,14 +64,14 @@
     - Limit results to 25 suggestions as per Discord limits
     - _Requirements: 3.1, 3.2, 3.5_
 
-- [ ] 5. Add configuration and environment setup
-  - [ ] 5.1 Update configuration files
+- [x] 5. Add configuration and environment setup
+  - [x] 5.1 Update configuration files
     - Add leaderboards API endpoints to config.js
     - Add OAuth2 client credentials configuration
     - Update environment variable documentation
     - _Requirements: 4.2, 4.3_
 
-  - [ ] 5.2 Update bot command registration
+  - [x] 5.2 Update bot command registration
     - Add course command to index.js command loading
     - Ensure proper command registration in Discord
     - Test command appears in Discord slash command list
