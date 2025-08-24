@@ -488,10 +488,10 @@ begin
   logger.log(p_text => 'session_id: ' || l_session_id || ', time_slot: ' || l_time_slot || ', timezone: ' || l_timezone, p_scope => l_scope);
 
   -- Validate session exists and registration is open
-  select case 
-    when open_registration_on is null or open_registration_on < localtimestamp
-    then 'Y' else 'N' end,
-    week
+  select case
+        when registration_closed_flag is null
+        then 'Y' else 'N' end
+       , week
   into l_registration_open, l_week
   from wmg_tournament_sessions
   where id = l_session_id;
