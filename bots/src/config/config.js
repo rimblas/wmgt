@@ -26,7 +26,8 @@ export const config = {
   bot: {
     name: 'WMGT Tournament Bot',
     version: '1.1.0',
-    tournament: 'WMGT'
+    tournament: 'WMGT',
+    tournamentMDurl: process.env.TOURNAMENT_MD_URL || '[MyWMGT.com](https://mywmgt.com)'
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',

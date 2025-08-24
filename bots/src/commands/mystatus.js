@@ -5,7 +5,7 @@ import { TimezoneService } from '../services/TimezoneService.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('mystatus')
-    .setDescription('View your current tournament registrations'),
+    .setDescription('View your current tournament registration & room'),
   
   async execute(interaction) {
     const registrationService = new RegistrationService();
@@ -76,19 +76,7 @@ export default {
             const timeSlot = registration.time_slot;
             
             // Create a moment for the time slot on the session date
-            const utcDateTime = `${sessionDate.split('T')[0]}T${timeSlot}:00.000Z`;
-            // const formattedTime = registration.session_local_tz;
             const formattedTime = `<t:${registration.session_date_epoch}:F> (${registration.session_date_formatted})`;
-
-            // const formattedTime = timezoneService.formatTimeDisplay(
-            //   registration.session_local_tz, 
-            //   userTimezone, 
-            //   { 
-            //     showDate: true, 
-            //     format12Hour: true, 
-            //     showTimezone: true 
-            //   }
-            // );
 
 
             // Build registration details stating with the course
