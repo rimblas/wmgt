@@ -45,20 +45,20 @@
     - Handle Discord character limits with proper truncation
     - _Requirements: 2.1, 2.2, 2.5_
 
-- [ ] 4. Implement the /course slash command
-  - [ ] 4.1 Create command definition with autocomplete
+- [x] 4. Implement the /course slash command
+  - [x] 4.1 Create command definition with autocomplete
     - Write course.js command file with SlashCommandBuilder
     - Implement autocomplete functionality for course selection
     - Add proper parameter validation and error handling
     - _Requirements: 1.1, 1.3, 3.1, 3.3_
 
-  - [ ] 4.2 Implement command execution logic
+  - [x] 4.2 Implement command execution logic
     - Write execute(interaction) method with user context
     - Add loading message display during API calls
     - Implement proper error handling with user-friendly messages
     - _Requirements: 1.2, 1.4, 4.1, 4.5_
 
-  - [ ] 4.3 Implement autocomplete handler
+  - [x] 4.3 Implement autocomplete handler
     - Write autocomplete(interaction) method
     - Add fuzzy matching for course codes
     - Limit results to 25 suggestions as per Discord limits

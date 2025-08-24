@@ -9,6 +9,7 @@ import unregisterCommand from './commands/unregister.js';
 import mystatusCommand from './commands/mystatus.js';
 import timezoneCommand from './commands/timezone.js';
 import votesCommand from './commands/votes.js';
+import courseCommand from './commands/course.js';
 
 export class DiscordTournamentBot {
   constructor() {
@@ -52,7 +53,8 @@ export class DiscordTournamentBot {
       unregisterCommand,
       mystatusCommand,
       timezoneCommand,
-      votesCommand
+      votesCommand,
+      courseCommand
     ];
 
     for (const command of commands) {
@@ -145,6 +147,41 @@ export class DiscordTournamentBot {
           interaction,
           `command_${interaction.commandName}`
         );
+      }
+    });
+
+    // Handle autocomplete interactions
+    this.client.on('interactionCreate', async (interaction) => {
+      if (!interaction.isAutocomplete()) return;
+
+      const command = this.client.commands.get(interaction.commandName);
+
+      if (!command) {
+        this.logger.error(`No command matching ${interaction.commandName} was found for autocomplete`, {
+          commandName: interaction.commandName,
+          userId: interaction.user.id,
+          guildId: interaction.guildId
+        });
+        return;
+      }
+
+      if (!command.autocomplete) {
+        this.logger.warn(`Command ${interaction.commandName} does not support autocomplete`, {
+          commandName: interaction.commandName,
+          userId: interaction.user.id
+        });
+        return;
+      }
+
+      try {
+        await command.autocomplete(interaction);
+      } catch (error) {
+        this.logger.error('Error handling autocomplete', {
+          error: error.message,
+          stack: error.stack,
+          commandName: interaction.commandName,
+          userId: interaction.user.id
+        });
       }
     });
 
