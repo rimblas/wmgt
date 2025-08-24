@@ -45,6 +45,11 @@ function format_session_date_epoch(
   , p_time_slot in varchar2
 ) return number;
 
+function build_room_players_json(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+  , p_room_no               in wmg_tournament_players.room_no%type
+) return clob;
+
 function build_courses_json(p_session_id in number) return clob;
 
 --------------------------------------------------------------------------------

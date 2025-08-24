@@ -112,6 +112,10 @@ export default {
             // Add the room
             if (registration.room_no) {
               registrationDetails += `**Room:** ${registration.room_no}\n`;
+              registrationDetails += registration.room_players.map(player =>
+                `• ${player.player_name}` + (player.isNew?' 🌱':'')
+              ).join('\n')
+              registrationDetails += '\n\n';
             } else {
               registrationDetails += `**Room:** *Not assigned yet*\n`;
             }

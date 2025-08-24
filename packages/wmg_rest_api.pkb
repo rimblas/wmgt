@@ -155,6 +155,32 @@ end format_session_date_local;
 
 
 /*
+* Given a tournament_session_id and a room_no return the players in that room
+*/
+function build_room_players_json(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+  , p_room_no               in wmg_tournament_players.room_no%type
+) return clob
+is
+  l_room_players_json clob;
+begin
+  select json_arrayagg(
+           json_object(
+               'player_name' value p.player_name
+             , 'isNew' value case when  p.rank_code = 'NEW' then 'true' else 'false' end format json
+           )
+           returning clob
+         )
+    into l_room_players_json
+    from wmg_tournament_player_v p
+    where p.tournament_session_id = p_tournament_session_id
+      and p.room_no = p_room_no;
+  
+  return l_room_players_json;
+end build_room_players_json;
+
+
+/*
 * Given a session_id return the courses that will be played
 */
 function build_courses_json(p_session_id in number) return clob
@@ -374,15 +400,16 @@ begin
                         , 'session_local_tz' value format_session_date_local(ts.session_date, tp.time_slot, l_player_timezone)
                         , 'session_local_tz' value format_session_date_local(ts.session_date, tp.time_slot, l_player_timezone)
                         , 'session_date_epoch' value format_session_date_epoch(ts.session_date, tp.time_slot)
-                        , 'room_no' value tp.room_no
+                        , 'room_no' value nvl2(tp.room_no, t.prefix_room_name, '') || tp.room_no
+                        , 'room_players' value build_room_players_json(ts.id, tp.room_no) format json
                         , 'courses' value build_courses_json(ts.id) format json
                       )
                       order by ts.session_date
                       returning clob
                     )
-               from wmg_tournament_players tp
-               join wmg_tournament_sessions ts 
-                 on tp.tournament_session_id = ts.id
+               from wmg_tournaments t
+               join wmg_tournament_sessions ts on t.id = ts.tournament_id
+               join wmg_tournament_players tp on tp.tournament_session_id = ts.id
               where tp.player_id = l_player_id
                 and tp.active_ind = 'Y'
                 and ts.session_date + 1 >= trunc(current_timestamp)
