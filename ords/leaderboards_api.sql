@@ -35,13 +35,21 @@ BEGIN
       p_mimes_allowed  => NULL,
       p_comments       => NULL,
       p_source         => 
-'select l.pos
+'with w_player as (
+    select id player_id
+    from wmg_players
+   where discord_id = to_number(:discord_id default null on conversion error)
+)
+select l.pos
      , l.discord_id
      , l.player_name
      , l.score
+     , case when l.approved_flag = ''Y'' then ''true'' else ''false'' end isApproved
 from wmg_leaderboards_all_v l
 where l.course_code = :code
-  and l.approved_flag = ''Y''
+  and (l.approved_flag = ''Y'' 
+   or (l.approved_flag is null and l.player_id = (select p.player_id from w_player p))
+  )
   and l.pos <= 20
 order by l.pos
 ');
