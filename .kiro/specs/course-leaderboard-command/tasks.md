@@ -6,20 +6,20 @@
   - Implement automatic token refresh logic
   - _Requirements: 4.2, 4.3, 4.4_
 
-- [ ] 2. Create CourseLeaderboardService with API integration
-  - [ ] 2.1 Implement OAuth2 authentication methods
+- [x] 2. Create CourseLeaderboardService with API integration
+  - [x] 2.1 Implement OAuth2 authentication methods
     - Write getAuthToken() method to obtain bearer tokens
     - Implement refreshTokenIfNeeded() for automatic token renewal
     - Add secure token storage and error handling
     - _Requirements: 4.2, 4.3, 4.4_
 
-  - [ ] 2.2 Implement course leaderboard data fetching
+  - [x] 2.2 Implement course leaderboard data fetching
     - Write getCourseLeaderboard(courseCode, userId) method
     - Add proper error handling for API failures and invalid courses
     - Implement retry logic with exponential backoff
     - _Requirements: 1.1, 1.2, 4.1, 4.3_
 
-  - [ ] 2.3 Implement course list fetching for autocomplete
+  - [x] 2.3 Implement course list fetching for autocomplete
     - Write getAvailableCourses() method for course selection
     - Add caching mechanism for course data
     - Handle API errors gracefully with fallback options
