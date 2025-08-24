@@ -25,21 +25,21 @@
     - Handle API errors gracefully with fallback options
     - _Requirements: 3.1, 3.2, 3.4_
 
-- [ ] 3. Create data processing and formatting logic
-  - [ ] 3.1 Implement leaderboard data processing
+- [x] 3. Create data processing and formatting logic
+  - [x] 3.1 Implement leaderboard data processing
     - Write formatLeaderboardData(apiResponse, userId) method
     - Add user score identification by matching discord_id
     - Implement approval status handling for personal vs approved scores
     - _Requirements: 2.1, 2.2, 2.3_
 
-  - [ ] 3.2 Create Discord embed formatting
+  - [x] 3.2 Create Discord embed formatting
     - Write createLeaderboardEmbed(leaderboardData, courseInfo) method
     - Add position indicators (🥇🥈🥉) for top 3 positions
     - Implement user score highlighting with ➤ and ⭐ [YOU] markers
     - Add [PERSONAL] indicators for unapproved scores
     - _Requirements: 2.1, 2.2, 2.4, 2.5_
 
-  - [ ] 3.3 Create fallback text display formatting
+  - [x] 3.3 Create fallback text display formatting
     - Write createTextDisplay(leaderboardData, courseInfo) method
     - Ensure consistent user highlighting in text format
     - Handle Discord character limits with proper truncation
