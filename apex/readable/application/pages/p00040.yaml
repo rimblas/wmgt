@@ -96,6 +96,11 @@ css:
         height: 22px;
         border-radius: 50%;   
     }
+    .teamLogo {
+        width: 24px;
+        height: 24px;
+    }
+    
 
 security: 
   authentication: Page Is Public
@@ -447,7 +452,10 @@ regions:
               '</mark>'
              end
           || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -639,8 +647,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -830,8 +841,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -1119,7 +1133,10 @@ regions:
               '</mark>'
              end
           || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -1311,8 +1328,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -1499,8 +1519,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -1687,8 +1710,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -1875,8 +1901,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp
@@ -2063,8 +2092,11 @@ regions:
           || case when p.player_id = :G_PLAYER_ID then
               '</mark>'
              end
-          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end 
-          || case when tp.team_id is not null then ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' end players
+          || case when p.rank_code = 'NEW' then '<span class="' || p.rank_list_class || ' tooltip" title="' || p.rank_name || '"></span>' end
+          || case when tp.team_id is not null then
+           -- ' <span class="cgabadge u-pullRight tooltip" title="Team ' || tp.team_name || '"></span>' 
+                '<img class="u-pullRight teamLogo tooltip" title="Team ' || tp.team_name || '" src="' || apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id) || '">' end
+          as players
       from wmg_tournament_player_v p
          , wmg_tournament_sessions s
          , wmg_team_players_v tp

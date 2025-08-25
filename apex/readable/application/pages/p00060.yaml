@@ -409,6 +409,10 @@ css:
         height: 22px;
         border-radius: 50%;
     }
+    .teamLogo  {
+        width: 22px;
+        height: 22px;
+    }
 
 security: 
   authentication: Page Is Public
@@ -2120,7 +2124,7 @@ regions:
            , case when sp.pos <= 10 then 'top' else 'p' || to_char(coalesce(p.points, sp.points)) end
            || case when coalesce(p.points, sp.points) <= 0 then ' missing tooltip' end
            || case when sp.pos <= 3 then ' podium podium' || sp.pos  end point_class
-           , case when coalesce(p.points, sp.points) <= 0 then 'Failed to complete round, or failed to submit scores before deadline' end points_title
+           , case when coalesce(p.points, sp.points) <= 0 and p.issue_code is not null then 'Failed to complete round, or failed to submit scores before deadline' end points_title
            , decode(p.player_id, :G_PLAYER_ID, 'mark', '') selected_player
            , case when sp.pos = 1 then '<i class="em em-trophy" aria-role="presentation" aria-label="TROPHY"></i>' else '' end trophy
            , pp.rank_code
@@ -2146,6 +2150,8 @@ regions:
            , i.icon issue_icon
            , i.description issue_description
            , p.issue_code
+      --     , '<img class="teamLogo" src="' || apex_util.get_blob_file_src('P570_TEAM_LOGO', tp.team_id) || '">' team_logo
+           , apex_util.get_blob_file_src('P571_TEAM_LOGO', tp.team_id)  team_logo
       from wmg_tournament_session_points_v sp
       , wmg_tournament_players p
       , wmg_team_players_v tp
@@ -2615,7 +2621,7 @@ regions:
     column-formatting: 
       html-expression: |
         {if TEAM_NAME/}
-        <div class="cgabadge tooltip" title="Team #TEAM_NAME#">
+        <img src="#TEAM_LOGO#" class="tooltip teamLogo" title="Team #TEAM_NAME#">
         <span class="u-vh">CGA</span>
         </div>
         {else/}
@@ -2730,6 +2736,21 @@ regions:
 
     layout: 
       sequence: 140
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TEAM_LOGO ===================================
+    id: 71048369327388610
+    identification: 
+      column-name: TEAM_LOGO
+      type: Hidden
+
+    layout: 
+      sequence: 290
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
