@@ -50,7 +50,7 @@ where l.course_code = :code
   and (l.approved_flag = ''Y'' 
    or (l.approved_flag is null and l.player_id = (select p.player_id from w_player p))
   )
-  and l.pos <= 20
+  and l.pos <= 20  and (l.pos <= 20 or l.player_id = (select p.player_id from w_player p))
 order by l.pos
 ');
 
