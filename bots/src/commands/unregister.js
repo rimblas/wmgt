@@ -197,7 +197,6 @@ export default {
       });
 
       buttonCollector.on('collect', async (buttonInteraction) => {
-        console.log(buttonInteraction);
         if (buttonInteraction.customId === 'confirm_unregister') {
 
            await handleUnregistrationConfirmation(buttonInteraction, registrationData.registrations[0], formattedTime);
