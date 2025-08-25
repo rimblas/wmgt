@@ -214,6 +214,7 @@ regions:
              , r.pos
              , p.player_id
              , p.tournament_player_id
+             , p.tournament_player_created
              , p.player_name
              , p.discord_id
              , p.time_slot
@@ -257,6 +258,7 @@ regions:
            , sc.room_no
            , sc.player_id
            , sc.tournament_player_id
+           , sc.tournament_player_created
            , wmg_discord.avatar_link(p_discord_id => sc.discord_id) avatar
            , sc.player_name
            , sc.player_rank
@@ -289,6 +291,7 @@ regions:
                , s.player_id
                , s.discord_id
                , s.tournament_player_id
+               , s.tournament_player_created
                , s.player_name
                , case when s.rank_code = 'NEW' then '<span class="' || s.rank_list_class || ' tooltip" title="' || s.rank_name || '"></span>' end player_rank
                , s.easy_scorecard
@@ -335,7 +338,7 @@ regions:
         and ((:P75_SHOW_MISSING_FLAG = 'N' and sc.pos is not null) or :P75_SHOW_MISSING_FLAG = 'Y')
         and (( :P75_SHOW_VERYFIED_FLAG = 'N' and sc.verified_score_flag is null or :P75_SHOW_NO_SHOWS_FLAG = 'Y') or (:P75_SHOW_VERYFIED_FLAG in ('Y', 'E') ))
       order by t.day_offset, sc.time_slot, sc.room_no, sc.display_seq
-         , sc.pos
+         , sc.tournament_player_created
       
     page-items-to-submit: 
     - P75_WEEK
@@ -1191,6 +1194,21 @@ regions:
 
     advanced: 
       compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_PLAYER_CREATED ===================
+    id: 74132633960128041
+    identification: 
+      column-name: TOURNAMENT_PLAYER_CREATED
+      type: Hidden
+
+    layout: 
+      sequence: 350
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
