@@ -229,9 +229,9 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
           }
 
           // Handle authentication errors
-          if (error.response?.status === 401 || error.response?.status === 429 || 
-              error.message?.includes('Authentication failed') || 
-              error.message?.includes('OAuth2 client credentials')) {
+          if (error.response?.status === 401 || error.response?.status === 429 ||
+            error.message?.includes('Authentication failed') ||
+            error.message?.includes('OAuth2 client credentials')) {
             throw this.handleAuthenticationError(error, 'course_leaderboard');
           }
 
@@ -391,16 +391,16 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
           });
 
           // Handle authentication errors first
-          if (error.response?.status === 401 || error.response?.status === 429 || 
-              error.message?.includes('Authentication failed') || 
-              error.message?.includes('OAuth2 client credentials')) {
-            
+          if (error.response?.status === 401 || error.response?.status === 429 ||
+            error.message?.includes('Authentication failed') ||
+            error.message?.includes('OAuth2 client credentials')) {
+
             // For autocomplete, we should provide fallback rather than throw auth errors
             this.logger.warn('Authentication error in course list, using fallback courses', {
               errorType: error.response?.status === 401 ? 'TOKEN_EXPIRED' : 'AUTH_ERROR',
               cacheSize: this.courseCache.size
             });
-            
+
             // Try to use cache first, then fallback courses
             if (this.courseCache.size > 0) {
               return Array.from(this.courseCache.values());
@@ -448,16 +448,76 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
    */
   getFallbackCourses() {
     return [
-      { code: 'ALE', name: 'Alfheim Easy', difficulty: 'Easy' },
-      { code: 'ALH', name: 'Alfheim Hard', difficulty: 'Hard' },
-      { code: 'BBE', name: 'Bogeys Bonnie Easy', difficulty: 'Easy' },
-      { code: 'BBH', name: 'Bogeys Bonnie Hard', difficulty: 'Hard' },
-      { code: 'CLE', name: 'Cherry Blossom Easy', difficulty: 'Easy' },
-      { code: 'CLH', name: 'Cherry Blossom Hard', difficulty: 'Hard' },
-      { code: 'EDE', name: 'El Dorado Easy', difficulty: 'Easy' },
+      { code: 'TTE', name: 'Tourist Trap', difficulty: 'Easy' },
+      { code: 'TTH', name: 'Tourist Trap Hard', difficulty: 'Hard' },
+      { code: 'CBE', name: 'Cherry Blossom', difficulty: 'Easy' },
+      { code: 'CBH', name: 'Cherry Blossom Hard', difficulty: 'Hard' },
+      { code: 'SSE', name: 'Seagull Stacks', difficulty: 'Easy' },
+      { code: 'SSH', name: 'Seagull Stacks - Hard', difficulty: 'Hard' },
+      { code: 'AME', name: 'Arizona Modern', difficulty: 'Easy' },
+      { code: 'AMH', name: 'Arizona Modern Hard', difficulty: 'Hard' },
+      { code: 'OGE', name: 'Original Gothic', difficulty: 'Easy' },
+      { code: 'OGH', name: 'Original Gothic Hard', difficulty: 'Hard' },
+      { code: 'TSE', name: 'Tethys Station', difficulty: 'Easy' },
+      { code: 'TSH', name: 'Tethys Station Hard', difficulty: 'Hard' },
+      { code: 'BBE', name: 'Bogey\'s Bonanza', difficulty: 'Easy' },
+      { code: 'BBH', name: 'Bogey\'s Bonanza Hard', difficulty: 'Hard' },
+      { code: 'QVE', name: 'Quixote Valley', difficulty: 'Easy' },
+      { code: 'QVH', name: 'Quixote Valley Hard', difficulty: 'Hard' },
+      { code: 'SWE', name: 'Sweetopia', difficulty: 'Easy' },
+      { code: 'SWH', name: 'Sweetopia Hard', difficulty: 'Hard' },
+      { code: 'LBE', name: 'Labyrinth', difficulty: 'Easy' },
+      { code: 'LBH', name: 'Labyrinth - Hard', difficulty: 'Hard' },
+      { code: 'MYE', name: 'Myst', difficulty: 'Easy' },
+      { code: 'MYH', name: 'Myst Hard', difficulty: 'Hard' },
+      { code: 'UTE', name: 'Upside Town', difficulty: 'Easy' },
+      { code: 'UTH', name: 'Upside Town - Hard', difficulty: 'Hard' },
+      { code: 'GBE', name: 'Gardens of Babylon', difficulty: 'Easy' },
+      { code: 'GBH', name: 'Gardens of Babylon Hard', difficulty: 'Hard' },
+      { code: 'SLE', name: 'Shangri-La', difficulty: 'Easy' },
+      { code: 'SLH', name: 'Shangri-La Hard', difficulty: 'Hard' },
+      { code: 'EDE', name: 'El Dorado', difficulty: 'Easy' },
       { code: 'EDH', name: 'El Dorado Hard', difficulty: 'Hard' },
-      { code: 'GBE', name: 'Gardens of Babylon Easy', difficulty: 'Easy' },
-      { code: 'GBH', name: 'Gardens of Babylon Hard', difficulty: 'Hard' }
+      { code: 'ATE', name: 'Atlantis', difficulty: 'Easy' },
+      { code: 'ATH', name: 'Atlantis Hard', difficulty: 'Hard' },
+      { code: 'ZZE', name: 'Temple at Zerzura', difficulty: 'Easy' },
+      { code: 'ZZH', name: 'Temple at Zerzura - Hard', difficulty: 'Hard' },
+      { code: '20E', name: '20,000 Leagues Under The Sea', difficulty: 'Easy' },
+      { code: '20H', name: '20,000 Leagues Hard', difficulty: 'Hard' },
+      { code: 'JCE', name: 'Journey to the Center of the Earth', difficulty: 'Easy' },
+      { code: 'JCH', name: 'Journey to the Center of the Earth - Hard', difficulty: 'Hard' },
+      { code: 'LLE', name: 'Laser Lair', difficulty: 'Easy' },
+      { code: 'LLH', name: 'Laser Lair - Hard', difficulty: 'Hard' },
+      { code: 'ALE', name: 'Alfheim', difficulty: 'Easy' },
+      { code: 'ALH', name: 'Alfheim Hard', difficulty: 'Hard' },
+      { code: 'WWE', name: 'Widow\'s Walkabout', difficulty: 'Easy' },
+      { code: 'WWH', name: 'Widow\'s Walkabout - Hard', difficulty: 'Hard' },
+      { code: 'MWE', name: 'Meow Wolf', difficulty: 'Easy' },
+      { code: 'MWH', name: 'Meow Wolf - Hard', difficulty: 'Hard' },
+      { code: 'AWE', name: 'Around The World in 80 Days', difficulty: 'Easy' },
+      { code: 'AWH', name: 'Around The World - Hard', difficulty: 'Hard' },
+      { code: 'ILE', name: 'Ice Lair', difficulty: 'Easy' },
+      { code: 'ILH', name: 'Ice Lair - Hard', difficulty: 'Hard' },
+      { code: 'VNE', name: 'Venice', difficulty: 'Easy' },
+      { code: 'VNH', name: 'Venice - Hard', difficulty: 'Hard' },
+      { code: 'WGE', name: 'Wallace & Gromit', difficulty: 'Easy' },
+      { code: 'WGH', name: 'Wallace & Gromit - Hard', difficulty: 'Hard' },
+      { code: 'MGE', name: 'Mars Gardens', difficulty: 'Easy' },
+      { code: 'MGH', name: 'Mars Gardens - Hard', difficulty: 'Hard' },
+      { code: '8BE', name: '8-Bit Lair', difficulty: 'Easy' },
+      { code: '8BH', name: '8-Bit Lair - Hard', difficulty: 'Hard' },
+      { code: 'HHE', name: 'Holiday Hideaway', difficulty: 'Easy' },
+      { code: 'HHH', name: 'Holiday Hideaway - Hard', difficulty: 'Hard' },
+      { code: 'ELE', name: 'Viva Las Elvis', difficulty: 'Easy' },
+      { code: 'ELH', name: 'Viva Las Elvis - Hard', difficulty: 'Hard' },
+      { code: 'MOE', name: 'Mount Olympus', difficulty: 'Easy' },
+      { code: 'MOH', name: 'Mount Olympus - Hard', difficulty: 'Hard' },
+      { code: 'RCE', name: 'Raptor Cliff\'s', difficulty: 'Easy' },
+      { code: 'RCH', name: 'Raptor Cliff\'s - Hard', difficulty: 'Hard' },
+      { code: 'CLE', name: 'Crystal Lair', difficulty: 'Easy' },
+      { code: 'CLH', name: 'Crystal Lair - Hard', difficulty: 'Hard' },
+      { code: 'TOE', name: 'Tokyo', difficulty: 'Easy' },
+      { code: 'TOH', name: 'Tokyo - Hard', difficulty: 'Hard' }
     ];
   }
 
@@ -468,26 +528,26 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
    */
   getSuggestedCourses(invalidCourseCode) {
     const fallbackCourses = this.getFallbackCourses();
-    
+
     if (!invalidCourseCode || typeof invalidCourseCode !== 'string') {
       // Return popular courses if no input provided
       return fallbackCourses.slice(0, 5);
     }
 
     const normalizedInput = invalidCourseCode.trim().toUpperCase();
-    
+
     // Try to find similar courses based on partial matches
     const suggestions = [];
-    
+
     // First, try exact prefix matches (e.g., "AL" -> "ALE", "ALH")
     if (normalizedInput.length >= 2) {
       const prefix = normalizedInput.substring(0, 2);
-      const prefixMatches = fallbackCourses.filter(course => 
+      const prefixMatches = fallbackCourses.filter(course =>
         course.code.startsWith(prefix)
       );
       suggestions.push(...prefixMatches);
     }
-    
+
     // Then, try single character matches for typos (e.g., "BLE" -> "ALE", "CLE")
     if (normalizedInput.length === 3) {
       const singleCharMatches = fallbackCourses.filter(course => {
@@ -501,17 +561,17 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       });
       suggestions.push(...singleCharMatches);
     }
-    
+
     // Remove duplicates and limit to 5 suggestions
-    const uniqueSuggestions = suggestions.filter((course, index, self) => 
+    const uniqueSuggestions = suggestions.filter((course, index, self) =>
       index === self.findIndex(c => c.code === course.code)
     );
-    
+
     // If no good matches found, return popular courses
     if (uniqueSuggestions.length === 0) {
       return fallbackCourses.slice(0, 5);
     }
-    
+
     return uniqueSuggestions.slice(0, 5);
   }
 
@@ -523,7 +583,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
   createCourseNotFoundError(courseCode) {
     const suggestions = this.getSuggestedCourses(courseCode);
     const suggestionText = suggestions.map(course => `**${course.code}** (${course.name})`).join(', ');
-    
+
     const error = new Error(
       `Course '${courseCode}' not found. Try one of these popular courses: ${suggestionText}`
     );
@@ -531,7 +591,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     error.courseCode = courseCode;
     error.suggestions = suggestions;
     error.errorType = 'COURSE_NOT_FOUND';
-    
+
     return error;
   }
 
@@ -569,7 +629,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
   createApiUnavailableError(originalError, context = 'api_call') {
     let message = 'The leaderboard service is temporarily unavailable. ';
     let suggestion = 'Please try again in a few minutes.';
-    
+
     // Customize message based on context
     if (context === 'course_leaderboard') {
       message += 'Unable to fetch course leaderboard data at this time.';
@@ -578,14 +638,14 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       message += 'Unable to fetch the course list for autocomplete.';
       suggestion = 'You can still try typing a course code directly (e.g., ALE, BBH). Popular courses are: ALE, BBH, CLE, EDE, GBE.';
     }
-    
+
     const error = new Error(message);
     error.originalError = originalError;
     error.errorType = 'API_UNAVAILABLE';
     error.suggestion = suggestion;
     error.shouldRetry = true;
     error.retryAfter = 30000; // Suggest retry after 30 seconds
-    
+
     return error;
   }
 
@@ -597,19 +657,19 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
    */
   createTokenExpiredError(originalError, context = 'api_call') {
     const message = 'Authentication token has expired and will be refreshed automatically.';
-    
+
     const error = new Error(message);
     error.originalError = originalError;
     error.errorType = 'TOKEN_EXPIRED';
     error.shouldRetry = true;
     error.retryAfter = 1000; // Retry quickly after token refresh
     error.context = context;
-    
+
     this.logger.info('Token expired, will be refreshed on next request', {
       context: context,
       originalError: originalError.message
     });
-    
+
     return error;
   }
 
@@ -621,20 +681,20 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
    */
   createInvalidCredentialsError(originalError, context = 'api_call') {
     const message = 'Authentication failed due to invalid credentials. Please contact support.';
-    
+
     const error = new Error(message);
     error.originalError = originalError;
     error.errorType = 'INVALID_CREDENTIALS';
     error.shouldRetry = false; // Don't retry credential errors
     error.context = context;
-    
+
     this.logger.error('Invalid authentication credentials detected', {
       context: context,
       originalError: originalError.message,
       hasClientId: !!config.api.oauth.clientId,
       hasClientSecret: !!config.api.oauth.clientSecret
     });
-    
+
     return error;
   }
 
@@ -648,22 +708,22 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     // Extract retry-after header if available
     const retryAfter = originalError.response?.headers?.['retry-after'];
     const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : 60000; // Default to 1 minute
-    
+
     const message = `Rate limit exceeded. Please wait ${Math.ceil(retryAfterMs / 1000)} seconds before trying again.`;
-    
+
     const error = new Error(message);
     error.originalError = originalError;
     error.errorType = 'RATE_LIMITED';
     error.shouldRetry = true;
     error.retryAfter = retryAfterMs;
     error.context = context;
-    
+
     this.logger.warn('Rate limit exceeded', {
       context: context,
       retryAfterSeconds: Math.ceil(retryAfterMs / 1000),
       retryAfterHeader: retryAfter
     });
-    
+
     return error;
   }
 
@@ -678,34 +738,34 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     if (error.response?.status === 401) {
       // Check if this is a token expiration or invalid credentials
       const errorData = error.response.data;
-      
+
       if (errorData?.error === 'invalid_token' || errorData?.error_description?.includes('expired')) {
         return this.createTokenExpiredError(error, context);
       } else {
         return this.createInvalidCredentialsError(error, context);
       }
     }
-    
+
     if (error.response?.status === 429) {
       return this.createRateLimitError(error, context);
     }
-    
+
     // Handle token manager specific errors
     if (error.message?.includes('OAuth2 client credentials not configured')) {
       return this.createInvalidCredentialsError(error, context);
     }
-    
+
     if (error.message?.includes('Authentication failed')) {
       return this.createInvalidCredentialsError(error, context);
     }
-    
+
     // For other authentication-related errors, return generic auth error
     const authError = new Error('Authentication error occurred. Please try again or contact support.');
     authError.originalError = error;
     authError.errorType = 'AUTHENTICATION_ERROR';
     authError.shouldRetry = false;
     authError.context = context;
-    
+
     return authError;
   }
 
@@ -959,27 +1019,27 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
         } else if (entry.position === 3) {
           line += ' 🥉 ';
         } else {
-          line += (entry.position<10?' ':'') + `${entry.position}. `;
+          line += (entry.position < 10 ? ' ' : '') + `${entry.position}. `;
         }
 
         // Add score (negative values indicate under par)
         const scoreDisplay = entry.score >= 0 ? `+${entry.score}` : `${entry.score}`;
         line += `${scoreDisplay}`;
         line += '` ';  // close fixed  width
-        
+
         // Add player name (truncate if too long)
         const maxNameLength = 25;
         let playerName = entry.playerName;
         if (playerName.length > maxNameLength) {
           playerName = playerName.substring(0, maxNameLength - 3) + '...';
         }
-        
+
         // Bold Top 3 players
         if (entry.position <= 3) {
-           playerName = '**' + playerName + '**';
+          playerName = '**' + playerName + '**';
         }
         line += playerName;
-        
+
         // Add user identification and approval status
         if (entry.isCurrentUser) {
           line += ' ⬅️ ';
@@ -1109,7 +1169,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
         } else if (entry.position === 3) {
           line += ' 🥉 ';
         } else {
-          line += (entry.position<10?' ':'') + `${entry.position}. `;
+          line += (entry.position < 10 ? ' ' : '') + `${entry.position}. `;
         }
 
         // Add user highlighting markers
