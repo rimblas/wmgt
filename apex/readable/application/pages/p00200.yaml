@@ -963,19 +963,25 @@ regions:
     type: SQL Query
     sql-query: |
       with best_round as (
-        select course_id, sum(score) best_strokes
+        select course_id, rank_code, sum(score) best_strokes
         from (
-          select course_id, h, score, row_number()  over (partition by course_id, h order by people desc) rn
+          select course_id, h, score, rank_code, row_number()  over (partition by course_id, rank_code, h order by people desc) rn
           from (
-              select u.course_id, u.h, u.score, count(*) people
+              select u.course_id, u.h, p.rank_code, u.score, count(*) people
                 from  wmg_rounds_unpivot_mv u
-               where u.course_id = :P200_COURSE_ID
+                    , wmg_players p
+                    , wmg_ranks r
+               where u.player_id = p.id
+                 and u.course_id = :P200_COURSE_ID
                  and u.player_id != 0  -- remove the curated system score
-               group by u.course_id, u.h, u.score
+                 and p.rank_code = r.code
+                 and r.active_ind = 'Y'
+               group by u.course_id, u.h, p.rank_code, u.score
+               order by u.course_id, u.h
           )
         )
        where rn = 1
-       group by course_id
+       group by course_id, rank_code
       )
       select week, player_name, under_par
       from (
@@ -983,10 +989,12 @@ regions:
           from wmg_leaderboards l
           where l.course_id = :P200_COURSE_ID
           union all
-          select '- Realistic - ' week, '' player_name, r.best_strokes - c.course_par under_par
+          select '- Realistic - ' week, r.name player_name, b.best_strokes - c.course_par under_par
           from wmg_courses_v c
-             ,  best_round r
-          where r.course_id = c.course_id
+             , best_round b
+             , wmg_ranks r
+          where b.course_id = c.course_id
+            and b.rank_code = r.code
             and c.course_id = :P200_COURSE_ID
           union all
           select '- Utopian -' week, '' player_name, best_under under_par
