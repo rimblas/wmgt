@@ -17,11 +17,21 @@ export const config = {
       unregister: '/tournament/unregister',
       playerRegistrations: '/tournament/players/registrations',
       setTimezone: '/tournament/players/timezone',
-      votes: '/tournament/votes'
+      votes: '/tournament/votes',
+      leaderboards: '/leaderboards/course',
+      courses: '/tournament/courses',
+      oauth: '/oauth/token'
     },
     timeout: parseInt(process.env.API_TIMEOUT) || 15000,
     retries: parseInt(process.env.API_RETRIES) || 3,
-    maxConcurrentRequests: parseInt(process.env.MAX_CONCURRENT_REQUESTS) || 10
+    maxConcurrentRequests: parseInt(process.env.MAX_CONCURRENT_REQUESTS) || 10,
+    oauth: {
+      clientId: process.env.API_CLIENT_ID,
+      clientSecret: process.env.API_CLIENT_SECRET,
+      tokenUrl: process.env.API_BASE_URL + '/oauth/token',
+      grantType: 'client_credentials',
+      tokenExpiryBuffer: parseInt(process.env.TOKEN_EXPIRY_BUFFER) || 300 // 5 minutes buffer before expiry
+    }
   },
   bot: {
     name: 'WMGT Tournament Bot',

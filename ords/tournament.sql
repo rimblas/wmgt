@@ -543,6 +543,11 @@ begin
 
   logger.log(p_text => ''END'', p_scope => l_scope);
 exception
+  when no_data_found then
+    wmg_rest_api.error_response(
+        p_error_code => ''REGISTRATION_CLOSED''
+      , p_message => ''No Tournament session exist at the moment''
+    );
   when others then
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
     raise;

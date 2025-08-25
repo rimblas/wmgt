@@ -86,7 +86,6 @@ export default {
       }
 
       // Filter for sessions with open registration
-      //      console.log(tournamentData.sessions);
       //      const openSessions = tournamentData.sessions.filter(session => session.registration_open);
       const openSessions = tournamentData.sessions;
 

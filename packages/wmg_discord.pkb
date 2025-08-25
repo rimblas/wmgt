@@ -71,6 +71,7 @@ is
   l_scope  scope_t := gc_scope_prefix || 'avatar';
 
   l_avatar wmg_players.discord_avatar%type;
+  l_embed_avatar number;
 begin
   -- logger.append_param(l_params, 'p_param1', p_param1);
   $IF $$VERBOSE_OUTPUT $THEN
@@ -94,7 +95,9 @@ begin
 
 exception
     when no_data_found then
-      return V('APP_IMAGES') || 'img/discord_mask.png';
+      -- https://stackoverflow.com/questions/54556637/discord-js-gives-null-avatarurl-for-server-members-that-have-the-default-avatar
+      return 'https://cdn.discordapp.com/embed/avatars/' || mod(trunc(p_discord_id / power(2,22)), 6) || '.png';
+      -- return V('APP_IMAGES') || 'img/discord_mask.png';
 
     when OTHERS then
       log('Unhandled Exception', l_scope);
