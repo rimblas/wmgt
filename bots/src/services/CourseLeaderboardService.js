@@ -12,7 +12,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     // Cache for course data to reduce API calls
     this.courseCache = new Map();
     this.courseCacheExpiry = null;
-    this.courseCacheTimeout = 5 * 60 * 1000; // 5 minutes cache
+    this.courseCacheTimeout = 60 * 60 * 1000; // 60 minutes cache
   }
 
   /**
