@@ -67,7 +67,7 @@ Call `/oauth/token` with your client_id and secret to obtain a token.
 $ curl -i -d "grant_type=client_credentials" --user "CLIENT_ID:CLIENT_SECRET" http://your-server/ords/wmgt/api/oauth/token
 ```
 
-In the reponse, the token will be in the `access_token` attribute. Notice the expiration of the token.
+In the reponse, the token will be in the `access_token` attribute. Notice the expiration of the token in `expires_in`.
 
 
 ```
@@ -76,7 +76,7 @@ Date: Sun, 08 Sep 2024 16:36:16 GMT
 Content-Type: application/json
 Transfer-Encoding: chunked
 Connection: keep-alive
-Set-Cookie: X-Oracle-BMC-LBS-Route=8f932a8ecd98341fb826b40296cad56249ada1bb; Path=/; Secure; HttpOnly
+Set-Cookie: XXX; Path=/; Secure; HttpOnly
 X-Frame-Options: SAMEORIGIN
 
 {"access_token":"NEW_TOKEN","token_type":"bearer","expires_in":3600}⏎
@@ -84,10 +84,19 @@ X-Frame-Options: SAMEORIGIN
 
 ### Using a Tooken
 
-curl -H "Authorization: Bearer NEW_TOKEN_HERE" -X GET "https://apex.skillbuilders.com/ords/fhit/ldd/match?id=706"
+**Sample GET**
 
-curl -H "Authorization: Bearer NEW_TOKEN_HERE" -X POST "https://apex.skillbuilders.com/ords/fhit/ldd/match" \
+```
+curl -H "Authorization: Bearer NEW_TOKEN_HERE" -X GET "http://your-server/ords/wmgt/api/tournament/votes"
+```
+
+**Sample POST**
+
+```
+curl -H "Authorization: Bearer NEW_TOKEN_HERE" -X POST "http://your-server/ords/wmgt/api/tournament/register" \
                                                           -H "Content-Type: application/json" 
+```
+
 
 ### Securing ORDS Endpoints
 
