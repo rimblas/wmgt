@@ -167,7 +167,7 @@ regions:
     - P532_EASY_COURSE_ID
 
   layout: 
-    sequence: 100
+    sequence: 120
     parent-region: Tournament Sessions # 56158045789158236792
     slot: BODY
     start-new-layout: false
@@ -413,7 +413,7 @@ regions:
     - P532_HARD_COURSE_ID
 
   layout: 
-    sequence: 110
+    sequence: 130
     parent-region: Tournament Sessions # 56158045789158236792
     slot: BODY
     start-new-layout: false
@@ -610,6 +610,464 @@ regions:
 
     layout: 
       sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Votes =======================================
+  id: 74129755168128012
+  identification: 
+    name: Votes
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select v.*
+      from (
+          select course
+               , sum(decode(vote, -1, 1, 0)) nay
+               , sum(decode(vote, 1, 1, 0)) yay
+               , count(*) total_votes
+               , sum(vote) vote_tally
+               , rank() over (order by sum(vote) desc) rn
+          from wmg_course_vote_v
+          where course_mode = 'E'
+          group by course
+      ) v
+      where rn  = 1
+      
+
+  layout: 
+    sequence: 100
+    parent-region: Tournament Sessions # 56158045789158236792
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--stacked
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P532_EASY_COURSE_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: COURSE ======================================
+    id: 74129889963128013
+    identification: 
+      column-name: COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAY =========================================
+    id: 74129966445128014
+    identification: 
+      column-name: NAY
+      type: Hidden
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: YAY =========================================
+    id: 74130019317128015
+    identification: 
+      column-name: YAY
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_VOTES =================================
+    id: 74130136118128016
+    identification: 
+      column-name: TOTAL_VOTES
+      type: Hidden
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VOTE_TALLY ==================================
+    id: 74130235016128017
+    identification: 
+      column-name: VOTE_TALLY
+      type: Plain Text
+
+    heading: 
+      heading: Votes
+      alignment: end
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: (#NAY#/#YAY#) <b>#VOTE_TALLY#</b>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RN ==========================================
+    id: 74131655221128031
+    identification: 
+      column-name: RN
+      type: Hidden
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: Votes =======================================
+  id: 74130984338128024
+  identification: 
+    name: Votes
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select v.*
+      from (
+          select course
+               , sum(decode(vote, -1, 1, 0)) nay
+               , sum(decode(vote, 1, 1, 0)) yay
+               , count(*) total_votes
+               , sum(vote) vote_tally
+               , rank() over (order by sum(vote) desc) rn
+          from wmg_course_vote_v
+          where course_mode = 'H'
+          group by course
+      ) v
+      where rn  = 1
+      
+
+  layout: 
+    sequence: 110
+    parent-region: Tournament Sessions # 56158045789158236792
+    slot: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--stacked
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P532_HARD_COURSE_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: None
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: COURSE ======================================
+    id: 74131017153128025
+    identification: 
+      column-name: COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Course
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: NAY =========================================
+    id: 74131120979128026
+    identification: 
+      column-name: NAY
+      type: Hidden
+
+    layout: 
+      sequence: 20
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: YAY =========================================
+    id: 74131306429128027
+    identification: 
+      column-name: YAY
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOTAL_VOTES =================================
+    id: 74131362465128028
+    identification: 
+      column-name: TOTAL_VOTES
+      type: Hidden
+
+    layout: 
+      sequence: 40
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: VOTE_TALLY ==================================
+    id: 74131478221128029
+    identification: 
+      column-name: VOTE_TALLY
+      type: Plain Text
+
+    heading: 
+      heading: Votes
+      alignment: end
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: (#NAY#/#YAY#) <b>#VOTE_TALLY#</b>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RN ==========================================
+    id: 74131575822128030
+    identification: 
+      column-name: RN
+      type: Hidden
+
+    layout: 
+      sequence: 60
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -826,7 +1284,7 @@ page-items:
     syntax-highlighting: true
 
   layout: 
-    sequence: 160
+    sequence: 180
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -921,7 +1379,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 130
+    sequence: 150
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -1021,6 +1479,116 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P532_REMOVE_EASY_VOTES ===================
+  id: 74131746595128032
+  identification: 
+    name: P532_REMOVE_EASY_VOTES
+    type: Switch
+
+  label: 
+    label: Remove Votes?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 10
+    region: Votes # 74129755168128012
+    slot: EDIT
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Never
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P532_REMOVE_HARD_VOTES ===================
+  id: 74131851653128033
+  identification: 
+    name: P532_REMOVE_HARD_VOTES
+    type: Switch
+
+  label: 
+    label: Remove Votes?
+    alignment: Left
+
+  settings: 
+    use-defaults: true
+
+  layout: 
+    sequence: 20
+    region: Votes # 74130984338128024
+    slot: EDIT
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  default: 
+    type: Static
+    static-value: Y
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  server-side-condition: 
+    type: Never
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P532_ROOMS_DEFINED_BY ====================
   id: 40389412453228769162
   identification: 
@@ -1083,7 +1651,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 150
+    sequence: 170
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
 
@@ -1590,7 +2158,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 120
+    sequence: 140
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -1651,7 +2219,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 140
+    sequence: 160
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
