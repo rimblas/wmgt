@@ -22,8 +22,35 @@ navigation:
 javascript: 
   file-urls: 
   - '&G_APP_FILES.lib/jquery.syotimer.min.js'
+  - //cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js
   - null
   function-and-global-variable-declaration: |
+    var $ctx;
+    
+    function searchRows(searchTerm) {
+    //  $ctx = $("#report_table_votesRegion .tooltipImg, #report_table_votesRegion .tooltipImg[title]");
+      $ctx = $("#report_table_votesRegion .tooltipImg");
+    
+      // Remove previous marked elements and ensure they all show
+      $ctx.unmark().parents("tr").show();
+    
+      if (searchTerm) {
+        // mark the search searchTerm and hide everything that didn't get marked
+        $ctx.mark(searchTerm, {
+          done: function() {
+    
+            $ctx.each(function(){
+              let $row = $(this).parents("tr");
+              if ( $row.find("mark").length === 0) { // if there's no mark, hide the row
+                $row.hide();
+              }
+            });
+          }
+        });
+      }
+    
+    }
+    
     function getDiff(nextDate) {
       const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
       const oneHour = 1 * 60 * 60 * 1000; // milliseconds in an hour
@@ -55,11 +82,35 @@ javascript:
     });
     }
     
+    function courseTooltips() {
+    $(".tooltipImg").tooltip({
+        content: function() {
+          // Get the description and image URL from the "title" and "data-img-url" attributes
+          var description = $(this).attr("title");
+          var fact = $(this).data("fact");
+          var imgUrl = $(this).data("img-url");
+          var wmgtExcluded = $(this).hasClass("--wmgt-excludedY");
     
+          // Create an HTML string to include the description and the image
+          var tooltipContent = "<div>" + description + "</div>";
+          tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
+          if (wmgtExcluded) {
+             tooltipContent += "<div class='--wmgt-excluded-legend'>" + "This course will not be played in S14" + "</div>";
+          }
+          else {
+            if (fact) {
+                tooltipContent += "<div class='legend u-color-6-text'>" + fact + "</div>";
+            }
+          }
+    
+          return tooltipContent;
+        }
+    });
+    }
   execute-when-page-loads: |
     wmgt.theme.init();
     
-    // tab visibility detation
+    // tab visibility detection
     document.addEventListener("visibilitychange", function() {
         // detect when the window is not visible any more
         if (document.visibilityState === 'visible') {
@@ -83,11 +134,62 @@ javascript:
     });
     
     $(".-wm-round1212,.-wm-lastround").parents("tr").addClass("t-Timeline-item")
+    
+    $('button.voteUp, button.voteDown').hover(
+      function() {
+        $(this).addClass('fa-anim-vertical-shake');
+      },
+      function() {
+        $(this).removeClass('fa-anim-vertical-shake');
+      }
+    );
 
 css: 
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    .voteUp:hover {
+    --ut-link-text-color: var(--ut-palette-success);
+    opacity: 1;
+    }
+    .voteDown:hover {
+    --ut-link-text-color: var(--ut-palette-danger);
+    opacity: 1;
+    }
+    .voteUp,.voteDown {
+    --ut-link-text-color:var(--ut-body-text-color);
+    opacity: .7;
+    }
+    .t-Button.fa-square-selected-o {
+        color: var(--ut-body-text-color);
+        opacity: .4;
+    }
+    .t-Button.fa-square-selected-o:hover {
+    opacity: 1;
+    }
+    .t-Button.fa-square-selected-o:hover:before {
+        content:"\f096";
+    } 
+    
+    [headers="EASY_VOTES"], [headers="HARD_VOTES"] {
+     font-family: Menlo,Consolas,monospace;
+    }
+    [headers="EASY_COURSE"], [headers="HARD_COURSE"] {
+        --a-button-padding-y: .2rem;
+        --ut-report-cell-padding-x: .1rem;
+        font-family: Menlo, Consolas, monospace;
+        white-space: nowrap;    
+    }
+    #P1_SEARCH_VOTE_COURSES {
+        --a-field-input-padding-x: .5rem;
+        --a-field-input-padding-y: .4rem;
+        --a-field-input-font-size: .6rem;
+        --a-field-input-line-height: .8rem;
+    }
+    #P1_SEARCH_VOTE_COURSES_CONTAINER .apex-item-icon {
+        --a-icon-size: 14px;
+        --ut-field-input-icon-padding-x: 1.1rem;
+    }
     .wm-animate-border {translate: 0% 0%;}
     #aboutNextCourses .t-Alert-content {background-color: var(--ut-alert-type-background-color);}
     .wm-animate-border::after,.wm-animate-border::before {margin: 4px;}
@@ -2390,12 +2492,12 @@ regions:
     export-/-printing: 
       include-in-export-/-print: true
 
-  advanced: 
+    advanced: 
       compute-sum: false
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
-      
+
     security: 
       escape-special-characters: true
 
@@ -2477,7 +2579,9 @@ regions:
       where e.course_mode = 'E'
         and e.code = tce.easy_course_code (+)
       )
+      join w_options on 1=1 
       where easy_course_code is null
+        and w_options.voting = 'Exclude'
       )
       , missing_hard as (
         select round_num
@@ -2510,8 +2614,11 @@ regions:
              , tournament_courses tch
           where h.course_mode = 'H'
             and h.code = tch.hard_course_code (+)
+            and h.id not in (select easy_course_id from tournament_courses)
         )
+      join w_options on 1=1 
         where hard_course_code is null
+        and w_options.voting = 'Exclude'
       )
       select /* q("pending") */ e.round_num
            , '' last_week
@@ -2586,10 +2693,13 @@ regions:
        select nvl(max(c.round_num),0) + 1 next_round_num
        from tournament_courses c
       )
+      join w_options on 1 = 1
       where next_round_num <= 12 -- 12 week season
+        and w_options.voting = 'Exclude'
       connect by level <= greatest(12 - next_round_num + 1, 0)
       --  and not exists (select 1 from tournament_courses where completed_ind = 'N') -- only add the TBD line when the current tournament is not finished
       order by order_by, round_num, course_order,last_week desc
+      
 
   layout: 
     sequence: 20
@@ -4687,7 +4797,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 50
     parent-region: '{col3}' # 13437440212291548
     slot: SUB_REGIONS
     start-new-layout: false
@@ -4923,6 +5033,729 @@ regions:
   attributes: 
     performance: 
       lazy-loading: false
+
+- # ====== Region: Season Courses Votes ========================
+  id: 71049005439388616
+  identification: 
+    name: Season Courses Votes
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with tournament_courses as (
+          select s.round_num
+               , count(*) over () setup_weeks
+               , s.week
+               , s.easy_course_code
+               , s.easy_course_name
+               , s.hard_course_code
+               , s.hard_course_name
+               , s.easy_course_id
+               , s.easy_release_order
+               , s.hard_course_id
+               , s.hard_release_order
+               , case 
+                   when s.completed_ind = 'Y' then 'white_check_mark'
+                   when (s.open_registration_on is null or s.open_registration_on < localtimestamp) then 'golf'
+                    else 'clock1' 
+                 end status
+            -- halloween
+            --   , case when s.completed_ind = 'Y' then 'skull' else 'jack_o_lantern' end status
+               , s.session_date
+               , s.completed_ind
+          from wmg_tournament_sessions_v s
+             , wmg_courses e
+             , wmg_courses h
+          where s.tournament_id in (
+              select id
+                from wmg_tournaments
+               where current_flag = 'Y'
+          )
+            and s.easy_course_id = e.id (+)
+            and s.hard_course_id = h.id (+)
+      )
+      , w_votes as (
+        select course_id, sum(vote) votes
+        from wmg_course_vote
+        group by course_id
+      )
+      , w_player_votes as (
+        select course_id, vote, case vote when 1 then 'up' when -1 then 'down' else null end vote_selection 
+        from wmg_course_vote
+        where player_id = nvl(:G_PLAYER_ID,0)
+      )
+      , missing_easy as (
+      select round_num
+           , easy_course_group
+           , easy_course
+           , easy_name
+           , '' hard_course
+           , '' hard_name
+           , status
+           , release_order
+           , votes easy_votes
+           , vote_class easy_vote_class
+      from (
+      select to_number(null) round_num
+           , e.course_group easy_course_group
+           , e.code easy_course
+           , tce.easy_course_code
+           , e.name easy_name
+           , 'lock' status
+           , e.release_order
+           , v.votes
+           , decode(pv.vote_selection, null, 'show', 'hide' || pv.vote_selection) vote_class
+      from wmg_courses e
+         , w_votes v
+         , w_player_votes pv
+         , tournament_courses tce
+      where e.course_mode = 'E'
+        and e.code = tce.easy_course_code (+)
+        and e.id = v.course_id (+)
+        and e.id = pv.course_id (+)
+      )
+      where easy_course_code is null
+      )
+      , missing_hard as (
+        select round_num
+             , hard_course_group
+             , '' easy_course
+             , '' easy_name
+             , hard_course
+             , hard_name
+             , status
+             , release_order
+             , votes hard_votes
+             , vote_class hard_vote_class
+        from (
+          select to_number(null) round_num
+               , h.course_group hard_course_group
+               , h.code hard_course
+               , h.name hard_name
+               , tch.hard_course_code
+               , 'lock' status
+               , h.release_order
+               , v.votes
+               , decode(pv.vote_selection, null, 'show', 'hide' || pv.vote_selection) vote_class
+          from wmg_courses h
+             , w_votes v
+             , w_player_votes pv
+             , tournament_courses tch
+          where h.course_mode = 'H'
+            and h.code = tch.hard_course_code (+)
+            and h.id not in (select easy_course_id from tournament_courses)
+            and h.id = v.course_id (+)
+            and h.id = pv.course_id (+)
+        )
+        where hard_course_code is null
+      )
+      , w_easy as (
+      select /* q("easy_votes") */ e.easy_votes easy_votes
+           , case when e.easy_votes is not null and rank() over (order by e.easy_votes desc nulls last) = 1 then 'top' end easy_votes_top
+           , row_number() over (order by e.easy_votes desc nulls last, e.easy_course_group) easy_vote_order
+           , e.easy_course
+           , e.easy_course_group
+           , e.easy_name
+           , e.easy_vote_class
+           , e.status
+           , case 
+               when e.status = 'lock' then 'Voting open'
+               else 'Not eligible' end status_title
+           , e.release_order course_order
+      from missing_easy e
+      )
+      , w_hard as (
+      select /* q("hard_votes") */ h.hard_votes
+           , case when h.hard_votes is not null and rank() over (order by h.hard_votes desc nulls last) = 1 then 'top' end hard_votes_top
+           , row_number() over (order by h.hard_votes desc nulls last, h.hard_course_group) hard_vote_order
+           , h.hard_course
+           , h.hard_course_group
+           , h.hard_name
+           , h.hard_vote_class
+           , h.status
+           , case 
+               when h.status = 'lock' then 'Voting open'
+               else 'Not eligible' end status_title
+           , h.release_order course_order
+      from missing_hard h
+      )
+      select e.easy_vote_order
+           , h.hard_vote_order
+           , e.easy_votes
+           , e.easy_votes_top
+           , e.easy_course
+           , e.easy_name
+           , e.easy_vote_class
+           , '' easy_factoids
+           , h.hard_course
+           , h.hard_name
+           , h.hard_vote_class
+           , '' hard_factoids
+           , h.hard_votes
+           , h.hard_votes_top
+           , coalesce(e.status, h.status) status
+           , case 
+               when  coalesce(e.status, h.status) = 'lock' then 'Voting open'
+               else 'Not eligible' end status_title
+           , coalesce(e.course_order, h.course_order) course_order
+      from (select * from w_easy where easy_votes is not null) e
+      full outer join (select * from w_hard where hard_votes is not null) h
+      on e.easy_vote_order = h.hard_vote_order
+      union all
+      select /* q("with_votes") */
+             e.easy_vote_order
+           , h.hard_vote_order
+           , e.easy_votes
+           , e.easy_votes_top
+           , e.easy_course
+           , e.easy_name
+           , e.easy_vote_class
+           , '' easy_factoids
+           , h.hard_course
+           , h.hard_name
+           , h.hard_vote_class
+           , '' hard_factoids
+           , h.hard_votes
+           , h.hard_votes_top
+           , coalesce(e.status, h.status) status
+           , case 
+               when  coalesce(e.status, h.status) = 'lock' then 'Voting open'
+               else 'Not eligible' end status_title
+           , coalesce(e.course_order, h.course_order) course_order
+      from (select * from w_easy where easy_votes is null) e
+      full outer join (select * from w_hard where hard_votes is null) h
+      on e.easy_course_group = h.hard_course_group
+      order by 1 nulls last, 3
+      
+
+  layout: 
+    sequence: 30
+    parent-region: '{col3}' # 13437440212291548
+    slot: SUB_REGIONS
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noBorder
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: votesRegion
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: |
+      :G_PLAYER_ID in (22,24,34,60,85,226
+      , 56 -- G0nzo
+      , 662 -- nerd
+      , 3826 -- zonk
+      , 6946 -- jen
+      , 6945 -- karma
+      , 7490 -- OpusMcGraw
+      , 7726 -- drew
+      , 9366 -- eyerie
+      )
+      or apex_authorization.is_authorized (p_authorization_name => 'Tournament Admin' )
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: 'Feature: Course Voting' # 74226408207696862
+
+  comments: 
+    comments: The URL param sets and item and submits because the region is cached and the URLs cannot contain the users session_id
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 50
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--stretch
+      - t-Report--staticRowColors
+      - t-Report--rowHighlightOff
+      - t-Report--hideNoPagination
+
+    pagination: 
+      type: Row Ranges X to Y (with next and previous links)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: EASY_VOTE_CLASS =============================
+    id: 11693791638199958
+    identification: 
+      column-name: EASY_VOTE_CLASS
+      type: Hidden
+
+    layout: 
+      sequence: 160
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_VOTE_CLASS =============================
+    id: 11693632089199957
+    identification: 
+      column-name: HARD_VOTE_CLASS
+      type: Hidden
+
+    layout: 
+      sequence: 170
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_COURSE =================================
+    id: 71049280952388619
+    identification: 
+      column-name: EASY_COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Easy
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {case EASY_NAME/}
+        {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
+        {otherwise/}
+          {case EASY_VOTE_CLASS/}
+          {when hidedown/}
+          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+          {otherwise/}
+        <button type="button" title="Vote Againts" aria-label="Vote Against" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
+          {endcase/}
+        <span class="tooltipImg --wmgt-excluded#EASY_TOURNAMENT_EXCLUDED_FLAG#" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">
+            #EASY_COURSE#
+            <span class="u-vh">#EASY_NAME#</span>
+        </span>
+          {case EASY_VOTE_CLASS/}
+          {when hideup/}
+          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+          {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
+          {endcase/}
+        {endcase/}
+        
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_NAME ===================================
+    id: 71049330052388620
+    identification: 
+      column-name: EASY_NAME
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_COURSE =================================
+    id: 71049443778388621
+    identification: 
+      column-name: HARD_COURSE
+      type: Plain Text
+
+    heading: 
+      heading: Hard
+      alignment: center
+
+    layout: 
+      sequence: 40
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {case HARD_NAME/}
+        {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
+        {otherwise/}
+          {case HARD_VOTE_CLASS/}
+          {when hidedown/}
+          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+          {otherwise/}
+        <button type="button" title="Vote Againts" aria-label="Vote Against" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
+           {endcase/}
+        <span class="tooltipImg --wmgt-excluded#HARD_TOURNAMENT_EXCLUDED_FLAG#" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">
+            #HARD_COURSE#
+            <span class="u-vh">#HARD_NAME#</span>
+        </span>
+        
+          {case HARD_VOTE_CLASS/}
+          {when hideup/}
+          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+          {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
+          {endcase/}
+        {endcase/}
+        
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_NAME ===================================
+    id: 71049560149388622
+    identification: 
+      column-name: HARD_NAME
+      type: Hidden
+
+    layout: 
+      sequence: 60
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: STATUS ======================================
+    id: 71049612298388623
+    identification: 
+      column-name: STATUS
+      type: Hidden
+
+    layout: 
+      sequence: 70
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: STATUS_TITLE ================================
+    id: 71049714820388624
+    identification: 
+      column-name: STATUS_TITLE
+      type: Hidden
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COURSE_ORDER ================================
+    id: 71049943243388626
+    identification: 
+      column-name: COURSE_ORDER
+      type: Hidden
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_VOTES ==================================
+    id: 71050888096388635
+    identification: 
+      column-name: EASY_VOTES
+      type: Plain Text
+
+    heading: 
+      heading: Easy Votes
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="t-Badge {if EASY_VOTES_TOP/}t-Badge--info{else/}t-Badge--outline{endif/} t-Badge--sm tooltip"  title="{if EASY_VOTES_TOP/}This course is winning{else/}Current votes{endif/}">#EASY_VOTES#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_VOTES ==================================
+    id: 71050972980388636
+    identification: 
+      column-name: HARD_VOTES
+      type: Plain Text
+
+    heading: 
+      heading: Hard Votes
+      alignment: end
+
+    layout: 
+      sequence: 50
+      column-alignment: end
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <span class="t-Badge {if HARD_VOTES_TOP/}t-Badge--info{else/}t-Badge--outline{endif/} t-Badge--sm tooltip" title="{if HARD_VOTES_TOP/}This course is winning{else/}Current votes{endif/}">#HARD_VOTES#</span>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_VOTES_TOP ==============================
+    id: 71051971275388646
+    identification: 
+      column-name: EASY_VOTES_TOP
+      type: Hidden
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_VOTES_TOP ==============================
+    id: 71052088670388647
+    identification: 
+      column-name: HARD_VOTES_TOP
+      type: Hidden
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_VOTE_ORDER =============================
+    id: 74131983732128034
+    identification: 
+      column-name: EASY_VOTE_ORDER
+      type: Hidden
+
+    layout: 
+      sequence: 200
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_VOTE_ORDER =============================
+    id: 74132062950128035
+    identification: 
+      column-name: HARD_VOTE_ORDER
+      type: Hidden
+
+    layout: 
+      sequence: 210
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: EASY_FACTOIDS ===============================
+    id: 74132111114128036
+    identification: 
+      column-name: EASY_FACTOIDS
+      type: Hidden
+
+    layout: 
+      sequence: 220
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_FACTOIDS ===============================
+    id: 74132304598128037
+    identification: 
+      column-name: HARD_FACTOIDS
+      type: Hidden
+
+    layout: 
+      sequence: 230
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+- # ====== Region: About Voting ================================
+  id: 74128491007127999
+  identification: 
+    name: About Voting
+    type: Static Content
+
+  source: 
+    html-code: |
+      <h2> How does voting work?</h2>
+      
+      Vote for the next easy and hard course we will play. <br>
+      
+      Everybody gets a vote! For every available course you get to vote in favor or against. 
+      
+      <br>
+      You must be signed up for the wekeend to vote, and the next course will be decided at the end of Tuesday night. <br>
+      As courses are played during the seasonm they will be eliminated from the list.<br>
+      After every week, all votes get reset and you get to select a course all over again.<br>
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    slot: REGION_POSITION_04
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: Inline Popup
+    template-options: 
+    - '#DEFAULT#'
+    - js-dialog-autoheight
+    - js-dialog-size480x320
+    - js-popup-pos-above
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: Your Assigned Room ==========================
   id: 7095453182086161115
@@ -6372,6 +7205,126 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P1_VOTE_COURSE_CODE ======================
+  id: 71051580098388642
+  identification: 
+    name: P1_VOTE_COURSE_CODE
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 10
+    region: Season Courses Votes # 71049005439388616
+    slot: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P1_VOTE_COURSE ===========================
+  id: 71051661316388643
+  identification: 
+    name: P1_VOTE_COURSE
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 20
+    region: Season Courses Votes # 71049005439388616
+    slot: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P1_SEARCH_VOTE_COURSES ===================
+  id: 74132349057128038
+  identification: 
+    name: P1_SEARCH_VOTE_COURSES
+    type: Text Field
+
+  label: 
+    label: Search Course Code
+    alignment: Left
+
+  settings: 
+    subtype: Search
+    trim-spaces: Leading and Trailing
+    text-case: NO CHANGE
+    submit-when-enter-pressed: false
+    disabled: false
+
+  layout: 
+    sequence: 30
+    region: Season Courses Votes # 71049005439388616
+    slot: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: 0
+
+  appearance: 
+    template: Optional
+    template-options: 
+    - '#DEFAULT#'
+    - t-Form-fieldContainer--stretchInputs
+    - margin-top-none
+    icon: fa-search
+    width: 30
+    value-placeholder: Search Course
+
+  validation: 
+    value-required: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    storage: Per Session (Persistent)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 buttons: 
 - # ====== Button: ENABLE_PUSH_NOTIFICATONS ====================
   id: 19993600497556795
@@ -6957,7 +7910,101 @@ buttons:
 
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: VOTE_HELP ===================================
+  id: 74128338574127998
+  identification: 
+    button-name: VOTE_HELP
+    label: About the Voting
+
+  layout: 
+    sequence: 30
+    region: Season Courses Votes # 71049005439388616
+    slot: EDIT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Icon
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--simple
+    icon: fa-question-circle-o
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: false
+
+- # ====== Button: CLOSE_ABOUT_VOTING ==========================
+  id: 74128755419128002
+  identification: 
+    button-name: CLOSE_ABOUT_VOTING
+    label: Ok
+
+  layout: 
+    sequence: 10
+    region: About Voting # 74128491007127999
+    slot: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--small
+
+  behavior: 
+    action: Defined by Dynamic Action
+    execute-validations: false
+
 dynamic-actions: 
+- # ====== Dynamic Action: Highlight Selection =================
+  id: 11693428828199955
+  identification: 
+    name: Highlight Selection
+
+  execution: 
+    sequence: 100
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: After Refresh
+    selection-type: Region
+    region: Season Courses Votes # 71049005439388616
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 11693376530199954
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        let = c = apex.item("P1_VOTE_COURSE_CODE").getValue();
+        
+        $("[data-code=" + c + "]").parents("td").find("span.tooltipImg").each(function() {
+          $(this).html(function(_, html) {
+            return '<mark>' + html + '</mark>';
+          });
+        });
+        
+        courseTooltips();
+
+    execution: 
+      sequence: 10
+      event: Highlight Selection # 11693428828199955
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 - # ====== Dynamic Action: Refresh On Close ====================
   id: 481389774587244
   identification: 
@@ -7085,31 +8132,7 @@ dynamic-actions:
       action: Execute JavaScript Code
 
     settings: 
-      code: |
-        $(".tooltipImg").tooltip({
-            content: function() {
-              // Get the description and image URL from the "title" and "data-img-url" attributes
-              var description = $(this).attr("title");
-              var fact = $(this).data("fact");
-              var imgUrl = $(this).data("img-url");
-              var wmgtExcluded = $(this).hasClass("--wmgt-excludedY");
-        
-              // Create an HTML string to include the description and the image
-              var tooltipContent = "<div>" + description + "</div>";
-              tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
-              if (wmgtExcluded) {
-                 tooltipContent += "<div class='--wmgt-excluded-legend'>" + "This course will not be played in S14" + "</div>";
-              }
-              else {
-                if (fact) {
-                    tooltipContent += "<div class='legend u-color-6-text'>" + fact + "</div>";
-                }
-              }
-        
-              return tooltipContent;
-            }
-        });
-        
+      code: courseTooltips();
 
     execution: 
       sequence: 10
@@ -7211,6 +8234,328 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
+- # ====== Dynamic Action: Handle Up/Down Vote =================
+  id: 71051099608388637
+  identification: 
+    name: Handle Up/Down Vote
+
+  execution: 
+    sequence: 80
+    event-scope: Dynamic
+    static-container-(jquery-selector): '#votesRegion'
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: jQuery Selector
+    jquery-selector: .receiveVote
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_REGISTRATION_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  configuration: 
+    build-option: 'Feature: Course Voting' # 74226408207696862
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 11693497778199956
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        var $el = $(this.triggerigElement);
+        setTimeout(function(){
+            $el.find(".t-Icon").removeClass().addClass("t-Icon fa fa-spinner fa-anim-spin-step")},0);
+        
+
+    execution: 
+      sequence: 10
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 71051142416388638
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: $(this.triggeringElement).parents("tr").addClass("highlight");
+
+    execution: 
+      sequence: 40
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Set Value ===================================
+    id: 71051359717388640
+    identification: 
+      action: Set Value
+
+    settings: 
+      set-type: JavaScript Expression
+      javascript-expression: this.triggeringElement.dataset.code
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P1_VOTE_COURSE_CODE
+
+    execution: 
+      sequence: 20
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: false
+      wait-for-result: true
+
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 71051410646388641
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |
+        let vote = 0;
+        if ( $(this.triggeringElement).hasClass("voteDown") ) {
+          vote = -1;
+        }
+        else if ( $(this.triggeringElement).hasClass("voteUp") ) {
+          vote = 1;
+        }
+        else {
+            console.error("Invalid vote");
+        }
+        apex.item("P1_VOTE_COURSE").setValue(vote);
+        
+        
+
+    execution: 
+      sequence: 30
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Execute Server-side Code ====================
+    id: 71051769162388644
+    identification: 
+      action: Execute Server-side Code
+
+    settings: 
+      language: PE.PROPERTY.SOURCE_SNIPPET_LANG.LOV.PLSQL.D
+      pl/sql-code: |
+        logger.log('VOTE: ' || :APP_USER);
+        logger.log('..P1_VOTE_COURSE_CODE: ' || :P1_VOTE_COURSE_CODE);
+        logger.log('..P1_VOTE_COURSE: ' || :P1_VOTE_COURSE);
+        logger.log('..G_PLAYER_ID: ' || :G_PLAYER_ID);
+        merge into wmg_course_vote v
+        using (
+          select c.id course_id
+               , to_number(:P1_VOTE_COURSE default 0 on conversion error) vote
+               , nvl(:G_PLAYER_ID,0) player_id
+            from wmg_courses c
+           where c.code = :P1_VOTE_COURSE_CODE
+        ) src
+        on (v.course_id = src.course_id and v.player_id = src.player_id)
+        when matched then
+          update set v.vote = 
+                 case 
+                    when v.vote + src.vote = 0 then 0 -- flip flop the vote
+                    else src.vote
+                 end
+        when not matched then
+          insert (course_id, vote, player_id)
+          values (src.course_id, src.vote, src.player_id);
+        
+        -- make the changes visible right away
+        apex_region.purge_cache (
+            p_page_id    => 1
+        );
+        
+        
+      items-to-submit: 
+      - P1_VOTE_COURSE_CODE
+      - P1_VOTE_COURSE
+      - G_PLAYER_ID
+
+    execution: 
+      sequence: 50
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+      stop-execution-on-error: true
+      wait-for-result: true
+
+  - # ====== Action: Refresh =====================================
+    id: 71051886948388645
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: Season Courses Votes # 71049005439388616
+
+    execution: 
+      sequence: 60
+      event: Handle Up/Down Vote # 71051099608388637
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Open About Voting ===================
+  id: 74128585675128000
+  identification: 
+    name: Open About Voting
+
+  execution: 
+    sequence: 110
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: Button
+    button: VOTE_HELP # 74128338574127998
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  configuration: 
+    build-option: 'Feature: Course Voting' # 74226408207696862
+
+  actions: 
+  - # ====== Action: Open Region =================================
+    id: 74128702058128001
+    identification: 
+      action: Open Region
+
+    affected-elements: 
+      selection-type: Region
+      region: About Voting # 74128491007127999
+
+    execution: 
+      sequence: 10
+      event: Open About Voting # 74128585675128000
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Close About Voting ==================
+  id: 74128905210128003
+  identification: 
+    name: Close About Voting
+
+  execution: 
+    sequence: 120
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: Button
+    button: CLOSE_ABOUT_VOTING # 74128755419128002
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  configuration: 
+    build-option: 'Feature: Course Voting' # 74226408207696862
+
+  actions: 
+  - # ====== Action: Close Region ================================
+    id: 74128996339128004
+    identification: 
+      action: Close Region
+
+    affected-elements: 
+      selection-type: Region
+      region: About Voting # 74128491007127999
+
+    execution: 
+      sequence: 10
+      event: Close About Voting # 74128905210128003
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Handle Up/Down Vote NOT_REGISTERED ==
+  id: 74129074903128005
+  identification: 
+    name: Handle Up/Down Vote NOT_REGISTERED
+
+  execution: 
+    sequence: 90
+    event-scope: Dynamic
+    static-container-(jquery-selector): '#votesRegion'
+    type: Immediate
+
+  when: 
+    event: Click
+    selection-type: jQuery Selector
+    jquery-selector: .receiveVote
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_REGISTRATION_ID
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  configuration: 
+    build-option: 'Feature: Course Voting' # 74226408207696862
+
+  actions: 
+  - # ====== Action: Alert =======================================
+    id: 74129621474128011
+    identification: 
+      action: Alert
+
+    settings: 
+      title: Registration required
+      message: Voting is only available to players registered for the current week.
+      style: Information
+
+    execution: 
+      sequence: 60
+      event: Handle Up/Down Vote NOT_REGISTERED # 74129074903128005
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Search Courses ======================
+  id: 74132491736128039
+  identification: 
+    name: Search Courses
+
+  execution: 
+    sequence: 130
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Key Release
+    selection-type: Item(s)
+    item(s): 
+    - P1_SEARCH_VOTE_COURSES
+
+  actions: 
+  - # ====== Action: Execute JavaScript Code =====================
+    id: 74132526252128040
+    identification: 
+      action: Execute JavaScript Code
+
+    settings: 
+      code: searchRows($v("P1_SEARCH_VOTE_COURSES"));
+
+    execution: 
+      sequence: 10
+      event: Search Courses # 74132491736128039
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
 computations: 
 - # ====== Computation: G_CURRENT_SESSION_ID ===================
   id: 2325269597982905530
@@ -7219,7 +8564,7 @@ computations:
 
   execution: 
     sequence: 10
-    point: After Header
+    point: Before Header
 
   computation: 
     type: SQL Query (return single value)
@@ -7247,7 +8592,7 @@ computations:
 
   execution: 
     sequence: 20
-    point: After Header
+    point: Before Header
 
   computation: 
     type: SQL Query (return single value)
