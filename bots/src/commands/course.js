@@ -60,7 +60,7 @@ export default {
       try {
         const apiResponse = await courseLeaderboardService.getCourseLeaderboard(courseCode, userId);
         leaderboardData = courseLeaderboardService.formatLeaderboardData(apiResponse, userId);
-        
+
         commandLogger.debug('Leaderboard data retrieved successfully', {
           courseCode: courseCode,
           entriesCount: leaderboardData.entries?.length || 0,
@@ -72,27 +72,101 @@ export default {
           error: error.message,
           stack: error.stack,
           userId: userId,
-          courseCode: courseCode
+          courseCode: courseCode,
+          errorType: error.errorType
         });
 
-        // Handle API errors with user-friendly messages
-        const processedError = courseLeaderboardService.handleApiError(error, 'course_command_fetch');
-        
-        const errorEmbed = new EmbedBuilder()
-          .setColor(0xFF0000)
-          .setTitle('❌ Unable to Fetch Course Leaderboard')
-          .setDescription(processedError.message)
-          .setFooter({ text: 'Please try again later or contact an Admin if the problem persists.' });
+        // Handle specific course error types with enhanced messaging
+        let errorEmbed;
+
+        if (error.errorType === 'COURSE_NOT_FOUND' && error.suggestions) {
+          // Special handling for course not found with suggestions
+          const suggestionText = error.suggestions.map(course => `**${course.code}** - ${course.name}`).join('\n');
+          
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle('🏌️ Course Not Found')
+            .setDescription(`Course **${courseCode.toUpperCase()}** could not be found.`)
+            .addFields({
+              name: '💡 Try These Popular Courses',
+              value: suggestionText,
+              inline: false
+            })
+            .setFooter({ text: 'Use the autocomplete feature to see all available courses.' });
+
+        } else if (error.errorType === 'API_UNAVAILABLE') {
+          // Special handling for API unavailable
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFF6B6B)
+            .setTitle('🔧 Service Temporarily Unavailable')
+            .setDescription(error.message)
+            .addFields({
+              name: '🔄 What to do next',
+              value: error.suggestion || 'Please try again in a few minutes.',
+              inline: false
+            })
+            .setFooter({ text: 'If the problem persists, contact support.' });
+
+        } else if (error.errorType === 'TOKEN_EXPIRED') {
+          // Special handling for token expiration
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFFA500)
+            .setTitle('🔑 Authentication Refreshing')
+            .setDescription('The authentication token has expired and is being refreshed automatically.')
+            .addFields({
+              name: '🔄 What to do next',
+              value: 'Please try the /course command again in a moment.',
+              inline: false
+            })
+            .setFooter({ text: 'This usually resolves automatically.' });
+
+        } else if (error.errorType === 'INVALID_CREDENTIALS' || error.errorType === 'AUTHENTICATION_ERROR') {
+          // Special handling for authentication failures
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle('🔒 Authentication Failed')
+            .setDescription('Unable to authenticate with the leaderboard service.')
+            .addFields({
+              name: '⚠️ What this means',
+              value: 'This is a configuration issue that requires administrator attention.',
+              inline: false
+            })
+            .setFooter({ text: 'Please contact support to resolve this issue.' });
+
+        } else if (error.errorType === 'RATE_LIMITED') {
+          // Special handling for rate limiting
+          const retrySeconds = Math.ceil((error.retryAfter || 60000) / 1000);
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFFA500)
+            .setTitle('🚦 Rate Limited')
+            .setDescription(`Too many requests have been made. Please wait ${retrySeconds} seconds before trying again.`)
+            .addFields({
+              name: '⏰ Retry After',
+              value: `${retrySeconds} seconds`,
+              inline: false
+            })
+            .setFooter({ text: 'This helps prevent server overload.' });
+
+        } else {
+          // Handle other API errors with user-friendly messages
+          const processedError = courseLeaderboardService.handleApiError(error, 'course_command_fetch');
+
+          errorEmbed = new EmbedBuilder()
+            .setColor(0xFF0000)
+            .setTitle('❌ Unable to Fetch Course Leaderboard')
+            .setDescription(processedError.message)
+            .setFooter({ text: 'Please try again later or contact an Admin if the problem persists.' });
+        }
 
         return await interaction.editReply({ embeds: [errorEmbed] });
       }
 
       // Check if leaderboard data is available
-      if (!leaderboardData.entries || leaderboardData.entries.length === 0) {
+      if (!leaderboardData.entries || leaderboardData.entries.length === 0 || leaderboardData.isEmpty) {
         const noDataEmbed = new EmbedBuilder()
           .setColor(0xFFA500)
           .setTitle('📊 No Scores Available')
-          .setDescription(`No scores have been recorded for course **${leaderboardData.course.name}** yet.`)
+          .setDescription(leaderboardData.message || `No scores have been recorded for course **${leaderboardData.course.name}** yet.`)
           .addFields({
             name: 'Course Information',
             value: `**Code:** ${leaderboardData.course.code}\n**Difficulty:** ${leaderboardData.course.difficulty}`,
@@ -106,10 +180,10 @@ export default {
       // Create leaderboard embed with fallback to text display
       let leaderboardEmbed;
       let fallbackToText = false;
-      
+
       try {
         const embedData = courseLeaderboardService.createLeaderboardEmbed(leaderboardData);
-        
+
         leaderboardEmbed = new EmbedBuilder()
           .setTitle(embedData.title)
           .setColor(embedData.color)
@@ -143,7 +217,7 @@ export default {
 
         // Set flag to use text fallback
         fallbackToText = true;
-        
+
         commandLogger.info('Attempting fallback to text-based display', {
           userId: userId,
           courseCode: courseCode,
@@ -158,11 +232,11 @@ export default {
         } else {
           // Fallback to text-based display
           const textDisplay = courseLeaderboardService.createTextDisplay(leaderboardData);
-          await interaction.editReply({ 
+          await interaction.editReply({
             content: textDisplay,
             embeds: [] // Clear any existing embeds
           });
-          
+
           commandLogger.info('Successfully sent text-based course leaderboard', {
             userId: userId,
             courseCode: courseCode,
@@ -180,9 +254,9 @@ export default {
 
         // Final fallback - simple error message
         const errorMessage = `❌ **Course Leaderboard Unavailable**\n\nUnable to display leaderboard for course **${courseCode.toUpperCase()}** due to a technical issue. Please try again later or contact support.`;
-        
+
         try {
-          await interaction.editReply({ 
+          await interaction.editReply({
             content: errorMessage,
             embeds: []
           });
@@ -193,7 +267,7 @@ export default {
             courseCode: courseCode
           });
         }
-        
+
         return;
       }
 
@@ -222,7 +296,7 @@ export default {
   async autocomplete(interaction) {
     try {
       const focusedValue = interaction.options.getFocused();
-      
+
       commandLogger.debug('Course autocomplete requested', {
         userId: interaction.user.id,
         focusedValue: focusedValue,
@@ -236,22 +310,30 @@ export default {
       } catch (error) {
         commandLogger.error('Failed to fetch courses for autocomplete', {
           error: error.message,
+          errorType: error.errorType,
           userId: interaction.user.id,
           focusedValue: focusedValue
         });
 
         // Return fallback courses on error
         courses = courseLeaderboardService.getFallbackCourses();
+        
+        // Log that we're using fallback
+        commandLogger.info('Using fallback courses for autocomplete', {
+          userId: interaction.user.id,
+          fallbackCount: courses.length,
+          reason: error.errorType || 'api_error'
+        });
       }
 
       // Filter courses based on user input with fuzzy matching
       const filtered = courses.filter(course => {
         if (!focusedValue) return true; // Show all if no input
-        
+
         const searchTerm = focusedValue.toLowerCase();
         const courseCode = course.code.toLowerCase();
         const courseName = course.name.toLowerCase();
-        
+
         // Match course code or course name
         return courseCode.includes(searchTerm) || courseName.includes(searchTerm);
       });
@@ -259,15 +341,15 @@ export default {
       // Sort by relevance (exact matches first, then partial matches)
       filtered.sort((a, b) => {
         if (!focusedValue) return a.code.localeCompare(b.code);
-        
+
         const searchTerm = focusedValue.toLowerCase();
         const aCodeMatch = a.code.toLowerCase().startsWith(searchTerm);
         const bCodeMatch = b.code.toLowerCase().startsWith(searchTerm);
-        
+
         // Prioritize code matches over name matches
         if (aCodeMatch && !bCodeMatch) return -1;
         if (!aCodeMatch && bCodeMatch) return 1;
-        
+
         // Then sort alphabetically
         return a.code.localeCompare(b.code);
       });

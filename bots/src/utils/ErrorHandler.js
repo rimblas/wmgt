@@ -102,6 +102,52 @@ export class ErrorHandler {
         suggestion: 'Please check your input and try again.'
       },
       
+      // Course Leaderboard Specific Errors
+      'COURSE_NOT_FOUND': {
+        title: '🏌️ Course Not Found',
+        message: 'The requested course could not be found.',
+        color: 0xFF0000,
+        suggestion: 'Please check the course code and try one of the suggested alternatives.'
+      },
+      'COURSE_NO_SCORES': {
+        title: '📊 No Scores Available',
+        message: 'No scores have been recorded for this course yet.',
+        color: 0xFFA500,
+        suggestion: 'Be the first to play this course and set a score!'
+      },
+      'COURSE_API_UNAVAILABLE': {
+        title: '🏌️ Leaderboard Service Unavailable',
+        message: 'The course leaderboard service is temporarily unavailable.',
+        color: 0xFF6B6B,
+        suggestion: 'Please try again in a few minutes. If the problem persists, contact support.'
+      },
+      'INVALID_COURSE_CODE': {
+        title: '❌ Invalid Course Code',
+        message: 'The provided course code is not in the correct format.',
+        color: 0xFF0000,
+        suggestion: 'Course codes should be 3 letters (e.g., ALE, BBH, CLE).'
+      },
+
+      // Authentication Specific Errors
+      'TOKEN_EXPIRED': {
+        title: '🔑 Authentication Token Expired',
+        message: 'The authentication token has expired and is being refreshed.',
+        color: 0xFFA500,
+        suggestion: 'Please try your request again in a moment.'
+      },
+      'INVALID_CREDENTIALS': {
+        title: '🔒 Authentication Failed',
+        message: 'Unable to authenticate with the API due to invalid credentials.',
+        color: 0xFF0000,
+        suggestion: 'This is a configuration issue. Please contact support.'
+      },
+      'AUTHENTICATION_ERROR': {
+        title: '🔑 Authentication Error',
+        message: 'An authentication error occurred while accessing the API.',
+        color: 0xFF0000,
+        suggestion: 'Please try again. If the problem persists, contact support.'
+      },
+
       // Votes API Specific Errors
       'VOTES_API_UNAVAILABLE': {
         title: '📊 Voting Service Unavailable',
@@ -242,6 +288,34 @@ export class ErrorHandler {
 
     // Check error message content
     const message = error.message?.toLowerCase() || '';
+    
+    // Course leaderboard specific errors
+    if (message.includes('course') && message.includes('not found')) {
+      return 'COURSE_NOT_FOUND';
+    }
+    if (message.includes('no scores') && (message.includes('course') || message.includes('recorded'))) {
+      return 'COURSE_NO_SCORES';
+    }
+    if (message.includes('leaderboard') && message.includes('unavailable')) {
+      return 'COURSE_API_UNAVAILABLE';
+    }
+    if (message.includes('invalid course code') || (message.includes('course code') && message.includes('invalid'))) {
+      return 'INVALID_COURSE_CODE';
+    }
+    
+    // Authentication specific errors
+    if (message.includes('authentication token') && message.includes('expired')) {
+      return 'TOKEN_EXPIRED';
+    }
+    if (message.includes('invalid credentials') || (message.includes('authentication') && message.includes('invalid'))) {
+      return 'INVALID_CREDENTIALS';
+    }
+    if (message.includes('authentication failed') || message.includes('oauth2 client credentials')) {
+      return 'INVALID_CREDENTIALS';
+    }
+    if (message.includes('authentication error')) {
+      return 'AUTHENTICATION_ERROR';
+    }
     
     // Votes API specific errors
     if (message.includes('voting data') && message.includes('invalid')) {

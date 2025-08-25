@@ -77,14 +77,14 @@
     - Test command appears in Discord slash command list
     - _Requirements: 1.1_
 
-- [ ] 6. Implement comprehensive error handling
-  - [ ] 6.1 Add specific error handling for course scenarios
+- [x] 6. Implement comprehensive error handling
+  - [x] 6.1 Add specific error handling for course scenarios
     - Handle "course not found" with suggested alternatives
     - Handle "no scores available" with appropriate messaging
     - Handle API unavailable scenarios with retry suggestions
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 6.2 Add authentication error handling
+  - [x] 6.2 Add authentication error handling
     - Handle token expiration with automatic refresh
     - Handle invalid credentials with clear error messages
     - Handle rate limiting with appropriate backoff

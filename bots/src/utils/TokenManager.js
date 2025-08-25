@@ -110,6 +110,10 @@ export class TokenManager {
       client_secret: clientSecret
     });
 
+    const basic = Buffer
+    .from(`${clientId}:${clientSecret}`, 'utf8')
+    .toString('base64');
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), config.api.timeout);
 
@@ -117,6 +121,7 @@ export class TokenManager {
       const response = await fetch(tokenUrl, {
         method: 'POST',
         headers: {
+          'Authorization': `Basic ${basic}`,
           'Content-Type': 'application/x-www-form-urlencoded',
           'Accept': 'application/json'
         },
@@ -133,7 +138,17 @@ export class TokenManager {
           statusText: response.statusText,
           error: errorText
         });
-        throw new Error(`Token request failed: ${response.status} ${response.statusText}`);
+        
+        // Provide more specific error messages based on status code
+        if (response.status === 401) {
+          throw new Error('Authentication failed: Invalid client credentials');
+        } else if (response.status === 429) {
+          throw new Error('Authentication rate limited: Too many token requests');
+        } else if (response.status >= 500) {
+          throw new Error('Authentication service unavailable: Server error');
+        } else {
+          throw new Error(`Token request failed: ${response.status} ${response.statusText}`);
+        }
       }
 
       const tokenData = await response.json();

@@ -140,17 +140,21 @@ describe('CourseLeaderboardService', () => {
         expect(courses).toEqual(cachedCourses);
       });
 
-      it('should return fallback courses when API fails and no cache', async () => {
+      it('should throw API unavailable error when API fails and no cache', async () => {
         // Mock API failure
         service.authenticatedGet = vi.fn().mockRejectedValue(new Error('API unavailable'));
 
-        const courses = await service.getAvailableCourses();
+        await expect(service.getAvailableCourses()).rejects.toThrow('The leaderboard service is temporarily unavailable');
         
-        expect(courses).toEqual(service.getFallbackCourses());
-        expect(courses.length).toBeGreaterThan(0);
-        expect(courses[0]).toHaveProperty('code');
-        expect(courses[0]).toHaveProperty('name');
-        expect(courses[0]).toHaveProperty('difficulty');
+        // Verify the error has the correct properties
+        try {
+          await service.getAvailableCourses();
+        } catch (error) {
+          expect(error.errorType).toBe('API_UNAVAILABLE');
+          expect(error.suggestion).toContain('You can still try typing a course code directly');
+          expect(error.shouldRetry).toBe(true);
+          expect(error.retryAfter).toBe(30000);
+        }
       });
     });
 

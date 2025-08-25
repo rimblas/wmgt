@@ -215,19 +215,29 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
             stack: error.stack
           });
 
-          // Handle specific error cases
+          // Handle specific error cases with enhanced messaging
           if (error.response?.status === 404) {
-            const courseError = new Error(`Course '${normalizedCourseCode}' not found. Please check the course code and try again.`);
-            courseError.noRetry = true;
-            courseError.courseCode = normalizedCourseCode;
-            throw courseError;
+            throw this.createCourseNotFoundError(normalizedCourseCode);
           }
 
           if (error.response?.status === 400) {
             const validationError = new Error(`Invalid course code '${normalizedCourseCode}'. Course codes should be 3 letters (e.g., ALE, BBH).`);
             validationError.noRetry = true;
             validationError.courseCode = normalizedCourseCode;
+            validationError.errorType = 'INVALID_COURSE_CODE';
             throw validationError;
+          }
+
+          // Handle authentication errors
+          if (error.response?.status === 401 || error.response?.status === 429 || 
+              error.message?.includes('Authentication failed') || 
+              error.message?.includes('OAuth2 client credentials')) {
+            throw this.handleAuthenticationError(error, 'course_leaderboard');
+          }
+
+          // Handle service unavailable scenarios
+          if (error.response?.status >= 500 || error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+            throw this.createApiUnavailableError(error, 'course_leaderboard');
           }
 
           throw error;
@@ -302,6 +312,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
           const processingErrors = [];
 
           response.items.forEach((item, index) => {
+
             try {
               // Validate course item structure
               if (!item || typeof item !== 'object') {
@@ -309,24 +320,18 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
                 return;
               }
 
-              if (!item.course_code || typeof item.course_code !== 'string') {
-                processingErrors.push(`Item ${index}: Missing or invalid course_code`);
+              if (!item.code || typeof item.code !== 'string') {
+                processingErrors.push(`Item ${index}: Missing or invalid course "code"`);
                 return;
               }
 
-              if (!item.course_name || typeof item.course_name !== 'string') {
-                processingErrors.push(`Item ${index}: Missing or invalid course_name`);
+              if (!item.name || typeof item.name !== 'string') {
+                processingErrors.push(`Item ${index}: Missing or invalid course "name"`);
                 return;
               }
 
-              const courseCode = item.course_code.trim().toUpperCase();
-              const courseName = item.course_name.trim();
-
-              // Validate course code format (should be 3 letters)
-              if (!/^[A-Z]{3}$/.test(courseCode)) {
-                processingErrors.push(`Item ${index}: Invalid course code format: ${courseCode}`);
-                return;
-              }
+              const courseCode = item.code.trim().toUpperCase();
+              const courseName = item.name.trim();
 
               const courseData = {
                 code: courseCode,
@@ -385,6 +390,24 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
             stack: error.stack
           });
 
+          // Handle authentication errors first
+          if (error.response?.status === 401 || error.response?.status === 429 || 
+              error.message?.includes('Authentication failed') || 
+              error.message?.includes('OAuth2 client credentials')) {
+            
+            // For autocomplete, we should provide fallback rather than throw auth errors
+            this.logger.warn('Authentication error in course list, using fallback courses', {
+              errorType: error.response?.status === 401 ? 'TOKEN_EXPIRED' : 'AUTH_ERROR',
+              cacheSize: this.courseCache.size
+            });
+            
+            // Try to use cache first, then fallback courses
+            if (this.courseCache.size > 0) {
+              return Array.from(this.courseCache.values());
+            }
+            return this.getFallbackCourses();
+          }
+
           // Provide fallback options when API fails
           if (this.courseCache.size > 0) {
             this.logger.info('API failed, returning stale cached course data', {
@@ -394,9 +417,9 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
             return Array.from(this.courseCache.values());
           }
 
-          // If no cache available, return popular courses as fallback
-          this.logger.warn('No cached data available, returning fallback course list');
-          return this.getFallbackCourses();
+          // If no cache available, throw enhanced error for autocomplete context
+          this.logger.warn('No cached data available, API unavailable for course list');
+          throw this.createApiUnavailableError(error, 'course_list');
         }
       },
       {
@@ -436,6 +459,254 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       { code: 'GBE', name: 'Gardens of Babylon Easy', difficulty: 'Easy' },
       { code: 'GBH', name: 'Gardens of Babylon Hard', difficulty: 'Hard' }
     ];
+  }
+
+  /**
+   * Get suggested alternative courses when a course is not found
+   * @param {string} invalidCourseCode - The invalid course code that was requested
+   * @returns {Array} Array of suggested course objects
+   */
+  getSuggestedCourses(invalidCourseCode) {
+    const fallbackCourses = this.getFallbackCourses();
+    
+    if (!invalidCourseCode || typeof invalidCourseCode !== 'string') {
+      // Return popular courses if no input provided
+      return fallbackCourses.slice(0, 5);
+    }
+
+    const normalizedInput = invalidCourseCode.trim().toUpperCase();
+    
+    // Try to find similar courses based on partial matches
+    const suggestions = [];
+    
+    // First, try exact prefix matches (e.g., "AL" -> "ALE", "ALH")
+    if (normalizedInput.length >= 2) {
+      const prefix = normalizedInput.substring(0, 2);
+      const prefixMatches = fallbackCourses.filter(course => 
+        course.code.startsWith(prefix)
+      );
+      suggestions.push(...prefixMatches);
+    }
+    
+    // Then, try single character matches for typos (e.g., "BLE" -> "ALE", "CLE")
+    if (normalizedInput.length === 3) {
+      const singleCharMatches = fallbackCourses.filter(course => {
+        let matchCount = 0;
+        for (let i = 0; i < 3; i++) {
+          if (course.code[i] === normalizedInput[i]) {
+            matchCount++;
+          }
+        }
+        return matchCount >= 2; // At least 2 characters match
+      });
+      suggestions.push(...singleCharMatches);
+    }
+    
+    // Remove duplicates and limit to 5 suggestions
+    const uniqueSuggestions = suggestions.filter((course, index, self) => 
+      index === self.findIndex(c => c.code === course.code)
+    );
+    
+    // If no good matches found, return popular courses
+    if (uniqueSuggestions.length === 0) {
+      return fallbackCourses.slice(0, 5);
+    }
+    
+    return uniqueSuggestions.slice(0, 5);
+  }
+
+  /**
+   * Handle course not found error with suggested alternatives
+   * @param {string} courseCode - The course code that was not found
+   * @returns {Error} Enhanced error with suggestions
+   */
+  createCourseNotFoundError(courseCode) {
+    const suggestions = this.getSuggestedCourses(courseCode);
+    const suggestionText = suggestions.map(course => `**${course.code}** (${course.name})`).join(', ');
+    
+    const error = new Error(
+      `Course '${courseCode}' not found. Try one of these popular courses: ${suggestionText}`
+    );
+    error.noRetry = true;
+    error.courseCode = courseCode;
+    error.suggestions = suggestions;
+    error.errorType = 'COURSE_NOT_FOUND';
+    
+    return error;
+  }
+
+  /**
+   * Handle no scores available scenario with encouraging message
+   * @param {string} courseCode - The course code with no scores
+   * @param {Object} courseInfo - Course information if available
+   * @returns {Object} Formatted response for no scores scenario
+   */
+  createNoScoresResponse(courseCode, courseInfo = null) {
+    const course = courseInfo || {
+      code: courseCode,
+      name: this.getCourseNameFromCode(courseCode),
+      difficulty: this.getCourseDifficulty(courseCode)
+    };
+
+    return {
+      course: course,
+      entries: [],
+      totalEntries: 0,
+      userEntries: [],
+      hasUserScores: false,
+      lastUpdated: new Date(),
+      isEmpty: true,
+      message: `No scores have been recorded for **${course.name}** yet. Be the first to play this course and set a score!`
+    };
+  }
+
+  /**
+   * Handle API unavailable scenario with retry suggestions
+   * @param {Error} originalError - The original API error
+   * @param {string} context - Context where the error occurred
+   * @returns {Error} Enhanced error with retry suggestions
+   */
+  createApiUnavailableError(originalError, context = 'api_call') {
+    let message = 'The leaderboard service is temporarily unavailable. ';
+    let suggestion = 'Please try again in a few minutes.';
+    
+    // Customize message based on context
+    if (context === 'course_leaderboard') {
+      message += 'Unable to fetch course leaderboard data at this time.';
+      suggestion = 'Please try the /course command again in a moment. If the problem persists, contact support.';
+    } else if (context === 'course_list') {
+      message += 'Unable to fetch the course list for autocomplete.';
+      suggestion = 'You can still try typing a course code directly (e.g., ALE, BBH). Popular courses are: ALE, BBH, CLE, EDE, GBE.';
+    }
+    
+    const error = new Error(message);
+    error.originalError = originalError;
+    error.errorType = 'API_UNAVAILABLE';
+    error.suggestion = suggestion;
+    error.shouldRetry = true;
+    error.retryAfter = 30000; // Suggest retry after 30 seconds
+    
+    return error;
+  }
+
+  /**
+   * Handle authentication token expiration with automatic refresh
+   * @param {Error} originalError - The original 401 error
+   * @param {string} context - Context where the error occurred
+   * @returns {Error} Enhanced error with refresh information
+   */
+  createTokenExpiredError(originalError, context = 'api_call') {
+    const message = 'Authentication token has expired and will be refreshed automatically.';
+    
+    const error = new Error(message);
+    error.originalError = originalError;
+    error.errorType = 'TOKEN_EXPIRED';
+    error.shouldRetry = true;
+    error.retryAfter = 1000; // Retry quickly after token refresh
+    error.context = context;
+    
+    this.logger.info('Token expired, will be refreshed on next request', {
+      context: context,
+      originalError: originalError.message
+    });
+    
+    return error;
+  }
+
+  /**
+   * Handle invalid authentication credentials
+   * @param {Error} originalError - The original authentication error
+   * @param {string} context - Context where the error occurred
+   * @returns {Error} Enhanced error with credential information
+   */
+  createInvalidCredentialsError(originalError, context = 'api_call') {
+    const message = 'Authentication failed due to invalid credentials. Please contact support.';
+    
+    const error = new Error(message);
+    error.originalError = originalError;
+    error.errorType = 'INVALID_CREDENTIALS';
+    error.shouldRetry = false; // Don't retry credential errors
+    error.context = context;
+    
+    this.logger.error('Invalid authentication credentials detected', {
+      context: context,
+      originalError: originalError.message,
+      hasClientId: !!config.api.oauth.clientId,
+      hasClientSecret: !!config.api.oauth.clientSecret
+    });
+    
+    return error;
+  }
+
+  /**
+   * Handle rate limiting with appropriate backoff
+   * @param {Error} originalError - The original 429 error
+   * @param {string} context - Context where the error occurred
+   * @returns {Error} Enhanced error with rate limit information
+   */
+  createRateLimitError(originalError, context = 'api_call') {
+    // Extract retry-after header if available
+    const retryAfter = originalError.response?.headers?.['retry-after'];
+    const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : 60000; // Default to 1 minute
+    
+    const message = `Rate limit exceeded. Please wait ${Math.ceil(retryAfterMs / 1000)} seconds before trying again.`;
+    
+    const error = new Error(message);
+    error.originalError = originalError;
+    error.errorType = 'RATE_LIMITED';
+    error.shouldRetry = true;
+    error.retryAfter = retryAfterMs;
+    error.context = context;
+    
+    this.logger.warn('Rate limit exceeded', {
+      context: context,
+      retryAfterSeconds: Math.ceil(retryAfterMs / 1000),
+      retryAfterHeader: retryAfter
+    });
+    
+    return error;
+  }
+
+  /**
+   * Enhanced error handling for authentication-related errors
+   * @param {Error} error - The error to handle
+   * @param {string} context - Context where the error occurred
+   * @returns {Error} Processed error with appropriate handling
+   */
+  handleAuthenticationError(error, context = 'api_call') {
+    // Handle specific HTTP status codes
+    if (error.response?.status === 401) {
+      // Check if this is a token expiration or invalid credentials
+      const errorData = error.response.data;
+      
+      if (errorData?.error === 'invalid_token' || errorData?.error_description?.includes('expired')) {
+        return this.createTokenExpiredError(error, context);
+      } else {
+        return this.createInvalidCredentialsError(error, context);
+      }
+    }
+    
+    if (error.response?.status === 429) {
+      return this.createRateLimitError(error, context);
+    }
+    
+    // Handle token manager specific errors
+    if (error.message?.includes('OAuth2 client credentials not configured')) {
+      return this.createInvalidCredentialsError(error, context);
+    }
+    
+    if (error.message?.includes('Authentication failed')) {
+      return this.createInvalidCredentialsError(error, context);
+    }
+    
+    // For other authentication-related errors, return generic auth error
+    const authError = new Error('Authentication error occurred. Please try again or contact support.');
+    authError.originalError = error;
+    authError.errorType = 'AUTHENTICATION_ERROR';
+    authError.shouldRetry = false;
+    authError.context = context;
+    
+    return authError;
   }
 
   /**
@@ -506,11 +777,12 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
           }
 
           // Ensure required fields exist
-          const pos = typeof item.pos === 'number' ? item.pos : index + 1;
+          const pos = typeof item.pos === 'number' ? item.pos : NaN;
           const playerName = typeof item.player_name === 'string' ? item.player_name.trim() : 'Unknown Player';
           const score = typeof item.score === 'number' ? item.score : 0;
-          const discordId = item.discord_id ? String(item.discord_id) : null;
-          const isApproved = Boolean(item.isApproved);
+          const discordId = item.discord_id;
+          const isApproved = Boolean(item.isapproved === 'true' ? true : false);
+          const isCurrentUser = Boolean(discordId === userId);
 
           // Create processed entry
           const processedEntry = {
@@ -519,7 +791,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
             score: score,
             discordId: discordId,
             isApproved: isApproved,
-            isCurrentUser: discordId === userId
+            isCurrentUser: isCurrentUser
           };
 
           processedEntries.push(processedEntry);
@@ -611,14 +883,14 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     }
 
     // Generate name from code as last resort
-    const difficulty = normalizedCode.endsWith('H') ? 'Hard' : 'Easy';
+    const difficulty = normalizedCode.endsWith('E') ? '(Easy)' : '';
     const baseCode = normalizedCode.substring(0, 2);
     return `${baseCode} ${difficulty}`;
   }
 
   /**
    * Get course difficulty from course code
-   * @param {string} courseCode - 3-letter course code
+   * @param {string} courseCode - 3-letter ends with E or H
    * @returns {string} Course difficulty ('Easy' or 'Hard')
    */
   getCourseDifficulty(courseCode) {
@@ -626,7 +898,8 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       return 'Unknown';
     }
 
-    return courseCode.trim().toUpperCase().endsWith('H') ? 'Hard' : 'Easy';
+    // no Hard needed for Hard courses because they all have Hard the name.
+    return courseCode.endsWith('E') ? '(Easy)' : '';
   }
 
   /**
@@ -652,7 +925,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       const embed = {
         color: 0x00AE86, // Consistent bot theme color
         title: `🏆 ${course.name} Leaderboard`,
-        description: `**Course:** ${course.code} (${course.difficulty})\n**Total Scores:** ${leaderboardData.totalEntries}`,
+        description: `${course.code} - ${course.name} ${course.difficulty}\n`,
         fields: [],
         footer: {
           text: `Last updated: ${leaderboardData.lastUpdated.toLocaleString()}`
@@ -664,56 +937,55 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       if (!leaderboardData.entries || leaderboardData.entries.length === 0) {
         embed.fields.push({
           name: '📊 Leaderboard',
-          value: 'No scores recorded for this course yet. Be the first to play!',
+          value: 'No scores recorded for this course yet. Be the first to submit!',
           inline: false
         });
         return embed;
       }
 
-      // Limit to top 10 entries for readability (as per requirements)
-      const displayEntries = leaderboardData.entries.slice(0, 10);
+      const displayEntries = leaderboardData.entries;
 
       // Format leaderboard entries
       const leaderboardLines = [];
 
       displayEntries.forEach((entry, index) => {
-        let line = '';
+        let line = '`';  // open fixed  width
 
         // Add position indicators for top 3
         if (entry.position === 1) {
-          line += '🥇 ';
+          line += ' 🥇 ';
         } else if (entry.position === 2) {
-          line += '🥈 ';
+          line += ' 🥈 ';
         } else if (entry.position === 3) {
-          line += '🥉 ';
+          line += ' 🥉 ';
         } else {
-          line += `${entry.position}. `;
+          line += (entry.position<10?' ':'') + `${entry.position}. `;
         }
-
-        // Add user highlighting markers
-        if (entry.isCurrentUser) {
-          if (entry.isApproved) {
-            line += '➤ '; // Approved user score marker
-          } else {
-            line += '📝 '; // Personal/unapproved score marker
-          }
-        }
-
-        // Add player name
-        line += entry.playerName;
 
         // Add score (negative values indicate under par)
         const scoreDisplay = entry.score >= 0 ? `+${entry.score}` : `${entry.score}`;
-        line += ` - (${scoreDisplay})`;
-
+        line += `${scoreDisplay}`;
+        line += '` ';  // close fixed  width
+        
+        // Add player name (truncate if too long)
+        const maxNameLength = 25;
+        let playerName = entry.playerName;
+        if (playerName.length > maxNameLength) {
+          playerName = playerName.substring(0, maxNameLength - 3) + '...';
+        }
+        
+        // Bold Top 3 players
+        if (entry.position <= 3) {
+           playerName = '**' + playerName + '**';
+        }
+        line += playerName;
+        
         // Add user identification and approval status
         if (entry.isCurrentUser) {
-          line += ' ⭐ **[YOU]**';
+          line += ' ⬅️ ';
           if (!entry.isApproved) {
-            line += ' **[PERSONAL]**';
+            line += ' 📝';
           }
-        } else if (!entry.isApproved) {
-          line += ' [PERSONAL]';
         }
 
         leaderboardLines.push(line);
@@ -732,12 +1004,12 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
 
         leaderboardData.userEntries.forEach(userEntry => {
           const scoreDisplay = userEntry.score >= 0 ? `+${userEntry.score}` : `${userEntry.score}`;
-          const statusText = userEntry.isApproved ? 'Approved' : 'Personal';
-          userSummaryLines.push(`Position ${userEntry.position}: ${scoreDisplay} (${statusText})`);
+          const statusText = userEntry.isApproved ? '' : ' (Personal)';
+          userSummaryLines.push(`Position ${userEntry.position}: ${scoreDisplay} ${statusText}`);
         });
 
         embed.fields.push({
-          name: '🎯 Your Scores',
+          name: '\n🎯 Your Score',
           value: userSummaryLines.join('\n'),
           inline: false
         });
@@ -747,8 +1019,8 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       const hasPersonalScores = leaderboardData.entries.some(entry => !entry.isApproved);
       if (hasPersonalScores) {
         embed.fields.push({
-          name: '📋 Legend',
-          value: '🥇🥈🥉 Top 3 positions\n➤ Your approved score\n📝 Personal (unapproved) scores\n⭐ **[YOU]** Your score',
+          name: '\n📋 Legend',
+          value: '🥇🥈🥉 Top 3 positions\n📝 Personal (unapproved) scores\n⬅️ **[YOU]** Your score',
           inline: false
         });
       }
@@ -831,20 +1103,18 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
 
         // Add position indicators for top 3
         if (entry.position === 1) {
-          line += '🥇 ';
+          line += ' 🥇 ';
         } else if (entry.position === 2) {
-          line += '🥈 ';
+          line += ' 🥈 ';
         } else if (entry.position === 3) {
-          line += '🥉 ';
+          line += ' 🥉 ';
         } else {
-          line += `${entry.position}. `;
+          line += (entry.position<10?' ':'') + `${entry.position}. `;
         }
 
         // Add user highlighting markers
         if (entry.isCurrentUser) {
-          if (entry.isApproved) {
-            line += '➤ '; // Approved user score marker
-          } else {
+          if (!entry.isApproved) {
             line += '📝 '; // Personal/unapproved score marker
           }
         }
@@ -864,11 +1134,6 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
         // Add user identification and approval status
         if (entry.isCurrentUser) {
           line += ' ⭐ **[YOU]**';
-          if (!entry.isApproved) {
-            line += ' **[PERSONAL]**';
-          }
-        } else if (!entry.isApproved) {
-          line += ' [PERSONAL]';
         }
 
         textDisplay += line + '\n';
@@ -876,12 +1141,12 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
 
       // Add user summary if user has scores
       if (leaderboardData.hasUserScores && leaderboardData.userEntries.length > 0) {
-        textDisplay += '\n🎯 **Your Scores**\n';
+        textDisplay += '\n🎯 **Your Score**\n';
 
         leaderboardData.userEntries.forEach(userEntry => {
           const scoreDisplay = userEntry.score >= 0 ? `+${userEntry.score}` : `${userEntry.score}`;
-          const statusText = userEntry.isApproved ? 'Approved' : 'Personal';
-          textDisplay += `Position ${userEntry.position}: ${scoreDisplay} (${statusText})\n`;
+          const statusText = userEntry.isApproved ? '' : ' (Personal)';
+          textDisplay += `Position ${userEntry.position}: ${scoreDisplay}${statusText}\n`;
         });
       }
 
@@ -889,7 +1154,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       const hasPersonalScores = leaderboardData.entries.some(entry => !entry.isApproved);
       if (hasPersonalScores) {
         textDisplay += '\n📋 **Legend**\n';
-        textDisplay += '🥇🥈🥉 Top 3 positions | ➤ Your approved score\n';
+        textDisplay += '🥇🥈🥉 Top 3 positions\n';
         textDisplay += '📝 Personal (unapproved) scores | ⭐ **[YOU]** Your score\n';
       }
 

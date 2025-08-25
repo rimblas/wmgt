@@ -145,8 +145,25 @@ export class BaseAuthenticatedService {
         shouldRetry: (error) => {
           // Retry on 401 (token expired) after clearing token
           if (error.response?.status === 401) {
+            this.logger.info('Retrying GET request after 401 - token will be refreshed');
             return true;
           }
+          
+          // Don't retry on 403 (forbidden) - likely a permissions issue
+          if (error.response?.status === 403) {
+            return false;
+          }
+          
+          // Handle rate limiting with backoff
+          if (error.response?.status === 429) {
+            const retryAfter = error.response.headers?.['retry-after'];
+            if (retryAfter && parseInt(retryAfter) > 300) {
+              // Don't retry if rate limit is too long (> 5 minutes)
+              return false;
+            }
+            return true;
+          }
+          
           return this.retryHandler.shouldRetry(error);
         }
       },
@@ -179,8 +196,25 @@ export class BaseAuthenticatedService {
         shouldRetry: (error) => {
           // Retry on 401 (token expired) after clearing token
           if (error.response?.status === 401) {
+            this.logger.info('Retrying POST request after 401 - token will be refreshed');
             return true;
           }
+          
+          // Don't retry on 403 (forbidden) - likely a permissions issue
+          if (error.response?.status === 403) {
+            return false;
+          }
+          
+          // Handle rate limiting with backoff
+          if (error.response?.status === 429) {
+            const retryAfter = error.response.headers?.['retry-after'];
+            if (retryAfter && parseInt(retryAfter) > 300) {
+              // Don't retry if rate limit is too long (> 5 minutes)
+              return false;
+            }
+            return true;
+          }
+          
           return this.retryHandler.shouldRetry(error);
         }
       },
