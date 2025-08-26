@@ -39,6 +39,7 @@ A Discord bot for WMGT tournament registration that allows players to register f
 - `/unregister` - Unregister from a tournament session  
 - `/mystatus` - View current registrations
 - `/votes` - View current votes on courses
+- `/course` - View current high scores on a course
 - `/timezone` - Set preferred timezone
 
 ## Project Structure
