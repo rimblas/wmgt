@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Create tournament control table and supporting database objects
+- [x] 1. Create tournament control table and supporting database objects
   - Create wmg_tournament_control table with nullable tournament_session_id to support tournament breaks
   - Create update trigger following existing patterns for audit columns
   - Create wmg_tournament_control_v view with comprehensive tournament session details
