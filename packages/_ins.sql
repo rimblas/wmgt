@@ -6,5 +6,7 @@
 @wmg_error_handler.pkb
 @wmg_notification.pks
 @wmg_notification.pkb
+@wmg_rest_api.pks
+@wmg_rest_api.pkb
 @wmg_util.pks
 @wmg_util.pkb
