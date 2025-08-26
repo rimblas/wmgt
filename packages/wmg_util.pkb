@@ -3088,5 +3088,151 @@ begin
 end save_stream_scores;
 
 
+--------------------------------------------------------------------------------
+-- Tournament Control Management Procedures
+--------------------------------------------------------------------------------
+
+/**
+ * Set the active tournament session for a specific tournament type
+ *
+ * @example
+ * wmg_util.set_tournament_control('WMGT', 123);
+ * 
+ * @author Jorge Rimblas
+ * @created August 25, 2025
+ * @param p_tournament_type Tournament type code (WMGT, KWT, FHIT)
+ * @param p_tournament_session_id Tournament session ID to set as active
+ */
+procedure set_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope scope_t := gc_scope_prefix || 'set_tournament_control';
+begin
+  log('BEGIN', l_scope);
+  log('.. Setting tournament control for type: ' || p_tournament_type || ', session: ' || p_tournament_session_id, l_scope);
+
+  -- Insert or update the tournament control record
+  -- Foreign key constraint will validate tournament_session_id exists
+  merge into wmg_tournament_control tc
+  using (
+    select p_tournament_type as tournament_type_code
+         , p_tournament_session_id as tournament_session_id
+    from dual
+  ) src
+  on (tc.tournament_type_code = src.tournament_type_code)
+  when matched then
+    update set 
+      tournament_session_id = src.tournament_session_id
+  when not matched then
+    insert (
+      tournament_type_code
+    , tournament_session_id
+    )
+    values (
+      src.tournament_type_code
+    , src.tournament_session_id
+    );
+
+  log('.. Tournament control updated for type: ' || p_tournament_type, l_scope);
+  log('END', l_scope);
+
+exception
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end set_tournament_control;
+
+
+/**
+ * Get the current tournament session ID for a specific tournament type
+ *
+ * @example
+ * l_session_id := wmg_util.get_tournament_control('WMGT');
+ * 
+ * @author Jorge Rimblas
+ * @created August 25, 2025
+ * @param p_tournament_type Tournament type code (WMGT, KWT, FHIT)
+ * @return Tournament session ID or NULL if no active tournament
+ */
+function get_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+) return number
+is
+  l_scope scope_t := gc_scope_prefix || 'get_tournament_control';
+  l_tournament_session_id number;
+begin
+  log('BEGIN', l_scope);
+  log('.. Getting tournament control for type: ' || p_tournament_type, l_scope);
+
+  select tournament_session_id
+    into l_tournament_session_id
+    from wmg_tournament_control
+   where tournament_type_code = p_tournament_type;
+
+  log('.. Found session ID: ' || l_tournament_session_id || ' for type: ' || p_tournament_type, l_scope);
+  log('END', l_scope);
+
+  return l_tournament_session_id;
+
+exception
+  when no_data_found then
+    log('.. No tournament control found for type: ' || p_tournament_type, l_scope);
+    log('END', l_scope);
+    return null;
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end get_tournament_control;
+
+
+/**
+ * Clear the active tournament session for a specific tournament type (set to tournament break)
+ *
+ * @example
+ * wmg_util.clear_tournament_control('WMGT');
+ * 
+ * @author Jorge Rimblas
+ * @created August 25, 2025
+ * @param p_tournament_type Tournament type code (WMGT, KWT, FHIT)
+ */
+procedure clear_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+)
+is
+  l_scope scope_t := gc_scope_prefix || 'clear_tournament_control';
+begin
+  log('BEGIN', l_scope);
+  log('.. Clearing tournament control for type: ' || p_tournament_type, l_scope);
+
+  update wmg_tournament_control
+     set tournament_session_id = null
+   where tournament_type_code = p_tournament_type;
+
+  if sql%rowcount = 0 then
+    -- Insert a record with NULL session ID if none exists
+    insert into wmg_tournament_control (
+      tournament_type_code
+    , tournament_session_id
+    ) values (
+      p_tournament_type
+    , null
+    );
+    log('.. Created new tournament control record with NULL session for type: ' || p_tournament_type, l_scope);
+  else
+    log('.. Cleared tournament control for type: ' || p_tournament_type, l_scope);
+  end if;
+
+  log('END', l_scope);
+
+exception
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end clear_tournament_control;
+
+
+
 end wmg_util;
 /

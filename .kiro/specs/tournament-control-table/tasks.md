@@ -12,7 +12,7 @@
   - Verify data integrity and foreign key relationships
   - _Requirements: 5.4, 5.5_
 
-- [ ] 3. Implement tournament control management procedures in wmg_util package
+- [x] 3. Implement tournament control management procedures in wmg_util package
   - Add set_tournament_control procedure to update active tournament sessions
   - Add get_tournament_control function to retrieve current tournament session ID
   - Add clear_tournament_control procedure to handle tournament breaks

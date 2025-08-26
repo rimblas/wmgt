@@ -146,5 +146,21 @@ procedure add_monthly_entries(
 );
 $END
 
+----------------------------------------
+-- Tournament Control Management Procedures
+----------------------------------------
+procedure set_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+  , p_tournament_session_id in wmg_tournament_sessions.id%type
+);
+
+function get_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+) return number;
+
+procedure clear_tournament_control(
+    p_tournament_type in wmg_tournament_control.tournament_type%type
+);
+
 end wmg_util;
 /
