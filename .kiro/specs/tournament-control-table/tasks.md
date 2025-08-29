@@ -47,7 +47,7 @@
   - Verify backward compatibility with existing API consumers
   - _Requirements: 1.5, 2.3, 2.4, 3.5_
 
-- [ ] 8. Update wmg_util.validate_tournament_state to use control table
+- [x] 8. Update wmg_util.validate_tournament_state to use control table
   - Modify validate_tournament_state procedure to check wmg_tournament_control instead of current_flag
   - Maintain existing error handling and validation logic
   - Ensure compatibility with existing code that calls this procedure
