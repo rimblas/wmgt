@@ -33,7 +33,7 @@
   - Implement error handling in tournament control procedures
   - _Requirements: 1.4, 3.4_
 
-- [ ] 6. Create unit tests for tournament control functionality
+- [x] 6. Create unit tests for tournament control functionality
   - Test wmg_tournament_control table operations (insert, update, delete)
   - Test tournament control management procedures with valid and invalid data
   - Test current_tournament procedure with different tournament types and NULL sessions
