@@ -962,50 +962,14 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
     return courseCode.endsWith('E') ? '(Easy)' : '';
   }
 
-  /**
-   * Create Discord embed for leaderboard display with user highlighting
-   * @param {Object} leaderboardData - Formatted leaderboard data from formatLeaderboardData
-   * @param {Object} courseInfo - Course information (optional, will use data from leaderboardData if not provided)
-   * @returns {Object} Discord embed object
+
+    /**
+   * Format leaderboard entries into display lines
+   * @param {Object} leaderboardData - Formatted leaderboard data
+   * @returns {Array<string>} Array of formatted leaderboard lines
    */
-  createLeaderboardEmbed(leaderboardData, courseInfo = null) {
-    try {
-      // Validate input
-      if (!leaderboardData || typeof leaderboardData !== 'object') {
-        throw new Error('Leaderboard data is required and must be an object');
-      }
-
-      // Use provided courseInfo or extract from leaderboardData
-      const course = courseInfo || leaderboardData.course;
-      if (!course) {
-        throw new Error('Course information is required');
-      }
-
-      // Create embed structure
-      const embed = {
-        color: 0x00AE86, // Consistent bot theme color
-        title: `🏆 ${course.name} Leaderboard`,
-        description: `${course.code} - ${course.name} ${course.difficulty}\n`,
-        fields: [],
-        footer: {
-          text: `Last updated: ${leaderboardData.lastUpdated.toLocaleString()}`
-        },
-        timestamp: leaderboardData.lastUpdated.toISOString()
-      };
-
-      // Handle empty leaderboard
-      if (!leaderboardData.entries || leaderboardData.entries.length === 0) {
-        embed.fields.push({
-          name: '📊 Leaderboard',
-          value: 'No scores recorded for this course yet. Be the first to submit!',
-          inline: false
-        });
-        return embed;
-      }
-
+    formatLeaderboardLines(leaderboardData) {
       const displayEntries = leaderboardData.entries;
-
-      // Format leaderboard entries
       const leaderboardLines = [];
 
       displayEntries.forEach((entry, index) => {
@@ -1051,10 +1015,60 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
         leaderboardLines.push(line);
       });
 
+    return leaderboardLines;
+  }
+
+
+  /**
+   * Create Discord embed for leaderboard display with user highlighting
+   * @param {Object} leaderboardData - Formatted leaderboard data from formatLeaderboardData
+   * @param {Object} courseInfo - Course information (optional, will use data from leaderboardData if not provided)
+   * @returns {Object} Discord embed object
+   */
+  createLeaderboardEmbed(leaderboardData, courseInfo = null) {
+    try {
+      // Validate input
+      if (!leaderboardData || typeof leaderboardData !== 'object') {
+        throw new Error('Leaderboard data is required and must be an object');
+      }
+
+      // Use provided courseInfo or extract from leaderboardData
+      const course = courseInfo || leaderboardData.course;
+      if (!course) {
+        throw new Error('Course information is required');
+      }
+
+      // Create embed structure
+      const embed = {
+        color: 0x00AE86, // Consistent bot theme color
+        title: `🏆 ${course.name} Leaderboard`,
+        description: `${course.code} - ${course.name} ${course.difficulty}\n`,
+        fields: [],
+        footer: {
+          text: `Last updated: ${leaderboardData.lastUpdated.toLocaleString()}`
+        },
+        timestamp: leaderboardData.lastUpdated.toISOString()
+      };
+
+      // Handle empty leaderboard
+      if (!leaderboardData.entries || leaderboardData.entries.length === 0) {
+        embed.fields.push({
+          name: '📊 Leaderboard',
+          value: 'No scores recorded for this course yet. Be the first to submit!',
+          inline: false
+        });
+        return embed;
+      }
+
+      const leaderboardLines = this.formatLeaderboardLines(leaderboardData);
+      let textDisplay = leaderboardLines.join('\n');
+
+      textDisplay = this.truncateTextDisplay(textDisplay);
+
       // Add leaderboard field
       embed.fields.push({
         name: '📊 Top Scores',
-        value: leaderboardLines.join('\n'),
+        value: textDisplay,
         inline: false
       });
 
@@ -1087,7 +1101,7 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
 
       this.logger.debug('Discord embed created successfully', {
         courseCode: course.code,
-        entriesDisplayed: displayEntries.length,
+        entriesDisplayed: leaderboardLines.length,
         totalEntries: leaderboardData.totalEntries,
         hasUserScores: leaderboardData.hasUserScores,
         hasPersonalScores: hasPersonalScores
@@ -1142,7 +1156,8 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
 
       // Header
       textDisplay += `🏆 **${course.name} Leaderboard**\n`;
-      textDisplay += `Course: ${course.code} (${course.difficulty}) | Total Scores: ${leaderboardData.totalEntries}\n`;
+      // textDisplay += `Course: ${course.code} (${course.difficulty}) | Total Scores: ${leaderboardData.totalEntries}\n`;
+      textDisplay += `${course.code} - ${course.name} ${course.difficulty}\n`,
       textDisplay += `Last updated: ${leaderboardData.lastUpdated.toLocaleString()}\n\n`;
 
       // Handle empty leaderboard
@@ -1153,80 +1168,14 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
       }
 
       // Limit to top 10 entries for readability
-      const displayEntries = leaderboardData.entries.slice(0, 10);
+      // const displayEntries = leaderboardData.entries.slice(0, 10);
 
       // Leaderboard section
       textDisplay += '📊 **Top Scores**\n';
 
-      displayEntries.forEach((entry, index) => {
-        let line = '';
+      const leaderboardLines = this.formatLeaderboardLines(leaderboardData);
 
-        // Add position indicators for top 3
-        if (entry.position === 1) {
-          line += ' 🥇 ';
-        } else if (entry.position === 2) {
-          line += ' 🥈 ';
-        } else if (entry.position === 3) {
-          line += ' 🥉 ';
-        } else {
-          line += (entry.position < 10 ? ' ' : '') + `${entry.position}. `;
-        }
-
-        // Add user highlighting markers
-        if (entry.isCurrentUser) {
-          if (!entry.isApproved) {
-            line += '📝 '; // Personal/unapproved score marker
-          }
-        }
-
-        // Add player name (truncate if too long)
-        const maxNameLength = 20;
-        let playerName = entry.playerName;
-        if (playerName.length > maxNameLength) {
-          playerName = playerName.substring(0, maxNameLength - 3) + '...';
-        }
-        line += playerName;
-
-        // Add score (negative values indicate under par)
-        const scoreDisplay = entry.score >= 0 ? `+${entry.score}` : `${entry.score}`;
-        line += ` - (${scoreDisplay})`;
-
-        // Add user identification and approval status
-        if (entry.isCurrentUser) {
-          line += ' ⭐ **[YOU]**';
-        }
-
-        textDisplay += line + '\n';
-      });
-
-      // Add user summary if user has scores
-      if (leaderboardData.hasUserScores && leaderboardData.userEntries.length > 0) {
-        textDisplay += '\n🎯 **Your Score**\n';
-
-        leaderboardData.userEntries.forEach(userEntry => {
-          const scoreDisplay = userEntry.score >= 0 ? `+${userEntry.score}` : `${userEntry.score}`;
-          const statusText = userEntry.isApproved ? '' : ' (Personal)';
-          textDisplay += `Position ${userEntry.position}: ${scoreDisplay}${statusText}\n`;
-        });
-      }
-
-      // Add legend if there are personal scores
-      const hasPersonalScores = leaderboardData.entries.some(entry => !entry.isApproved);
-      if (hasPersonalScores) {
-        textDisplay += '\n📋 **Legend**\n';
-        textDisplay += '🥇🥈🥉 Top 3 positions\n';
-        textDisplay += '📝 Personal (unapproved) scores | ⭐ **[YOU]** Your score\n';
-      }
-
-      this.logger.debug('Text display created successfully', {
-        courseCode: course.code,
-        entriesDisplayed: displayEntries.length,
-        totalEntries: leaderboardData.totalEntries,
-        hasUserScores: leaderboardData.hasUserScores,
-        hasPersonalScores: hasPersonalScores,
-        textLength: textDisplay.length
-      });
-
+      textDisplay += leaderboardLines.join('\n');
       return this.truncateTextDisplay(textDisplay);
 
     } catch (error) {
@@ -1247,8 +1196,8 @@ export class CourseLeaderboardService extends BaseAuthenticatedService {
    * @param {string} text - Text to truncate
    * @returns {string} Truncated text that fits Discord limits
    */
-  truncateTextDisplay(text) {
-    const maxLength = 2000; // Discord message character limit
+  truncateTextDisplay(text, limit = 2000) {
+    const maxLength = limit; // Discord message character limit
 
     if (text.length <= maxLength) {
       return text;

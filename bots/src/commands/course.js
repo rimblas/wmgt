@@ -183,7 +183,7 @@ export default {
 
       try {
         const embedData = courseLeaderboardService.createLeaderboardEmbed(leaderboardData);
-
+        
         leaderboardEmbed = new EmbedBuilder()
           .setTitle(embedData.title)
           .setColor(embedData.color)
@@ -200,6 +200,7 @@ export default {
           });
         });
 
+
         commandLogger.info('Course leaderboard embed created successfully', {
           courseCode: courseCode,
           fieldsCount: embedData.fields.length,
@@ -207,6 +208,8 @@ export default {
         });
 
       } catch (error) {
+
+
         commandLogger.error('Failed to create course leaderboard embed', {
           error: error.message,
           stack: error.stack,
