@@ -245,72 +245,115 @@ end success_response;
 
 
 procedure current_tournament(
-    p_output out clob
+  p_tournament_type_code in wmg_tournament_control.tournament_type_code%type default 'WMGT'
 )
 is
   l_scope scope_t := gc_scope_prefix || 'current_tournament';
+
+  l_clob clob;
+  l_tournament_session_id number;
 begin
   logger.log(p_text => 'START', p_scope => l_scope);
+  logger.log(p_text => '.. p_tournament_type_code: ' || p_tournament_type_code, p_scope => l_scope);
+  
+  -- Get the current tournament session ID from the control table
+  l_tournament_session_id := wmg_util.get_tournament_control(p_tournament_type_code);
+  
+  -- Handle NULL tournament_session_id case (tournament break)
+  if l_tournament_session_id is null then
+    error_response(
+        p_error_code => c_error_no_active_tournament_session
+      , p_message => 'No available ' || p_tournament_type_code || ' tournaments at the time.'
+    );
+    return;
+  end if;
+  
+  logger.log(p_text => '.. l_tournament_session_id: ' || l_tournament_session_id, p_scope => l_scope);
   
   select json_object(
-           'tournament' value json_object(
-               'id' value t.tournament_id
-             , 'name' value t.name
-             , 'code' value t.code
-           )
-         , 'sessions' value json_object(
-               'id' value t.tournament_session_id
-             , 'week' value t.week
-             , 'session_date' value format_session_date_utc(t.session_date)
-             , 'open_registration_on' value format_session_date_utc(t.open_registration_on)
-             , 'close_registration_on' value format_session_date_utc(t.close_registration_on)
-             , 'registration_open' value case 
-                 when t.open_registration_on is null or t.open_registration_on < localtimestamp
-                 then 'true' else 'false'
-                 end format json
-             , 'available_time_slots' value (
-                 select json_arrayagg(
-                          json_object(
-                              'time_slot' value ts.time_slot
-                            , 'day_offset' value ts.day_offset
-                            , 'display' value ts.prepared_time_slot
-                          ) order by ts.seq
-                        )
-                   from wmg_time_slots_all_v ts
-               )
-             , 'courses' value build_courses_json(t.tournament_session_id)
-           )
-           returning clob
-         )
-    into p_output
-    from (
-           select t.id tournament_id
-                , t.name
-                , t.code
-                , s.tournament_session_id
-                , s.week
-                , s.session_date
-                , s.open_registration_on
-                , s.close_registration_on
-             from wmg_tournaments t
-                , wmg_tournament_sessions_v s
-            where s.tournament_id = t.id
-              and t.current_flag = 'Y'
-              and t.active_ind = 'Y'
-              and s.session_date + 1 >= trunc(current_timestamp)
-              and s.completed_ind = 'N'
-            fetch first 1 rows only
-         ) t;
+    'tournament' value json_object(
+      'id' value t.tournament_id,
+      'name' value t.name,
+      'code' value t.code
+    )
+    ,'sessions' value json_object(
+          'id' value t.tournament_session_id,
+          'week' value t.week,
+          'session_date' value to_char(t.session_date, 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+          'open_registration_on' value to_char(t.open_registration_on, 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+          'close_registration_on' value to_char(t.close_registration_on, 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+          'registration_open' value case
+            when t.registration_closed_flag is null 
+            then 'true' else 'false'
+            end format json
+            ,'available_time_slots' value (
+            select json_arrayagg(
+              json_object(
+                'time_slot' value ts.time_slot,
+                'day_offset' value ts.day_offset,
+                'display' value ts.prepared_time_slot
+              ) order by ts.seq
+            )
+            from wmg_time_slots_all_v ts
+          )
+          ,'courses' value (
+            select json_arrayagg(
+              json_object(
+                'course_no' value case when tc.course_no = 1 then 1 else 2 end,
+                'course_name' value c.name,
+                'course_code' value c.code,
+                'difficulty' value case when tc.course_no = 1 then 'Easy' else 'Hard' end
+              )
+            )
+            from wmg_tournament_courses tc
+            join wmg_courses c on tc.course_id = c.id
+            where tc.tournament_session_id = t.tournament_session_id
+          )
+        -- returning clob
+      )
+    )
+    -- returning clob
+  into l_clob
+  from (
+    select t.id tournament_id, t.name, t.code
+      , s.id tournament_session_id
+      , s.week
+      , s.session_date
+      , s.open_registration_on
+      , s.close_registration_on
+      , s.registration_closed_flag
+   from wmg_tournament_sessions s
+   join wmg_tournaments t on s.tournament_id = t.id
+   where s.id = l_tournament_session_id
+  ) t;
 
-  if p_output is null then
-    p_output := '{}';
+  if l_clob is null then
+    l_clob := '{}';
+    /*
+    json_object(
+      'tournament' value null,
+      'sessions' value json_array()
+    );
+    */
+    logger.log(p_text => 'No tournament session found for ID: ' || l_tournament_session_id, p_scope => l_scope);
   end if;
+
+ sys.owa_util.mime_header('application/json', true);
+  apex_util.prn(
+    p_clob   => l_clob,
+    p_escape => false
+  );
+
 
   logger.log(p_text => 'END', p_scope => l_scope);
 exception
   when others then
+    -- Handle unexpected application errors from tournament control procedures
+    error_response(
+        p_error_code => c_error_invalid_tournament_session
+      , p_message => 'Unknown error:' || sqlerrm
+    );
     logger.log_error(p_text => sqlerrm, p_scope => l_scope);
-    raise;
 end current_tournament;
 
 

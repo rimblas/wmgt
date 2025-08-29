@@ -497,6 +497,12 @@ begin
        , registration_closed_flag = decode(registration_closed_flag, 'Y', null, 'Y')
   where id = p_tournament_session_id;
 
+  $IF env.kwt $THEN
+  set_tournament_control(p_tournament_type => 'KWT', p_tournament_session_id => p_tournament_session_id);
+  $ELSE
+  set_tournament_control(p_tournament_type => 'WMGT', p_tournament_session_id => p_tournament_session_id);
+  $END
+
   commit;  -- Make sure the room open up regardless or other errors
 
   wmg_util.submit_close_scoring_jobs(p_tournament_session_id => p_tournament_session_id);
@@ -1799,6 +1805,9 @@ begin
     add_monthly_entries(
       p_tournament_session_id => p_tournament_session_id
     );
+    clear_tournament_control('KWT');
+  $ELSE
+    clear_tournament_control('WMGT');
   $END
 
 
@@ -3104,17 +3113,35 @@ end save_stream_scores;
  * @param p_tournament_session_id Tournament session ID to set as active
  */
 procedure set_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
   , p_tournament_session_id in wmg_tournament_sessions.id%type
 )
 is
   l_scope scope_t := gc_scope_prefix || 'set_tournament_control';
+  l_session_exists number;
+  l_valid_type_count number;
 begin
   log('BEGIN', l_scope);
   log('.. Setting tournament control for type: ' || p_tournament_type || ', session: ' || p_tournament_session_id, l_scope);
 
+  -- Validate tournament type
+  if p_tournament_type not in ('WMGT', 'KWT', 'FHIT') then
+    log('.. Invalid tournament type: ' || p_tournament_type, l_scope);
+    raise_application_error(-20100, 'INVALID_TOURNAMENT_TYPE: Tournament type ' || p_tournament_type || ' is not supported');
+  end if;
+
+  -- Validate tournament session exists
+  select count(*)
+    into l_session_exists
+    from wmg_tournament_sessions
+   where id = p_tournament_session_id;
+
+  if l_session_exists = 0 then
+    log('.. Invalid tournament session ID: ' || p_tournament_session_id, l_scope);
+    raise_application_error(-20101, 'INVALID_TOURNAMENT_SESSION: Tournament session ' || p_tournament_session_id || ' does not exist');
+  end if;
+
   -- Insert or update the tournament control record
-  -- Foreign key constraint will validate tournament_session_id exists
   merge into wmg_tournament_control tc
   using (
     select p_tournament_type as tournament_type_code
@@ -3157,7 +3184,7 @@ end set_tournament_control;
  * @return Tournament session ID or NULL if no active tournament
  */
 function get_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
 ) return number
 is
   l_scope scope_t := gc_scope_prefix || 'get_tournament_control';
@@ -3165,6 +3192,7 @@ is
 begin
   log('BEGIN', l_scope);
   log('.. Getting tournament control for type: ' || p_tournament_type, l_scope);
+
 
   select tournament_session_id
     into l_tournament_session_id
@@ -3198,7 +3226,7 @@ end get_tournament_control;
  * @param p_tournament_type Tournament type code (WMGT, KWT, FHIT)
  */
 procedure clear_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
 )
 is
   l_scope scope_t := gc_scope_prefix || 'clear_tournament_control';
@@ -3231,6 +3259,47 @@ exception
     log('Unhandled Exception', l_scope);
     raise;
 end clear_tournament_control;
+
+
+/**
+ * Validate that a tournament session exists
+ *
+ * @example
+ * wmg_util.validate_tournament_session(123);
+ * 
+ * @author Jorge Rimblas
+ * @created August 25, 2025
+ * @param p_tournament_session_id Tournament session ID to validate
+ * @raises INVALID_TOURNAMENT_SESSION if session does not exist
+ */
+procedure validate_tournament_session(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
+)
+is
+  l_scope scope_t := gc_scope_prefix || 'validate_tournament_session';
+  l_session_exists number;
+begin
+  log('BEGIN', l_scope);
+  log('.. Validating tournament session ID: ' || p_tournament_session_id, l_scope);
+
+  select count(*)
+    into l_session_exists
+    from wmg_tournament_sessions
+   where id = p_tournament_session_id;
+
+  if l_session_exists = 0 then
+    log('.. Invalid tournament session ID: ' || p_tournament_session_id, l_scope);
+    raise_application_error(-20101, 'INVALID_TOURNAMENT_SESSION: Tournament session ' || p_tournament_session_id || ' does not exist');
+  end if;
+
+  log('.. Tournament session validated successfully', l_scope);
+  log('END', l_scope);
+
+exception
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end validate_tournament_session;
 
 
 

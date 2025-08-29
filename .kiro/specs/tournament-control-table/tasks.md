@@ -19,14 +19,14 @@
   - Add validate_tournament_session procedure for data integrity
   - _Requirements: 2.1, 2.2, 3.1, 3.2, 3.3_
 
-- [ ] 4. Update wmg_rest_api.current_tournament procedure to use control table
+- [x] 4. Update wmg_rest_api.current_tournament procedure to use control table
   - Modify current_tournament procedure to query from wmg_tournament_control instead of current_flag
   - Add optional p_tournament_type parameter with WMGT default for backward compatibility
   - Handle NULL tournament_session_id case for tournament breaks with appropriate error response
   - Maintain existing JSON response format for backward compatibility
   - _Requirements: 2.3, 2.4, 2.5_
 
-- [ ] 5. Add new error constants and handling for tournament control scenarios
+- [x] 5. Add new error constants and handling for tournament control scenarios
   - Add NO_ACTIVE_TOURNAMENT_SESSION error constant to wmg_rest_api package
   - Add INVALID_TOURNAMENT_TYPE error constant
   - Add INVALID_TOURNAMENT_SESSION error constant

@@ -18,6 +18,8 @@ c_error_registration_failed  constant varchar2(30) := 'REGISTRATION_FAILED';
 c_error_unregistration_failed constant varchar2(30) := 'UNREGISTRATION_FAILED';
 c_error_not_registered       constant varchar2(30) := 'NOT_REGISTERED';
 c_error_timezone_update_failed constant varchar2(30) := 'TIMEZONE_UPDATE_FAILED';
+c_error_no_active_tournament_session constant varchar2(30) := 'NO_ACTIVE_TOURNAMENT_SESSION';
+c_error_invalid_tournament_session   constant varchar2(30) := 'INVALID_TOURNAMENT_SESSION';
 
 
 --------------------------------------------------------------------------------
@@ -57,7 +59,7 @@ function build_courses_json(p_session_id in number) return clob;
 --------------------------------------------------------------------------------
 
 procedure current_tournament(
-    p_output out clob
+  p_tournament_type_code in wmg_tournament_control.tournament_type_code%type default 'WMGT'
 );
 
 procedure success_response(

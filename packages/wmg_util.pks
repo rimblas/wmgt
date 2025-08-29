@@ -150,16 +150,20 @@ $END
 -- Tournament Control Management Procedures
 ----------------------------------------
 procedure set_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
   , p_tournament_session_id in wmg_tournament_sessions.id%type
 );
 
 function get_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
 ) return number;
 
 procedure clear_tournament_control(
-    p_tournament_type in wmg_tournament_control.tournament_type%type
+    p_tournament_type in wmg_tournament_control.tournament_type_code%type
+);
+
+procedure validate_tournament_session(
+    p_tournament_session_id in wmg_tournament_sessions.id%type
 );
 
 end wmg_util;
