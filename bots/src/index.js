@@ -12,6 +12,7 @@ import votesCommand from './commands/votes.js';
 import courseCommand from './commands/course.js';
 import courseraceCommand from './commands/courserace.js';
 import setupRegistrationCommand from './commands/setupRegistration.js';
+import spinCommand from './commands/spin.js';
 import RegistrationMessageManager from './services/RegistrationMessageManager.js';
 import RegistrationButtonHandler from './services/RegistrationButtonHandler.js';
 import { RegistrationService } from './services/RegistrationService.js';
@@ -69,7 +70,8 @@ export class DiscordTournamentBot {
       votesCommand,
       courseCommand,
       courseraceCommand,
-      setupRegistrationCommand
+      setupRegistrationCommand,
+      spinCommand
     ];
 
     for (const command of commands) {
@@ -299,37 +301,49 @@ export class DiscordTournamentBot {
     }
 
     const rest = new REST().setToken(config.discord.token);
+    const guildOnlyCommandName = 'setup-wmgt-registration';
+
+    const globalCommands = commands.filter((command) => command.name !== guildOnlyCommandName);
+    const guildOnlyCommands = commands.filter((command) => command.name === guildOnlyCommandName);
 
     try {
       this.logger.info(`Started refreshing ${commands.length} application (/) commands`, {
-        commandCount: commands.length,
-        guildSpecific: !!config.discord.guildId
+        totalCommandCount: commands.length,
+        globalCommandCount: globalCommands.length,
+        guildOnlyCommandCount: guildOnlyCommands.length,
+        guildSpecific: !!config.discord.guildId,
+        guildOnlyCommandName
       });
 
-      let data;
-      if (config.discord.guildId) {
-        // Register commands for specific guild (faster for development)
-        data = await this.rateLimitHandler.executeRequest(
+      // Register all non-guild-only commands globally (takes up to 1 hour to propagate)
+      const globalData = await this.rateLimitHandler.executeRequest(
+        () => rest.put(
+          Routes.applicationCommands(config.discord.clientId),
+          { body: globalCommands }
+        ),
+        'command_registration_global'
+      );
+
+      let guildData = [];
+      if (config.discord.guildId && guildOnlyCommands.length > 0) {
+        guildData = await this.rateLimitHandler.executeRequest(
           () => rest.put(
             Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId),
-            { body: commands }
+            { body: guildOnlyCommands }
           ),
-          'command_registration'
+          'command_registration_guild_only'
         );
-      } else {
-        // Register commands globally (takes up to 1 hour to propagate)
-        data = await this.rateLimitHandler.executeRequest(
-          () => rest.put(
-            Routes.applicationCommands(config.discord.clientId),
-            { body: commands }
-          ),
-          'command_registration'
-        );
+      } else if (guildOnlyCommands.length > 0) {
+        this.logger.warn('Guild-only command not registered because DISCORD_GUILD_ID is not set', {
+          guildOnlyCommandName
+        });
       }
 
-      this.logger.info(`Successfully reloaded ${data.length} application (/) commands`, {
-        registeredCount: data.length,
-        guildId: config.discord.guildId || 'global'
+      this.logger.info('Successfully reloaded application (/) commands', {
+        globalRegisteredCount: globalData.length,
+        guildOnlyRegisteredCount: guildData.length,
+        guildId: config.discord.guildId || null,
+        guildOnlyCommandName
       });
 
     } catch (error) {
