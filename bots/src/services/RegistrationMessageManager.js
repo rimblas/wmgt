@@ -240,8 +240,10 @@ class RegistrationMessageManager {
       return "No scores submitted yet";
     }
 
-    // Limit to top N players
-    const topPlayers = results.slice(0, maxPlayers);
+    // Limit to top N players, but include all players sharing the boundary position
+    const boundaryIndex = Math.min(maxPlayers, results.length) - 1;
+    const boundaryPos = results[boundaryIndex].pos;
+    const topPlayers = results.filter(p => p.pos <= boundaryPos);
 
     // Group players by position
     const positionGroups = new Map();
