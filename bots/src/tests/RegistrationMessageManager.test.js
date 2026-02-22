@@ -1135,3 +1135,268 @@ describe('RegistrationMessageManager.initialize', () => {
     expect(callOrder[1]).toBe('getCurrentTournament');
   });
 });
+
+describe('RegistrationMessageManager.formatLeaderboard', () => {
+  let manager;
+
+  beforeEach(() => {
+    manager = new RegistrationMessageManager(null, null);
+  });
+
+  it('should return "No scores submitted yet" for null results', () => {
+    const result = manager.formatLeaderboard(null);
+    expect(result).toBe("No scores submitted yet");
+  });
+
+  it('should return "No scores submitted yet" for empty array', () => {
+    const result = manager.formatLeaderboard([]);
+    expect(result).toBe("No scores submitted yet");
+  });
+
+  it('should format a single player correctly', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` moba (-39)");
+  });
+
+  it('should format multiple players correctly', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 },
+      { pos: 2, player_name: "player2", discord_id: "234567", total_score: -35 },
+      { pos: 3, player_name: "player3", discord_id: "345678", total_score: -32 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` moba (-39)\n`2.` player2 (-35)\n`3.` player3 (-32)");
+  });
+
+  it('should limit to top 5 players by default', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -40 },
+      { pos: 2, player_name: "player2", discord_id: "2", total_score: -35 },
+      { pos: 3, player_name: "player3", discord_id: "3", total_score: -30 },
+      { pos: 4, player_name: "player4", discord_id: "4", total_score: -25 },
+      { pos: 5, player_name: "player5", discord_id: "5", total_score: -20 },
+      { pos: 6, player_name: "player6", discord_id: "6", total_score: -15 },
+      { pos: 7, player_name: "player7", discord_id: "7", total_score: -10 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    const lines = result.split('\n');
+    expect(lines).toHaveLength(5);
+    expect(result).toContain("player5");
+    expect(result).not.toContain("player6");
+    expect(result).not.toContain("player7");
+  });
+
+  it('should respect maxPlayers option', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -40 },
+      { pos: 2, player_name: "player2", discord_id: "2", total_score: -35 },
+      { pos: 3, player_name: "player3", discord_id: "3", total_score: -30 }
+    ];
+    const result = manager.formatLeaderboard(results, { maxPlayers: 2 });
+    const lines = result.split('\n');
+    expect(lines).toHaveLength(2);
+    expect(result).toContain("player1");
+    expect(result).toContain("player2");
+    expect(result).not.toContain("player3");
+  });
+
+  it('should handle negative scores (under par)', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` player1 (-39)");
+  });
+
+  it('should handle positive scores (over par)', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: 5 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` player1 (5)");
+  });
+
+  it('should handle zero score', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: 0 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` player1 (0)");
+  });
+
+  it('should handle missing discord_id field', () => {
+    const results = [
+      { pos: 1, player_name: "player1", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` player1 (-39)");
+  });
+
+  it('should use Discord mentions when showDiscordMention is true', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showDiscordMention: true });
+    expect(result).toBe("`1.` <@123456> (-39)");
+  });
+
+  it('should fall back to player_name when showDiscordMention is true but discord_id is missing', () => {
+    const results = [
+      { pos: 1, player_name: "moba", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showDiscordMention: true });
+    expect(result).toBe("`1.` moba (-39)");
+  });
+
+  it('should hide position when showPosition is false', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showPosition: false });
+    expect(result).toBe("moba (-39)");
+  });
+
+  it('should hide score when showScore is false', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showScore: false });
+    expect(result).toBe("`1.` moba");
+  });
+
+  it('should handle all options combined', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 },
+      { pos: 2, player_name: "player2", discord_id: "234567", total_score: -35 }
+    ];
+    const result = manager.formatLeaderboard(results, {
+      maxPlayers: 1,
+      showDiscordMention: true,
+      showPosition: false,
+      showScore: false
+    });
+    expect(result).toBe("<@123456>");
+  });
+
+  it('should not exceed 1024 characters (Discord field limit)', () => {
+    // Create a large results array with long player names
+    const results = Array.from({ length: 100 }, (_, i) => ({
+      pos: i + 1,
+      player_name: `VeryLongPlayerNameThatTakesUpSpace${i}`,
+      discord_id: `${i}`,
+      total_score: -40 + i
+    }));
+    
+    const result = manager.formatLeaderboard(results);
+    expect(result.length).toBeLessThanOrEqual(1024);
+  });
+
+  it('should truncate with ellipsis when exceeding 1024 characters', () => {
+    // Create results that would exceed 1024 chars
+    const results = Array.from({ length: 100 }, (_, i) => ({
+      pos: i + 1,
+      player_name: `VeryLongPlayerNameThatTakesUpLotsOfSpaceInTheLeaderboard${i}`,
+      discord_id: `${i}`,
+      total_score: -40 + i
+    }));
+    
+    const result = manager.formatLeaderboard(results);
+    if (result.length === 1024) {
+      expect(result).toMatch(/\.\.\.$/);
+    }
+  });
+
+  it('should handle results with fewer than maxPlayers', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -40 },
+      { pos: 2, player_name: "player2", discord_id: "2", total_score: -35 }
+    ];
+    const result = manager.formatLeaderboard(results, { maxPlayers: 5 });
+    const lines = result.split('\n');
+    expect(lines).toHaveLength(2);
+  });
+
+  it('should format entries with consistent spacing', () => {
+    const results = [
+      { pos: 1, player_name: "moba", discord_id: "123456", total_score: -39 },
+      { pos: 2, player_name: "player2", discord_id: "234567", total_score: -5 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` moba (-39)\n`2.` player2 (-5)");
+  });
+});
+
+describe('RegistrationMessageManager.formatLeaderboard - Tied Positions', () => {
+  let manager;
+
+  beforeEach(() => {
+    manager = new RegistrationMessageManager(null, null);
+  });
+
+  it('should group tied players on the same line', () => {
+    const results = [
+      { pos: 1, player_name: "his.Dudeness", discord_id: "811626523375173800", total_score: -39 },
+      { pos: 1, player_name: "moba", discord_id: "1050589220357546000", total_score: -39 },
+      { pos: 3, player_name: "TIGERHOODS", discord_id: "694152154406977500", total_score: -37 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` his.Dudeness, moba (-39)\n`3.` TIGERHOODS (-37)");
+  });
+
+  it('should handle multiple tied positions', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -40 },
+      { pos: 1, player_name: "player2", discord_id: "2", total_score: -40 },
+      { pos: 3, player_name: "player3", discord_id: "3", total_score: -35 },
+      { pos: 3, player_name: "player4", discord_id: "4", total_score: -35 },
+      { pos: 3, player_name: "player5", discord_id: "5", total_score: -35 }
+    ];
+    const result = manager.formatLeaderboard(results);
+    expect(result).toBe("`1.` player1, player2 (-40)\n`3.` player3, player4, player5 (-35)");
+  });
+
+  it('should handle tied positions with Discord mentions', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "123", total_score: -39 },
+      { pos: 1, player_name: "player2", discord_id: "456", total_score: -39 },
+      { pos: 3, player_name: "player3", discord_id: "789", total_score: -37 }
+    ];
+    const result = manager.formatLeaderboard(results, { showDiscordMention: true });
+    expect(result).toBe("`1.` <@123>, <@456> (-39)\n`3.` <@789> (-37)");
+  });
+
+  it('should handle tied positions without showing position', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -39 },
+      { pos: 1, player_name: "player2", discord_id: "2", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showPosition: false });
+    expect(result).toBe("player1, player2 (-39)");
+  });
+
+  it('should handle tied positions without showing score', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -39 },
+      { pos: 1, player_name: "player2", discord_id: "2", total_score: -39 }
+    ];
+    const result = manager.formatLeaderboard(results, { showScore: false });
+    expect(result).toBe("`1.` player1, player2");
+  });
+
+  it('should respect maxPlayers limit with tied positions', () => {
+    const results = [
+      { pos: 1, player_name: "player1", discord_id: "1", total_score: -40 },
+      { pos: 1, player_name: "player2", discord_id: "2", total_score: -40 },
+      { pos: 3, player_name: "player3", discord_id: "3", total_score: -35 },
+      { pos: 4, player_name: "player4", discord_id: "4", total_score: -30 }
+    ];
+    const result = manager.formatLeaderboard(results, { maxPlayers: 3 });
+    const lines = result.split('\n');
+    expect(lines).toHaveLength(2); // Two position groups: pos 1 (2 players) and pos 3 (1 player)
+    expect(result).toBe("`1.` player1, player2 (-40)\n`3.` player3 (-35)");
+  });
+});
+

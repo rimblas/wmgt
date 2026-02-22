@@ -207,59 +207,158 @@ class RegistrationMessageManager {
 
     return { embeds: [embed], components: [row] };
   }
+  /**
+   * Format tournament results into a Discord-compatible leaderboard string.
+   * Players with the same position (tied scores) are grouped on the same line.
+   *
+   * @param {Array|null} results - Array of player result objects with pos, player_name, total_score
+   * @param {object} options - Formatting options
+   * @param {number} options.maxPlayers - Maximum number of players to display (default: 5)
+   * @param {boolean} options.showDiscordMention - Whether to use Discord mentions (default: false)
+   * @param {boolean} options.showPosition - Whether to show position numbers (default: true)
+   * @param {boolean} options.showScore - Whether to show scores (default: true)
+   * @returns {string} Formatted leaderboard string (max 1024 characters)
+   *
+   * @example
+   * const results = [
+   *   { pos: 1, player_name: "his.Dudeness", discord_id: "811626523375173800", total_score: -39 },
+   *   { pos: 1, player_name: "moba", discord_id: "1050589220357546000", total_score: -39 },
+   *   { pos: 3, player_name: "TIGERHOODS", discord_id: "694152154406977500", total_score: -37 }
+   * ];
+   * const leaderboard = formatLeaderboard(results);
+   * // Returns: "1. his.Dudeness, moba (-39)\n3. TIGERHOODS (-37)"
+   */
+  formatLeaderboard(results, options = {}) {
+    // Set defaults
+    const maxPlayers = options.maxPlayers || 5;
+    const showDiscordMention = options.showDiscordMention || false;
+    const showPosition = options.showPosition !== false; // default true
+    const showScore = options.showScore !== false; // default true
+
+    // Handle empty results
+    if (!results || results.length === 0) {
+      return "No scores submitted yet";
+    }
+
+    // Limit to top N players
+    const topPlayers = results.slice(0, maxPlayers);
+
+    // Group players by position
+    const positionGroups = new Map();
+    for (const player of topPlayers) {
+      if (!positionGroups.has(player.pos)) {
+        positionGroups.set(player.pos, []);
+      }
+      positionGroups.get(player.pos).push(player);
+    }
+
+    // Format each position group
+    const lines = [];
+    for (const [position, players] of positionGroups) {
+      let line = "";
+
+      if (showPosition) {
+        line += `\`${position}.\` `;
+      }
+
+      // Format all player names for this position
+      const playerNames = players.map(player => {
+        if (showDiscordMention && player.discord_id) {
+          return `<@${player.discord_id}>`;
+        } else {
+          return player.player_name;
+        }
+      });
+
+      // Join player names with commas
+      line += playerNames.join(", ");
+
+      // Add score once (all tied players have the same score)
+      if (showScore) {
+        line += ` (${players[0].total_score})`;
+      }
+
+      lines.push(line);
+    }
+
+    // Join with newlines
+    const formattedString = lines.join("\n");
+
+    // Ensure we don't exceed Discord's field value limit (1024 characters)
+    if (formattedString.length > 1024) {
+      this.logger.warn('Leaderboard string exceeds 1024 characters, truncating', {
+        length: formattedString.length
+      });
+      return formattedString.substring(0, 1021) + "...";
+    }
+
+    return formattedString;
+  }
+
 
   /**
    * @private
    */
   _buildOngoingMessage(tournamentData) {
-    const embed = new EmbedBuilder()
-      .setColor(0xFFA500)
-      .setTitle(`⛳️ 🏆 ${tournamentData.sessions.week} (In Progress) <:gameon:1336174091828465734>`);
+      const embed = new EmbedBuilder()
+        .setColor(0xFFA500)
+        .setTitle(`<a:live:1391224502901276784> 🏆 ${tournamentData.sessions.week} (In Progress) <:gameon:1336174091828465734>`);
 
-    if (Array.isArray(tournamentData.sessions.courses) && tournamentData.sessions.courses.length > 0) {
-      const courseList = tournamentData.sessions.courses.map(c => c.course_name).join('\n');
-      embed.addFields({ name: 'Courses', value: courseList, inline: true });
+      if (Array.isArray(tournamentData.sessions.courses) && tournamentData.sessions.courses.length > 0) {
+        const courseList = tournamentData.sessions.courses.map(c => c.course_name).join('\n');
+        embed.addFields({ name: 'Courses', value: courseList, inline: true });
+      }
+
+      /*
+      if (tournamentData.sessions.session_date) {
+        const sessionEpoch = moment.utc(tournamentData.session_date).unix();
+        embed.addFields({ name: 'Session Date', value: `<t:${sessionEpoch}:F>`, inline: true });
+      }
+      */
+
+      if (Array.isArray(tournamentData.sessions.available_time_slots) && tournamentData.sessions.available_time_slots.length > 0) {
+        const slotList = tournamentData.sessions.available_time_slots
+          .map(s => {
+            const playerCount = Number.isFinite(Number(s.player_count)) ? Number(s.player_count) : 0;
+            const marker = s.time_slot_status === 'done' ? '✅' : s.time_slot_status === 'current' ? '⬅️' : '⬜';
+            const localTime = s.session_date_epoch ? ` <t:${s.session_date_epoch}:t> ` : '';
+            return '`' + s.time_slot + ' UTC` ' + `(\`${playerCount.toString().padStart(2, ' ')}p\`) ` + marker + localTime;
+          })
+          .join('\n');
+        embed.addFields({ name: 'UTC Time Slots | (Players) | Local Time', value: slotList, inline: false });      
+      }
+
+      // Add current leaders leaderboard if results data is available
+      if (Array.isArray(tournamentData.sessions.results) && tournamentData.sessions.results.length > 0) {
+        const leaderboardText = this.formatLeaderboard(tournamentData.sessions.results, {
+          maxPlayers: 5,
+          showDiscordMention: false,
+          showPosition: true,
+          showScore: true
+        });
+        embed.addFields({ name: '🏆 Current Leaders', value: leaderboardText, inline: false });
+      }
+
+      embed.addFields({ name: 'Legend:', value: '✅ - Done, ⬅️ - Now playing' , inline: false });
+
+      embed.addFields({ name: 'To enter scores go to ', value: config.bot.tournamentMDurl, inline: true  });
+
+      const button = new ButtonBuilder()
+        .setCustomId('reg_register')
+        .setLabel('Tournament In Progress')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(true);
+
+      const myRoomButton = new ButtonBuilder()
+        .setCustomId('reg_my_room')
+        .setLabel('My Room')
+        .setStyle(ButtonStyle.Primary);
+  //      .setEmoji('🏠');
+
+      const row = new ActionRowBuilder().addComponents(button, myRoomButton);
+
+      return { embeds: [embed], components: [row] };
     }
-
-    /*
-    if (tournamentData.sessions.session_date) {
-      const sessionEpoch = moment.utc(tournamentData.session_date).unix();
-      embed.addFields({ name: 'Session Date', value: `<t:${sessionEpoch}:F>`, inline: true });
-    }
-    */
-
-    if (Array.isArray(tournamentData.sessions.available_time_slots) && tournamentData.sessions.available_time_slots.length > 0) {
-      const slotList = tournamentData.sessions.available_time_slots
-        .map(s => {
-          const playerCount = Number.isFinite(Number(s.player_count)) ? Number(s.player_count) : 0;
-          const marker = s.time_slot_status === 'done' ? '✅' : s.time_slot_status === 'current' ? '⬅️' : '⬜';
-          const localTime = s.session_date_epoch ? ` <t:${s.session_date_epoch}:t> ` : '';
-          return '`' + s.time_slot + ' UTC` ' + `(\`${playerCount.toString().padStart(2, ' ')}p\`) ` + marker + localTime;
-        })
-        .join('\n');
-      embed.addFields({ name: 'UTC Time Slots | (Players) | Local Time', value: slotList, inline: false });      
-    }
-
-    embed.addFields({ name: 'Legend:', value: '✅ - Done, ⬅️ - Now playing' , inline: false });
-
-    embed.addFields({ name: 'To enter scores go to ', value: config.bot.tournamentMDurl, inline: true  });
-
-    const button = new ButtonBuilder()
-      .setCustomId('reg_register')
-      .setLabel('Tournament In Progress')
-      .setStyle(ButtonStyle.Secondary)
-      .setDisabled(true);
-
-    const myRoomButton = new ButtonBuilder()
-      .setCustomId('reg_my_room')
-      .setLabel('My Room')
-      .setStyle(ButtonStyle.Primary);
-//      .setEmoji('🏠');
-
-    const row = new ActionRowBuilder().addComponents(button, myRoomButton);
-
-    return { embeds: [embed], components: [row] };
-  }
 
   /**
    * Start polling for tournament data changes.

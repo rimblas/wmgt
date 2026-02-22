@@ -6,6 +6,7 @@ A Discord bot for WMGT tournament registration that allows players to register f
 
 - Tournament registration through Discord slash commands
 - Timezone-aware time slot display
+- Real-time tournament leaderboard showing top 5 current leaders
 - Registration status management
 - Integration with existing WMGT backend APIs
 
@@ -41,6 +42,35 @@ A Discord bot for WMGT tournament registration that allows players to register f
 - `/votes` - View current votes on courses
 - `/course` - View current high scores on a course
 - `/timezone` - Set preferred timezone
+
+## Tournament Leaderboard
+
+When a tournament is in progress, the registration message automatically displays a real-time leaderboard showing the top 5 current leaders.
+
+### How It Works
+
+- **When it appears**: The leaderboard is displayed only when the tournament state is "ongoing" and players have submitted scores
+- **What it shows**: Position, player name, and total score for the top 5 players
+- **Update frequency**: The leaderboard updates automatically every 60 seconds during the tournament's active window
+- **Data source**: Rankings are calculated from the `wmg_tournament_session_points_v` database view, which aggregates scores across all tournament courses
+
+### Example Display
+
+```
+🏆 Current Leaders
+1. player1 (-39)
+2. player2 (-35)
+3. player3 (-32)
+4. player4 (-30)
+5. player5 (-28)
+```
+
+### Notes
+
+- Scores are displayed as under-par (negative) or over-par (positive) values
+- The leaderboard only appears during ongoing tournaments - it is not shown when registration is open or after the tournament closes
+- If no scores have been submitted yet, the leaderboard field will not be displayed
+- In case of tied scores, all players with the same position may be shown (potentially more than 5 players)
 
 ## Project Structure
 
@@ -78,3 +108,12 @@ Setup logrotate `/etc/logrotate.d/discordbot`
     copytruncate
 }
 ```
+
+## Changelog
+
+### 2025-01-27 - Tournament Leaderboard Feature
+- Added real-time tournament leaderboard display to registration messages
+- Leaderboard shows top 5 current leaders during ongoing tournaments
+- Updates automatically every 60 seconds with latest scores
+- Displays position, player name, and total score for each leader
+- Gracefully handles tournaments with no submitted scores
