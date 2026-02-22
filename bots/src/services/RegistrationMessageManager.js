@@ -302,10 +302,22 @@ class RegistrationMessageManager {
   _buildOngoingMessage(tournamentData) {
       const embed = new EmbedBuilder()
         .setColor(0xFFA500)
-        .setTitle(`<a:live:1391224502901276784> 🏆 ${tournamentData.sessions.week} (In Progress) <:gameon:1336174091828465734>`);
+        .setTitle(`<a:live:1391224502901276784> ${tournamentData.sessions.week} (In Progress) <:gameon:1336174091828465734>`);
+
+
+      // Add current leaders leaderboard if results data is available
+      if (Array.isArray(tournamentData.sessions.results) && tournamentData.sessions.results.length > 0) {
+        const leaderboardText = this.formatLeaderboard(tournamentData.sessions.results, {
+          maxPlayers: 5,
+          showDiscordMention: false,
+          showPosition: true,
+          showScore: true
+        });
+        embed.addFields({ name: '🏆 Current Leaders', value: leaderboardText, inline: false });
+      }
 
       if (Array.isArray(tournamentData.sessions.courses) && tournamentData.sessions.courses.length > 0) {
-        const courseList = tournamentData.sessions.courses.map(c => c.course_name).join('\n');
+        const courseList = tournamentData.sessions.courses.map(c => '• ' + c.course_name).join('\n');
         embed.addFields({ name: 'Courses', value: courseList, inline: true });
       }
 
@@ -326,17 +338,6 @@ class RegistrationMessageManager {
           })
           .join('\n');
         embed.addFields({ name: 'UTC Time Slots | (Players) | Local Time', value: slotList, inline: false });      
-      }
-
-      // Add current leaders leaderboard if results data is available
-      if (Array.isArray(tournamentData.sessions.results) && tournamentData.sessions.results.length > 0) {
-        const leaderboardText = this.formatLeaderboard(tournamentData.sessions.results, {
-          maxPlayers: 5,
-          showDiscordMention: false,
-          showPosition: true,
-          showScore: true
-        });
-        embed.addFields({ name: '🏆 Current Leaders', value: leaderboardText, inline: false });
       }
 
       embed.addFields({ name: 'Legend:', value: '✅ - Done, ⬅️ - Now playing' , inline: false });
