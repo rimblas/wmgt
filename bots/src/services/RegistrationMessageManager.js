@@ -483,7 +483,12 @@ class RegistrationMessageManager {
 
       await this.ensureMessageExists();
 
-      this.lastTournamentData = await this.registrationService.getCurrentTournament();
+      // Always refresh the embed to the latest state on startup
+      // before storing lastTournamentData, so the first poll doesn't skip the update
+      const currentData = await this.registrationService.getCurrentTournament();
+      await this.updateMessage(currentData);
+      this.lastTournamentData = currentData;
+
       this.startPolling();
 
       this.logger.info('RegistrationMessageManager initialized successfully');
