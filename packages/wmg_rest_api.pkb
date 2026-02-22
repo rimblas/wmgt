@@ -379,6 +379,19 @@ begin
             join wmg_courses c on tc.course_id = c.id
             where tc.tournament_session_id = t.tournament_session_id
           )
+          ,'results' value (
+            select json_arrayagg(
+              json_object(
+                'pos' value r.pos,
+                'player_name' value r.player_name,
+                'discord_id' value r.discord_id,
+                'total_score' value r.total_score
+              ) order by r.pos
+            )
+            from wmg_tournament_session_points_v r
+            where r.tournament_session_id = t.tournament_session_id
+              and r.pos <= 5
+          )
         -- returning clob
       )
     )
