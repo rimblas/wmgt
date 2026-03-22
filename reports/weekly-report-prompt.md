@@ -21,7 +21,8 @@ Analysis Guidelines:
 - Compare performance vs rank expectations
 - Look for interesting patterns in country/rank performance
 - Celebrate achievements at all levels
-- Use player_name from wmg_players_v for mentions and do NOT include @ tags (Discord issue)
+- Always use wmg_players_v.player_name for names in the report and never use wmg_players.name
+- Do NOT include @ tags (Discord issue)
 
 Make it engaging, positive, and highlight the human stories in the data!
 ```
