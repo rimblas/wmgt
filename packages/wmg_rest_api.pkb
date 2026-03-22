@@ -223,7 +223,8 @@ begin
     into l_room_players_json
     from wmg_tournament_player_v p
     where p.tournament_session_id = p_tournament_session_id
-      and p.room_no = p_room_no;
+      and p.room_no = p_room_no
+      and p.active_ind = 'Y';
   
   return l_room_players_json;
 end build_room_players_json;
