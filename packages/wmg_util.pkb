@@ -2132,7 +2132,9 @@ is
   l_scope  logger_logs.scope%type := gc_scope_prefix || 'cast_player_vote';
   l_params logger.tab_param;
 
-  l_valid_course number := 0;
+  l_valid_course      number := 0;
+  l_allow_down_vote   varchar2(1) := 'Y';
+  l_app_id            number;
 begin
   logger.append_param(l_params, 'p_player_id', p_player_id);
   logger.append_param(l_params, 'p_course_code', p_course_code);
@@ -2147,6 +2149,35 @@ begin
     null; -- good vote
   else
     raise_application_error(-20000, 'Can only vote +1 or -1');
+  end if;
+
+  -- Downvotes are controlled by APEX build option "Feature: Vote Against Courses".
+  -- When the flag is excluded, only upvotes and vote removal are allowed.
+  l_app_id := nv('APP_ID');
+
+  if l_app_id is not null then
+    begin
+      select case
+              when exists (
+                select 1
+                  from apex_application_build_options
+                where application_id = l_app_id
+                  and build_option_name = 'Feature: Vote Against Courses'
+                  and build_option_status = 'Include'
+              ) then 'Y'
+              else 'N'
+            end
+        into l_allow_down_vote
+        from dual;
+
+    exception
+      when no_data_found then
+        l_allow_down_vote := 'N';
+    end;
+  end if;
+
+  if p_vote = -1 and l_allow_down_vote = 'N' then
+    raise_application_error(-20000, 'Voting against courses is currently disabled');
   end if;
 
   /*
@@ -2181,6 +2212,7 @@ begin
   when matched then
     update set v.vote = 
            case 
+              when v.vote = src.vote then 0 -- selecting the same vote removes it
               when v.vote + src.vote = 0 then 0 -- flip flop the vote
               else src.vote
            end

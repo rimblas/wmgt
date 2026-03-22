@@ -129,7 +129,7 @@ regions:
         (select apex_lang.message('APEX.FEATURE.CONFIG.ENABLED') enabled, apex_lang.message('APEX.FEATURE.CONFIG.DISABLED') disabled from dual) m
        where application_id = :APP_ID 
        and (feature_identifier not in ( 'APPLICATION_ACCESS_CONTROL', 'APPLICATION_CONFIGURATION')
-      or build_option_name in ('Feature: Handle Registrations', 'Feature: Course Voting')
+      or build_option_name in ('Feature: Handle Registrations', 'Feature: Course Voting', 'Feature: Vote Against Courses')
       )
 
   layout: 
@@ -655,4 +655,3 @@ branches:
     target: 
       url: 'f?p=&APP_ID.:10000:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
       page: 10000 # Administration
-

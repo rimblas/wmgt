@@ -5051,7 +5051,20 @@ regions:
     location: Local Database
     type: SQL Query
     sql-query: |
-      with tournament_courses as (
+      with w_options as (
+        select case
+                 when exists (
+                   select 1
+                   from apex_application_build_options
+                   where application_id = :APP_ID
+                     and build_option_name = 'Feature: Vote Against Courses'
+                     and build_option_status = 'Include'
+                 ) then 'Y'
+                 else 'N'
+               end allow_down_vote
+        from dual
+      )
+      , tournament_courses as (
           select s.round_num
                , count(*) over () setup_weeks
                , s.week
@@ -5084,14 +5097,29 @@ regions:
             and s.hard_course_id = h.id (+)
       )
       , w_votes as (
-        select course_id, sum(vote) votes
-        from wmg_course_vote
-        group by course_id
+        select v.course_id
+             , sum(
+                 case
+                   when o.allow_down_vote = 'Y' then v.vote
+                   when v.vote = 1 then 1
+                   else 0
+                 end
+               ) votes
+        from wmg_course_vote v
+           , w_options o
+        group by v.course_id
       )
       , w_player_votes as (
-        select course_id, vote, case vote when 1 then 'up' when -1 then 'down' else null end vote_selection 
-        from wmg_course_vote
-        where player_id = nvl(:G_PLAYER_ID,0)
+        select v.course_id
+             , v.vote
+             , case
+                 when v.vote = 1 then 'up'
+                 when v.vote = -1 and o.allow_down_vote = 'Y' then 'down'
+                 else null
+               end vote_selection
+        from wmg_course_vote v
+           , w_options o
+        where v.player_id = nvl(:G_PLAYER_ID,0)
       )
       , missing_easy as (
       select round_num
@@ -5103,6 +5131,7 @@ regions:
            , status
            , release_order
            , votes easy_votes
+           , allow_down_vote
            , vote_class easy_vote_class
       from (
       select to_number(null) round_num
@@ -5113,11 +5142,13 @@ regions:
            , 'lock' status
            , e.release_order
            , v.votes
+           , o.allow_down_vote
            , decode(pv.vote_selection, null, 'show', 'hide' || pv.vote_selection) vote_class
       from wmg_courses e
          , w_votes v
          , w_player_votes pv
          , tournament_courses tce
+         , w_options o
       where e.course_mode = 'E'
         and e.code = tce.easy_course_code (+)
         and e.id = v.course_id (+)
@@ -5135,6 +5166,7 @@ regions:
              , status
              , release_order
              , votes hard_votes
+             , allow_down_vote
              , vote_class hard_vote_class
         from (
           select to_number(null) round_num
@@ -5145,11 +5177,13 @@ regions:
                , 'lock' status
                , h.release_order
                , v.votes
+               , o.allow_down_vote
                , decode(pv.vote_selection, null, 'show', 'hide' || pv.vote_selection) vote_class
           from wmg_courses h
              , w_votes v
              , w_player_votes pv
              , tournament_courses tch
+             , w_options o
           where h.course_mode = 'H'
             and h.code = tch.hard_course_code (+)
             and h.id in (select ac.id from wmg_courses ac where ac.course_mode = 'H' minus select easy_course_id from tournament_courses)
@@ -5166,6 +5200,7 @@ regions:
            , e.easy_course_group
            , e.easy_name
            , e.easy_vote_class
+           , e.allow_down_vote easy_allow_down_vote
            , e.status
            , case 
                when e.status = 'lock' then 'Voting open'
@@ -5181,6 +5216,7 @@ regions:
            , h.hard_course_group
            , h.hard_name
            , h.hard_vote_class
+           , h.allow_down_vote hard_allow_down_vote
            , h.status
            , case 
                when h.status = 'lock' then 'Voting open'
@@ -5195,10 +5231,12 @@ regions:
            , e.easy_course
            , e.easy_name
            , e.easy_vote_class
+           , e.easy_allow_down_vote
            , '' easy_factoids
            , h.hard_course
            , h.hard_name
            , h.hard_vote_class
+           , h.hard_allow_down_vote
            , '' hard_factoids
            , h.hard_votes
            , h.hard_votes_top
@@ -5219,10 +5257,12 @@ regions:
            , e.easy_course
            , e.easy_name
            , e.easy_vote_class
+           , e.easy_allow_down_vote
            , '' easy_factoids
            , h.hard_course
            , h.hard_name
            , h.hard_vote_class
+           , h.hard_allow_down_vote
            , '' hard_factoids
            , h.hard_votes
            , h.hard_votes_top
@@ -5351,6 +5391,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: EASY_ALLOW_DOWN_VOTE ========================
+    id: 94642071000133702
+    identification: 
+      column-name: EASY_ALLOW_DOWN_VOTE
+      type: Hidden
+
+    layout: 
+      sequence: 180
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ALLOW_DOWN_VOTE ========================
+    id: 94642071000133703
+    identification: 
+      column-name: HARD_ALLOW_DOWN_VOTE
+      type: Hidden
+
+    layout: 
+      sequence: 190
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
   - # ====== Column: EASY_COURSE =================================
     id: 71049280952388619
     identification: 
@@ -5373,11 +5443,20 @@ regions:
         {case EASY_NAME/}
         {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
         {otherwise/}
+          {case EASY_ALLOW_DOWN_VOTE/}
+          {when Y/}
           {case EASY_VOTE_CLASS/}
           {when hidedown/}
           <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
           {otherwise/}
         <button type="button" title="Vote Against" aria-label="Vote Against" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
+          {endcase/}
+          {otherwise/}
+            {case EASY_VOTE_CLASS/}
+            {when hidedown/}
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+            {endcase/}
           {endcase/}
         <span class="tooltipImg --wmgt-excluded#EASY_TOURNAMENT_EXCLUDED_FLAG#" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">
             #EASY_COURSE#
@@ -5385,7 +5464,12 @@ regions:
         </span>
           {case EASY_VOTE_CLASS/}
           {when hideup/}
+            {case EASY_ALLOW_DOWN_VOTE/}
+            {when Y/}
           <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
+            {endcase/}
           {otherwise/}
         <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
           {endcase/}
@@ -5444,12 +5528,21 @@ regions:
         {case HARD_NAME/}
         {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
         {otherwise/}
+          {case HARD_ALLOW_DOWN_VOTE/}
+          {when Y/}
           {case HARD_VOTE_CLASS/}
           {when hidedown/}
           <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
           {otherwise/}
         <button type="button" title="Vote Against" aria-label="Vote Against" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
            {endcase/}
+          {otherwise/}
+            {case HARD_VOTE_CLASS/}
+            {when hidedown/}
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+            {endcase/}
+          {endcase/}
         <span class="tooltipImg --wmgt-excluded#HARD_TOURNAMENT_EXCLUDED_FLAG#" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">
             #HARD_COURSE#
             <span class="u-vh">#HARD_NAME#</span>
@@ -5457,7 +5550,12 @@ regions:
         
           {case HARD_VOTE_CLASS/}
           {when hideup/}
+            {case HARD_ALLOW_DOWN_VOTE/}
+            {when Y/}
           <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
+            {endcase/}
           {otherwise/}
         <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
           {endcase/}
@@ -10492,4 +10590,3 @@ branches:
 
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
-
