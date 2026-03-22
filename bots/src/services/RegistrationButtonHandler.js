@@ -299,11 +299,11 @@ class RegistrationButtonHandler {
       .setColor(0x0099FF)
       .setTitle('📜 Tournament Rules')
       .setDescription(description)
-      .setFooter({ text: 'Please read the rules carefully before proceeding.' });
+      .setFooter({ text: 'Please read the rules carefully before registering.' });
 
     const acknowledgeButton = new ButtonBuilder()
       .setCustomId('reg_rules_acknowledge')
-      .setLabel('I Acknowledge the Rules')
+      .setLabel('Acknowledge Rules and Register')
       .setStyle(ButtonStyle.Success)
       .setEmoji('✅');
 
@@ -333,7 +333,10 @@ class RegistrationButtonHandler {
       try {
         if (buttonInteraction.customId === 'reg_rules_acknowledge') {
           buttonCollector.stop('acknowledged');
-          await this._handleTimeSlotConfirmation(interaction, buttonInteraction, tournamentData, formattedSlots, timezone, selectedTimeSlot);
+          const selectedSlot = formattedSlots.find(s => s.value.time_slot === selectedTimeSlot);
+          await this._processRegistration(
+            buttonInteraction, tournamentData, selectedTimeSlot, selectedSlot, timezone
+          );
         } else if (buttonInteraction.customId === 'reg_rules_cancel') {
           buttonCollector.stop('cancelled');
           await buttonInteraction.update({
@@ -687,65 +690,34 @@ class RegistrationButtonHandler {
 
 
   /**
-   * Handle time slot change: unregister → show slots → register new.
-   * Stub — will be implemented in Task 6.2.
-   *
-   * @param {import('discord.js').ButtonInteraction} interaction
-   * @param {object} currentRegistration
-   * @param {object} tournamentData
-   */
-  /**
-     * Handle time slot change: unregister → show slots → register new.
+     * Handle time slot change: show slots → register new.
      *
      * Flow:
-     *  1. Unregister from current slot
-     *  2. Get player timezone
-     *  3. Format available time slots
-     *  4. Show select menu with available slots
-     *  5. On selection: register for new slot, show success/error
-     *  6. On timeout: show timeout message
+     *  1. Get player timezone
+     *  2. Format available time slots
+     *  3. Show select menu with available slots
+     *  4. On selection: register for new slot, show success/error
+     *  5. On timeout: show timeout message
      *
      * @param {import('discord.js').ButtonInteraction} interaction - The ORIGINAL button interaction (already deferred)
      * @param {object} currentRegistration
      * @param {object} tournamentData
      */
     async handleTimeSlotChange(interaction, currentRegistration, tournamentData) {
-      // 1. Unregister from current slot
-      try {
-        await this.registrationService.unregisterPlayer(
-          interaction.user,
-          currentRegistration.session_id
-        );
-      } catch (error) {
-        this.logger.error('Failed to unregister during time slot change', { error: error.message });
-
-        const errorEmbed = new EmbedBuilder()
-          .setColor(0xFF0000)
-          .setTitle('❌ Time Slot Change Failed')
-          .setDescription(`Could not unregister from your current slot: ${error.message}`)
-          .setFooter({ text: 'Your current registration is unchanged. Please try again.' });
-
-        return interaction.editReply({
-          content: null,
-          embeds: [errorEmbed],
-          components: []
-        });
-      }
-
-      // 2. Get player timezone
+      // 1. Get player timezone
       const timezone = await this.timezoneService.getUserTimezone(
         this.registrationService,
         interaction.user.id
       );
 
-      // 3. Format available time slots
+      // 2. Format available time slots
       const formattedSlots = this.timezoneService.formatTournamentTimeSlots(
         tournamentData.sessions.available_time_slots,
         tournamentData.sessions.session_date,
         timezone
       );
 
-      // 4. Build select menu
+      // 3. Build select menu
       const isUTC = timezone === 'UTC';
       const options = formattedSlots.map((slot) => {
         const label = isUTC
@@ -770,7 +742,7 @@ class RegistrationButtonHandler {
       const selectRow = new ActionRowBuilder().addComponents(selectMenu);
 
       const week = tournamentData.sessions.week || 'Current Week';
-      let content = `🔄 **Select a new time slot for ${week}:**\n\nYou have been unregistered from your previous slot (${currentRegistration.time_slot} UTC).`;
+      let content = `🔄 **Select a new time slot for ${week}:**\n\nYour current slot is **${currentRegistration.time_slot} UTC**. You will keep it unless your new selection is successfully saved.`;
       if (isUTC) {
         content += '\n\n💡 *Tip: Use the `/timezone` command to set your timezone and see local times.*';
       }
@@ -781,7 +753,7 @@ class RegistrationButtonHandler {
         components: [selectRow]
       });
 
-      // 5. Create collector for time slot selection
+      // 4. Create collector for time slot selection
       const collector = replyMessage.createMessageComponentCollector({
         filter: (i) => i.user.id === interaction.user.id,
         time: 300000 // 5 minutes
@@ -836,13 +808,13 @@ class RegistrationButtonHandler {
 
               await this._refreshRegistrationMessage();
             } catch (regError) {
-              this.logger.error('Re-registration failed during time slot change', { error: regError.message });
+              this.logger.error('Time slot update failed', { error: regError.message });
 
               const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle('❌ Re-registration Failed')
+                .setTitle('❌ Time Slot Change Failed')
                 .setDescription(regError.message || 'An unexpected error occurred.')
-                .setFooter({ text: 'You have been unregistered from your previous slot. Please try registering again.' });
+                .setFooter({ text: 'Your existing registration is unchanged. Please try again.' });
 
               await interaction.editReply({
                 content: null,

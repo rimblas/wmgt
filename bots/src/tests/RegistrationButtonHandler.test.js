@@ -687,11 +687,9 @@ describe('RegistrationButtonHandler', () => {
 
       await interaction._mockCollector._emit('collect', changeInteraction);
 
-      // handleTimeSlotChange should have called unregisterPlayer
-      expect(services.registrationService.unregisterPlayer).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '123456789' }),
-        42
-      );
+      expect(services.registrationService.unregisterPlayer).not.toHaveBeenCalled();
+      const lastCall = interaction.editReply.mock.calls[interaction.editReply.mock.calls.length - 1][0];
+      expect(lastCall.content).toContain('Select a new time slot');
     });
 
     it('should call handleUnregister on "Unregister" click', async () => {
@@ -802,19 +800,15 @@ describe('RegistrationButtonHandler', () => {
     beforeEach(() => {
       services.timezoneService.getUserTimezone.mockResolvedValue('America/New_York');
       services.timezoneService.formatTournamentTimeSlots.mockReturnValue(formattedSlots);
-      services.registrationService.unregisterPlayer.mockResolvedValue({ success: true });
     });
 
-    it('should unregister the player from the current slot first', async () => {
+    it('should not unregister the player before they choose a new slot', async () => {
       await handler.handleTimeSlotChange(interaction, currentRegistration, tournamentData);
 
-      expect(services.registrationService.unregisterPlayer).toHaveBeenCalledWith(
-        expect.objectContaining({ id: '123456789' }),
-        42
-      );
+      expect(services.registrationService.unregisterPlayer).not.toHaveBeenCalled();
     });
 
-    it('should show select menu with available time slots after unregistering', async () => {
+    it('should show select menu with available time slots while keeping the current slot', async () => {
       await handler.handleTimeSlotChange(interaction, currentRegistration, tournamentData);
 
       expect(interaction.editReply).toHaveBeenCalled();
@@ -822,23 +816,8 @@ describe('RegistrationButtonHandler', () => {
       expect(replyArgs.components).toBeDefined();
       expect(replyArgs.components.length).toBe(1);
       expect(replyArgs.content).toContain('Select a new time slot');
-      expect(replyArgs.content).toContain('22:00 UTC');
-    });
-
-    it('should show error embed when unregister fails', async () => {
-      services.registrationService.unregisterPlayer.mockRejectedValue(
-        new Error('Session not found')
-      );
-
-      await handler.handleTimeSlotChange(interaction, currentRegistration, tournamentData);
-
-      const replyArgs = interaction.editReply.mock.calls[0][0];
-      expect(replyArgs.embeds).toBeDefined();
-      expect(replyArgs.embeds.length).toBe(1);
-      const embed = replyArgs.embeds[0].data;
-      expect(embed.title).toContain('Failed');
-      expect(embed.description).toContain('Session not found');
-      expect(replyArgs.components).toEqual([]);
+      expect(replyArgs.content).toContain('Your current slot is');
+      expect(replyArgs.content).toContain('keep it unless your new selection is successfully saved');
     });
 
     it('should register player for new slot on selection', async () => {
@@ -867,7 +846,7 @@ describe('RegistrationButtonHandler', () => {
       );
     });
 
-    it('should show success embed with room number after re-registration', async () => {
+    it('should show success embed with room number after changing time slot', async () => {
       services.registrationService.registerPlayer.mockResolvedValue({
         success: true,
         registration: { room_no: 5 }
@@ -893,7 +872,7 @@ describe('RegistrationButtonHandler', () => {
       expect(lastCall.components).toEqual([]);
     });
 
-    it('should show error embed when re-registration fails', async () => {
+    it('should show error embed when changing time slot fails', async () => {
       services.registrationService.registerPlayer.mockRejectedValue(
         new Error('All rooms are full')
       );
@@ -912,8 +891,9 @@ describe('RegistrationButtonHandler', () => {
       const lastCall = interaction.editReply.mock.calls[interaction.editReply.mock.calls.length - 1][0];
       expect(lastCall.embeds).toBeDefined();
       const embed = lastCall.embeds[0].data;
-      expect(embed.title).toContain('Failed');
+      expect(embed.title).toContain('Time Slot Change Failed');
       expect(embed.description).toContain('All rooms are full');
+      expect(embed.footer.text).toContain('existing registration is unchanged');
     });
 
     it('should show timeout message when collector times out', async () => {
@@ -1064,7 +1044,6 @@ describe('RegistrationButtonHandler', () => {
     describe('time slot selection and confirmation', () => {
       let selectInteraction;
       let rulesCollector;
-      let confirmCollector;
 
       beforeEach(async () => {
         // Set up a mock for the rules step's collector
@@ -1073,19 +1052,11 @@ describe('RegistrationButtonHandler', () => {
           createMessageComponentCollector: vi.fn().mockReturnValue(rulesCollector)
         };
 
-        // Set up a mock for the confirmation step's collector
-        confirmCollector = createMockCollector();
-        const confirmMessage = {
-          createMessageComponentCollector: vi.fn().mockReturnValue(confirmCollector)
-        };
-
         // First editReply returns the select menu message (from handleNewRegistration),
-        // second editReply returns the rules message (from _handleRulesDisplay),
-        // third editReply returns the confirmation message (from _handleTimeSlotConfirmation)
+        // second editReply returns the rules message (from _handleRulesDisplay)
         interaction.editReply
           .mockResolvedValueOnce(interaction._mockMessage)
-          .mockResolvedValueOnce(rulesMessage)
-          .mockResolvedValue(confirmMessage);
+          .mockResolvedValueOnce(rulesMessage);
 
         selectInteraction = {
           customId: 'reg_timeslot_select',
@@ -1112,7 +1083,12 @@ describe('RegistrationButtonHandler', () => {
         expect(replyArgs.components).toBeDefined();
       });
 
-      it('should show confirmation embed after acknowledging rules', async () => {
+      it('should register player after acknowledging rules', async () => {
+        services.registrationService.registerPlayer.mockResolvedValue({
+          success: true,
+          registration: { room_no: 3 }
+        });
+
         await handler.handleNewRegistration(interaction, tournamentData);
         await interaction._mockCollector._emit('collect', selectInteraction);
 
@@ -1120,62 +1096,82 @@ describe('RegistrationButtonHandler', () => {
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
+          deferUpdate: vi.fn().mockResolvedValue(undefined),
+          editReply: vi.fn().mockResolvedValue(undefined)
         };
         await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        // interaction.editReply call[0] = select menu, call[1] = rules embed, call[2] = confirmation embed
-        expect(interaction.editReply).toHaveBeenCalledTimes(3);
-        const replyArgs = interaction.editReply.mock.calls[2][0];
-        expect(replyArgs.embeds).toBeDefined();
-        expect(replyArgs.embeds.length).toBe(1);
-        expect(replyArgs.components).toBeDefined();
+        expect(services.registrationService.registerPlayer).toHaveBeenCalledWith(
+          acknowledgeInteraction.user,
+          42,
+          '22:00',
+          'America/New_York'
+        );
+        expect(acknowledgeInteraction.editReply).toHaveBeenCalled();
       });
 
-      it('should include tournament name in confirmation embed', async () => {
+      it('should show a success embed after acknowledging rules', async () => {
+        services.registrationService.registerPlayer.mockResolvedValue({
+          success: true,
+          registration: { room_no: 3 }
+        });
+
         await handler.handleNewRegistration(interaction, tournamentData);
         await interaction._mockCollector._emit('collect', selectInteraction);
 
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
+          deferUpdate: vi.fn().mockResolvedValue(undefined),
+          editReply: vi.fn().mockResolvedValue(undefined)
         };
         await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        const embed = interaction.editReply.mock.calls[2][0].embeds[0];
+        const embed = acknowledgeInteraction.editReply.mock.calls[0][0].embeds[0];
         const embedData = embed.data;
-        expect(embedData.fields.some(f => f.value.includes('WMGT Season 5'))).toBe(true);
+        expect(embedData.title).toContain('Successful');
       });
 
-      it('should include time slot details in confirmation embed', async () => {
+      it('should include the registered session timestamp in the success embed after acknowledging rules', async () => {
+        services.registrationService.registerPlayer.mockResolvedValue({
+          success: true,
+          registration: { room_no: 3 }
+        });
+
         await handler.handleNewRegistration(interaction, tournamentData);
         await interaction._mockCollector._emit('collect', selectInteraction);
 
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
+          deferUpdate: vi.fn().mockResolvedValue(undefined),
+          editReply: vi.fn().mockResolvedValue(undefined)
         };
         await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        const embed = interaction.editReply.mock.calls[2][0].embeds[0];
+        const embed = acknowledgeInteraction.editReply.mock.calls[0][0].embeds[0];
         const embedData = embed.data;
-        expect(embedData.fields.some(f => f.value.includes('22:00'))).toBe(true);
+        expect(embedData.fields.some(f => f.value.includes('<t:'))).toBe(true);
       });
 
-      it('should include courses in confirmation embed', async () => {
+      it('should include courses in success embed after acknowledging rules', async () => {
+        services.registrationService.registerPlayer.mockResolvedValue({
+          success: true,
+          registration: { room_no: 3 }
+        });
+
         await handler.handleNewRegistration(interaction, tournamentData);
         await interaction._mockCollector._emit('collect', selectInteraction);
 
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
+          deferUpdate: vi.fn().mockResolvedValue(undefined),
+          editReply: vi.fn().mockResolvedValue(undefined)
         };
         await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        const embed = interaction.editReply.mock.calls[2][0].embeds[0];
+        const embed = acknowledgeInteraction.editReply.mock.calls[0][0].embeds[0];
         const embedData = embed.data;
         const coursesField = embedData.fields.find(f => f.name.includes('Courses'));
         expect(coursesField).toBeDefined();
@@ -1183,7 +1179,12 @@ describe('RegistrationButtonHandler', () => {
         expect(coursesField.value).toContain('Labyrinth');
       });
 
-      it('should not include courses field when courses array is empty', async () => {
+      it('should not include courses field in success embed when courses array is empty', async () => {
+        services.registrationService.registerPlayer.mockResolvedValue({
+          success: true,
+          registration: { room_no: 3 }
+        });
+
         const noCourseData = {
           ...tournamentData,
           sessions: { ...tournamentData.sessions, courses: [] }
@@ -1195,11 +1196,12 @@ describe('RegistrationButtonHandler', () => {
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
+          deferUpdate: vi.fn().mockResolvedValue(undefined),
+          editReply: vi.fn().mockResolvedValue(undefined)
         };
         await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        const embed = interaction.editReply.mock.calls[2][0].embeds[0];
+        const embed = acknowledgeInteraction.editReply.mock.calls[0][0].embeds[0];
         const embedData = embed.data;
         expect(embedData.fields.every(f => !f.name.includes('Courses'))).toBe(true);
       });
@@ -1211,7 +1213,7 @@ describe('RegistrationButtonHandler', () => {
         expect(interaction._mockCollector.stop).toHaveBeenCalledWith('selection_made');
       });
 
-      it('should register player on confirm button click', async () => {
+      it('should register player when rules are acknowledged', async () => {
         services.registrationService.registerPlayer.mockResolvedValue({
           success: true,
           registration: { room_no: 3 }
@@ -1224,22 +1226,13 @@ describe('RegistrationButtonHandler', () => {
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
-        };
-        await rulesCollector._emit('collect', acknowledgeInteraction);
-
-        // Simulate confirm button click
-        const confirmInteraction = {
-          customId: 'reg_confirm_42_22:00',
-          user: { id: '123456789', username: 'TestPlayer' },
           deferUpdate: vi.fn().mockResolvedValue(undefined),
           editReply: vi.fn().mockResolvedValue(undefined)
         };
-
-        await confirmCollector._emit('collect', confirmInteraction);
+        await rulesCollector._emit('collect', acknowledgeInteraction);
 
         expect(services.registrationService.registerPlayer).toHaveBeenCalledWith(
-          confirmInteraction.user,
+          acknowledgeInteraction.user,
           42,
           '22:00',
           'America/New_York'
@@ -1258,20 +1251,12 @@ describe('RegistrationButtonHandler', () => {
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
-        };
-        await rulesCollector._emit('collect', acknowledgeInteraction);
-
-        const confirmInteraction = {
-          customId: 'reg_confirm_42_22:00',
-          user: { id: '123456789', username: 'TestPlayer' },
           deferUpdate: vi.fn().mockResolvedValue(undefined),
           editReply: vi.fn().mockResolvedValue(undefined)
         };
+        await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        await confirmCollector._emit('collect', confirmInteraction);
-
-        const replyArgs = confirmInteraction.editReply.mock.calls[0][0];
+        const replyArgs = acknowledgeInteraction.editReply.mock.calls[0][0];
         const embed = replyArgs.embeds[0];
         expect(embed.data.title).toContain('Successful');
         expect(embed.data.fields.some(f => f.value.includes('Room 3'))).toBe(true);
@@ -1289,20 +1274,12 @@ describe('RegistrationButtonHandler', () => {
         const acknowledgeInteraction = {
           customId: 'reg_rules_acknowledge',
           user: { id: '123456789', username: 'TestPlayer' },
-          deferUpdate: vi.fn().mockResolvedValue(undefined)
-        };
-        await rulesCollector._emit('collect', acknowledgeInteraction);
-
-        const confirmInteraction = {
-          customId: 'reg_confirm_42_22:00',
-          user: { id: '123456789', username: 'TestPlayer' },
           deferUpdate: vi.fn().mockResolvedValue(undefined),
           editReply: vi.fn().mockResolvedValue(undefined)
         };
+        await rulesCollector._emit('collect', acknowledgeInteraction);
 
-        await confirmCollector._emit('collect', confirmInteraction);
-
-        const replyArgs = confirmInteraction.editReply.mock.calls[0][0];
+        const replyArgs = acknowledgeInteraction.editReply.mock.calls[0][0];
         const embed = replyArgs.embeds[0];
         expect(embed.data.title).toContain('Failed');
         expect(embed.data.description).toContain('Registration for this session has closed');
