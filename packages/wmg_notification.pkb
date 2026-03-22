@@ -465,8 +465,9 @@ begin
 
   for p in (
 
-    select tp.time_slot, count(*) n
-    from wmg_tournament_players tp
+    select tp.time_slot
+         , count(*) n
+    from wmg_tournament_player_v tp
     where tp.tournament_session_id = p_tournament_session_id
      and tp.time_slot in (
         -- find the player's time slot
@@ -487,39 +488,58 @@ begin
   )
   loop
 
-    -- Construct the embeds JSON for the webhook
-    l_content := '## The first player from __' || p.time_slot || '__ just entered their scores!';
-    l_embeds := '{}';
+    /* Get the player and the room name */
+    for tp in (
+       select tp.player_name
+            , nvl2(tp.room_no, t.prefix_room_name, '') || to_char(tp.room_no) room_name
+         from wmg_tournament_player_v tp
+            , wmg_tournaments t
+        where t.id = tp.tournament_id         
+        and tp.tournament_session_id = p_tournament_session_id
+          and tp.player_id = p_player_id
+    )
+    loop
+      -- Construct the embeds JSON for the webhook
+      l_content := '## The first player from __' || p.time_slot || '__ just entered their scores!';
 
-    $IF env.wmgt $THEN
-    wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'WMGT'
-       , p_content      => l_content
-       , p_embeds       => l_embeds
-    );
-    $END
+      l_embeds := json_array (
+                json_object(
+                  'title' value tp.player_name,
+                  'description' value 'Room **' || tp.room_name || '**'
+                  )
+            );
+
+      $IF env.wmgt $THEN
+      wmg_notification.send_to_discord_webhook(
+           p_webhook_code => 'WMGT'
+         , p_content      => l_content
+         , p_embeds       => l_embeds
+      );
+      $END
 
 
-    -- Add to the webhook for the staff channels
-    l_content := l_content
-          || c_crlf || 'time to verify some scorecards.';
+      -- Add to the webhook for the staff channels
+      l_content := l_content
+            || c_crlf || 'time to verify some scorecards.';
 
-    $IF env.fhit $THEN
-    wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'FHIT1'
-       , p_content      => l_content
-       , p_embeds       => l_embeds
-    );
-    $END
+      $IF env.fhit $THEN
+      wmg_notification.send_to_discord_webhook(
+           p_webhook_code => 'FHIT1'
+         , p_content      => l_content
+         , p_embeds       => l_embeds
+      );
+      $END
 
 
-    $IF env.wmgt $THEN
-    wmg_notification.send_to_discord_webhook(
-         p_webhook_code => 'STAFFWMGT'
-       , p_content      => l_content
-       , p_embeds       => l_embeds
-    );
-    $END
+      $IF env.wmgt $THEN
+      wmg_notification.send_to_discord_webhook(
+           p_webhook_code => 'STAFFWMGT'
+         , p_content      => l_content
+         , p_embeds       => l_embeds
+      );
+      $END
+
+    end loop;
 
 
   end loop;
