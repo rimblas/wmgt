@@ -81,7 +81,7 @@ export class SpinButtonHandler {
       }
 
       // Dismiss the ephemeral prompt, then send a public follow-up visible to everyone
-      await interaction.update({ content: 'Spun!', embeds: [], components: [] });
+      await interaction.update({ content: `Spun "${footerLabel}"!`, embeds: [], components: [] });
       await interaction.followUp({ embeds: [embed] });
     } catch (error) {
       this.logger.error('Unexpected error in handleSpin', { error: error.message });
