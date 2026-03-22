@@ -15,6 +15,7 @@ import setupRegistrationCommand from './commands/setupRegistration.js';
 import spinCommand from './commands/spin.js';
 import RegistrationMessageManager from './services/RegistrationMessageManager.js';
 import RegistrationButtonHandler from './services/RegistrationButtonHandler.js';
+import { SpinButtonHandler } from './services/SpinButtonHandler.js';
 import { RegistrationService } from './services/RegistrationService.js';
 import { TimezoneService } from './services/TimezoneService.js';
 
@@ -52,6 +53,7 @@ export class DiscordTournamentBot {
     const timezoneService = new TimezoneService();
     this.registrationMessageManager = new RegistrationMessageManager(this.client, registrationService);
     this.registrationButtonHandler = new RegistrationButtonHandler(registrationService, timezoneService, this.registrationMessageManager);
+    this.spinButtonHandler = new SpinButtonHandler();
     this.client.registrationMessageManager = this.registrationMessageManager;
 
     // Load commands
@@ -215,6 +217,12 @@ export class DiscordTournamentBot {
       if (!interaction.isMessageComponent()) return;
 
       try {
+        // Route spin button interactions
+        if (interaction.isButton() && interaction.customId.startsWith('spin_')) {
+          await this.spinButtonHandler.handleSpin(interaction);
+          return;
+        }
+
         // Route registration button interactions (only the initial register button)
         if (interaction.isButton() && interaction.customId === 'reg_register') {
           await this.registrationButtonHandler.handleRegisterButton(interaction);
