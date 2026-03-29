@@ -531,6 +531,8 @@ begin
       $END
 
 
+      /*
+       --  No need to spam staff also
       $IF env.wmgt $THEN
       wmg_notification.send_to_discord_webhook(
            p_webhook_code => 'STAFFWMGT'
@@ -538,6 +540,7 @@ begin
          , p_embeds       => l_embeds
       );
       $END
+      */
 
     end loop;
 
