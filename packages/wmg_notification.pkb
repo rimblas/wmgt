@@ -1371,7 +1371,7 @@ is
     for rank_info in (
       with std_scale as (
         select max(std_dev) max_std_dev
-          from wmg_course_stats_v
+          from wmg_course_stats_recent_v
       )
       select r.*
            , case
@@ -1406,7 +1406,7 @@ is
                   end
                 ) difficulty
               from  wmg_courses c
-                  , wmg_course_stats_v s
+                  , wmg_course_stats_recent_v s
                   , std_scale
               where c.id = s.course_id (+)
               group by c.id, c.code, c.name, c.course_mode
@@ -1482,7 +1482,7 @@ is
   begin
     with std_scale as (
        select max(std_dev) max_std_dev
-         from wmg_course_stats_v
+         from wmg_course_stats_recent_v
     )
     , holes as (
       select s.course_id, s.course_code, s.h
@@ -1490,7 +1490,7 @@ is
                 when s.std_dev = 0 then 0
                 else round(s.std_dev / std_scale.max_std_dev * 10,1)
               end value
-      from  wmg_course_stats_v s
+      from  wmg_course_stats_recent_v s
           , std_scale
       where s.course_id = p_course_id
     )

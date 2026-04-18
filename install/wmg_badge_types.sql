@@ -11,6 +11,7 @@ create table wmg_badge_types (
                                    constraint wmg_badge_types_name_unq unique not null,
     display_seq                    integer not null,
     description                    varchar2(4000 char),
+    description_jtl                varchar2(4000 char),
     icon_class                     varchar2(100 char),
     system_calculated_ind          varchar2(1 char) default 'N' constraint wmg_badge_types_sys_ind_ck
                                    check (system_calculated_ind in ('Y','N')) not null,
@@ -26,6 +27,8 @@ create table wmg_badge_types (
 ;
 
 comment on table wmg_badge_types is 'Badges that a player can earn';
+
+alter table wmg_badge_types add description_jtl varchar2(500) constraint wmg_badge_types_tl_ck CHECK (description_jtl is json(strict));
 
 -- triggers
 create or replace trigger wmg_badge_types_bu

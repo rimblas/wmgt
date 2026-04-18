@@ -10,6 +10,7 @@ create table wmg_players (
     discord_discriminator          varchar2(10),
     account_login                  varchar2(100),
     prefered_tz                    varchar2(20),
+    prefered_lang                  varchar2(20),
     country_code                   varchar2(10),
     rank_code                      varchar2(10) default on null 'NEW' not null,
     created_on                     timestamp with local time zone default on null current_timestamp not null,
@@ -29,4 +30,5 @@ alter table wmg_players add constraint wmg_players_rank_fk foreign key (rank_cod
 
 -- comments
 comment on column wmg_players.account is 'discord name';
+comment on column wmg_players.prefered_lang is 'Two letted code of the player prefered language. "en" if empty';
 comment on column wmg_players.discord_avatar is 'Get an avatar via https://cdn.discordapp.com/avatars/{G_DISCORD_ID}/{G_DISCORD_AVATAR}.png';
