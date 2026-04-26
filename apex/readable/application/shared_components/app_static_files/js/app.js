@@ -51,6 +51,27 @@ theme.init = function() {
   $(".tooltip").tooltip();
 },
 
+    /* setInlineHelp: Sets the help message below an item */
+    theme.setInlineHelp = function(itemID, msg) {
+      let itemWrapper = apex.item(itemID).element.parents(".t-Form-itemWrapper");
+      let el$ = apex.jQuery('#' + itemID + '_inline_help');
+
+      if (!el$.length) {
+        // Need to append: <span class="t-Form-inlineHelp"><span id="{itemID}_inline_help"></span></span>
+        var out = apex.util.htmlBuilder();
+        out.markup( "<span" )
+            .attr( "class", "t-Form-inlineHelp" )
+            .markup( "><span" )
+            .attr( "id", itemID + "_inline_help" )
+            .markup( "></span></span>" );
+
+        itemWrapper.after(out.toString());
+        
+        el$ = apex.jQuery('#' + itemID + '_inline_help');
+      }
+
+      el$.html(msg);
+    },
 
 
 /* Week LOV Template */
