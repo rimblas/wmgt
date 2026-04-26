@@ -2592,6 +2592,92 @@ regions:
   customization: 
     customizable: Not Customizable By End Users
 
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Voting is disabled ==========================
+  id: 114538307597710413
+  identification: 
+    name: Voting is disabled
+    type: Static Content
+
+  layout: 
+    sequence: 10
+    parent-region: Voting Options # 114537863505710408
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 7
+
+  appearance: 
+    template: Alert
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--colorBG
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--warning
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: MODEL.LOV.NOT_W_ARGUMENT # 74226408207696862
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
+
+- # ====== Region: Voting is active ============================
+  id: 114539309494710423
+  identification: 
+    name: Voting is active
+    type: Static Content
+
+  layout: 
+    sequence: 60
+    parent-region: Voting Options # 114537863505710408
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 7
+
+  appearance: 
+    template: Alert
+    template-options: 
+    - '#DEFAULT#'
+    - t-Alert--horizontal
+    - t-Alert--defaultIcons
+    - t-Alert--success
+    render-components: Below Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  customization: 
+    customizable: Not Customizable By End Users
+
   configuration: 
     build-option: 'Feature: Course Voting' # 74226408207696862
 
@@ -3585,7 +3671,7 @@ page-items:
     separator: ':'
 
   layout: 
-    sequence: 10
+    sequence: 30
     region: Voting Options # 114537863505710408
     slot: BODY
     alignment: Left
@@ -3670,7 +3756,7 @@ page-items:
     separator: ':'
 
   layout: 
-    sequence: 20
+    sequence: 40
     region: Voting Options # 114537863505710408
     slot: BODY
     alignment: Left
@@ -4034,6 +4120,69 @@ buttons:
     show-processing: false
     warn-on-unsaved-changes: Do Not Check
 
+- # ====== Button: ENABLE_VOTING ===============================
+  id: 114538482992710414
+  identification: 
+    button-name: ENABLE_VOTING
+    label: Enable Voting
+
+  layout: 
+    sequence: 10
+    region: Voting is disabled # 114538307597710413
+    slot: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--success
+    - t-Button--iconRight
+    icon: fa-plus
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    show-processing: false
+    warn-on-unsaved-changes: Do Not Check
+
+- # ====== Button: DISABLE_VOTING ==============================
+  id: 114539455810710424
+  identification: 
+    button-name: DISABLE_VOTING
+    label: Disable Voting
+
+  layout: 
+    sequence: 20
+    region: Voting is active # 114539309494710423
+    slot: NEXT
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    button-template: Text with Icon
+    hot: false
+    template-options: 
+    - '#DEFAULT#'
+    - t-Button--danger
+    - t-Button--simple
+    - t-Button--iconRight
+    icon: fa-lock
+
+  behavior: 
+    action: Submit Page
+    execute-validations: true
+    show-processing: false
+    warn-on-unsaved-changes: Do Not Check
+
 - # ====== Button: VIEW ========================================
   id: 50437967169044816775
   identification: 
@@ -4308,4 +4457,49 @@ processes:
 
   server-side-condition: 
     when-button-pressed: SAVE_VOTING_COURSES # 114538119973710411
+
+- # ====== Process: Toggle Voting ==============================
+  id: 114538542038710415
+  identification: 
+    name: Toggle Voting
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      for c1 in (
+          select application_id, build_option_id, build_option_name, build_option_status
+            from apex_application_build_options
+           where build_option_name = 'Feature: Course Voting'
+             and application_Id = :APP_ID
+          )
+      loop
+          if upper(c1.build_option_status) in (apex_application_admin.c_build_option_status_include, apex_application_admin.c_build_option_status_exclude) then
+              apex_application_admin.set_build_option_status(  p_application_id => :APP_ID
+                                               ,  p_id => c1.build_option_id
+                                               ,  p_build_status => 
+                                                    case upper(c1.build_option_status)
+                                                      when apex_application_admin.c_build_option_status_include then apex_application_admin.c_build_option_status_exclude
+                                                      when apex_application_admin.c_build_option_status_exclude then apex_application_admin.c_build_option_status_include
+                                                    end );
+          end if;
+      end loop;
+      
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: Voting status toggled
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Request is contained in Value
+    value: ENABLE_VOTING,DISABLE_VOTING
 

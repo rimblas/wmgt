@@ -2621,6 +2621,12 @@ processes:
       if :REQUEST = 'UNREGISTER' then
         :G_ENROLLED_IND := 'N';
         :G_REGISTRATION_ID := null;
+        -- if the player is unregistering, remove their voites.
+        -- this is the unix.dude because he was sneaky
+        delete from wmg_course_vote where player_id = :P30_PLAYER_ID;
+        if :P30_PLAYER_ID = :G_PLAYER_ID then
+           :G_VOTING_ALLOWED := 'NO';
+        end if;
       else 
         :G_ENROLLED_IND := 'Y';
       end if;
