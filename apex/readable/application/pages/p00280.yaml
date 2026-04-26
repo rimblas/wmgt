@@ -414,21 +414,58 @@ dynamic-actions:
       background-color: '#EBEBEB'
       border-color: '#c5c5c5'
       highlight-row-color: '#e3e3e3'
-      details-query: |
-        select week "Week"
-            , aces "Aces"
-        from (
-            select u.week week, u.player_id, p.player_name,  count(*) aces
-            from wmg_rounds_unpivot_mv u
-               , wmg_players_v p
-            where u.player_id > 0
-              and u.player_id = p.id
-             and u.score = 1
-             and u.player_id = #PLAYER_ID#
-            group by u.week, u.player_id, p.player_name
-            having count(*) = #ACES#
-        )
-        order by week desc
+      details-query: |2
+          with week_aces as (
+              select u.week
+                   , u.player_id
+                   , count(*) as aces
+              from wmg_rounds_unpivot_mv u
+              where u.player_id = #PLAYER_ID#
+                and u.score = 1
+                and u.player_id > 0
+              group by u.week, u.player_id
+              having count(*) = #ACES#
+          ),
+          course_aces as (
+              select u.week
+                   , u.player_id
+                   , u.course_id
+                   , count(*) as course_aces
+              from wmg_rounds_unpivot_mv u
+              where u.player_id = #PLAYER_ID#
+                and u.score = 1
+                and u.player_id > 0
+              group by u.week, u.player_id, u.course_id
+          ),
+          rounds as (
+              select r.week
+                   , r.player_id
+                   , r.course_id
+                   , r.course_name
+                   , r.course_code
+                   , r.course_mode
+                   , r.under_par as score
+              from wmg_rounds_v r
+              where r.player_id = #PLAYER_ID#
+          )
+          select w.week as "Week"
+               , max(case when r.course_mode = 'E' then r.course_name end) as "Easy Course"
+               , max(case when r.course_mode = 'H' then r.course_name end) as "Hard Course"
+               , max(case when r.course_mode = 'E' then ca.course_aces end) as "Easy Aces"
+               , max(case when r.course_mode = 'H' then ca.course_aces end) as "Hard Aces"
+               , w.aces as "Aces"
+               , max(case when r.course_mode = 'E' then r.score end) as "Easy Score"
+               , max(case when r.course_mode = 'H' then r.score end) as "Hard Score"
+          from week_aces w
+          join rounds r
+            on r.week = w.week
+           and r.player_id = w.player_id
+          left join course_aces ca
+            on ca.week = r.week
+           and ca.player_id = r.player_id
+           and ca.course_id = r.course_id
+          group by w.week, w.aces
+          order by w.week desc
       when-no-data-found: No data found
 
     affected-elements: 
@@ -440,34 +477,4 @@ dynamic-actions:
       event: Nested Report Most Aces Weeks # 28079730224449232
       fire-when-event-result-is: True
       fire-on-initialization: false
-
-- # ====== Dynamic Action: Nested Report Expand Player with Most
-  id: 28080688290449232
-  identification: 
-    name: Nested Report Expand Player with Most
-
-  execution: 
-    sequence: 10
-    event-scope: Static
-    type: Immediate
-
-  when: 
-    event: Click
-    selection-type: jQuery Selector
-    jquery-selector: .playerDetailsMost
-
-- # ====== Dynamic Action: Nested Report Expand Player w/Lowest 
-  id: 28081515733449232
-  identification: 
-    name: Nested Report Expand Player w/Lowest
-
-  execution: 
-    sequence: 5
-    event-scope: Static
-    type: Immediate
-
-  when: 
-    event: Click
-    selection-type: jQuery Selector
-    jquery-selector: .playerDetailsLowest
 

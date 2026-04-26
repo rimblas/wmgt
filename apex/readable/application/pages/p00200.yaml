@@ -231,7 +231,7 @@ regions:
         sql-query: |
           with std_scale as (
              select max(std_dev) max_std_dev
-               from wmg_course_stats_v
+               from wmg_course_stats_recent_v
           )
           , missing_ace as (
               select level h
@@ -277,7 +277,7 @@ regions:
                     c.regular
                    end
                  end color
-          from  wmg_course_stats_v s
+          from  wmg_course_stats_recent_v s
               , std_scale
               , missing_ace ma
               , wmg_bar_chart_colors c
@@ -459,7 +459,7 @@ regions:
              connect by level <= 10
           )
           , round as (
-              select u.score, count(*) people, sum(count(*)) over () all_scores
+              select u.score, count(distinct u.player_id) people, count(*) n, sum(count(*)) over () all_scores
                 from wmg_rounds_unpivot_mv u
                    , wmg_players p
                    , wmg_rounds r
@@ -474,12 +474,14 @@ regions:
                group by u.score
           )
           select stroke
-               , people || ' player' || decode(people, 1, '', 's')
-              || ' got it in ' || stroke || ' stroke' || decode(stroke, 1, '', 's') || '<br>' 
+               ,  n || ' time' || decode(people, 1, '', 's') 
+              || ' in ' || stroke || ' stroke' || decode(stroke, 1, '', 's') 
+              || ' by ' || people || ' player' || decode(people, 1, '', 's')
+              || '<br>' 
               || '(' || round(percent,1) || '%)' tooltip
               , percent 
           from (
-              select s.stroke, r.people, round(r.people * 100 / all_scores,2) percent
+              select s.stroke, r.n, r.people, round(r.n * 100 / all_scores,2) percent
               from  round r
                   , strokes s
              where s.stroke = r.score (+)
@@ -569,12 +571,16 @@ regions:
       select p.player_name, u.score, count(*) times, listagg(u.week, ', ') weeks
       from  wmg_rounds_unpivot_mv u
           , wmg_players_v p
+          , wmg_rounds r
       where u.player_id = p.id
         and u.course_id = :P200_COURSE_ID
         and u.h = :P200_H
         and u.score = :P200_S
         and u.player_id > 0
-        and (p.rank_code = :P200_RANK_SELECTOR or :P200_RANK_SELECTOR is null)
+        and u.week = r.week
+        and u.course_id = r.course_id
+        and u.player_id = r.players_id
+        and (wmg_rank_history.get_round_effective_rank(r.id) = :P200_RANK_SELECTOR or :P200_RANK_SELECTOR is null)
       group by p.player_name, u.score
       order by 3 desc, p.player_name
     page-items-to-submit: 
@@ -793,7 +799,7 @@ regions:
     sql-query: |
       with std_scale as (
          select max(std_dev) max_std_dev
-           from wmg_course_stats_v
+           from wmg_course_stats_recent_v
       )
       select s.course_id, s.course_code, s.h
            ,  case :P200_FORMULA
@@ -814,7 +820,7 @@ regions:
               end  difficulty
            , case when course_id = :P200_COURSE_ID and h = :P200_H then 'gold' else '#4c825c' end color
            , course_code || ' #' || h label
-      from  wmg_course_stats_v s
+      from  wmg_course_stats_recent_v s
          , std_scale
       order by difficulty
       fetch first 15 rows only
@@ -986,17 +992,24 @@ regions:
         from (
           select course_id, h, score, rank_code, row_number()  over (partition by course_id, rank_code, h order by people desc) rn
           from (
-              select u.course_id, u.h, p.rank_code, u.score, count(*) people
-                from  wmg_rounds_unpivot_mv u
-                    , wmg_players_v p
-                    , wmg_ranks r
-               where u.player_id = p.id
-                 and u.course_id = :P200_COURSE_ID
-                 and u.player_id != 0  -- remove the curated system score
-                 and p.rank_code = r.code
-                 and r.active_ind = 'Y'
-               group by u.course_id, u.h, p.rank_code, u.score
-               order by u.course_id, u.h
+              select course_id, h, score, rank_code, count(*) people
+              from (
+                  select u.course_id, u.h, wmg_rank_history.get_round_effective_rank(r.id) rank_code, u.score
+                    from  wmg_rounds_unpivot_mv u
+                        , wmg_players_v p
+                        -- , wmg_ranks ra
+                        , wmg_rounds r
+                   where u.player_id = p.id
+                     and u.course_id = :P200_COURSE_ID
+                     and u.player_id != 0  -- remove the curated system score
+                     -- and p.rank_code = ra.code
+                     -- and ra.active_ind = 'Y'
+                     and u.player_id = r.players_id
+                     and u.week = r.week
+                     and u.course_id = r.course_id
+               )
+               group by course_id, h, rank_code, score
+               order by course_id, h
           )
         )
        where rn = 1
@@ -1991,7 +2004,7 @@ regions:
         sql-query: |
           with std_scale as (
              select max(std_dev) max_std_dev
-               from wmg_course_stats_v
+               from wmg_course_stats_recent_v
           )
           select course_id, course_name, course_code label, difficulty value
           , course_name || '<br>Difficulty ' || round(difficulty) tooltip
@@ -2023,7 +2036,7 @@ regions:
                     ))
                   end
                 ) difficulty
-              from  wmg_course_stats_v s
+              from  wmg_course_stats_recent_v s
                   , wmg_courses c
                   , std_scale
               where c.id = s.course_id (+)
@@ -2770,8 +2783,15 @@ regions:
     sql-query: |
       with std_scale as (
          select max(std_dev) max_std_dev
-           from wmg_course_stats_v
+           from wmg_course_stats_recent_v
       )
+      select course_id
+           , course_code
+           , h
+           , difficulty
+           , color
+           , label
+      from (
       select s.course_id, s.course_code, s.h
            ,  case :P200_FORMULA
                when 'SCORE' then
@@ -2791,10 +2811,12 @@ regions:
               end  difficulty
            , case when course_id = :P200_COURSE_ID and h = :P200_H then 'gold' else '#4c825c' end color
            , s.course_code || ' #' || s.h label
-      from  wmg_course_stats_v s
+      from  wmg_course_stats_recent_v s
          , std_scale
       order by difficulty desc
       fetch first 15 rows only
+      )
+      order by difficulty
     page-items-to-submit: 
     - P200_COURSE_ID
     - ' P200_FORMULA'
@@ -4776,7 +4798,9 @@ dynamic-actions:
               and u.h = #HOLE#
               and u.score = 1
         )
-        where rn > 1 -- skip the original
+        where (rn > 1 -- skip the original
+        or (#COURSE_ID# = 101 and  #HOLE# = 8)  -- the unicorn that never was
+        )
         order by rn desc
       when-no-data-found: No data found
 
