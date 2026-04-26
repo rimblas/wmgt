@@ -314,76 +314,94 @@ regions:
   source: 
     language: PL/SQL
     pl/sql-function-body-returning-a-clob: |
-      declare 
-        t varchar2(4000);
-        tz varchar2(100);
+      declare
+          t      varchar2(4000);
+          dmd    varchar2(4000);
+          tz     varchar2(100);
       begin
       
       with tz as (
-      select :P40_TZ tz from dual 
+        select :P40_TZ tz from dual
       )
       , slots_n as (
           select level n
-           from dual
-           connect by level <= 6
-          )
+            from dual
+          connect by level <= 6
+        )
       , slots as (
           select day_offset, slot || ':00' d, slot t
-          from (
-              select lpad( (n-1)*4,2,0) slot, 0 day_offset
-              from slots_n
+            from (
+              select lpad((n-1)*4, 2, 0) slot, 0 day_offset
+                from slots_n
               union all
               select '22' slot, -1 day_offset from dual
               union all
-              select '02' slot, 0 day_offset from dual
+              select '02' slot,  0 day_offset from dual
               union all
-              select '06' slot, 0 day_offset from dual
+              select '06' slot,  0 day_offset from dual
               union all
-              select '18' slot, 0 day_offset from dual
-          )
-      )
+              select '18' slot,  0 day_offset from dual
+            )
+        )
       , ts as (
           select s.session_date
-          from wmg_tournament_sessions s
-          where s.tournament_id in (
-              select id
-                from wmg_tournaments
-               where current_flag = 'Y'
-          )
-            and s.completed_ind = 'N'
-            and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
-          order by s.session_date
-          fetch first 1 rows only
-      )
+            from wmg_tournament_sessions s
+           where s.tournament_id in (
+                   select id
+                     from wmg_tournaments
+                    where current_flag = 'Y'
+                 )
+             and s.completed_ind = 'N'
+             and (s.open_registration_on is null or s.open_registration_on < localtimestamp)
+           order by s.session_date
+           fetch first 1 rows only
+        )
       select json_arrayagg(
-             to_char(local_tz, 'fmDy, fmMonth fmDD') 
-            || ', ' 
-            || case when tz like 'US/%' or tz like 'America%' then
-                 ltrim(to_char(local_tz, 'HH:MI PM'), '0')
-               else 
-                 to_char(local_tz, 'HH24:MI')
-               end
-              order by day_offset, d)
-              , tz
-         into t, tz
+               to_char(local_tz, 'fmDy, fmMonth fmDD')
+               || ', '
+               || case
+                    when tz like 'US/%' or tz like 'America%' then
+                      ltrim(to_char(local_tz, 'HH:MI PM'), '0')
+                    else
+                      to_char(local_tz, 'HH24:MI')
+                  end
+               order by day_offset, d
+             )
+           , json_arrayagg(
+               wmg_discord_util.discord_timestamp_markdown(
+                 p_date_str  => to_char(session_date + day_offset, 'YYYY/MM/DD') || ' ' || d
+               , p_timezone  => 'UTC'
+               , p_md_format => 't'
+               )
+               order by day_offset, d
+             )
+           , max(tz)
+        into t, dmd, tz
         from (
           select s.session_date
                , slots.d
                , slots.day_offset
                , tz.tz
-               , to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.d) at time zone tz.tz local_tz
-          from ts s
-             , tz
-             , slots
-         );
+               , to_utc_timestamp_tz(
+                   to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.d
+                 ) at time zone tz.tz local_tz
+            from ts s
+               , tz
+               , slots
+        );
       
-      return '<script>var s = ' || nvl(t, '["","","","","","","","","",""]') || ', tz = "' || tz || '";</script>';
+      return '<script>var s = '
+          || nvl(t,   '["","","","","","","","","",""]')
+          || ', dMD = '
+          || nvl(dmd, '["","","","","","","","","",""]')
+          || ', tz = "'
+          || tz
+          || '";</script>';
       
       exception
       when others then
-      return '<script>var s = ["","","","","","","","","",""], tz = "UTC";</script>';
+        return '<script>var s = ["","","","","","","","","",""], dMD = ["","","","","","","","","",""], tz = "UTC";</script>';
       end;
-      
     page-items-to-submit: 
     - P40_TZ
 
@@ -409,7 +427,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-cache: 
     caching: Disabled
@@ -2496,7 +2514,7 @@ regions:
   advanced: 
     static-id: timeLegend
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-cache: 
     caching: Disabled
@@ -2600,7 +2618,7 @@ regions:
   advanced: 
     static-id: regionRDS
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2746,7 +2764,7 @@ regions:
         The courses are:<br>
         • #EASY_COURSE_CODE# - #EASY_COURSE#<br>
         • #HARD_COURSE_CODE# - #HARD_COURSE#
-        
+        <span class="u-vh" data-clipboard-source="#EASY_COURSE# & #HARD_COURSE#"><span class="t-Icon fa fa-clipboard" aria-hidden="true"></span></span>
 
     sorting: 
       sortable: false
@@ -2948,7 +2966,7 @@ page-items:
   layout: 
     sequence: 20
     region: Breadcrumb # 59007190296908349363
-    slot: NEXT
+    slot: BODY
     alignment: Left
     start-new-layout: false
     start-new-row: true
@@ -3773,23 +3791,59 @@ dynamic-actions:
       code: |
         var out = apex.util.htmlBuilder();
         
-        out.markup( "<span" )
-            .attr( "class", "tzClass hidden-xs-up" )
-            .markup( ">" )
-            .content( tz )
-            .markup( "</span>" );
+        out.markup("<span")
+            .attr("class", "tzClass hidden-lg-down")
+            .markup(">")
+            .content(tz)
+            .markup("</span>");
         
+        $(".room").each(function (i) {
+            var copyBtn = "";
+            var discordMd = Array.isArray(dMD) ? dMD[i] : null;
         
-        $(".room").each(
-          function(i){
-            // console.log(i, s[i]);
-            $(this).prepend('<div class="u-tC">' + s[i] + out.toString() + '</div>');
-            var $t = $(this).find('.t-Region-title');
+            if (discordMd) {
+                var btn = apex.util.htmlBuilder();
+        
+                btn.markup("<button")
+                    .attr("type", "button")
+                    .attr("class", "t-Button t-Button--noLabel t-Button--icon t-Button--tiny t-Button--noUI tooltip")
+                    .attr("title", "Copy Date as Discord MD")
+                    .attr("aria-label", "Copy Date Discord MD")
+                    .attr("data-clipboard-source", discordMd)
+                    .markup(">")
+                    .markup('<span class="t-Icon fa fa-copy" aria-hidden="true"></span>')
+                    .markup("</button>");
+        
+                copyBtn = btn.toString();
+            }
+        
+            $(this).prepend(
+                '<div class="u-tC">' +
+                s[i] +
+                out.toString() +
+                copyBtn +
+                '</div>'
+            );
+        
+            var $t = $(this).find(".t-Region-title");
             var t = $t.text();
-            //    console.log({t});
             $t.text(t + " UTC");
-          }
-        );
+        });
+        
+        
+            $( function() {
+                $( "[data-clipboard-source]", apex.gPageContext$ ).each( function() {
+                    const trigger$ = $( this ),
+                        source = trigger$.attr( "data-clipboard-source" );
+        
+                    if ( source.substring( 0, 1 ) === "#" ) {
+                        apex.clipboard.addElement( $( source )[0], trigger$[0] );
+                    } else {
+                        apex.clipboard.addText( source, trigger$[0] );
+                    }
+                } );
+            } );
+        
 
     execution: 
       sequence: 10
@@ -3814,6 +3868,27 @@ dynamic-actions:
 
     security: 
       authorization-scheme: Tournament Admin # 55902033226819493948
+
+  - # ====== Action: Relocate "Show Player Avatars" Toggle =======
+    id: 140303950169994911
+    identification: 
+      name: Relocate "Show Player Avatars" Toggle
+      action: Execute JavaScript Code
+
+    settings: 
+      code: |2
+          const itemContainer = document.getElementById("P40_SHOW_AVATARS_IND_CONTAINER");
+          const targetContainer = document.querySelector(".t-BreadcrumbRegion-buttons.t-BreadcrumbRegion-buttons--end");
+        
+          if (itemContainer && targetContainer) {
+            targetContainer.prepend(itemContainer);
+          }
+
+    execution: 
+      sequence: 40
+      event: Init Actions # 12528847877550025
+      fire-when-event-result-is: True
+      fire-on-initialization: false
 
 - # ====== Dynamic Action: Refresh on Dialog Close 22 ==========
   id: 29249352638467346
