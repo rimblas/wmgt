@@ -71,8 +71,9 @@ javascript:
       }
     }
     
-    function start_timer(time, title) {
-        var layoutFormat;
+    function start_timer(time, titleCode) {
+        let layoutFormat;
+        let title = apex.lang.getMessage(titleCode);
         layoutFormat = getDiff(time);
     $(".syotimer").syotimer({
       date: new Date(time),
@@ -95,7 +96,7 @@ javascript:
           var tooltipContent = "<div>" + description + "</div>";
           tooltipContent += "<img class='courseIcon' src='" + imgUrl + "' alt='" + description + "' />";
           if (wmgtExcluded) {
-             tooltipContent += "<div class='--wmgt-excluded-legend'>" + "This course will not be played in S14" + "</div>";
+             tooltipContent += "<div class='--wmgt-excluded-legend'>" + "This course will not be played this season" + "</div>";
           }
           else {
             if (fact) {
@@ -109,6 +110,8 @@ javascript:
     }
   execute-when-page-loads: |
     wmgt.theme.init();
+    
+    $(".a-LinksList-item").addClass("t-Button").addClass("t-Button--pill");
     
     // tab visibility detection
     document.addEventListener("visibilitychange", function() {
@@ -148,6 +151,17 @@ css:
   file-urls: 
   - //emoji-css.afeld.me/emoji.css
   inline: |
+    .a-LinksList--lang {text-align: center;}
+    a.a-LinksList-link {position: relative; z-index: 2;}
+    .a-LinksList--lang .t-Button:not(.is-active) {
+        --a-button-padding-y: 3px;
+    }
+    .a-LinksList--lang .t-Button.is-active a:after {
+        content: "\f14a";
+        font-family: 'Font APEX Small' !important;
+        color: var(--u-color-4);
+    }
+    
     .voteUp:hover {
     --ut-link-text-color: var(--ut-palette-success);
     opacity: 1;
@@ -988,7 +1002,7 @@ regions:
     - col-md-6
     - col-lg-5
     - col-xl-5
-    - col-xxl-4
+    - col-xxl-5
 
   appearance: 
     template: Standard
@@ -1212,7 +1226,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Function Body
@@ -1259,7 +1273,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1347,7 +1361,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1389,7 +1403,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -1444,7 +1458,11 @@ regions:
         from (
         select to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.time_slot) session_date_utc
              , to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.time_slot || '+00:00' session_date_utc_str
-             , decode(slots.seq, 0, 'Registration closes in', 1, 'Next tournament starts in', 'UTC ' || slots.time_slot || ' starts in') title
+             , decode(slots.seq
+               , 0, 'REGISTRATION_CLOSES'
+               , 1, 'Next tournament starts in'
+               , 'UTC ' || slots.time_slot || ' starts in'
+               ) title
              , s.session_date
         from next_session s
            , w_slots slots
@@ -1561,6 +1579,7 @@ regions:
         setTimeout(function(){start_timer("#COUNTDOWN_TIMER#", "#TITLE#")}, 700);
         </script>
         {endif/}
+        
 
     sorting: 
       sortable: false
@@ -2282,7 +2301,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Function Body
@@ -2500,6 +2519,98 @@ regions:
 
     security: 
       escape-special-characters: true
+
+- # ====== Region: For the rest of the story ===================
+  id: 32463879325429436
+  identification: 
+    name: For the rest of the story
+    type: Static Content
+
+  source: 
+    html-code: |
+      If you like drama and fantastical stories, keep reading. Otherwise, just dismiss this section, which would be perfectly fine.<br>
+      
+      But if you want to know why the WMGT was abruptly paused, keep reading.<br>
+      
+      Actually, I don't understand why myself, as many of the details don't make sense. But I'll try to present you with the conversations that happened 
+       and let you form your own opinion.
+      <br>
+      <br>
+      I'm now banned from the Walkabout Mini Golf server, forever, and for what? For promoting their game and making the weekly tournament better than it ever was?
+      <br>
+      <br>
+      -El Jorge
+      <br>
+      <br>
+      <i>Must be logged in to read</i>
+      <br>
+      
+      
+
+  layout: 
+    sequence: 29
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 7
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Function Body
+    language: PL/SQL
+    pl/sql-function-body: |
+      if nvl(apex_util.get_preference('NO_GOLFGATE_DRAMA'), 'N') = 'Y' then
+        return false;
+      end if;
+      if :G_PLAYER_ID in ( 
+            25  -- Bear
+          , 39  -- FIRE
+          , 6906 -- wyatt
+          ) 
+          or :APP_USER like 'BJKRHINO7%' then
+          return false;
+      else
+        if :G_PLAYER_ID in (3212, 1546, 6912, 662, 8426, 9046, 7490) 
+         or :APP_USER like 'THERE.WAS.SUN%'
+         or :APP_USER like 'JORGE%'
+        then
+        -- 585=mickullen, 3212=gmoney, 1546 = The great Golfer, 6912 = SpareBullet, 662 NEDR, 8426 unixdude
+        -- 9046 sandwichartista, 7490 OpusMcGraw
+        return true;
+        else
+        return false;
+        end if;
+      end if;
+      
+      return true;
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: Season Courses ==============================
   id: 32751428375549205
@@ -2736,7 +2847,7 @@ regions:
     exclude-title-from-translation: false
 
   server-cache: 
-    caching: Enabled
+    caching: Cache By Session
     cache-timeout: 2 days
     depends-on-item(s): 
     - APP_REQUEST_DATA_HASH
@@ -2750,7 +2861,7 @@ regions:
   attributes: 
     layout: 
       number-of-rows-type: Static Value
-      number-of-rows: 50
+      number-of-rows: 12
 
     appearance: 
       template-type: Theme
@@ -2763,12 +2874,8 @@ regions:
       - t-Report--hideNoPagination
 
     pagination: 
-      type: Row Ranges X to Y (with next and previous links)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
-    performance: 
-      lazy-loading: false
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: false
 
     break-formatting: 
       break-columns: No Break
@@ -3221,7 +3328,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -3246,7 +3353,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 20
+    sequence: 40
     parent-region: '{col1}' # 36326139583635119
     slot: BODY
     start-new-layout: false
@@ -3273,7 +3380,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -3319,7 +3426,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -3853,349 +3960,6 @@ regions:
       table-owner: Parsing Schema
 
     security: 
-      escape-special-characters: true
-
-- # ====== Region: Most recent registrations ===================
-  id: 39559725575969820
-  identification: 
-    name: Most recent registrations
-    type: Classic Report
-
-  source: 
-    location: Local Database
-    type: SQL Query
-    sql-query: |
-      select tp.player_id
-          , country_code, country
-          , tp.player_name
-          , tp.rank_name
-          , tp.rank_list_class
-          , tournament_player_created
-          , row_number() over (order by tournament_player_created) rn
-      from wmg_tournament_player_v tp
-      where tp.tournament_session_id = :G_CURRENT_SESSION_ID
-        and tp.active_ind = 'Y'
-      order by tp.tournament_player_created desc
-      
-      
-
-  layout: 
-    sequence: 90
-    parent-region: '{col2}' # 11993448770685629
-    slot: BODY
-    start-new-layout: false
-    start-new-row: false
-    column: Automatic
-    new-column: true
-    column-span: 6
-
-  appearance: 
-    template: Standard
-    template-options: 
-    - '#DEFAULT#'
-    - t-Region--noPadding
-    - t-Region--scrollBody
-    render-components: Above Content
-
-  accessibility: 
-    use-landmark: true
-    landmark-type: Template Default
-
-  advanced: 
-    static-id: recentReg
-    region-display-selector: false
-    exclude-title-from-translation: false
-
-  header-and-footer: 
-    footer-text: |
-      <div class="pro-legend row margin-sm u-justify-content-space-around">
-      <div class="-wm-rank-elite fa margin-right-sm" title="Elite"> = Elite player</div>
-      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro </div>
-      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi-Pro</div>
-      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur</div>
-      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
-      </div>
-
-  server-side-condition: 
-    type: Rows returned
-    sql-query: |
-      select 1
-      from wmg_tournament_sessions
-      where id = :G_CURRENT_SESSION_ID
-        and rooms_open_flag is null
-
-  server-cache: 
-    caching: Disabled
-
-  customization: 
-    customizable: Not Customizable By End Users
-
-  attributes: 
-    layout: 
-      number-of-rows-type: Static Value
-      number-of-rows: 15
-
-    appearance: 
-      template-type: Theme
-      template: Standard
-      template-options: 
-      - '#DEFAULT#'
-      - t-Report--stretch
-      - t-Report--staticRowColors
-      - t-Report--rowHighlightOff
-      - t-Report--horizontalBorders
-
-    pagination: 
-      type: Search Engine 1,2,3,4 (set based pagination)
-      display-position: Bottom - Right
-      partial-page-refresh: true
-
-    performance: 
-      lazy-loading: false
-
-    messages: 
-      when-no-data-found: '- No registrations yet -'
-
-    break-formatting: 
-      break-columns: No Break
-
-    advanced: 
-      strip-html: false
-      sort-nulls: Last
-
-    heading: 
-      type: Custom Headings
-
-    download: 
-      csv-export-enabled: false
-
-    printing: 
-      enabled: false
-
-  columns: 
-  - # ====== Column: RANK_NAME ===================================
-    id: 39135535853390006
-    identification: 
-      column-name: RANK_NAME
-      type: Hidden
-
-    layout: 
-      sequence: 70
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: RANK_LIST_CLASS =============================
-    id: 39135696411390007
-    identification: 
-      column-name: RANK_LIST_CLASS
-      type: Hidden
-
-    layout: 
-      sequence: 80
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COUNTRY_CODE ================================
-    id: 39559812182969821
-    identification: 
-      column-name: COUNTRY_CODE
-      type: Plain Text
-
-    heading: 
-      heading: Country
-      alignment: center
-
-    layout: 
-      sequence: 30
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: <i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="#COUNTRY#" title="#COUNTRY#"></i>
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PLAYER_NAME =================================
-    id: 39559942454969822
-    identification: 
-      column-name: PLAYER_NAME
-      type: Plain Text
-
-    heading: 
-      heading: Player
-      alignment: start
-
-    layout: 
-      sequence: 50
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    column-formatting: 
-      html-expression: '<div>#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div></div>'
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: TOURNAMENT_PLAYER_CREATED ===================
-    id: 39560026898969823
-    identification: 
-      column-name: TOURNAMENT_PLAYER_CREATED
-      type: Plain Text
-
-    heading: 
-      heading: When
-      alignment: start
-
-    layout: 
-      sequence: 60
-      column-alignment: start
-
-    accessibility: 
-      value-identifies-row: false
-
-    appearance: 
-      format-mask: SINCE
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: RN ==========================================
-    id: 39560257576969825
-    identification: 
-      column-name: RN
-      type: Plain Text
-
-    heading: 
-      heading: 'Reg #'
-      alignment: end
-
-    layout: 
-      sequence: 20
-      column-alignment: end
-
-    accessibility: 
-      value-identifies-row: false
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: COUNTRY =====================================
-    id: 39560389445969826
-    identification: 
-      column-name: COUNTRY
-      type: Hidden
-
-    layout: 
-      sequence: 40
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: PLAYER_ID ===================================
-    id: 46151834826838146
-    identification: 
-      column-name: PLAYER_ID
-      type: Link
-
-    heading: 
-      heading: Edit
-      alignment: center
-
-    layout: 
-      sequence: 10
-      column-alignment: center
-
-    accessibility: 
-      value-identifies-row: false
-
-    link: 
-      target: 
-        url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:#PLAYER_ID#'
-        page: 7 # Player
-        clear-cache: 7
-        values: 
-          p7_id: '#PLAYER_ID#'
-
-      link-text: '&EDIT_BUTTON.'
-
-    sorting: 
-      sortable: false
-
-    export-/-printing: 
-      include-in-export-/-print: true
-
-    advanced: 
-      compute-sum: false
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      authorization-scheme: Tournament Admin # 55902033226819493948
       escape-special-characters: true
 
 - # ====== Region: Top By Rank =================================
@@ -4752,7 +4516,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 100
+    sequence: 110
     parent-region: '{col2}' # 11993448770685629
     slot: BODY
     start-new-layout: false
@@ -4826,7 +4590,7 @@ regions:
   advanced: 
     static-id: decorationRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -4843,7 +4607,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 40
+    sequence: 60
     parent-region: '{col1}' # 36326139583635119
     slot: BODY
     start-new-layout: false
@@ -4870,7 +4634,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -4935,7 +4699,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 30
+    sequence: 50
     parent-region: '{col1}' # 36326139583635119
     slot: BODY
     start-new-layout: false
@@ -4962,7 +4726,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -5022,7 +4786,7 @@ regions:
   advanced: 
     static-id: profileRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -5053,15 +4817,15 @@ regions:
     sql-query: |
       with w_options as (
         select case
-                 when exists (
-                   select 1
-                   from apex_application_build_options
-                   where application_id = :APP_ID
-                     and build_option_name = 'Feature: Vote Against Courses'
-                     and build_option_status = 'Include'
-                 ) then 'Y'
-                 else 'N'
-               end allow_down_vote
+               when exists (
+                 select 1
+                 from apex_application_build_options
+                 where application_id = :APP_ID
+                   and build_option_name = 'Feature: Vote Against Courses'
+                   and build_option_status = 'Include'
+               ) then 'Y'
+               else 'N'
+             end allow_down_vote
         from dual
       )
       , tournament_courses as (
@@ -5097,29 +4861,29 @@ regions:
             and s.hard_course_id = h.id (+)
       )
       , w_votes as (
-        select v.course_id
-             , sum(
-                 case
-                   when o.allow_down_vote = 'Y' then v.vote
-                   when v.vote = 1 then 1
-                   else 0
-                 end
-               ) votes
-        from wmg_course_vote v
-           , w_options o
-        group by v.course_id
+          select v.course_id
+               , sum(
+                   case
+                     when o.allow_down_vote = 'Y' then v.vote
+                     when v.vote = 1 then 1
+                     else 0
+                   end
+                 ) votes
+          from wmg_course_vote v
+             , w_options o
+          group by v.course_id
       )
       , w_player_votes as (
-        select v.course_id
-             , v.vote
-             , case
-                 when v.vote = 1 then 'up'
-                 when v.vote = -1 and o.allow_down_vote = 'Y' then 'down'
-                 else null
-               end vote_selection
-        from wmg_course_vote v
-           , w_options o
-        where v.player_id = nvl(:G_PLAYER_ID,0)
+          select v.course_id
+               , v.vote
+               , case
+                   when v.vote = 1 then 'up'
+                   when v.vote = -1 and o.allow_down_vote = 'Y' then 'down'
+                   else null
+                 end vote_selection
+          from wmg_course_vote v
+             , w_options o
+          where v.player_id = nvl(:G_PLAYER_ID,0)
       )
       , missing_easy as (
       select round_num
@@ -5142,7 +4906,7 @@ regions:
            , 'lock' status
            , e.release_order
            , v.votes
-           , o.allow_down_vote
+           , o.allow_down_vote     
            , decode(pv.vote_selection, null, 'show', 'hide' || pv.vote_selection) vote_class
       from wmg_courses e
          , w_votes v
@@ -5155,6 +4919,11 @@ regions:
         and e.id = pv.course_id (+)
       )
       where easy_course_code is null
+        and easy_course in ( 
+          select column_value from apex_string.split(wmg_util.get_param('VOTING_AVAILABLE_EASY'), ':')
+          union
+          select code from wmg_courses where course_mode = 'E' and wmg_util.get_param('VOTING_AVAILABLE_EASY') is null
+        )
       )
       , missing_hard as (
         select round_num
@@ -5190,7 +4959,12 @@ regions:
             and h.id = v.course_id (+)
             and h.id = pv.course_id (+)
         )
-        where hard_course_code is null
+       where hard_course_code is null
+         and hard_course in ( 
+          select column_value from apex_string.split(wmg_util.get_param('VOTING_AVAILABLE_HARD'), ':')
+          union
+          select code from wmg_courses where course_mode = 'H' and wmg_util.get_param('VOTING_AVAILABLE_HARD') is null
+        )
       )
       , w_easy as (
       select /* q("easy_votes") */ e.easy_votes easy_votes
@@ -5300,7 +5074,7 @@ regions:
   advanced: 
     static-id: votesRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Expression
@@ -5391,36 +5165,6 @@ regions:
     security: 
       escape-special-characters: true
 
-  - # ====== Column: EASY_ALLOW_DOWN_VOTE ========================
-    id: 94642071000133702
-    identification: 
-      column-name: EASY_ALLOW_DOWN_VOTE
-      type: Hidden
-
-    layout: 
-      sequence: 180
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
-  - # ====== Column: HARD_ALLOW_DOWN_VOTE ========================
-    id: 94642071000133703
-    identification: 
-      column-name: HARD_ALLOW_DOWN_VOTE
-      type: Hidden
-
-    layout: 
-      sequence: 190
-
-    ui-defaults-reference: 
-      table-owner: Parsing Schema
-
-    security: 
-      escape-special-characters: true
-
   - # ====== Column: EASY_COURSE =================================
     id: 71049280952388619
     identification: 
@@ -5443,36 +5187,36 @@ regions:
         {case EASY_NAME/}
         {when TBD /}<span class="tooltip" title="#EASY_NAME#">#EASY_COURSE#</span>
         {otherwise/}
-          {case EASY_ALLOW_DOWN_VOTE/}
-          {when Y/}
-          {case EASY_VOTE_CLASS/}
-          {when hidedown/}
-          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
-          {otherwise/}
+            {case EASY_ALLOW_DOWN_VOTE/}
+            {when Y/}
+            {case EASY_VOTE_CLASS/}
+            {when hidedown/}
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
         <button type="button" title="Vote Against" aria-label="Vote Against" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
-          {endcase/}
-          {otherwise/}
+            {endcase/}
+            {otherwise/}
             {case EASY_VOTE_CLASS/}
             {when hidedown/}
             <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
             {otherwise/}
             {endcase/}
-          {endcase/}
+            {endcase/}
         <span class="tooltipImg --wmgt-excluded#EASY_TOURNAMENT_EXCLUDED_FLAG#" title="#EASY_NAME#" data-img-url="&BUCKET.#EASY_COURSE#_FULL.jpg" data-fact="#EASY_FACTOIDS#">
             #EASY_COURSE#
             <span class="u-vh">#EASY_NAME#</span>
         </span>
-          {case EASY_VOTE_CLASS/}
-          {when hideup/}
+            {case EASY_VOTE_CLASS/}
+            {when hideup/}
             {case EASY_ALLOW_DOWN_VOTE/}
             {when Y/}
-          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#EASY_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-square-selected-o"></span></button>
+            {endcase/}
             {otherwise/}
         <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
             {endcase/}
-          {otherwise/}
-        <button type="button" title="Vote For" aria-label="Vote For" data-code="#EASY_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
-          {endcase/}
         {endcase/}
         
 
@@ -5528,37 +5272,37 @@ regions:
         {case HARD_NAME/}
         {when TBD /}<span class="tooltip" title="#HARD_NAME#">#HARD_COURSE#</span>
         {otherwise/}
-          {case HARD_ALLOW_DOWN_VOTE/}
-          {when Y/}
-          {case HARD_VOTE_CLASS/}
-          {when hidedown/}
-          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
-          {otherwise/}
+            {case HARD_ALLOW_DOWN_VOTE/}
+            {when Y/}
+            {case HARD_VOTE_CLASS/}
+            {when hidedown/}
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
         <button type="button" title="Vote Against" aria-label="Vote Against" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteDown"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-down"></span></button>
-           {endcase/}
-          {otherwise/}
+            {endcase/}
+            {otherwise/}
             {case HARD_VOTE_CLASS/}
             {when hidedown/}
             <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteUp" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
             {otherwise/}
             {endcase/}
-          {endcase/}
+            {endcase/}
         <span class="tooltipImg --wmgt-excluded#HARD_TOURNAMENT_EXCLUDED_FLAG#" title="#HARD_NAME#" data-img-url="&BUCKET.#HARD_COURSE#_FULL.jpg" data-fact="#HARD_FACTOIDS#">
             #HARD_COURSE#
             <span class="u-vh">#HARD_NAME#</span>
         </span>
         
-          {case HARD_VOTE_CLASS/}
-          {when hideup/}
+            {case HARD_VOTE_CLASS/}
+            {when hideup/}
             {case HARD_ALLOW_DOWN_VOTE/}
             {when Y/}
-          <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+            <span class="t-Button t-Button--noLabel t-Button--icon t-Button--link fa fa-square-selected-o receiveVote voteDown" data-code="#HARD_COURSE#" aria-hidden="true" title="Voted!"></span>
+            {otherwise/}
+        <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-square-selected-o"></span></button>
+            {endcase/}
             {otherwise/}
         <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
             {endcase/}
-          {otherwise/}
-        <button type="button" title="Vote For" aria-label="Vote For" data-code="#HARD_COURSE#" class="t-Button t-Button--noLabel t-Button--icon t-Button--link receiveVote voteUp"><span aria-hidden="true" class="t-Icon fa fa-caret-square-o-up"></span></button>
-          {endcase/}
         {endcase/}
         
 
@@ -5797,6 +5541,36 @@ regions:
     security: 
       escape-special-characters: true
 
+  - # ====== Column: EASY_ALLOW_DOWN_VOTE ========================
+    id: 122769952114741912
+    identification: 
+      column-name: EASY_ALLOW_DOWN_VOTE
+      type: Hidden
+
+    layout: 
+      sequence: 240
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: HARD_ALLOW_DOWN_VOTE ========================
+    id: 122770082286741913
+    identification: 
+      column-name: HARD_ALLOW_DOWN_VOTE
+      type: Hidden
+
+    layout: 
+      sequence: 250
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: About Voting ================================
   id: 74128491007127999
   identification: 
@@ -5945,6 +5719,11 @@ regions:
         and e.id = pv.course_id (+)
       )
       where easy_course_code is null
+        and easy_course in ( 
+          select column_value from apex_string.split(wmg_util.get_param('VOTING_AVAILABLE_EASY'), ':')
+          union
+          select code from wmg_courses where course_mode = 'E' and wmg_util.get_param('VOTING_AVAILABLE_EASY') is null
+        )
       )
       , missing_hard as (
         select round_num
@@ -5977,7 +5756,12 @@ regions:
             and h.id = v.course_id (+)
             and h.id = pv.course_id (+)
         )
-        where hard_course_code is null
+       where hard_course_code is null
+         and hard_course in ( 
+          select column_value from apex_string.split(wmg_util.get_param('VOTING_AVAILABLE_HARD'), ':')
+          union
+          select code from wmg_courses where course_mode = 'H' and wmg_util.get_param('VOTING_AVAILABLE_HARD') is null
+        )
       )
       , w_easy as (
       select /* q("easy_votes") */ e.easy_votes easy_votes
@@ -6080,7 +5864,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Expression
@@ -6505,7 +6289,7 @@ regions:
       )
 
   layout: 
-    sequence: 30
+    sequence: 40
     parent-region: Season Courses Votes # 85004434021720108
     slot: SUB_REGIONS
     start-new-layout: false
@@ -6526,7 +6310,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-cache: 
     caching: Disabled
@@ -6761,7 +6545,7 @@ regions:
       
 
   layout: 
-    sequence: 19
+    sequence: 29
     parent-region: No Parent
     slot: REGION_POSITION_05
     start-new-layout: false
@@ -7162,7 +6946,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -7210,7 +6994,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -7219,6 +7003,482 @@ regions:
     settings: 
       output-as: HTML
       expand-shortcuts: false
+
+- # ====== Region: {Player Language} ===========================
+  id: 122772133064741934
+  identification: 
+    name: '{Player Language}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return apex_lang. get_language_selector_list;
+      
+
+  layout: 
+    sequence: 20
+    parent-region: '{col1}' # 36326139583635119
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-sm-6
+    - col-xs-12
+    - null
+    - hidden-xs-down
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: true
+
+  security: 
+    authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  configuration: 
+    build-option: Commented Out # 46995003406591514325
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
+- # ====== Region: {Player Language Footer} ====================
+  id: 122772229628741935
+  identification: 
+    name: '{Player Language Footer}'
+    type: Dynamic Content
+
+  source: 
+    language: PL/SQL
+    pl/sql-function-body-returning-a-clob: |
+      return apex_lang. get_language_selector_list;
+      
+
+  layout: 
+    sequence: 19
+    parent-region: No Parent
+    slot: REGION_POSITION_05
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    column-css-classes: 
+    - col-sm-6
+    - col-xs-12
+    - null
+    - null
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--noPadding
+    - t-Region--removeHeader js-removeLandmark
+    - t-Region--noUI
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: true
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    performance: 
+      lazy-loading: false
+
+- # ====== Region: Most Recent Registrations ===================
+  id: 140302846519994900
+  identification: 
+    name: Most Recent Registrations
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      select tp.player_id
+          , decode(tp.tournament_player_source, 'API', 'Y', 'N') api_ind
+          , country_code, country
+          , tp.player_name
+          , tp.rank_name
+          , tp.rank_list_class
+          , tp.tournament_player_created
+          , row_number() over (order by tournament_player_created) rn
+      from wmg_tournament_player_v tp
+      where tp.tournament_session_id = :G_CURRENT_SESSION_ID
+        and tp.active_ind = 'Y'
+      order by tp.tournament_player_created desc
+      
+      
+
+  layout: 
+    sequence: 100
+    parent-region: '{col2}' # 11993448770685629
+    slot: BODY
+    start-new-layout: false
+    start-new-row: false
+    column: Automatic
+    new-column: true
+    column-span: 6
+
+  appearance: 
+    template: Standard
+    template-options: 
+    - '#DEFAULT#'
+    - t-Region--scrollBody
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    static-id: recentReg
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  header-and-footer: 
+    footer-text: |
+      <div class="pro-legend row margin-sm u-justify-content-space-around">
+      <div class="-wm-rank-elite fa margin-right-sm" title="Elite"> = Elite player</div>
+      <div class="-wm-rank-pro fa margin-right-sm" title="Pro"> = Pro </div>
+      <div class="-wm-rank-semi fa margin-right-sm" title="Semi-Pro"> = Semi-Pro</div>
+      <div class="-wm-rank-ama fa margin-right-sm" title="Amateur"> = Amateur</div>
+      <div class="-wm-rank-new fa margin-right-sm" title="New player!"> = New player!</div>
+      </div>
+
+  server-side-condition: 
+    type: Rows returned
+    sql-query: |
+      select 1
+      from wmg_tournament_sessions
+      where id = :G_CURRENT_SESSION_ID
+        and rooms_open_flag is null
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Standard
+      template-options: 
+      - '#DEFAULT#'
+      - t-Report--altRowsDefault
+      - t-Report--rowHighlight
+
+    pagination: 
+      type: Search Engine 1,2,3,4 (set based pagination)
+      display-position: Bottom - Right
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: PLAYER_ID ===================================
+    id: 140302948163994901
+    identification: 
+      column-name: PLAYER_ID
+      type: Link
+
+    heading: 
+      heading: Edit
+      alignment: center
+
+    layout: 
+      sequence: 10
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    link: 
+      target: 
+        url: 'f?p=&APP_ID.:7:&SESSION.::&DEBUG.:7:P7_ID:#PLAYER_ID#'
+        page: 7 # Player
+        clear-cache: 7
+        values: 
+          p7_id: '#PLAYER_ID#'
+
+      link-text: '&EDIT_BUTTON.'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      authorization-scheme: Tournament Admin # 55902033226819493948
+      escape-special-characters: true
+
+  - # ====== Column: API_IND =====================================
+    id: 140303072348994902
+    identification: 
+      column-name: API_IND
+      type: Hidden
+
+    layout: 
+      sequence: 30
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY_CODE ================================
+    id: 140303110166994903
+    identification: 
+      column-name: COUNTRY_CODE
+      type: Plain Text
+
+    heading: 
+      heading: Country
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: <i class="em em-flag-#COUNTRY_CODE# tooltip" aria-role="presentation" aria-label="#COUNTRY#" title="#COUNTRY#"></i>
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: COUNTRY =====================================
+    id: 140303275439994904
+    identification: 
+      column-name: COUNTRY
+      type: Hidden
+
+    layout: 
+      sequence: 50
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME =================================
+    id: 140303406713994905
+    identification: 
+      column-name: PLAYER_NAME
+      type: Plain Text
+
+    heading: 
+      heading: Player
+      alignment: start
+
+    layout: 
+      sequence: 60
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: '<div>#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div></div>'
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_NAME ===================================
+    id: 140303418440994906
+    identification: 
+      column-name: RANK_NAME
+      type: Hidden
+
+    layout: 
+      sequence: 80
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RANK_LIST_CLASS =============================
+    id: 140303605906994907
+    identification: 
+      column-name: RANK_LIST_CLASS
+      type: Hidden
+
+    layout: 
+      sequence: 90
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: TOURNAMENT_PLAYER_CREATED ===================
+    id: 140303674318994908
+    identification: 
+      column-name: TOURNAMENT_PLAYER_CREATED
+      type: Plain Text
+
+    heading: 
+      heading: When
+      alignment: start
+
+    layout: 
+      sequence: 70
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    appearance: 
+      format-mask: SINCE
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: RN ==========================================
+    id: 140303714053994909
+    identification: 
+      column-name: RN
+      type: Plain Text
+
+    heading: 
+      heading: 'Reg #'
+      alignment: center
+
+    layout: 
+      sequence: 20
+      column-alignment: center
+
+    accessibility: 
+      value-identifies-row: false
+
+    column-formatting: 
+      html-expression: |
+        {if API_IND /}<span class="t-Badge t-Badge--info t-Badge--sm tooltip" title="Bot Registration">{endif/}
+        #RN#
+        {if API_IND /}</span>{endif/}
+        
+
+    sorting: 
+      sortable: false
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
 
 - # ====== Region: Your Assigned Room ==========================
   id: 7095453182086161115
@@ -9158,7 +9418,7 @@ buttons:
 
   layout: 
     sequence: 10
-    region: Most recent registrations # 39559725575969820
+    region: Most Recent Registrations # 140302846519994900
     slot: EDIT
     start-new-layout: false
     start-new-row: true
@@ -9594,36 +9854,6 @@ dynamic-actions:
       fire-when-event-result-is: True
       fire-on-initialization: false
 
-- # ====== Dynamic Action: Turn-on Tooltips ====================
-  id: 23850337986801620
-  identification: 
-    name: Turn-on Tooltips
-
-  execution: 
-    sequence: 40
-    event-scope: Static
-    type: Immediate
-
-  when: 
-    event: After Refresh
-    selection-type: Region
-    region: Most recent registrations # 39559725575969820
-
-  actions: 
-  - # ====== Action: Execute JavaScript Code =====================
-    id: 23850408731801621
-    identification: 
-      action: Execute JavaScript Code
-
-    settings: 
-      code: $(this.triggeringElement).find(".tooltip").tooltip()
-
-    execution: 
-      sequence: 10
-      event: Turn-on Tooltips # 23850337986801620
-      fire-when-event-result-is: True
-      fire-on-initialization: false
-
 - # ====== Dynamic Action: Glow Registration ===================
   id: 25635352674764337
   identification: 
@@ -9800,7 +10030,7 @@ dynamic-actions:
   execution: 
     sequence: 80
     event-scope: Dynamic
-    static-container-(jquery-selector): '#votesRegion'
+    static-container-(jquery-selector): '#votesRegion,#votesRegion2'
     type: Immediate
 
   when: 
@@ -10590,3 +10820,4 @@ branches:
 
   security: 
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
+

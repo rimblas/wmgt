@@ -126,7 +126,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -172,7 +172,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Expression
@@ -1069,6 +1069,118 @@ page-items:
     store-value-encrypted-in-session-state: true
     restricted-characters: All characters can be saved.
 
+- # ====== Page Item: P7_PREFERED_LANG =========================
+  id: 122773128102741944
+  identification: 
+    name: P7_PREFERED_LANG
+    type: Select List
+
+  label: 
+    label: Language Preference
+    alignment: Left
+
+  settings: 
+    page-action-on-selection: None
+
+  multiple-values: 
+    type: No
+
+  layout: 
+    sequence: 90
+    region: Player # 46995262475564515187
+    slot: BODY
+    alignment: Left
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+    label-column-span: Page Template Default
+
+  appearance: 
+    template: Optional - Floating
+    template-options: 
+    - '#DEFAULT#'
+    height: 1
+
+  validation: 
+    value-required: false
+
+  list-of-values: 
+    type: SQL Query
+    sql-query: |
+      with w_lang as (
+      select 'en' lang, 'English' lang_name, 1 display_seq from dual union all
+      select 'es' lang, 'Español' lang_name, 2 display_seq from dual union all
+      select 'fr' lang, 'Français' lang_name, 3 display_seq from dual
+      )
+      select lang_name d, lang r
+      from w_lang
+      order by display_seq
+      
+    display-extra-values: true
+    display-null-value: false
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    form-region: Player # 46995262475564515187
+    column: PREFERED_LANG
+    data-type: VARCHAR2
+    query-only: false
+    primary-key: false
+
+  default: 
+    type: Static
+    static-value: en
+
+  session-state: 
+    storage: Per Request (Memory Only)
+
+  quick-picks: 
+    show-quick-picks: false
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+  help: 
+    help-text: Specify your preffered language for the application.
+
+- # ====== Page Item: P7_CURRENT_LANG ==========================
+  id: 122773405804741946
+  identification: 
+    name: P7_CURRENT_LANG
+    type: Hidden
+
+  settings: 
+    value-protected: true
+
+  layout: 
+    sequence: 100
+    region: Player # 46995262475564515187
+    slot: BODY
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: apex_util.get_session_lang
+    used: Always, replacing any existing value in session state
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
 - # ====== Page Item: P7_ID ====================================
   id: 46995262754388515188
   identification: 
@@ -1250,7 +1362,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 100
+    sequence: 110
     region: Player # 46995262475564515187
     slot: BODY
 
@@ -1574,6 +1686,30 @@ dynamic-actions:
       fire-on-initialization: false
 
 processes: 
+- # ====== Process: Set Language  ==============================
+  id: 122773258878741945
+  identification: 
+    name: 'Set Language '
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: 'wmg_lang.set_player_language(p_player_id => :P7_ID);'
+
+  execution: 
+    sequence: 20
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: G_PLAYER_ID
+
 - # ====== Process: Initialize form Player =====================
   id: 46995267921240515191
   identification: 
@@ -1622,7 +1758,7 @@ processes:
     show-success-messages: false
 
   execution: 
-    sequence: 50
+    sequence: 30
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -1630,10 +1766,29 @@ processes:
     display-location: Inline in Notification
 
   server-side-condition: 
-    type: Item is NULL
-    item: P7_REGISTRATION_FLAG
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P7_REGISTRATION_FLAG is null and nvl(:P7_CURRENT_LANG, 'en') = nvl(:P7_PREFERED_LANG, 'en')"
+
+  comments: 
+    comments: Close the dialog if we didn't come from registration or the language is the same
 
 branches: 
+- # ====== Branch: Go to Homepage (Reload) on Language Change ==
+  id: 122773424514741947
+  identification: 
+    name: Go to Homepage (Reload) on Language Change
+
+  execution: 
+    sequence: 20
+    point: After Processing
+
+  behavior: 
+    type: Page or URL (Redirect)
+    target: 
+      url: 'f?p=&APP_ID.:1:&SESSION.::&DEBUG.:::&success_msg=#SUCCESS_MSG#'
+      page: 1 # Home
+
 - # ====== Branch: This new record is a registration ===========
   id: 56024166986937751669
   identification: 
@@ -1651,4 +1806,8 @@ branches:
       clear-cache: 7
       values: 
         p30_player_id: '&P7_ID.'
+
+  server-side-condition: 
+    type: Item is NOT NULL
+    item: P7_REGISTRATION_FLAG
 

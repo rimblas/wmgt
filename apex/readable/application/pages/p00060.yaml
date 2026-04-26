@@ -527,7 +527,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -565,7 +565,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -585,7 +585,7 @@ regions:
     location: Local Database
     type: Table / View
     table-owner: Parsing Schema
-    table-name: WMG_BADGE_TYPES
+    table-name: WMG_BADGE_TYPES_VL
     include-rowid-column: false
     where-clause: selectable_ind = 'Y'
 
@@ -626,7 +626,7 @@ regions:
     footer-text: '"BADGES_BY_STEVEN"'
 
   server-cache: 
-    caching: Enabled
+    caching: Cache By Session
     cache-timeout: 2 weeks
     depends-on-item(s): 
     - APP_REQUEST_DATA_HASH
@@ -1333,7 +1333,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-cache: 
     caching: Disabled
@@ -1947,7 +1947,7 @@ regions:
   advanced: 
     static-id: itemsRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -2070,7 +2070,7 @@ regions:
                        select u2.course_id, u2.h, min(u2.score) possible_beetles
                           from  wmg_rounds_unpivot_mv u2
                           where u2.week = :P60_WEEK
-                          and u2.score > 1 -- non-ace score
+                         having min(u2.score) > 1 -- non-ace score
                           group by u2.course_id, u2.h
                  )
                 having count(*) <= 3

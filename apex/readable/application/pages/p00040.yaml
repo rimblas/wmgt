@@ -230,7 +230,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -4254,6 +4254,37 @@ dynamic-actions:
     execution: 
       sequence: 10
       event: Close New Players Dialog # 43143520718406738
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+- # ====== Dynamic Action: Refresh on Dialog Close 06 ==========
+  id: 114539586833710425
+  identification: 
+    name: Refresh on Dialog Close 06
+
+  execution: 
+    sequence: 70
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Dialog Closed or Canceled
+    selection-type: Button
+    button: EDIT_06 # 92659920943565742
+
+  actions: 
+  - # ====== Action: Refresh =====================================
+    id: 114539626794710426
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '06:00' # 92659642462565739
+
+    execution: 
+      sequence: 10
+      event: Refresh on Dialog Close 06 # 114539586833710425
       fire-when-event-result-is: True
       fire-on-initialization: false
 

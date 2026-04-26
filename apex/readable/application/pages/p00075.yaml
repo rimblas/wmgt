@@ -376,7 +376,7 @@ regions:
     - P75_HARD
 
   layout: 
-    sequence: 199
+    sequence: 209
     parent-region: No Parent
     slot: BODY
     start-new-layout: false
@@ -1277,7 +1277,7 @@ regions:
     type: Static Content
 
   layout: 
-    sequence: 209
+    sequence: 219
     parent-region: No Parent
     slot: BODY
     start-new-layout: false
@@ -1340,7 +1340,7 @@ regions:
     - P75_SLOT
 
   layout: 
-    sequence: 189
+    sequence: 199
     parent-region: No Parent
     slot: BODY
     start-new-layout: false
@@ -1885,7 +1885,7 @@ page-items:
     type: No
 
   layout: 
-    sequence: 129
+    sequence: 139
     region: No Parent
     slot: BODY
     alignment: Left
@@ -1948,7 +1948,7 @@ page-items:
     virtual-keyboard: Decimal
 
   layout: 
-    sequence: 139
+    sequence: 149
     region: No Parent
     slot: BODY
     alignment: Left
@@ -2094,7 +2094,7 @@ page-items:
     disabled: false
 
   layout: 
-    sequence: 149
+    sequence: 159
     region: No Parent
     slot: BODY
     alignment: Left
@@ -2359,7 +2359,7 @@ page-items:
     send-on-page-submit: true
 
   layout: 
-    sequence: 119
+    sequence: 129
     region: No Parent
     slot: BODY
     alignment: Left
@@ -2376,6 +2376,36 @@ page-items:
     template: Hidden
     template-options: 
     - '#DEFAULT#'
+
+  advanced: 
+    warn-on-unsaved-changes: Page Default
+
+  source: 
+    type: Null
+    used: Only when current value in session state is null
+
+  session-state: 
+    data-type: VARCHAR2
+    storage: Per Session (Persistent)
+
+  security: 
+    session-state-protection: Unrestricted
+    store-value-encrypted-in-session-state: true
+    restricted-characters: All characters can be saved.
+
+- # ====== Page Item: P75_LOCAL_TIME ===========================
+  id: 114539106365710420
+  identification: 
+    name: P75_LOCAL_TIME
+    type: Hidden
+
+  settings: 
+    value-protected: false
+
+  layout: 
+    sequence: 119
+    region: No Parent
+    slot: BODY
 
   advanced: 
     warn-on-unsaved-changes: Page Default
@@ -2457,7 +2487,7 @@ buttons:
     label: Add New Round
 
   layout: 
-    sequence: 159
+    sequence: 169
     region: No Parent
     slot: BODY
     start-new-layout: false
@@ -2468,7 +2498,7 @@ buttons:
     column-css-classes: 
     - col-xxs-6
     - col-sm-4
-    alignment: Right
+    alignment: Left center
 
   appearance: 
     button-template: Text with Icon
@@ -2496,7 +2526,7 @@ buttons:
     label: Quick Verify
 
   layout: 
-    sequence: 169
+    sequence: 179
     region: No Parent
     slot: BODY
     start-new-layout: false
@@ -2528,7 +2558,7 @@ buttons:
     label: Verify
 
   layout: 
-    sequence: 179
+    sequence: 189
     region: No Parent
     slot: BODY
     start-new-layout: false
@@ -3430,6 +3460,101 @@ dynamic-actions:
       event: Toggle Room Verification # 48742901542254435
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+- # ====== Dynamic Action: Set Local Time ======================
+  id: 114538813147710418
+  identification: 
+    name: Set Local Time
+
+  execution: 
+    sequence: 130
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Change
+    selection-type: Item(s)
+    item(s): 
+    - P75_SLOT
+
+  actions: 
+  - # ====== Action: Get Time Slot Local Time ====================
+    id: 114538994475710419
+    identification: 
+      name: Get Time Slot Local Time
+      action: Set Value
+
+    settings: 
+      set-type: SQL Statement
+      sql-statement: |
+        select case 
+                when local_tz is null then null 
+                when sessiontimezone like 'US/%' or sessiontimezone like 'America%' then
+                   ltrim(to_char(local_tz, 'HH:MI PM'), '0') || ' local'
+                 else 
+                   to_char(local_tz, 'HH24:MI') || ' local'
+                 end
+               at_local_time
+        from (
+        select to_utc_timestamp_tz(to_char(s.session_date + ts.day_offset, 'yyyy-mm-dd') || 'T' || :P75_SLOT) at time zone sessiontimezone local_tz
+        from wmg_tournament_sessions s
+           , wmg_time_slots_all_v ts
+        where s.id = :G_CURRENT_SESSION_ID
+          and ts.time_slot = :P75_SLOT
+        union all
+        select null local_tz
+        from dual
+        where :P75_SLOT is null
+        ) r
+      items-to-submit: 
+      - P75_SLOT
+      escape-special-characters: true
+      suppress-change-event: false
+
+    affected-elements: 
+      selection-type: Item(s)
+      item(s): 
+      - P75_LOCAL_TIME
+
+    execution: 
+      sequence: 10
+      event: Set Local Time # 114538813147710418
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+      stop-execution-on-error: true
+      wait-for-result: true
+
+- # ====== Dynamic Action: Show Local Time =====================
+  id: 114539192828710421
+  identification: 
+    name: Show Local Time
+
+  execution: 
+    sequence: 140
+    event-scope: Static
+    type: Immediate
+
+  when: 
+    event: Change
+    selection-type: Item(s)
+    item(s): 
+    - P75_LOCAL_TIME
+
+  actions: 
+  - # ====== Action: Show Local Time =============================
+    id: 114539287865710422
+    identification: 
+      name: Show Local Time
+      action: Execute JavaScript Code
+
+    settings: 
+      code: wmgt.theme.setInlineHelp("P75_SLOT", apex.item("P75_LOCAL_TIME").getValue());
+
+    execution: 
+      sequence: 10
+      event: Show Local Time # 114539192828710421
+      fire-when-event-result-is: True
+      fire-on-initialization: true
 
 validations: 
 - # ====== Validation: Room Required to Verify =================

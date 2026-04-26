@@ -395,21 +395,19 @@ page-items:
   help: 
     help-text: Order in which badge will be listed or presented
 
-- # ====== Page Item: P555_DESCRIPTION =========================
+- # ====== Page Item: P555_DESCRIPTION_JTL =====================
   id: 40319735907072208
   identification: 
-    name: P555_DESCRIPTION
-    type: Textarea
+    name: P555_DESCRIPTION_JTL
+    type: JTL Item
 
   label: 
     label: Description
     alignment: Left
 
   settings: 
-    resizable: true
-    auto-height: false
-    character-counter: false
-    trim-spaces: Leading and Trailing
+    subtype: Textarea
+    edit-languages: return true;
 
   layout: 
     sequence: 60
@@ -432,20 +430,19 @@ page-items:
 
   validation: 
     value-required: false
-    maximum-length: 4000
+    maximum-length: 500
 
   advanced: 
     warn-on-unsaved-changes: Page Default
 
   source: 
     form-region: Maintain Badges # 40317843058072182
-    column: DESCRIPTION
+    column: DESCRIPTION_JTL
     data-type: VARCHAR2
     query-only: false
     primary-key: false
 
   session-state: 
-    data-type: VARCHAR2
     storage: Per Request (Memory Only)
 
   quick-picks: 
@@ -453,7 +450,7 @@ page-items:
 
   security: 
     session-state-protection: Unrestricted
-    store-value-encrypted-in-session-state: true
+    escape-special-characters: true
     restricted-characters: All characters can be saved.
 
 - # ====== Page Item: P555_ICON_CLASS ==========================

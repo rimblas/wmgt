@@ -165,7 +165,28 @@ css:
       flex-flow: row-reverse;
     }
     
+    /* slanted “Verified ✅” rubber-stamp badge */
+      .verification-stamp-Y {
+        position: relative;
+      }
     
+      .verification-stamp-Y::after {
+        content: "VERIFIED ✅";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        padding: 6px 12px 7px;
+        font: 800 12px/1 "Bebas Neue", "Arial Black", sans-serif;
+        letter-spacing: 0.12em;
+        color: var(--rw-palette-green-0);
+        background: var(--rw-palette-green-100);
+        border: 2px solid var(--rw-palette-green-110);
+        border-radius: 6px;
+        box-shadow: 0 2px 0 var(--rw-palette-green-120), 0 6px 14px rgba(0,0,0,0.18);
+        transform: rotate(-12deg);
+        pointer-events: none;
+      }
 
 security: 
   authentication: Page Requires Authentication
@@ -276,7 +297,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -316,7 +337,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -356,7 +377,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -398,7 +419,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -439,7 +460,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -480,7 +501,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -523,7 +544,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -564,7 +585,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -604,7 +625,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -644,7 +665,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -684,7 +705,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -724,7 +745,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -762,7 +783,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -811,7 +832,7 @@ regions:
 
   advanced: 
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -819,6 +840,49 @@ regions:
   attributes: 
     edit: 
       enabled: false
+
+- # ====== Region: {contributor css} ===========================
+  id: 114540003911710429
+  identification: 
+    name: '{contributor css}'
+    type: Static Content
+
+  source: 
+    html-code: |
+      <style type="text/css">
+      #P50_PLAYERS_ID_DISPLAY {
+          --a-field-input-font-size: 1.2rem;
+          font-weight: bold;
+      }
+      </style>
+
+  layout: 
+    sequence: 85
+    parent-region: No Parent
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: Automatic
+    new-column: true
+    column-span: Automatic
+
+  appearance: 
+    template: None
+    render-components: Above Content
+
+  advanced: 
+    exclude-title-from-translation: true
+
+  security: 
+    authorization-scheme: Contribution Rights # 46995203801871514425
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    settings: 
+      output-as: HTML
+      expand-shortcuts: false
 
 - # ====== Region: {Player & Round Details} ====================
   id: 40825883820734223932
@@ -848,7 +912,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   customization: 
     customizable: Not Customizable By End Users
@@ -888,7 +952,7 @@ regions:
 
   advanced: 
     region-display-selector: true
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Expression
@@ -1061,7 +1125,7 @@ regions:
   advanced: 
     static-id: scoresRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -1117,7 +1181,7 @@ regions:
   advanced: 
     static-id: scoresRegion
     region-display-selector: false
-    exclude-title-from-translation: false
+    exclude-title-from-translation: true
 
   server-side-condition: 
     type: Item is NOT NULL
@@ -4624,6 +4688,8 @@ page-items:
     template: Required - Floating
     template-options: 
     - '#DEFAULT#'
+    css-classes: 
+    - verification-stamp-&P50_VERIFIED_FLAG.
     width: 30
 
   validation: 

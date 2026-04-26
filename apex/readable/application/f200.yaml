@@ -58,7 +58,7 @@ database-session:
 globalization: 
   primary-language: English (en)
   document-direction: Left-To-Right
-  language-derived-from: Application Primary Language
+  language-derived-from: Session
   automatic-time-zone: false
   automatic-csv-encoding: false
 
@@ -200,6 +200,9 @@ component-settings:
     name: NATIVE_MAP_REGION
     type: Region
 
+  settings: 
+    attribute-1: Y
+
   subscription: 
     version-number: 40348156184453
 
@@ -217,6 +220,27 @@ component-settings:
 
   subscription: 
     version-number: 40348156184456
+
+- # ====== Component Setting: PLUGIN_JMR.MLS.JTLITEM ===========
+  id: 139568883520742220
+  identification: 
+    name: PLUGIN_JMR.MLS.JTLITEM
+    type: Item
+
+  settings: 
+    attribute-1: return '["en","es","fr"]';
+    attribute-2: |
+      {
+         "applyChanges": "Ok",
+         "cancelButton": "Cancel",
+         "languageLabel": "Language",
+         "languageValue": "Translation",
+         "noDataFound": "No specified languages.",
+         "valueValidationError": "#LABEL# contains an invalid value."
+      }
+
+  subscription: 
+    version-number: 2695677838
 
 - # ====== Component Setting: NATIVE_COLOR_PICKER ==============
   id: 46995000327182514324
@@ -360,4 +384,32 @@ application-settings:
 
   comments: 
     comments: The default access level given to authenticated users who are not in the access control list
+
+language-mappings: 
+- # ====== Language Mapping: Spanish (Traditional Sort) (es) ===
+  id: 135212160126172186
+  attributes: 
+    translation-application: 10201
+    language: Spanish (Traditional Sort) (es)
+
+  globalization: 
+    document-direction: Left-To-Right
+
+- # ====== Language Mapping: French (France) (fr) ==============
+  id: 135212315888169648
+  attributes: 
+    translation-application: 10202
+    language: French (France) (fr)
+
+  globalization: 
+    document-direction: Left-To-Right
+
+- # ====== Language Mapping: German (Germany) (de) =============
+  id: 135212455176167159
+  attributes: 
+    translation-application: 10203
+    language: German (Germany) (de)
+
+  globalization: 
+    document-direction: Left-To-Right
 

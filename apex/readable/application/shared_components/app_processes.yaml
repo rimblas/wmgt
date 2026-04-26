@@ -26,6 +26,10 @@
          set discord_avatar = :G_DISCORD_AVATAR
         where discord_id = :G_DISCORD_ID
           and nvl(discord_avatar, '~NA~') != nvl(:G_DISCORD_AVATAR, '~NA~');
+      
+      
+      logger.log('Synced Discord Info:' || :G_PLAYER_ID);
+      wmg_lang.set_player_language(p_player_id => :G_PLAYER_ID);
 
   execution: 
     sequence: 1
@@ -39,5 +43,27 @@
     authorization-scheme: MODEL.LOV.MUST_NOT_BE_PUBLIC_USER
 
   subscription: 
-    version-number: 40348156185687
+    version-number: 2702039408
+
+- # ====== Application Process: INIT new session ===============
+  id: 141481791869004879
+  identification: 
+    name: INIT new session
+    type: NATIVE_PLSQL
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: wmg_lang.set_player_language();
+
+  execution: 
+    sequence: 1
+    point: New Session
+
+  server-side-condition: 
+    type: Item is NULL
+    item: G_PLAYER_ID
+
+  subscription: 
+    version-number: 2702039942
 
