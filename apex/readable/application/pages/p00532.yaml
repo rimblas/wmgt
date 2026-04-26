@@ -3644,39 +3644,7 @@ processes:
     location: Local Database
     language: PL/SQL
     pl/sql-code: |
-      begin
-       wmg_util.set_tournament_control(p_tournament_type => 'WMGT', p_tournament_session_id => :P532_ID);
-      
-      if :P532_CLEAR_VOTES_FLAG = 'Y' then
-        logger.log('.. clear previous vote backup');
-        delete from wmg_course_vote_back;
-        logger.log('.. save vote backup');
-        insert into wmg_course_vote_back (
-            id
-          , course_id
-          , player_id
-          , vote
-          , created_on
-          , created_by
-          , updated_on
-          , updated_by
-          )
-          select   id
-          , course_id
-          , player_id
-          , vote
-          , created_on
-          , created_by
-          , updated_on
-          , updated_by
-          from wmg_course_vote;
-      
-        logger.log('..reset votes table');
-      
-        delete from wmg_course_vote;
-      end if;
-      
-      end;
+      wmg_util.set_tournament_control(p_tournament_type => 'WMGT', p_tournament_session_id => :P532_ID);
       
       
 
@@ -3709,7 +3677,7 @@ processes:
     pl/sql-code: wmg_util.clear_tournament_control(p_tournament_type => 'WMGT');
 
   execution: 
-    sequence: 30
+    sequence: 40
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -3723,6 +3691,66 @@ processes:
     type: Expression
     language: PL/SQL
     pl/sql-expression: ":REQUEST != 'DELETE' and :P532_CLEAR_CURRENT_FLAG = 'Y'"
+
+- # ====== Process: Handle Votes ===============================
+  id: 114538656280710416
+  identification: 
+    name: Handle Votes
+    type: Execute Code
+    execution-chain: None
+
+  source: 
+    location: Local Database
+    language: PL/SQL
+    pl/sql-code: |
+      begin
+      
+      if :P532_CLEAR_VOTES_FLAG = 'Y' then
+        logger.log('.. clear previous vote backup');
+        delete from wmg_course_vote_back;
+        logger.log('.. save vote backup');
+        insert into wmg_course_vote_back (
+            id
+          , course_id
+          , player_id
+          , vote
+          , created_on
+          , created_by
+          , updated_on
+          , updated_by
+          )
+          select   id
+          , course_id
+          , player_id
+          , vote
+          , created_on
+          , created_by
+          , updated_on
+          , updated_by
+          from wmg_course_vote;
+      
+        logger.log('..reset votes table');
+      
+        delete from wmg_course_vote;
+      end if;
+      
+      end;
+
+  execution: 
+    sequence: 30
+    point: Processing
+    run-process: Once Per Page Visit (default)
+
+  success-message: 
+    success-message: This is now the current tournament.
+
+  error: 
+    display-location: Inline in Notification
+
+  server-side-condition: 
+    type: Expression
+    language: PL/SQL
+    pl/sql-expression: ":P532_CLEAR_VOTES_FLAG = 'Y'"
 
 - # ====== Process: Save Courses & Push Notifications ==========
   id: 56024166207057751661
@@ -3781,7 +3809,7 @@ processes:
       
 
   execution: 
-    sequence: 40
+    sequence: 50
     point: Processing
     run-process: Once Per Page Visit (default)
 
@@ -3845,7 +3873,7 @@ processes:
     show-success-messages: false
 
   execution: 
-    sequence: 70
+    sequence: 80
     point: Processing
     run-process: Once Per Page Visit (default)
 
