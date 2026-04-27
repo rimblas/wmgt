@@ -79,7 +79,7 @@
     name: discord
 
   subscription: 
-    version-number: 2414853992
+    version-number: 2694035557
 
   settings: 
     type: Social Sign-In
@@ -104,15 +104,15 @@
        l_clob clob;
       begin
         logger.log('POST_AUTH', 'POST_AUTH');
-        
+      /*  
         logger.log('Guilds:' || apex_json.get_count('$'), 'POST_AUTH');
-      
+      */
       -- l_clob := apex_json.get_clob_output;
       
         logger.log(apex_json.get_varchar2(p_path => 'username'));
         logger.log(apex_json.get_varchar2(p_path => 'global_name'));
-        logger.log(apex_json.get_count('$'));
       /*
+        logger.log(apex_json.get_count('$'));
       
       FOR i IN 1..apex_json.get_count('$') LOOP
       
