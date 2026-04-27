@@ -602,11 +602,13 @@ begin
   l_env := wmg_util.get_param('ENV');
 
   for p in (
-    select tp.time_slot, listagg('<@' || tp.discord_id || '> (' || tp.player_name || ')', c_crlf) players
+    select tp.time_slot, listagg('@' || p.player_name, c_crlf) players
       from wmg_tournament_results_v r
          , wmg_tournament_player_v tp
+         , wmg_players_v p
      where tp.week = r.week (+)
        and tp.player_id = r.player_id (+)
+       and p.id = tp.player_id
        and tp.tournament_session_id = p_tournament_session_id
        and tp.time_slot = p_time_slot
        and tp.active_ind = 'Y'
@@ -711,9 +713,10 @@ begin
   for p in (
     select s.prefix_tournament, s.round_num, s.week, to_char(s.session_date, 'YYYY-MM-DD') session_date_prepared
          , (
-        select listagg(p.pos || ': ' || '<@' || p.discord_id || '> (' || p.player_name || ')' || '     **' || p.total_score || '**', chr(13)||chr(10))
-               within group (order by p.pos, decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4)) players
+        select listagg(p.pos || ': ' || '@' || pv.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+               within group (order by p.pos, decode(p.rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4)) players
           from wmg_tournament_session_points_v p
+          join wmg_players_v pv on pv.id = p.player_id
          where p.tournament_session_id = s.tournament_session_id
            and p.pos <= 3
           ) podium_players
@@ -1012,7 +1015,7 @@ is
   -- l_params logger.tab_param;
 
   l_subject varchar2( 4000 );
-  l_placeholders varchar2( 4000 );
+  l_placeholders clob;
   l_courses varchar2( 4000 );
   l_html    clob;
   l_text    clob;
@@ -1033,7 +1036,30 @@ begin
        where p.tournament_session_id = p_tournament_session_id
          and p.active_ind = 'Y'
     )
+    , rank_achievements as (
+      select player_id
+           , player_name
+           , new_rank_code
+      from (
+        select rh.player_id
+             , p.player_name
+             , rh.new_rank_code
+             , row_number() over (
+                 partition by rh.player_id
+                 order by rh.rank_display_seq desc, rh.change_timestamp desc, rh.id desc
+               ) rn
+          from wmg_player_rank_history_v rh
+          join wmg_players_v p on p.id = rh.player_id
+          left join wmg_ranks old_rank on old_rank.code = rh.old_rank_code
+         where rh.tournament_session_id = p_tournament_session_id
+           and rh.new_rank_code in ('ELITE', 'PRO', 'SEMI')
+           and rh.old_rank_code is not null
+           and rh.rank_display_seq > nvl(old_rank.display_seq, -1)
+      )
+      where rn = 1
+    )
     select prefix_tournament, round_num, week, session_date
+         , st.total_registered total_players
          , easy_course_group
          , easy_course_code
          , easy_course_name
@@ -1041,21 +1067,39 @@ begin
          , hard_course_name
          , hard_course_code
          , '' "NULL"
-         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
-                   within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
+         , (select listagg('- ' || player_name, chr(13)||chr(10))
+                   within group (order by nls_upper(player_name))
+              from rank_achievements
+             where new_rank_code = 'ELITE'
+           ) new_elite_rank
+         , (select listagg('- ' || player_name, chr(13)||chr(10))
+                   within group (order by nls_upper(player_name))
+              from rank_achievements
+             where new_rank_code = 'PRO'
+           ) new_pro_rank
+         , (select listagg('- ' || player_name, chr(13)||chr(10))
+                   within group (order by nls_upper(player_name))
+              from rank_achievements
+             where new_rank_code = 'SEMI'
+           ) new_semi_rank
+         , (select listagg(pv.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+                   within group (order by decode(p.rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), p.pos) players
               from wmg_tournament_session_points_v p
+              join wmg_players_v pv on pv.id = p.player_id
              where p.tournament_session_id = s.tournament_session_id
                and p.pos = 1
            ) first_place
-         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
-                   within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
+         , (select listagg(pv.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+                   within group (order by decode(p.rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), p.pos) players
               from wmg_tournament_session_points_v p
+              join wmg_players_v pv on pv.id = p.player_id
              where p.tournament_session_id = s.tournament_session_id
                and p.pos = 2
            ) second_place
-         , (select listagg('@'||p.account || '     **' || p.total_score || '**', chr(13)||chr(10))
-                   within group (order by decode(rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), pos) players
+         , (select listagg(pv.player_name || '     **' || p.total_score || '**', chr(13)||chr(10))
+                   within group (order by decode(p.rank_code, 'NEW', 1, 'AMA', 2, 'RISING', 3, 'SEMI', 4), p.pos) players
               from wmg_tournament_session_points_v p
+              join wmg_players_v pv on pv.id = p.player_id
              where p.tournament_session_id = s.tournament_session_id
                and p.pos = 3
            ) third_place
@@ -1063,7 +1107,7 @@ begin
               from (
                   select who, total, rank() over (order by total desc) rn
                   from (
-                  select '@'||r.account who
+                  select p.player_name who
                        , sum(decode(s1, 1, 1, 0)
                            + decode(s2, 1, 1, 0)
                            + decode(s3, 1, 1, 0)
@@ -1085,11 +1129,13 @@ begin
                         ) total
                     from wmg_rounds_v r
                        , wmg_tournament_players tp
+                       , wmg_players_v p
                    where r.week = s.week
                      and r.tournament_session_id = tp.tournament_session_id
                      and tp.player_id = r.player_id
+                     and p.id = r.player_id
                      and tp.issue_code is null  -- only players with no issues are eligible
-                  group by r.account
+                  group by p.player_name
                   ) aces
                   order by aces.who
               )
@@ -1119,36 +1165,40 @@ begin
                     )
                    ) c
           ) coconut_players
-         , (select listagg('@'||account, ', ') || '  **' || total || '**' top_easy
+         , (select listagg(player_name, ', ') || '  **' || total || '**' top_easy
               from (
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
-                    select course_mode, player_id, player_name, account, sum(under_par) total
+                    select r.course_mode, r.player_id, p.player_name, sum(r.under_par) total
                       from wmg_rounds_v r
                          , wmg_tournament_courses tc
+                         , wmg_players_v p
                       where r.week = s.week
                         and r.tournament_session_id = tc.tournament_session_id
                         and r.course_id = tc.course_id
+                        and p.id = r.player_id
                         and tc.course_no = 1
-                     group by course_mode, player_id, player_name, account
+                     group by r.course_mode, r.player_id, p.player_name
                     ) r
                     order by course_mode, rn, r.player_name
               )
               where rn = 1
               group by  course_mode, total
             ) easy_top_players
-         , (select listagg('@'||account, ', ') || '  **' || total || '**' top_hard
+         , (select listagg(player_name, ', ') || '  **' || total || '**' top_hard
               from (
                     select r.*, rank() over (partition by course_mode order by r.total) rn
                     from (
-                    select course_mode, player_id, player_name, account, sum(under_par) total
+                    select r.course_mode, r.player_id, p.player_name, sum(r.under_par) total
                       from wmg_rounds_v r
                          , wmg_tournament_courses tc
+                         , wmg_players_v p
                       where r.week = s.week
                         and r.tournament_session_id = tc.tournament_session_id
                         and r.course_id = tc.course_id
+                        and p.id = r.player_id
                         and tc.course_no = 2
-                     group by course_mode, player_id, player_name, account
+                     group by r.course_mode, r.player_id, p.player_name
                     ) r
                     order by course_mode, rn, r.player_name
               )
@@ -1156,6 +1206,7 @@ begin
               group by  course_mode, total
             ) hard_top_players
       from wmg_tournament_sessions_v s
+         , session_stats st
      where s.tournament_session_id = p_tournament_session_id
   )
   loop
@@ -1175,6 +1226,7 @@ begin
         '    "SEASON":'           || apex_json.stringify( new_session.prefix_tournament ) ||
         '   ,"WEEK_NUM":'         || apex_json.stringify( new_session.round_num ) ||
         '   ,"COURSES_NAME":'     || apex_json.stringify( l_courses ) ||
+        '   ,"TOTAL_PLAYERS":'    || apex_json.stringify( new_session.total_players ) ||
         '   ,"FIRST_PLACE":'      || apex_json.stringify( new_session.first_place ) ||
         '   ,"SECOND_PLACE":'     || apex_json.stringify( new_session.second_place ) ||
         '   ,"THIRD_PLACE":'      || apex_json.stringify( new_session.third_place ) ||
@@ -1182,6 +1234,9 @@ begin
         '   ,"SEMI_PLAYERS":'     || apex_json.stringify( new_session."NULL" ) ||
         '   ,"RISING_PLAYERS":'   || apex_json.stringify( new_session."NULL" ) ||
         '   ,"AMATEUR_PLAYERS":'  || apex_json.stringify( new_session."NULL" ) ||
+        '   ,"NEW_ELITE_RANK":'   || apex_json.stringify( new_session.new_elite_rank ) ||
+        '   ,"NEW_PRO_RANK":'     || apex_json.stringify( new_session.new_pro_rank ) ||
+        '   ,"NEW_SEMI_RANK":'    || apex_json.stringify( new_session.new_semi_rank ) ||
         '   ,"DIAMOND_PLAYERS":'  || apex_json.stringify( new_session.diamond_players  ) ||
         '   ,"COCONUT_PLAYERS":'  || apex_json.stringify( new_session.coconut_players  ) ||
         '   ,"EASY_CODE":'        || apex_json.stringify( new_session.easy_course_code ) ||
@@ -1192,7 +1247,7 @@ begin
         '   ,"HARD_TOP_PLAYERS":' || apex_json.stringify( new_session.hard_top_players ) ||
         '}';
 
-    log(l_placeholders, l_scope);
+    log(dbms_lob.substr(l_placeholders, 4000, 1), l_scope);
 
     apex_mail.prepare_template (
         p_static_id    => 'TOURNAMENT_RECAP'
@@ -1262,10 +1317,12 @@ begin
     with issues as (
       select p.issue_code
            -- , listagg(p.player_name, chr(13)||chr(10) ) issue_list
-           , listagg('@'||p.account, chr(13)||chr(10) ) issue_list
+           , listagg('@'||pv.player_name, chr(13)||chr(10) ) issue_list
       from wmg_tournament_player_v p
          , wmg_issues i
+         , wmg_players_v pv
       where p.issue_code = i.code
+        and pv.id = p.player_id
         and p.tournament_session_id = p_tournament_session_id
       group by p.issue_code
     )
