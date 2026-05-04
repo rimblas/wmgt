@@ -97,6 +97,18 @@ procedure cast_player_vote(
   , p_vote        in number
 );
 
+function course_combination_play_count(
+    p_easy_course_id in wmg_courses.id%type
+  , p_hard_course_id in wmg_courses.id%type
+  , p_completed_only in varchar2 default 'N'
+) return number;
+
+function course_combination_week_list(
+    p_easy_course_id in wmg_courses.id%type
+  , p_hard_course_id in wmg_courses.id%type
+  , p_completed_only in varchar2 default 'N'
+) return varchar2;
+
 --------------------------------------------------------------------------------
 procedure score_entry_verification(
    p_week      in wmg_rounds.week%type

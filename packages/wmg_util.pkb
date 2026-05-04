@@ -2235,6 +2235,117 @@ begin
 end cast_player_vote;
 
 
+/**
+ * Count how many tournament sessions have used the same two-course combination.
+ *
+ * @example
+ * l_play_count := wmg_util.course_combination_play_count(:P532_EASY_COURSE_ID, :P532_HARD_COURSE_ID);
+ *
+ * @author Jorge Rimblas
+ * @created May 3, 2026
+ * @param p_easy_course_id Course selected as course_no 1
+ * @param p_hard_course_id Course selected as course_no 2
+ * @param p_completed_only When Y, count only completed tournament sessions
+ * @return Number of tournament sessions where this combination has been used
+ */
+function course_combination_play_count(
+    p_easy_course_id in wmg_courses.id%type
+  , p_hard_course_id in wmg_courses.id%type
+  , p_completed_only in varchar2 default 'N'
+) return number
+is
+  l_scope scope_t := gc_scope_prefix || 'course_combination_play_count';
+  l_play_count number;
+begin
+  log('BEGIN', l_scope);
+
+  if p_easy_course_id is null or p_hard_course_id is null then
+    log('END', l_scope);
+    return 0;
+  end if;
+
+  select count(*)
+    into l_play_count
+    from (
+      select tc.tournament_session_id
+        from wmg_tournament_sessions s
+           , wmg_tournament_courses tc
+       where s.id = tc.tournament_session_id
+         and (nvl(upper(p_completed_only), 'N') != 'Y' or s.completed_ind = 'Y')
+         and tc.course_id in (p_easy_course_id, p_hard_course_id)
+       group by tc.tournament_session_id
+      having count(distinct tc.course_id) = case
+          when p_easy_course_id = p_hard_course_id then 1
+          else 2
+        end
+    );
+
+  log('END', l_scope);
+
+  return l_play_count;
+
+exception
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end course_combination_play_count;
+
+
+
+/**
+ * List of weeks where the two course combination has been played
+ *
+ * @example
+ * l_play_count := wmg_util.course_combination_week_list(:P532_EASY_COURSE_ID, :P532_HARD_COURSE_ID);
+ *
+ * @author Jorge Rimblas
+ * @created May 3, 2026
+ * @param p_easy_course_id Course selected as course_no 1
+ * @param p_hard_course_id Course selected as course_no 2
+ * @param p_completed_only When Y, count only completed tournament sessions
+ * @return Number of tournament sessions where this combination has been used
+ */
+function course_combination_week_list(
+    p_easy_course_id in wmg_courses.id%type
+  , p_hard_course_id in wmg_courses.id%type
+  , p_completed_only in varchar2 default 'N'
+) return varchar2
+is
+  l_scope scope_t := gc_scope_prefix || 'course_combination_week_list';
+  l_week_list varchar2(4000);
+begin
+  log('BEGIN', l_scope);
+
+  if p_easy_course_id is null or p_hard_course_id is null then
+    log('END', l_scope);
+    return '';
+  end if;
+
+  select substr(listagg(week, ','),1,4000) week_list
+    into l_week_list
+    from (
+      select s.week
+        from wmg_tournament_sessions s
+           , wmg_tournament_courses tc
+       where s.id = tc.tournament_session_id
+         and (nvl(upper(p_completed_only), 'N') != 'Y' or s.completed_ind = 'Y')
+         and tc.course_id in (p_easy_course_id, p_hard_course_id)
+       group by s.week
+      having count(distinct tc.course_id) = case
+          when p_easy_course_id = p_hard_course_id then 1
+          else 2
+        end
+    );
+
+  log('END', l_scope);
+
+  return l_week_list;
+
+exception
+  when others then
+    log('Unhandled Exception', l_scope);
+    raise;
+end course_combination_week_list;
 
 
 
