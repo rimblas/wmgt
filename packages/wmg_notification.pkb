@@ -1219,7 +1219,7 @@ begin
       || case when new_session.easy_course_group = new_session.hard_course_group then
           null -- we're done, the easy and hard match
          else
-           ' ' || chr(38) || new_session.hard_course_name
+           ' ' || chr(38) || ' '  || new_session.hard_course_name
          end;
         
     l_placeholders := '{' ||
