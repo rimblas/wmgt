@@ -381,7 +381,7 @@
     name: WEEKS
 
   subscription: 
-    version-number: 1
+    version-number: 2741775114
 
   source: 
     location: Local Database
@@ -393,18 +393,37 @@
           , round_num week_no
           , nvl(easy_course_code, 'TBD') easy_course
           , nvl(hard_course_code, 'TBD') hard_course
+          , session_date
       from wmg_tournament_sessions_v
-      
+      where tournament_id <> 0
 
   column-mapping: 
     return: WEEK
     display: WEEK_INFO
-    default-sort: WEEK
+    default-sort: SESSION_DATE
     sort-direction: Descending (Nulls Last)
     group: SEASON
     group-sort-direction: Descending (Nulls Last)
 
   columns: 
+  - # ====== Column: SESSION_DATE ================================
+    id: 151809079750801741
+    identification: 
+      column-name: SESSION_DATE
+      show: false
+
+    heading: 
+      heading: Session Date
+
+    layout: 
+      sequence: 10
+
+    source: 
+      data-type: DATE
+
+    advanced: 
+      searchable: false
+
   - # ====== Column: WEEK ========================================
     id: 41203829092871143372
     identification: 
