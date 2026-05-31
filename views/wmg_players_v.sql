@@ -10,6 +10,7 @@ select p.id
      , p.discord_discriminator
      , p.account_login
      , p.prefered_tz
+     , p.prefered_lang
      , p.country_code
      , c.name country
      , p.rank_code
