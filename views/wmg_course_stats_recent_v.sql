@@ -16,7 +16,7 @@ with recent_course_plays as (
            from wmg_tournament_courses tc
                , wmg_tournament_sessions ts
            where ts.id = tc.tournament_session_id
-             and ts.session_date <= trunc(sysdate)
+             and ts.session_date <= trunc(sysdate) + 1
      )
 )
 , recent_rounds as (
