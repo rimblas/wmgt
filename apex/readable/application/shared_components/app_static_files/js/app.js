@@ -115,3 +115,80 @@ theme.renderPies = function (selector) {
 
 
 })( wmgt.theme );
+
+
+/**
+ * Search helpers for matching plain text against styled Unicode text.
+ *
+ * @namespace
+ */
+window.wmgSearch = {};
+
+( function( search ) {
+  "use strict";
+
+  /**
+   * Normalize compatibility characters and letter case for searching.
+   *
+   * @param  {String} value
+   * @return {String}
+   */
+  search.fold = function(value) {
+    return String(value || "").normalize("NFKC").toLocaleLowerCase();
+  };
+
+  /**
+   * Return mark.js ranges for a normalized search term while preserving the
+   * offsets of the original display text.
+   *
+   * @param  {String} text
+   * @param  {String} searchTerm
+   * @return {Array}
+   */
+  search.nfkcRanges = function(text, searchTerm) {
+    var normalizedText = ""
+      , offsetMap = []
+      , sourceOffset = 0
+      , normalizedTerm = search.fold(searchTerm)
+      , ranges = []
+      , index;
+
+    if (!normalizedTerm) {
+      return ranges;
+    }
+
+    for (const character of text) {
+      const normalizedCharacter = search.fold(character);
+
+      normalizedText += normalizedCharacter;
+
+      for (let i = 0; i < normalizedCharacter.length; i++) {
+        offsetMap.push({
+          start: sourceOffset,
+          end: sourceOffset + character.length
+        });
+      }
+
+      sourceOffset += character.length;
+    }
+
+    index = normalizedText.indexOf(normalizedTerm);
+
+    while (index !== -1) {
+      const first = offsetMap[index];
+      const last = offsetMap[index + normalizedTerm.length - 1];
+
+      if (first && last) {
+        ranges.push({
+          start: first.start,
+          length: last.end - first.start
+        });
+      }
+
+      index = normalizedText.indexOf(normalizedTerm, index + normalizedTerm.length);
+    }
+
+    return ranges;
+  };
+
+})( window.wmgSearch );

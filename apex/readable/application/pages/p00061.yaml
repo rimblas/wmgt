@@ -383,6 +383,7 @@ regions:
       select rank() over (order by r.season_total desc) pos
            , r.player_id
            , r.player_name
+           , r.player_name_plain
            , '' actions
            , r.country_code
            , r.country
@@ -429,6 +430,7 @@ regions:
            , decode(r.player_id, :G_PLAYER_ID, 'mark', '') selected_player
         from (
         select p.player_name
+             , p.account player_name_plain
              , p.country_code
              , p.country
              , p.rank_code
@@ -770,7 +772,7 @@ regions:
           p120_player_id: '#PLAYER_ID#'
           p120_tournament_id: '&P61_TOURNAMENT_ID.'
 
-      link-text: '#PLAYER_NAME# <div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
+      link-text: '#PLAYER_NAME# <span class="u-vh">#PLAYER_NAME_PLAIN#</span><div class="w #RANK_LIST_CLASS# tooltip" title="#RANK_NAME#"></div>'
 
     sorting: 
       sortable: false
@@ -1790,6 +1792,21 @@ regions:
 
     layout: 
       sequence: 480
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: PLAYER_NAME_PLAIN ===========================
+    id: 140305367853994925
+    identification: 
+      column-name: PLAYER_NAME_PLAIN
+      type: Hidden
+
+    layout: 
+      sequence: 490
 
     ui-defaults-reference: 
       table-owner: Parsing Schema
@@ -3262,44 +3279,42 @@ dynamic-actions:
 
     settings: 
       code: |
-        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
-        // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
-        var $ctx=$("#report_table_raceRegion .t-Report-cell[headers='PLAYER_NAME']")
-          , $other=$("#badgeKey,.pro-legend")
-          , term=$v("P61_SEARCH");
+        // Highlight and filter player names while preserving their styled Unicode text.
+        var $ctx = $("#report_table_raceRegion .t-Report-cell[headers='PLAYER_NAME']")
+          , $other = $("#badgeKey,.pro-legend")
+          , term = $v("P61_SEARCH");
         
         
-        // Remove previous marked elements and ensure they all show
         $ctx.unmark().parents("tr").show();
+        
         if (apex.theme.mq("(max-width: 768px)")) {
           $other.show();
         }
         
-        // console.log({selectedRank});
         if (term) {
-        
-          if (!!selectedRank) {
-            // all good already showing all results
-          }
-          else {
-              // show all first
-              $s("f01_ALL", "ALL");
-              selectedRank = "";
+          if (!selectedRank) {
+            $s("f01_ALL", "ALL");
+            selectedRank = "";
           }
         
-          // mark the search term and hide everything that didn't get marked
-          
-          $ctx.mark(term, {
-            separateWordSearch: false,
-            diacritics: true,
-            done: function() {
-              $ctx.not(":has(mark)").parents("tr").hide();
-              if ($ctx.find("mark").length > 0 && apex.theme.mq("(max-width: 768px)")) {
-                 // if something is found and we're on a small device, hide the other regions
-                 $other.hide();
-               }
+          var matchFound = false;
+        
+          $ctx.each(function() {
+            var $cell = $(this)
+              , ranges = wmgSearch.nfkcRanges($cell.text(), term)
+              , matches = ranges.length > 0;
+        
+            $cell.parents("tr").toggle(matches);
+        
+            if (matches) {
+              matchFound = true;
+              $cell.markRanges(ranges);
             }
           });
+        
+          if (matchFound && apex.theme.mq("(max-width: 768px)")) {
+            $other.hide();
+          }
         }
         
         

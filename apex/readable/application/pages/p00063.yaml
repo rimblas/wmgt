@@ -3221,47 +3221,52 @@ dynamic-actions:
 
     settings: 
       code: |
-        // Highlight the search term using markjs.io (and even filter away the non-matching lines)
-        // var $ctx=$("#report_table_weekResults .t-Report-cell[headers='PLAYER_NAME']")
-        var $ctx=$("#report_table_topRegion .t-Report-cell[headers='PLAYER_NAME']")
-          , $other=$("#badgeKey,.pro-legend")
-          , term=$v("P63_SEARCH");
+        // Highlight and filter player names using NFKC-normalized search text.
+        var $ctx = $("#report_table_topRegion .t-Report-cell[headers='PLAYER_NAME']")
+          , $other = $("#badgeKey,.pro-legend")
+          , term = $v("P63_SEARCH");
         
+        $ctx.unmark({
+          done: function() {
+            $ctx.parents("tr").show();
         
-        // Remove previous marked elements and ensure they all show
-        $ctx.unmark().parents("tr").show();
-        if (apex.theme.mq("(max-width: 768px)")) {
-          $other.show();
-        }
+            if (apex.theme.mq("(max-width: 768px)")) {
+              $other.show();
+            }
         
-        console.log({selectedRank});
-        if (term) {
+            if (!term) {
+              return;
+            }
         
-          if (!!selectedRank) {
-            // all good already showing all results
-          }
-          else {
-              // show all first
+            if (!selectedRank) {
+              // Show all ranks before filtering by player name.
               $s("f01_ALL", "ALL");
               selectedRank = "";
-          }
-        
-          // mark the search term and hide everything that didn't get marked
-          
-          $ctx.mark(term, {
-            separateWordSearch: false,
-            diacritics: true,
-            done: function() {
-              $ctx.not(":has(mark)").parents("tr").hide();
-              if ($ctx.find("mark").length > 0 && apex.theme.mq("(max-width: 768px)")) {
-                 // if something is found and we're on a small device, hide the other regions
-                 $other.hide();
-               }
             }
-          });
-        }
         
+            var matchFound = false;
         
+            $ctx.each(function() {
+              var $cell = $(this)
+                , ranges = wmgSearch.nfkcRanges($cell.text(), term)
+                , matches = ranges.length > 0;
+        
+              $cell.parents("tr").toggle(matches);
+        
+              if (matches) {
+                matchFound = true;
+        
+                $cell.markRanges(ranges, {
+                  acrossElements: true
+                });
+              }
+            });
+        
+            if (matchFound && apex.theme.mq("(max-width: 768px)")) {
+              $other.hide();
+            }
+          }
+        });
 
     execution: 
       sequence: 10
