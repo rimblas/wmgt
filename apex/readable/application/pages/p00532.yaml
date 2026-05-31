@@ -1153,6 +1153,236 @@ regions:
     security: 
       escape-special-characters: true
 
+- # ====== Region: {Alert: Played Before} ======================
+  id: 140304032493994912
+  identification: 
+    name: '{Alert: Played Before}'
+    type: Classic Report
+
+  source: 
+    location: Local Database
+    type: SQL Query
+    sql-query: |
+      with w_play_count as (
+        select wmg_util.course_combination_play_count(:P532_EASY_COURSE_ID, :P532_HARD_COURSE_ID) n
+             , wmg_util.course_combination_week_list(:P532_EASY_COURSE_ID, :P532_HARD_COURSE_ID) weeks
+          from dual
+      )
+      select case 
+               when w_play_count.n = 0 then 'success'
+               when w_play_count.n < 4 then 'warning'
+               else 'error'
+              end ALERT_TYPE
+            , case 
+                  when w_play_count.n = 0 then 'Never played before'
+                  else 'Played ' || w_play_count.n || ' time' || decode(w_play_count.n, 1, '', 's') || ' before'
+              end alert_title
+           , weeks alert_desc
+           , '' alert_action
+      from w_play_count
+      
+    page-items-to-submit: 
+    - P532_EASY_COURSE_ID
+    - P532_HARD_COURSE_ID
+
+  layout: 
+    sequence: 160
+    parent-region: Tournament Sessions # 56158045789158236792
+    slot: BODY
+    start-new-layout: false
+    start-new-row: true
+    column: 3
+    new-column: true
+    column-span: 9
+
+  appearance: 
+    template: Blank with Attributes
+    template-options: 
+    - '#DEFAULT#'
+    - margin-top-md
+    render-components: Above Content
+
+  accessibility: 
+    use-landmark: true
+    landmark-type: Template Default
+
+  advanced: 
+    region-display-selector: false
+    exclude-title-from-translation: false
+
+  server-side-condition: 
+    type: Item is NULL
+    item: P532_ID
+
+  server-cache: 
+    caching: Disabled
+
+  customization: 
+    customizable: Not Customizable By End Users
+
+  attributes: 
+    layout: 
+      number-of-rows-type: Static Value
+      number-of-rows: 15
+
+    appearance: 
+      template-type: Theme
+      template: Alerts
+      template-options: 
+      - '#DEFAULT#'
+
+    pagination: 
+      type: No Pagination (Show All Rows)
+      partial-page-refresh: true
+
+    performance: 
+      lazy-loading: false
+
+    break-formatting: 
+      break-columns: No Break
+
+    advanced: 
+      strip-html: false
+      sort-nulls: Last
+
+    heading: 
+      type: Custom Headings
+
+    download: 
+      csv-export-enabled: false
+
+    printing: 
+      enabled: false
+
+  columns: 
+  - # ====== Column: ALERT_TYPE ==================================
+    id: 140304417482994916
+    identification: 
+      column-name: ALERT_TYPE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Type
+      alignment: start
+
+    layout: 
+      sequence: 10
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_TITLE =================================
+    id: 140304524406994917
+    identification: 
+      column-name: ALERT_TITLE
+      type: Plain Text
+
+    heading: 
+      heading: Alert Title
+      alignment: start
+
+    layout: 
+      sequence: 20
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_DESC ==================================
+    id: 140304706316994918
+    identification: 
+      column-name: ALERT_DESC
+      type: Plain Text
+
+    heading: 
+      heading: Alert Desc
+      alignment: start
+
+    layout: 
+      sequence: 30
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
+  - # ====== Column: ALERT_ACTION ================================
+    id: 140304717575994919
+    identification: 
+      column-name: ALERT_ACTION
+      type: Plain Text
+
+    heading: 
+      heading: Alert Action
+      alignment: start
+
+    layout: 
+      sequence: 40
+      column-alignment: start
+
+    accessibility: 
+      value-identifies-row: false
+
+    sorting: 
+      sortable: true
+
+    export-/-printing: 
+      include-in-export-/-print: true
+
+    advanced: 
+      compute-sum: false
+
+    ui-defaults-reference: 
+      table-owner: Parsing Schema
+
+    security: 
+      escape-special-characters: true
+
 - # ====== Region: Rank Promotions =============================
   id: 229688949021830195
   identification: 
@@ -1610,7 +1840,7 @@ page-items:
     syntax-highlighting: true
 
   layout: 
-    sequence: 200
+    sequence: 210
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -1705,7 +1935,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 170
+    sequence: 180
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -2139,7 +2369,7 @@ page-items:
     value-protected: true
 
   layout: 
-    sequence: 190
+    sequence: 200
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
 
@@ -2646,7 +2876,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 160
+    sequence: 170
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -2707,7 +2937,7 @@ page-items:
     use-defaults: true
 
   layout: 
-    sequence: 180
+    sequence: 190
     region: Tournament Sessions # 56158045789158236792
     slot: BODY
     alignment: Left
@@ -3264,10 +3494,10 @@ dynamic-actions:
       stop-execution-on-error: true
       wait-for-result: true
 
-- # ====== Dynamic Action: Refresh On Change ===================
+- # ====== Dynamic Action: Refresh Easy On Change ==============
   id: 47965350787877936
   identification: 
-    name: Refresh On Change
+    name: Refresh Easy On Change
 
   execution: 
     sequence: 50
@@ -3291,8 +3521,8 @@ dynamic-actions:
       region: Last Played # 47964843790877931
 
     execution: 
-      sequence: 20
-      event: Refresh On Change # 47965350787877936
+      sequence: 30
+      event: Refresh Easy On Change # 47965350787877936
       fire-when-event-result-is: True
       fire-on-initialization: true
 
@@ -3310,8 +3540,8 @@ dynamic-actions:
       region: Last Played # 47964843790877931
 
     execution: 
-      sequence: 30
-      event: Refresh On Change # 47965350787877936
+      sequence: 50
+      event: Refresh Easy On Change # 47965350787877936
       fire-when-event-result-is: True
       fire-on-initialization: true
 
@@ -3330,9 +3560,62 @@ dynamic-actions:
 
     execution: 
       sequence: 10
-      event: Refresh On Change # 47965350787877936
+      event: Refresh Easy On Change # 47965350787877936
       fire-when-event-result-is: True
       fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 140304243210994914
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Alert: Played Before}' # 140304032493994912
+
+    execution: 
+      sequence: 20
+      event: Refresh Easy On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Show ========================================
+    id: 140304818334994920
+    identification: 
+      action: Show
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Alert: Played Before}' # 140304032493994912
+
+    execution: 
+      sequence: 40
+      event: Refresh Easy On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is not null
+      item: P532_EASY_COURSE_ID
+
+  - # ====== Action: Hide ========================================
+    id: 140304927205994921
+    identification: 
+      action: Hide
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Alert: Played Before}' # 140304032493994912
+
+    execution: 
+      sequence: 60
+      event: Refresh Easy On Change # 47965350787877936
+      fire-when-event-result-is: True
+      fire-on-initialization: true
+
+    client-side-condition: 
+      type: Item is null
+      item: P532_EASY_COURSE_ID
 
 - # ====== Dynamic Action: Refresh Hard On Change ==============
   id: 47966285196877945
@@ -3361,7 +3644,7 @@ dynamic-actions:
       region: Last Played # 47965682906877939
 
     execution: 
-      sequence: 20
+      sequence: 30
       event: Refresh Hard On Change # 47966285196877945
       fire-when-event-result-is: True
       fire-on-initialization: true
@@ -3380,7 +3663,7 @@ dynamic-actions:
       region: Last Played # 47965682906877939
 
     execution: 
-      sequence: 30
+      sequence: 40
       event: Refresh Hard On Change # 47966285196877945
       fire-when-event-result-is: True
       fire-on-initialization: true
@@ -3400,6 +3683,21 @@ dynamic-actions:
 
     execution: 
       sequence: 10
+      event: Refresh Hard On Change # 47966285196877945
+      fire-when-event-result-is: True
+      fire-on-initialization: false
+
+  - # ====== Action: Refresh =====================================
+    id: 140304382803994915
+    identification: 
+      action: Refresh
+
+    affected-elements: 
+      selection-type: Region
+      region: '{Alert: Played Before}' # 140304032493994912
+
+    execution: 
+      sequence: 20
       event: Refresh Hard On Change # 47966285196877945
       fire-when-event-result-is: True
       fire-on-initialization: false
