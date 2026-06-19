@@ -1,6 +1,6 @@
 PRO .. wmg_webhooks 
 
-drop table wmg_webhooks cascade constraints purge;
+-- drop table wmg_webhooks cascade constraints purge;
 
 -- Keep table names under 24 characters
 --           1234567890123456789012345
