@@ -1,4 +1,4 @@
-create or replace view wmg_course_vote_v
+create or replace force view wmg_course_vote_v
 as
 select v.id vote_id
      , v.player_id, p.player_name

@@ -1,4 +1,4 @@
-create or replace view wmg_tournament_session_points_v
+create or replace force view wmg_tournament_session_points_v
 as
 with rounds as (
     select r.tournament_session_id

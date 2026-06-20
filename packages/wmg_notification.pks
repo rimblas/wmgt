@@ -18,16 +18,16 @@ procedure send_to_discord_webhook(
 );
 
 --------------------------------------------------------------------------------
-$IF env.fhit $THEN
 procedure new_player(
     p_player_id       in wmg_players.id%type
   , p_registration_id in wmg_tournament_players.id%type default null
 );
-$END
 
+$IF env.fhit $THEN
 procedure new_team(
     p_team_id       in wmg_teams.id%type
 );
+$END
 
 procedure notify_first_timeslot_finish(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
