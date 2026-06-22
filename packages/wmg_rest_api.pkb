@@ -255,6 +255,43 @@ begin
 end build_courses_json;
 
 
+function get_player_moderation_message(
+    p_player_id  in wmg_players.id%type
+  , p_session_id in wmg_tournament_sessions.id%type
+) return wmg_player_moderation.player_message%type
+is
+  l_moderation_count pls_integer;
+  l_message wmg_player_moderation.player_message%type;
+begin
+  select count(*)
+       , coalesce(max(m.player_message), 'You have been banned !')
+    into l_moderation_count
+       , l_message
+    from wmg_player_moderation m
+   where m.player_id = p_player_id
+     and (
+        m.banned_flag = 'Y'
+      or (  m.timeout_flag = 'Y'
+        and m.timeout_tournament_id in (
+              select tournament_id
+                from wmg_tournament_sessions
+               where id = p_session_id
+            )
+       )
+      or (  m.timeout_flag = 'Y'
+        and m.timeout_end_date < current_timestamp
+       )
+     )
+     and m.active_ind = 'Y';
+
+  if l_moderation_count > 0 then
+    return l_message;
+  end if;
+
+  return null;
+end get_player_moderation_message;
+
+
 
 --------------------------------------------------------------------------------
 -- RESPONSE PROCEDURES
@@ -604,6 +641,7 @@ is
   l_response clob;
   l_player_rank_code wmg_players.rank_code%type;
   l_valid_slot_count number;
+  l_moderation_message wmg_player_moderation.player_message%type;
 begin
   logger.log(p_text => 'START', p_scope => l_scope);
 
@@ -638,6 +676,19 @@ begin
   l_discord_user := t_discord_user();
   l_discord_user.init_from_json(l_json.get_object('discord_user').to_clob());
   l_discord_user.sync_player();
+
+  l_moderation_message := get_player_moderation_message(
+      p_player_id  => l_discord_user.player_id
+    , p_session_id => l_session_id
+  );
+
+  if l_moderation_message is not null then
+    error_response(
+        p_error_code => c_error_player_moderated
+      , p_message    => l_moderation_message
+    );
+    return;
+  end if;
 
   if l_timezone is not null then
       update wmg_players
