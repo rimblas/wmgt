@@ -501,8 +501,12 @@ begin
 
   $IF env.kwt $THEN
   set_tournament_control(p_tournament_type => 'KWT', p_tournament_session_id => p_tournament_session_id);
-  $ELSE
+  $END
+  $IF env.wmgt $THEN
   set_tournament_control(p_tournament_type => 'WMGT', p_tournament_session_id => p_tournament_session_id);
+  $END
+  $IF env.fhit $THEN
+  set_tournament_control(p_tournament_type => 'FHIT', p_tournament_session_id => p_tournament_session_id);
   $END
 
   commit;  -- Make sure the room open up regardless or other errors
@@ -1469,6 +1473,7 @@ end add_unicorns;
 
 
 
+$IF env.wmgt $THEN 
 /**
  * After the tournament is closed add people's best scores to the leaderboards
  *
@@ -1555,7 +1560,7 @@ begin
       log('Unhandled Exception', l_scope);
       raise;
 end add_leaderboard_entries;
-
+$END
 
 
 
@@ -1801,21 +1806,26 @@ begin
 
   commit;
 
-  if env.wmgt then
+  $IF env.wmgt $THEN
     add_leaderboard_entries(
       p_tournament_session_id => p_tournament_session_id
     );
-  end if;
+  $END
 
   $IF env.kwt $THEN
     add_monthly_entries(
       p_tournament_session_id => p_tournament_session_id
     );
     clear_tournament_control('KWT');
-  $ELSE
-    clear_tournament_control('WMGT');
   $END
 
+  $IF env.wmgt $THEN
+  clear_tournament_control('WMGT');
+  $END
+
+  $IF env.fhit $THEN
+  clear_tournament_control('FHIT');
+  $END
 
   wmg_notification.notify_channel_tournament_close(
      p_tournament_session_id => p_tournament_session_id
