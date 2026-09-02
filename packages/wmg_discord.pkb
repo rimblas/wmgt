@@ -440,6 +440,12 @@ begin
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
 
+  $IF env.kwt $THEN
+  log('.. Move monthly leaderboard', l_scope);
+  update kw_monthly_players
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+  $END
 
   if p_remove_from_player then
     $IF env.fhit $THEN
