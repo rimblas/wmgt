@@ -1,5 +1,20 @@
 # Weekly Tournament Report Automation Guide
 
+## Current workflow
+
+Use `.kiro/hooks/wmgt-weekly-report.kiro.hook` for each completed tournament
+week. Enter a code such as `S21W01`; the hook reads
+`weekly_tournament_report_workflow.md`, validates the completed database
+results, and saves the Discord-ready recap to the matching season directory.
+
+The workflow is the authoritative reference for required sections, data
+sources, tie handling, Player of the Week selection, badges, and the pre-save
+checks. The reports in `S20_reports/` remain the format examples.
+
+The older Level 1 instructions below are retained only as background. When
+running a recap manually, follow `weekly_tournament_report_workflow.md` rather
+than the older prompt templates.
+
 ## **Level 1: Manual with Script (5 minutes/week)**
 
 ### Setup (One-time):
