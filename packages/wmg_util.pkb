@@ -515,7 +515,6 @@ begin
 
   wmg_notification.notify_room_assignments(p_tournament_session_id => p_tournament_session_id);
 
-
   log('END', l_scope);
 
   exception
@@ -1825,6 +1824,10 @@ begin
 
   $IF env.fhit $THEN
   clear_tournament_control('FHIT');
+  $END
+
+  $IF env.fgl $THEN
+  fgl_util.score_week(p_wmg_tournament_session_id => p_tournament_session_id);
   $END
 
   wmg_notification.notify_channel_tournament_close(
@@ -3311,6 +3314,7 @@ is
   l_scope scope_t := gc_scope_prefix || 'set_tournament_control';
   l_session_exists number;
   l_valid_type_count number;
+  l_prev_tournament_session_id wmg_tournament_sessions.id%type;
 begin
   log('BEGIN', l_scope);
   log('.. Setting tournament control for type: ' || p_tournament_type || ', session: ' || p_tournament_session_id, l_scope);
@@ -3331,6 +3335,8 @@ begin
     log('.. Invalid tournament session ID: ' || p_tournament_session_id, l_scope);
     raise_application_error(-20101, 'INVALID_TOURNAMENT_SESSION: Tournament session ' || p_tournament_session_id || ' does not exist');
   end if;
+
+  l_prev_tournament_session_id := get_tournament_control(p_tournament_type);
 
   -- Insert or update the tournament control record
   merge into wmg_tournament_control tc
@@ -3354,6 +3360,62 @@ begin
     );
 
   log('.. Tournament control updated for type: ' || p_tournament_type, l_scope);
+
+
+  $IF env.fgl $THEN
+  if l_prev_tournament_session_id != get_tournament_control(p_tournament_type) and p_tournament_type in ('WMGT') then
+    -- a new session has been set to current, open the FGL Week
+    declare
+      l_week_id fgl_weeks.id%type;
+    begin
+      for l in (
+        with w_options as (
+          -- Check if the FGL is enabled this season
+          select build_option_status fgl_status
+            from apex_application_build_options
+           where application_id = (select fgl_security.source_application_id from dual)
+             and build_option_name = 'Feature: Fantasy Golf League'
+        )
+        , next_session as (
+          select s.session_date
+               , l.id league_id
+            from wmg_tournament_sessions s
+            join fgl_leagues l on l.wmg_tournament_id = s.tournament_id
+           where l.current_league_flag = 'Y'
+             and l.active_ind = 'Y'
+             and s.id = p_tournament_session_id
+        )
+        , w_slots as (
+           select 0 seq, -1 day_offset, '21:00' time_slot, '21:00 -1' prepared_time_slot, '21' t
+           from dual
+        )
+        select s.league_id
+             , to_utc_timestamp_tz(to_char(s.session_date + slots.day_offset, 'yyyy-mm-dd') || 'T' || slots.time_slot) session_date_utc
+             , w_options.fgl_status
+        from next_session s
+           , w_slots slots
+           , w_options
+      )
+      loop
+        if l.fgl_status = 'Include' then
+          fgl_util.create_week(
+              p_actor_wmg_player_id       => null
+            , p_league_id                 => l.league_id
+            , p_wmg_tournament_session_id => p_tournament_session_id
+            , p_draft_deadline            => l.session_date_utc
+            , p_week_id                   => l_week_id
+          );
+          log('.. new FGL week: ' || l_week_id);
+        else
+          log('.. FGL status: ' || l.fgl_status);
+        end if;
+      end loop; 
+    end;
+
+  end if;
+  $END
+
+
   log('END', l_scope);
 
 exception
