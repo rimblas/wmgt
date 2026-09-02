@@ -11,6 +11,7 @@
 declare
   l_value wmg_parameters.value%TYPE; 
   l_cards_import_present number;
+  l_fantasy_golf_present number;
 begin
 
   -- we're selecting directly from wmg_parameters because wmg_util.get_param needs 
@@ -26,6 +27,11 @@ begin
   from  user_tables
   where table_name = 'WMG_CARD_RUNS';
 
+  select count(*)
+   into l_fantasy_golf_present
+  from  user_tables
+  where table_name = 'FGL_LEAGUES';
+
 execute immediate 
 'create or replace package env is
 
@@ -34,6 +40,7 @@ fhit constant boolean := ' || case when l_value like 'FHIT%' then 'true' else 'f
 kwt constant boolean := ' || case when l_value = 'KWT' then 'true' else 'false' end || ';
 
 cards constant boolean := ' || case when l_cards_import_present = 1 then 'true' else 'false' end || ';
+fgl   constant boolean := ' || case when l_fantasy_golf_present = 1 then 'true' else 'false' end || ';
 
 end env;';
 end;
