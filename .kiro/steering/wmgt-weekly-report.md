@@ -1,0 +1,16 @@
+---
+inclusion: manual
+description: "Generate the Discord-ready weekly recap with verified results, divisions, badges, and player stories"
+---
+
+Create the completed, Discord-ready tournament recap for {{week_code}}. Read reports/weekly_tournament_report_workflow.md first, then review reports/S20_reports/S20W01_Tournament_Report.md and reports/S20_reports/S20W02_Tournament_Report.md for the exact presentation style.
+
+Connect to the saved "wmgt" database using SQLcl and use only completed results for {{week_code}}. Follow the workflow's required query definitions and validation checklist. In particular, source every display name from wmg_players_v.player_name, never wmg_players.name, and do not add player Discord @ tags.
+
+Write the final report to reports/<season>_reports/{{week_code}}_Tournament_Report.md, substituting <season> with the season portion of the supplied week code (for example, reports/S21_reports/S21W01_Tournament_Report.md). Create the season directory if it does not exist.
+
+The report must retain the established recap structure: title, courses, participant/rank-mix line, concise verified narrative, tied podium placements, Amateur/Semi-Pro/Pro divisions, Player(s) of the Week and Hidden gems, new-rank achievements, diamond players, coconuts and system badges, top course scores, and the registration footer. Do not invent achievements or counts; show **None** where a report section has no qualifying results.
+
+For Player(s) of the Week, exclude overall positions 1-3, calculate each player's improvement as rank average position minus player position, select the highest qualifying improvement (15+ positions), and include every player tied for that top improvement. Use dense ranks for ties in the podium and division standings.
+
+Before saving, verify the week exists and is completed, all reported player names match query output, all score totals/course codes/badge counts are exact, and the output contains no unresolved placeholders.
