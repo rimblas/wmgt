@@ -599,7 +599,11 @@ begin
       l_room := p_room_name;
     end if;
   else
+    if env.fhit then
+    l_room := 'FHIT' || p_room_no;
+    else
     l_room := p_room_no;
+    end if;
   end if;
 
   l_result.room_no := l_room;
