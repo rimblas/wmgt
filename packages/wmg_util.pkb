@@ -509,6 +509,10 @@ begin
   set_tournament_control(p_tournament_type => 'FHIT', p_tournament_session_id => p_tournament_session_id);
   $END
 
+  $IF env.fgl $THEN
+  fgl_util.capture_week_stats(p_wmg_tournament_session_id => p_tournament_session_id);
+  $END
+
   commit;  -- Make sure the room open up regardless or other errors
 
   wmg_util.submit_close_scoring_jobs(p_tournament_session_id => p_tournament_session_id);
@@ -3363,7 +3367,42 @@ begin
 
 
   $IF env.fgl $THEN
-  if l_prev_tournament_session_id != get_tournament_control(p_tournament_type) and p_tournament_type in ('WMGT') then
+  if l_prev_tournament_session_id = get_tournament_control(p_tournament_type) and p_tournament_type in ('WMGT') then
+    -- same session as before, see if it's time to open the FGL and lock the drafts
+
+      for l in (
+        with w_options as (
+          -- Check if the FGL is enabled this season
+          select build_option_status fgl_status
+            from apex_application_build_options
+           where application_id = (select fgl_security.source_application_id from dual)
+             and build_option_name = 'Feature: Fantasy Golf League'
+        )
+        , next_session as (
+          select s.session_date
+               , l.id league_id
+               , w.id week_id
+            from wmg_tournament_sessions s
+            join fgl_leagues l on l.wmg_tournament_id = s.tournament_id
+            join fgl_weeks w on w.league_id = l.id
+           where l.current_league_flag = 'Y'
+             and l.active_ind = 'Y'
+             and w.wmg_tournament_session_id = s.id
+             and s.id = p_tournament_session_id
+             and w.draft_locked_on is null
+        )
+        select week_id
+          from next_session
+      )
+      loop
+        logger.log('.. Locking FGL draft! week_id:' || l.week_id, l_scope);
+        update fgl_weeks
+          set draft_locked_on = current_timestamp
+         where id = l.week_id;
+
+      end loop;
+
+  else
     -- a new session has been set to current, open the FGL Week
     declare
       l_week_id fgl_weeks.id%type;
@@ -3409,7 +3448,7 @@ begin
         else
           log('.. FGL status: ' || l.fgl_status);
         end if;
-      end loop; 
+      end loop;
     end;
 
   end if;
