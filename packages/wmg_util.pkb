@@ -55,28 +55,29 @@ begin
 end log;
 
 
-function rooms(p_player_count in number) return number
+function rooms(
+    p_player_count in number
+  , p_preferred_room_size in varchar2 default '4'
+) return number
 is
    l_players integer;
-   l_rooms number;
 begin
   l_players := nvl(p_player_count, 0);
-  l_rooms := trunc(l_players / 4);
 
-  return 
-      case 
-        when l_rooms  =  (l_players / 4) then l_rooms  -- evenly divisible by 4
-        else
-          l_rooms + 1
-      end;
+  -- Missing or unsupported preferences preserve the original rooms-of-4 behavior.
+  if nvl(trim(p_preferred_room_size), '4') <> '3' then
+    return ceil(l_players / 4);
+  end if;
 
-/*
-when p_player_count = 5 then 1 --  Rooms 3 + 2
-when p_player_count = 6 then 1 --  Rooms 3 + 3
-when p_player_count = 7 then 1 --  Rooms 3 + 3
-when p_player_count = 8 then 1 --  Rooms 4 + 4
-when p_player_count = 9 then 1 --  Rooms 3 + 3 + 3
-*/
+  -- Prefer rooms of 3, using rooms of 4 rather than creating pairs.
+  -- Five players need a 3 + 2 split to stay within the four-player limit.
+  if l_players <= 4 then
+    return ceil(l_players / 4);
+  elsif l_players = 5 then
+    return 2;
+  end if;
+
+  return trunc(l_players / 3);
 
 end rooms;
 
@@ -229,8 +230,9 @@ end extract_hole_from_file;
 ------------------------------------------------------------------------------
 /**
  * Given a tournament session create random room assignments
- * We ideally want rooms of 4, never have a room of 1 and avoid rooms of 2
- * Scenarios:
+ * Default to rooms of 4. PREFERRED_ROOM_SIZE = 3 prefers rooms of 3,
+ * allowing 4 to avoid rooms of 1 or 2 when possible.
+ * Scenarios with PREFERRED_ROOM_SIZE = 3:
  *   1 players: Room  1
  *   2 players: Room  2
  *   3 players: Room  3
@@ -242,12 +244,9 @@ end extract_hole_from_file;
  *   9 players: Rooms 3 + 3 + 3
  *  10 players: Rooms 4 + 3 + 3
  *  11 players: Rooms 4 + 4 + 3 = Rule 8 + 3
- *  12 players: Rooms 4 + 4 + 4 = Rule 8 + 4
- *  
- *  Logic:
- *   if P / 4 = trunc(P/4) then even number...
- *   else
- *       Rooms = P / 3 
+ *  12 players: Rooms 3 + 3 + 3 + 3
+ *  13 players: Rooms 4 + 3 + 3 + 3
+ *  14 players: Rooms 4 + 4 + 3 + 3
  *       
  *
  *
@@ -282,6 +281,7 @@ is
 
   l_players  number;
   l_next_player  number;
+  l_preferred_room_size wmg_parameters.value%type;
 
 
   -- Search in l_room_id_tbl for a plaer without a room assignment
@@ -328,6 +328,8 @@ is
 
 begin
   log('BEGIN', l_scope);
+
+  l_preferred_room_size := get_param('PREFERRED_ROOM_SIZE');
 
   log('.. Stamp room assignments', l_scope);
   update wmg_tournament_sessions
@@ -382,7 +384,10 @@ begin
     log('.. Assigning Rooms for ' || time_slots.time_slot || ' players ' || l_room_id_tbl.count, l_scope);
     
     l_players := l_room_id_tbl.count;
-    l_rooms := rooms(p_player_count => l_players);
+    l_rooms := rooms(
+        p_player_count => l_players
+      , p_preferred_room_size => l_preferred_room_size
+    );
     l_room := 1;
     l_last_room_no := l_room_no;  -- Keep this in sync with room_no to indicate where the time slot starts
 
