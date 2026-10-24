@@ -399,6 +399,11 @@ begin
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
 
+  log('.. Move player rank history', l_scope);
+  update wmg_player_rank_history
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+
   log('.. Move leaderboard', l_scope);
   begin
     update wmg_leaderboards
@@ -447,12 +452,56 @@ begin
    where player_id = p_from_player_id;
   $END
 
+  $IF env.fgl $THEN
+  -- Allow data to be modified
+  fgl_security.set_admin_override(true);
+  log('.. Move fgl_team_picks', l_scope);
+  update fgl_team_picks
+     set wmg_player_id = p_into_player_id
+   where wmg_player_id = p_from_player_id;
+
   if p_remove_from_player then
+
+    log('.. Remove FGL manager and team roaster', l_scope);
+    delete 
+      from fgl_week_rankings
+     where wmg_player_id = p_from_player_id;
+
+    delete from fgl_team_pick_scores tps where tps.team_pick_id in (
+       select tp.id
+         from fgl_team_picks tp where tp.roster_id in (
+        select tr.id
+          from fgl_team_rosters tr where tr.team_id in (select t.id from fgl_teams t where t.manager_id in (select m.id from fgl_managers m where m.wmg_player_id = p_from_player_id))
+      )
+    );
+    delete from fgl_team_picks tp where tp.roster_id in (
+      select tr.id
+        from fgl_team_rosters tr where tr.team_id in (select t.id from fgl_teams t where t.manager_id in (select m.id from fgl_managers m where m.wmg_player_id = p_from_player_id))
+    );
+    delete from fgl_team_scores ts where ts.roster_id in (
+      select tr.id
+        from fgl_team_rosters tr where tr.team_id in (select t.id from fgl_teams t where t.manager_id in (select m.id from fgl_managers m where m.wmg_player_id = p_from_player_id))
+    );
+    delete from fgl_team_rosters tr where tr.team_id in (select t.id from fgl_teams t where t.manager_id in (select m.id from fgl_managers m where m.wmg_player_id = p_from_player_id));
+    delete from fgl_teams t where t.manager_id in (select m.id from fgl_managers m where m.wmg_player_id = p_from_player_id);
+    delete from fgl_managers fm
+    where fm.wmg_player_id = p_from_player_id;
+  end if;
+  $END
+
+  if p_remove_from_player then
+    $IF env.fgl $THEN
+    log('.. Delete fgl_player_stats', l_scope);
+    delete
+      from fgl_player_stats
+     where wmg_player_id = p_from_player_id;
+    $END
+
     $IF env.fhit $THEN
     log('.. Delete player_invites', l_scope);
     delete
       from fhit_player_invites
-     where player_id = p_from_player_id;    
+     where player_id = p_from_player_id;
     $END
     log('.. Delete old player', l_scope);
     delete
