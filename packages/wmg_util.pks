@@ -53,6 +53,12 @@ procedure reset_room_assignments(
     p_tournament_session_id  in wmg_tournament_sessions.id%type
 );
 
+-- Clear assignments for rerandomization before rooms have been opened.
+-- Does not commit; the caller controls the transaction.
+procedure reset_unopened_room_assignments(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+);
+
 
 procedure possible_player_match (
     p_discord_account in wmg_players.account%type

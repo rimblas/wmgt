@@ -593,6 +593,51 @@ begin
 end reset_room_assignments;
 
 
+/**
+ * Clear room assignments before opening rooms so randomization can run again.
+ * Preserve verification data and registration/completion settings.
+ * The caller controls the transaction; no commit is performed here.
+ */
+procedure reset_unopened_room_assignments(
+    p_tournament_session_id  in wmg_tournament_sessions.id%type
+)
+is
+  l_rooms_open_flag wmg_tournament_sessions.rooms_open_flag%type;
+  l_completed_ind wmg_tournament_sessions.completed_ind%type;
+  l_room_count number;
+begin
+  -- Lock the session before checking its state and clearing assignments.
+  select rooms_open_flag, completed_ind
+    into l_rooms_open_flag, l_completed_ind
+    from wmg_tournament_sessions
+   where id = p_tournament_session_id
+     for update;
+
+  -- Room records are created by open_rooms, so also reject previously opened
+  -- sessions even if their rooms_open_flag has since been switched off.
+  select count(*)
+    into l_room_count
+    from wmg_tournament_rooms
+   where tournament_session_id = p_tournament_session_id;
+
+  if l_rooms_open_flag = 'Y' or l_completed_ind = 'Y' or l_room_count > 0 then
+    raise_application_error(-20001, 'Room assignments can only be reset before rooms are opened.');
+  end if;
+
+  update wmg_tournament_players
+     set room_no = null
+   where tournament_session_id = p_tournament_session_id;
+
+  update wmg_tournament_sessions
+     set rooms_defined_flag = null
+       , rooms_defined_by = null
+       , rooms_defined_on = null
+   where id = p_tournament_session_id;
+
+  g_rooms_set_ind := null;
+end reset_unopened_room_assignments;
+
+
 
 
 
