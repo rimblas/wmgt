@@ -333,3 +333,23 @@ For production deployment, consider implementing:
 ### Debugging
 
 Enable detailed logging by checking the logger output with scope `REST:api/*` to see detailed execution information for each endpoint.
+### Attendance rules for registration
+
+The registration endpoint applies page 30's season attendance rules, including
+time slot changes. Only active tournament-player records in the requested
+session's tournament count. `NOSHOW` and `NOSCORE` are counted separately;
+`INFRACTION` does not contribute to these limits.
+
+- Two of either issue: registration succeeds with `data.warning`. The bot shows
+  this warning in its confirmation.
+- Three or more of either issue: registration fails with
+  `success: false`, `error_code: "ATTENDANCE_LIMIT_REACHED"`, and a player-facing
+  `message`. No registration or time slot change is performed.
+
+Deployment requires recompiling `packages/wmg_rest_api.pkb` and restarting the
+bot with the updated command and button handler.
+
+Regression checks in a development database should cover 0, 1, 2, and 3 of each
+issue; two of both; inactive issues; issues in another season; and `INFRACTION`
+records. Verify that blocked requests preserve existing registrations and time
+slots, and that both new registrations and time slot changes display warnings.

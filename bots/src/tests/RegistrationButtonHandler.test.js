@@ -106,6 +106,28 @@ describe('RegistrationButtonHandler', () => {
     interaction = createMockInteraction();
   });
 
+  it('shows the API attendance warning on a successful registration', async () => {
+    const warning = 'You have 2 no-shows this season. One more will result in a cool-down break.';
+    services.registrationService.registerPlayer.mockResolvedValue({
+      success: true,
+      data: { warning }
+    });
+    interaction.deferUpdate = vi.fn().mockResolvedValue(undefined);
+
+    await handler._processRegistration(
+      interaction,
+      { sessions: { id: 42, week: 'Week 1' } },
+      '22:00',
+      { session_date_epoch: 1700000000 },
+      'UTC'
+    );
+
+    const embed = interaction.editReply.mock.calls[0][0].embeds[0].data;
+    expect(embed.title).toContain('Successful');
+    expect(embed.color).toBe(0xFFA500);
+    expect(embed.fields).toContainEqual({ name: '⚠️ Attendance Warning', value: warning });
+  });
+
   describe('handleRegisterButton', () => {
     it('should defer reply as ephemeral', async () => {
       await handler.handleRegisterButton(interaction);

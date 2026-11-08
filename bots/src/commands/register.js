@@ -461,6 +461,11 @@ async function handleRegistrationConfirmation(interaction, session, timeSlot, us
         });
       }
 
+      const warning = registrationResult.data?.warning || registrationResult.warning;
+      if (warning) {
+        successEmbed.setColor(0xFFA500).addFields({ name: '⚠️ Attendance Warning', value: warning });
+      }
+
       successEmbed.setFooter({
         text: 'Use /mystatus to view all your registrations or /unregister to cancel.'
       });

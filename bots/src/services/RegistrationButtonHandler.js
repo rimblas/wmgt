@@ -537,6 +537,11 @@ class RegistrationButtonHandler {
       }
         
 
+      const warning = result.data?.warning || result.warning;
+      if (warning) {
+        successEmbed.setColor(0xFFA500).addFields({ name: '⚠️ Attendance Warning', value: warning });
+      }
+
       if (result.registration?.room_no) {
         successEmbed.addFields({
           name: '🏠 Room',
@@ -787,6 +792,11 @@ class RegistrationButtonHandler {
                 .addFields(
                   { name: '⏰ New Time Slot', value: timeDisplay, inline: true }
                 );
+
+              const warning = result.data?.warning || result.warning;
+              if (warning) {
+                successEmbed.setColor(0xFFA500).addFields({ name: '⚠️ Attendance Warning', value: warning });
+              }
 
               if (result.registration?.room_no) {
                 successEmbed.addFields({

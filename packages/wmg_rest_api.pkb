@@ -641,6 +641,9 @@ is
   l_response clob;
   l_player_rank_code wmg_players.rank_code%type;
   l_valid_slot_count number;
+  l_noshow_count number;
+  l_noscore_count number;
+  l_attendance_warning varchar2(2000);
   l_moderation_message wmg_player_moderation.player_message%type;
 begin
   logger.log(p_text => 'START', p_scope => l_scope);
@@ -688,6 +691,41 @@ begin
       , p_message    => l_moderation_message
     );
     return;
+  end if;
+
+  -- Match page 30: count active issues separately within the requested season.
+  select count(case when p.issue_code = 'NOSHOW' then 1 end)
+       , count(case when p.issue_code = 'NOSCORE' then 1 end)
+    into l_noshow_count, l_noscore_count
+    from wmg_tournament_players p
+    join wmg_tournament_sessions ts on ts.id = p.tournament_session_id
+   where p.player_id = l_discord_user.player_id
+     and p.active_ind = 'Y'
+     and ts.tournament_id = (
+       select tournament_id from wmg_tournament_sessions where id = l_session_id
+     );
+
+  if l_noshow_count > 2 or l_noscore_count > 2 then
+    error_response(
+        p_error_code => 'ATTENDANCE_LIMIT_REACHED'
+      , p_message => 'You cannot register any more this season. You have '
+          || l_noshow_count || ' no-shows and ' || l_noscore_count
+          || ' skipped score entries. Hopefully we will see you next season.'
+    );
+    return;
+  end if;
+
+  if l_noshow_count = 2 then
+    l_attendance_warning := 'You have 2 no-shows this season. One more unannounced absence '
+      || 'will result in a cool-down break for the rest of the season. '
+      || 'If you cannot make it, let Staff know in advance.';
+  end if;
+
+  if l_noscore_count = 2 then
+    l_attendance_warning := l_attendance_warning
+      || case when l_attendance_warning is not null then chr(10) end
+      || 'You have skipped entering scores 2 times this season. One more skipped score entry '
+      || 'will result in a cool-down break for the rest of the season.';
   end if;
 
   if l_timezone is not null then
@@ -752,7 +790,8 @@ begin
   success_response(
       p_message => 'Successfully registered for ' || l_week || ' at ' || l_time_slot || ' UTC'
     , p_data => json_object(
-          'registration' value json_object(
+          'warning' value l_attendance_warning
+        , 'registration' value json_object(
               'session_id' value l_session_id
             , 'week' value l_week
             , 'time_slot' value l_time_slot
