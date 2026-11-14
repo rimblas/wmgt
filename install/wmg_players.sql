@@ -9,7 +9,7 @@ create table wmg_players (
     accent_color                   number,
     discord_discriminator          varchar2(10),
     account_login                  varchar2(100),
-    prefered_tz                    varchar2(20),
+    prefered_tz                    varchar2(30),
     prefered_lang                  varchar2(20),
     country_code                   varchar2(10),
     rank_code                      varchar2(10) default on null 'NEW' not null,
