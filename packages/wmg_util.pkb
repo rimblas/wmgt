@@ -430,8 +430,8 @@ begin
          and time_slot = time_slots.time_slot
          and id = l_room_id_tbl(idx).player_id;
 
-    -- Make absolutely sure the next room_no in the sequence is brand new
-    select max(room_no) + 1
+    -- Keep the next room number when this slot has no assigned rooms.
+    select nvl(max(room_no) + 1, l_room_no)
       into l_room_no
       from wmg_tournament_players
      where tournament_session_id = p_tournament_session_id
