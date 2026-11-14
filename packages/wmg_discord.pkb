@@ -404,6 +404,13 @@ begin
      set player_id = p_into_player_id
    where player_id = p_from_player_id;
 
+  $IF not env.kwt $THEN
+  log('.. Move player invites', l_scope);
+  update fhit_player_invites
+     set player_id = p_into_player_id
+   where player_id = p_from_player_id;
+  $END
+
   log('.. Move leaderboard', l_scope);
   begin
     update wmg_leaderboards
@@ -497,12 +504,6 @@ begin
      where wmg_player_id = p_from_player_id;
     $END
 
-    $IF env.fhit $THEN
-    log('.. Delete player_invites', l_scope);
-    delete
-      from fhit_player_invites
-     where player_id = p_from_player_id;
-    $END
     log('.. Delete old player', l_scope);
     delete
       from wmg_players
